@@ -632,10 +632,8 @@ function renderRaw(){
     '<th>Currency</th><th title="Auto-summed from Currency Detail">Fundamentals (raw / max)</th>'+
     '<th>Yield (&minus;10 to 10)</th><th>Institutional Bias (&minus;6 to +6)</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table>'+
     '<div class="legend-line">Fundamentals and Institutional Bias are auto-calculated from Currency Detail. Update them there!</div></div>'+
-    '<div class="card" style="margin-top:20px;"><h3>Team Sharing &amp; Backup</h3><p style="font-size:12.5px;color:var(--text-dim);line-height:1.5;margin-bottom:12px;">Since you are running in a sandbox without a dedicated backend database connected, the link won\'t magically sync to your team\'s computer. <b>To share your live numbers:</b> copy the code block below and send it to your team. They can paste it here and click "Import Data" to instantly sync their view to yours.</p>'+
-    '<textarea id="syncDataStr" class="guidance-box" style="height:60px; font-size:11px;" '+(unlockedLocally?"":"disabled")+'>'+btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG}))+'</textarea>'+
-    (unlockedLocally? '<button id="importSyncBtn" class="recalc-btn" style="margin-top:10px;">Import Data</button>' : '')+
-    '</div>';
+    '';
+
   document.getElementById("tab-raw").innerHTML=html;
   var tb=document.getElementById("rawRows"), out="";
   for(var i=0;i<CCYS.length;i++){
@@ -1092,3 +1090,4 @@ init();
 </script>
 </body>
 </html>
+
