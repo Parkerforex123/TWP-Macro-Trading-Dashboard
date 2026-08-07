@@ -210,22 +210,26 @@ th{font-size:11.5px;}
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// Supabase cloud sync
+const SUPABASE_URL = "https://uxcluyadxdngcepwique.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JpSv5ckmnMb0fjdvrr6g_Q_AM6PLJMo";
+const SUPABASE_TABLE = "dashboard_state";
+const SUPABASE_ROW_ID = 1;
 
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-twp-dashboard';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-let app, db, auth, docRef;
-if (Object.keys(firebaseConfig).length > 0) {
-    try {
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        docRef = doc(db, 'artifacts', appId, 'public', 'data', 'dashboard', 'state');
-    } catch(e) { console.error("Firebase init failed", e); }
+async function supabaseRequest(path, options = {}) {
+  const headers = Object.assign({
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + SUPABASE_KEY,
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  }, options.headers || {});
+  const response = await fetch(SUPABASE_URL + "/rest/v1/" + path, Object.assign({}, options, { headers }));
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error("Supabase " + response.status + ": " + text);
+  }
+  if (response.status === 204) return null;
+  return response.json();
 }
 
 "use strict";
@@ -424,32 +428,28 @@ function loadLocalCache() {
 }
 
 async function saveDataNow(){
-  if(isSaving) return;
+  if(isSaving || !DATA) return;
   isSaving = true;
   updateStatus("Saving to cloud...", "var(--text-dim)");
   try {
-    if(!DATA) return;
     DATA._updatedAt = new Date().toISOString();
     var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG };
     var payload = JSON.stringify(state);
+
+    // Keep a local backup, but Supabase is now the shared source of truth.
     localStorage.setItem('twp_dashboard_state_v4', payload);
-    
-    if (typeof window.storage !== 'undefined' && window.storage.set) {
-      try {
-        await window.storage.set('twp_dashboard_state_v4', payload, { shared: true });
-      } catch (wsErr) {
-        console.error("window.storage error:", wsErr);
-      }
-    }
-    
-    if (docRef) {
-      await setDoc(docRef, { payload: payload, updatedAt: DATA._updatedAt });
-    }
+
+    await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+      method: "PATCH",
+      headers: { "Prefer": "return=minimal" },
+      body: JSON.stringify({ payload: payload, updated_at: DATA._updatedAt })
+    });
+
     updateStatus("Saved to cloud", "var(--bullish-strong)");
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
   } catch(e) {
-    console.error("Save error:", e);
-    updateStatus("Error saving data!", "var(--bearish-strong)");
+    console.error("Supabase save error:", e);
+    updateStatus("Cloud save failed", "var(--bearish-strong)");
   } finally {
     isSaving = false;
   }
@@ -1011,71 +1011,81 @@ async function init(){
   }
 
   let loaded = false;
-  if (typeof window.storage !== 'undefined' && window.storage.get) {
-    try {
-      let stored = await window.storage.get('twp_dashboard_state_v4');
-      if (stored) {
-        let parsed = JSON.parse(stored);
-        DATA = parsed.DATA; SETTINGS = parsed.SETTINGS || {passwordHash:null};
-        DAILY = parsed.DAILY || {}; LOG = parsed.LOG || [];
+
+  // Supabase is the shared source of truth. Load it first so every browser
+  // starts from the same dashboard state.
+  try {
+    const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at");
+    if (rows && rows.length && rows[0].payload) {
+      const parsed = JSON.parse(rows[0].payload);
+      if (parsed && parsed.DATA && Object.keys(parsed.DATA).length) {
+        DATA = parsed.DATA;
+        SETTINGS = parsed.SETTINGS || {passwordHash:null};
+        DAILY = parsed.DAILY || {};
+        LOG = parsed.LOG || [];
+        localStorage.setItem('twp_dashboard_state_v4', rows[0].payload);
         loaded = true;
       }
-    } catch(e) { console.error("window.storage error", e); }
+    }
+  } catch(e) {
+    console.error("Supabase load error:", e);
   }
 
-  // Load local cache to prevent empty screen flashes, and as a backup
+  // First-time migration: if the shared row is still empty, preserve the
+  // existing local dashboard data from this browser and upload it once.
   if (!loaded) {
-    if (!loadLocalCache()) {
-      DATA = seed();
+    if (!loadLocalCache()) DATA = seed();
+    try {
+      await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+        method: "PATCH",
+        headers: { "Prefer": "return=minimal" },
+        body: JSON.stringify({
+          payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG}),
+          updated_at: new Date().toISOString()
+        })
+      });
+      updateStatus("Cloud initialized", "var(--bullish-strong)");
+    } catch(e) {
+      console.error("Initial cloud migration failed:", e);
     }
   }
-  
+
   renderLockBox();
   renderAllStatic();
 
   updateStatus("Connecting to cloud...", "var(--text-dim)");
-  if (auth && db) {
+  // Poll for changes so every open dashboard receives the shared state.
+  // This avoids requiring any paid realtime service and works on GitHub Pages.
+  let lastCloudUpdatedAt = null;
+  async function pullCloudState(){
     try {
-      if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
-      else await signInAnonymously(auth);
-      
-      onSnapshot(docRef, function(snap) {
-        if (snap.exists()) {
-          var d = snap.data();
-          if (d.payload) {
-            var parsed = JSON.parse(d.payload);
-            DATA = parsed.DATA;
-            SETTINGS = parsed.SETTINGS || {passwordHash:null};
-            DAILY = parsed.DAILY || {};
-            LOG = parsed.LOG || [];
-            localStorage.setItem('twp_dashboard_state_v4', d.payload);
-            
-            if(!isSaving) {
-              updateStatus("Live synced", "var(--text-faint)");
-              // If you are currently typing, it won't abruptly refresh the whole screen
-              if (!isTyping) {
-                renderAllStatic();
-                renderLockBox();
-              } else {
-                updateComputed();
-              }
-            }
-          }
-        } else {
-          // Document doesn't exist yet, we must be the first one here. Save local cache to cloud to migrate!
-          saveDataNow();
-        }
-      }, function(error) {
-        console.error("Cloud sync error", error);
-        updateStatus("Cloud disconnected", "var(--bearish-strong)");
-      });
+      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at");
+      if (!rows || !rows.length || !rows[0].payload) return;
+      const row = rows[0];
+      if (lastCloudUpdatedAt === row.updated_at) return;
+      lastCloudUpdatedAt = row.updated_at;
+      if (isSaving) return;
+      const parsed = JSON.parse(row.payload);
+      if (!parsed || !parsed.DATA) return;
+      DATA = parsed.DATA;
+      SETTINGS = parsed.SETTINGS || {passwordHash:null};
+      DAILY = parsed.DAILY || {};
+      LOG = parsed.LOG || [];
+      localStorage.setItem('twp_dashboard_state_v4', row.payload);
+      if (!isTyping) {
+        renderAllStatic();
+        renderLockBox();
+      } else {
+        updateComputed();
+      }
+      updateStatus("Live synced", "var(--text-faint)");
     } catch(e) {
-      console.error("Auth failed", e);
-      updateStatus("Offline mode", "var(--bearish-strong)");
+      console.error("Cloud sync error:", e);
     }
-  } else {
-    updateStatus("Cloud unavailable", "var(--bearish-strong)");
   }
+  pullCloudState();
+  setInterval(pullCloudState, 5000);
+
 }
 
 init();
