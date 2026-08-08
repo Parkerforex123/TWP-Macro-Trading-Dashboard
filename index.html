@@ -166,6 +166,10 @@ th{font-size:11.5px;}
 .bigchart-head b{color:var(--text);font-family:'Space Grotesk',sans-serif;}
 .close-x{cursor:pointer;color:var(--text-faint);font-size:16px;}
 .close-x:hover{color:var(--text);}
+.range-switch{display:flex;gap:4px;}
+.range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.range-btn:hover{color:var(--text);}
+.range-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
 
 ::-webkit-scrollbar{width:10px;height:10px;}
 ::-webkit-scrollbar-thumb{background:var(--panel3);border-radius:6px;}
@@ -401,6 +405,7 @@ function seed(){
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null;
 var isSaving=false, isTyping=false;
+var expandedRange="1M";
 
 function hashStr(s){ var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h|=0; } return (h>>>0).toString(16); }
 
@@ -871,10 +876,24 @@ function sparkline(pair,w,h){
   var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
   return {svg:'<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2"/></svg>', days:days, vals:vals};
 }
-function bigChart(pair){
+function filterDaysByRange(days, range){
+  if(!range || range==="ALL") return days;
+  var lookback = range==="1M" ? 30 : (range==="3M" ? 90 : null);
+  if(!lookback) return days;
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate()-lookback);
+  var cutoffKey = cutoff.toISOString().slice(0,10);
+  return days.filter(function(d){ return d>=cutoffKey; });
+}
+function bigChart(pair, rangeSel){
   var w=680,h=170,pad=30;
-  var days=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
-  if(days.length<2) return '<div class="building">Not enough history yet — click Recalculate on at least two different days to start a trend line.</div>';
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
+  var days=filterDaysByRange(allDays, rangeSel);
+  if(days.length<2){
+    var msg = allDays.length<2
+      ? "Not enough history yet — click Recalculate on at least two different days to start a trend line."
+      : "No logged data falls inside this window — try a wider range.";
+    return '<div class="building">'+msg+'</div>';
+  }
   var vals=days.map(function(dt){ return DAILY[dt][pair]; });
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
@@ -915,7 +934,13 @@ function renderPairs(){
   }
   var expandedHtml="";
   if(expandedPair){
-    expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span><span class="close-x" id="closeChart">&times; close</span></div>'+bigChart(expandedPair)+'</div></div>';
+    var rangeBtns = ["1M","3M","ALL"].map(function(r){
+      return '<button class="range-btn'+(expandedRange===r?" active":"")+'" data-range="'+r+'">'+r+'</button>';
+    }).join("");
+    expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span>'+
+      '<div style="display:flex;align-items:center;gap:12px;"><div class="range-switch">'+rangeBtns+'</div>'+
+      '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
+      bigChart(expandedPair, expandedRange)+'</div></div>';
   }
   var html = '<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
     '<div class="legend-line" style="margin:0;">Pair direction follows standard FX convention: EUR &gt; GBP &gt; AUD &gt; NZD &gt; USD &gt; CAD &gt; JPY as base. Click any row for its trend chart.</div>'+
@@ -940,6 +965,8 @@ function renderPairs(){
   for(var q=0;q<prows.length;q++){ prows[q].onclick=function(){ expandedPair = (expandedPair===this.dataset.pair)? null : this.dataset.pair; renderPairs(); }; }
   var closeX=document.getElementById("closeChart");
   if(closeX){ closeX.onclick=function(){ expandedPair=null; renderPairs(); }; }
+  var rangeBtnsEl=document.querySelectorAll(".range-btn");
+  for(var rI=0;rI<rangeBtnsEl.length;rI++){ rangeBtnsEl[rI].onclick=function(e){ e.stopPropagation(); expandedRange=this.dataset.range; renderPairs(); }; }
 }
 
 function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -1090,4 +1117,3 @@ init();
 </script>
 </body>
 </html>
-
