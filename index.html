@@ -760,6 +760,11 @@ function y2ExportCsv(){
   a.href=URL.createObjectURL(blob); a.download='TWP_2Y_Yield_Master.csv'; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},500);
 }
 function y2ImportCsvText(text){
+  // Append-only importer: existing dates are never overwritten. A date already
+  // present in history is either skipped (values match) or flagged as a
+  // conflict (values differ) and left untouched. Only genuinely new dates are
+  // appended. This enforces the TWP CSV Update Protocol at the import layer,
+  // not just as a written instruction to an AI.
   var lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(function(x){return x.trim();});
   if(!lines.length) throw new Error('CSV is empty.');
   var header=y2SplitCsvLine(lines[0]).map(function(x){return x.trim().replace(/^"|"$/g,'');});
@@ -771,8 +776,44 @@ function y2ImportCsvText(text){
     var date=y2DateKey(parts[idx.Date]); if(!date) continue;
     var r={date:date}; Y2_CCY_ORDER.forEach(function(c){var k=c+'_2Y'; var raw=parts[idx[k]]; var n=y2Num(raw); if(n!=null) r[c]=n;}); rows.push(r);
   }
-  var byDate={}; (YIELD_ENGINE.history||[]).forEach(function(r){byDate[r.date]=r;}); rows.forEach(function(r){byDate[r.date]=Object.assign({},byDate[r.date]||{},r);});
-  YIELD_ENGINE.history=Object.keys(byDate).sort().map(function(k){return byDate[k];});
+
+  var existing={}; (YIELD_ENGINE.history||[]).forEach(function(r){existing[r.date]=r;});
+  var originalCount=Object.keys(existing).length;
+  var toAdd={}, skipped=0, conflicts=[], newDates=[];
+
+  rows.forEach(function(r){
+    var old=existing[r.date];
+    if(!old){
+      toAdd[r.date]=r; newDates.push(r.date);
+      return;
+    }
+    // Date already exists in history — never overwrite. Check whether every
+    // currency value supplied in this row matches what's already stored.
+    var mismatch=[];
+    Y2_CCY_ORDER.forEach(function(c){
+      if(r[c]==null) return; // currency not present in this row, nothing to compare
+      var oldVal=y2Num(old[c]);
+      if(oldVal==null || Math.abs(oldVal-r[c])>0.0005){ mismatch.push(c); }
+    });
+    if(mismatch.length){
+      conflicts.push({date:r.date, currencies:mismatch});
+    } else {
+      skipped++;
+    }
+  });
+
+  var merged=Object.assign({}, existing, toAdd);
+  YIELD_ENGINE.history=Object.keys(merged).sort().map(function(k){return merged[k];});
+  var finalCount=Object.keys(merged).length;
+
+  return {
+    originalCount:originalCount,
+    newAdded:newDates.length,
+    newDates:newDates.sort(),
+    skippedExisting:skipped,
+    conflicts:conflicts,
+    finalCount:finalCount
+  };
 }
 function y2RenderRows(){
   var tb=document.getElementById('y2Rows'); if(!tb) return;
@@ -821,7 +862,24 @@ function renderYield2Y(){
   };
   var ex=document.getElementById('y2Export'); if(ex) ex.onclick=y2ExportCsv;
   var demo=document.getElementById('y2Demo'); if(demo) demo.onclick=function(){if(!confirm('Load synthetic demo data? This replaces the current 2Y history in the dashboard.')) return; y2LoadDemo(); saveDataNow(); renderYield2Y(); updateStatus('Synthetic demo loaded','var(--amber)');};
-  var imp=document.getElementById('y2Import'); if(imp) imp.onchange=function(){var f=this.files&&this.files[0]; if(!f) return; var reader=new FileReader(); reader.onload=function(){try{y2ImportCsvText(reader.result); saveDataNow(); renderYield2Y(); updateStatus('CSV imported','var(--bullish-strong)');}catch(e){alert(e.message);}}; reader.readAsText(f);};
+  var imp=document.getElementById('y2Import'); if(imp) imp.onchange=function(){var f=this.files&&this.files[0]; if(!f) return; var reader=new FileReader(); reader.onload=function(){
+    try{
+      var report=y2ImportCsvText(reader.result);
+      var msg='Existing rows: '+report.originalCount+'\n'+
+        'New rows added: '+report.newAdded+'\n'+
+        'Existing dates skipped (match): '+report.skippedExisting+'\n'+
+        'Conflicts (NOT saved): '+report.conflicts.length+'\n'+
+        'Final rows: '+report.finalCount+
+        (report.newDates.length?'\n\nNew date range: '+report.newDates[0]+' \u2192 '+report.newDates[report.newDates.length-1]:'');
+      if(report.conflicts.length){
+        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed:\n';
+        report.conflicts.forEach(function(c){ msg+='  '+c.date+': '+c.currencies.join(', ')+'\n'; });
+      }
+      saveDataNow(); renderYield2Y();
+      updateStatus(report.conflicts.length?('CSV imported \u2014 '+report.conflicts.length+' conflict(s) flagged'):'CSV imported \u2014 append-only', report.conflicts.length?'var(--amber)':'var(--bullish-strong)');
+      alert(msg);
+    }catch(e){alert(e.message);}
+  }; reader.readAsText(f);};
   y2RenderRows();
   initHistoricalSpreadPanel();
 }
