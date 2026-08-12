@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TWP v4 — Fundamentals Dashboard</title>
+<title>TWP — Fundamentals Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23181b22%27/%3E%3Ctext x=%2732%27 y=%2742%27 text-anchor=%27middle%27 font-family=%27Arial,sans-serif%27 font-size=%2725%27 font-weight=%27700%27 fill=%27white%27%3ETWP%3C/text%3E%3C/svg%3E">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -49,11 +50,11 @@ body{min-height:100vh;transition:background .15s;}
 .lock-state{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
 .lock-state.unlocked{color:var(--amber);}
 .lock-box input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
-  padding:7px 8px;border-radius:6px;font-size:13px;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  padding:7px 8px;border-radius:6px;font-size:15px;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
 .lock-box button{width:100%;background:var(--panel3);border:1px solid var(--border);color:var(--text);
   padding:7px 8px;border-radius:6px;font-size:12.5px;cursor:pointer;font-weight:700;}
 .lock-box button:hover{border-color:var(--amber);}
-.lock-box .hint{font-size:11px;color:var(--text-faint);margin-top:6px;line-height:1.4;}
+.lock-box .hint{font-size:13px;color:var(--text-faint);margin-top:6px;line-height:1.4;}
 .lock-box .change-link{font-size:11.5px;color:var(--text-faint);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
 
 .content{flex:1;padding:26px 32px 60px;max-width:1260px;}
@@ -62,6 +63,26 @@ body{min-height:100vh;transition:background .15s;}
 .page-sub{color:var(--text-dim);font-size:13.5px;margin-top:4px;}
 .updated{font-size:11.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
 .tab-panel{display:none;} .tab-panel.active{display:block;}
+.y2-grid{display:grid;grid-template-columns:1.1fr 1.9fr;gap:16px;}
+.y2-input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.y2-input{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;width:100%;}
+.y2-input:focus{outline:none;border-color:var(--amber);}
+.y2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.y2-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
+.y2-btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
+.y2-btn:hover{filter:brightness(.97);}
+.y2-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:9px;}
+.y2-score{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;}
+.y2-positive{color:var(--bullish-strong);} .y2-negative{color:var(--bearish-strong);} .y2-neutral{color:var(--text-dim);}
+.y2-spread{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+.y2-track{height:7px;background:var(--panel3);border-radius:20px;position:relative;min-width:130px;overflow:hidden;}
+.y2-track i{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);left:50%;}
+.y2-track b{position:absolute;top:0;bottom:0;background:var(--bullish);opacity:.8;}
+.y2-track b.neg{background:var(--bearish);}
+.y2-small{font-size:13px;color:var(--text-faint);}.y2-direction{font-size:12px;font-weight:700;}
+@media(max-width:1000px){.y2-grid{grid-template-columns:1fr;}.y2-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.y2-input-grid{grid-template-columns:1fr;}}
+
 .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
 .card h3{font-family:'Space Grotesk',sans-serif;font-size:13.5px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:0 0 14px;font-weight:700;}
 
@@ -70,8 +91,8 @@ body{min-height:100vh;transition:background .15s;}
 .divergence.off{color:var(--text-dim);}
 .divergence b{color:var(--amber);}
 
-table{width:100%;border-collapse:collapse;font-size:14px;}
-th{text-align:left;font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);padding:9px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
+table{width:100%;border-collapse:collapse;font-size:16px;}
+th{text-align:left;font-family:'Space Grotesk',sans-serif;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);padding:9px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
 td{padding:11px 10px;border-bottom:1px solid var(--border);color:var(--text);}
 tr:last-child td{border-bottom:none;}
 tr.rowhover:hover td{filter:brightness(.98);}
@@ -109,12 +130,12 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .detail-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;}
 @media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
 .left-col .ccy-big{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;}
-.left-col .ccy-full{color:var(--text-dim);font-size:13px;}
+.left-col .ccy-full{color:var(--text-dim);font-size:15px;}
 .gauge-svg{width:100%;height:auto;display:block;}
 .gauge-num{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;text-align:center;margin-top:-50px;}
 .stat-block{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
 .stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);}
-.stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;padding:3px 10px;border-radius:6px;}
+.stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;padding:3px 10px;border-radius:6px;}
 .rate-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
 .rate-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
@@ -124,12 +145,12 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .conv-select.High{color:var(--amber);font-weight:700;}
 .conv-select.Medium{color:var(--text-dim);}
 .conv-select.Low{color:var(--text-faint);}
-.guidance-box{width:100%;min-height:170px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;resize:vertical;margin-top:8px;overflow:hidden;}
-.field-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
+.guidance-box{width:100%;min-height:170px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:vertical;margin-top:8px;overflow:hidden;}
+.field-label{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
 
 .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin-bottom:18px;padding:14px 16px;background:var(--panel2);border-radius:8px;}
 .info-item{display:flex;flex-direction:column;gap:4px;}
-.info-item .k{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
+.info-item .k{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
 .info-item .v{font-size:13.5px;font-weight:600;}
 .info-item input{width:70px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
 .info-item select{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:12.5px;}
@@ -144,7 +165,7 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .ind-txt{width:80px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;}
 .surprise{font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;}
 th{font-size:11.5px;}
-.sector-block table thead th{background:var(--panel2);font-size:12px;}
+.sector-block table thead th{background:var(--panel2);font-size:14px;}
 .bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-weight:700;}
 .bias-select.Bullish{color:var(--bullish-strong);} .bias-select.Bearish{color:var(--bearish-strong);} .bias-select.Neutral{color:var(--text-dim);}
 .bias-chip-text{font-weight:700;font-size:12.5px;}
@@ -152,23 +173,23 @@ th{font-size:11.5px;}
 .static-chip{display:inline-block;padding:6px 10px;border-radius:6px;background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12.5px;border:1px solid var(--border);}
 .rm-btn{background:transparent;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;padding:2px 6px;}
 .rm-btn:hover{color:var(--bearish);}
-.add-btn{background:var(--panel2);border:1px dashed var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;margin-top:6px;}
+.add-btn{background:var(--panel2);border:1px dashed var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:6px;}
 .add-btn:hover{color:var(--text);border-color:var(--amber);}
-.te-note{font-size:11px;color:var(--text-faint);margin-bottom:14px;}
+.te-note{font-size:13px;color:var(--text-faint);margin-bottom:14px;}
 
 .pair-bar{height:6px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden;width:120px;}
 .pair-bar i{position:absolute;top:0;bottom:0;border-radius:4px;}
-.recalc-btn{background:var(--amber);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;}
+.recalc-btn{background:var(--amber);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;}
 .recalc-btn:hover{filter:brightness(1.08);}
 .building{color:var(--text-faint);font-size:11.5px;font-style:italic;}
 .pair-row{cursor:pointer;}
 .bigchart{margin-top:6px;padding:16px;background:var(--panel2);border-radius:8px;}
-.bigchart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:var(--text-dim);}
+.bigchart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px;color:var(--text-dim);}
 .bigchart-head b{color:var(--text);font-family:'Space Grotesk',sans-serif;}
 .close-x{cursor:pointer;color:var(--text-faint);font-size:16px;}
 .close-x:hover{color:var(--text);}
 .range-switch{display:flex;gap:4px;}
-.range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .range-btn:hover{color:var(--text);}
 .range-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
 
@@ -179,6 +200,26 @@ th{font-size:11.5px;}
   .shell{flex-direction:column;} .rail{width:100%;flex:none;height:auto;position:relative;}
   .content{padding:18px;}
 }
+
+/* Historical 2Y yield differential */
+.hist-spread-card{margin-top:16px;}
+.hist-spread-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+.hist-spread-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.hist-spread-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.hist-range{display:flex;gap:4px;}
+.hist-range button{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:7px 10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.hist-range button.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+.hist-spread-chart{height:330px;margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;}
+.hist-spread-chart canvas{width:100%;height:100%;display:block;}
+.hist-spread-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--text-faint);font-size:12.5px;}
+.hist-spread-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px;}
+.hist-stat{padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);}
+.hist-stat .k{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.7px;}
+.hist-stat .v{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;margin-top:4px;}
+.hist-spread-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:10px;}
+@media(max-width:900px){.hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.hist-spread-stats{grid-template-columns:1fr;}.hist-spread-chart{height:280px;}}
+
 </style>
 </head>
 <body>
@@ -196,6 +237,7 @@ th{font-size:11.5px;}
       <button class="tab-btn" data-tab="raw">Raw Inputs</button>
       <button class="tab-btn" data-tab="detail">Currency Detail</button>
       <button class="tab-btn" data-tab="pairs">Pair Ranking</button>
+      <button class="tab-btn" data-tab="yield2y">2Y Yield Score</button>
     </nav>
     <div class="lock-box" id="lockBox"></div>
   </aside>
@@ -204,13 +246,14 @@ th{font-size:11.5px;}
       <div><p class="page-title" id="pageTitle">Overview</p><p class="page-sub" id="pageSub"></p></div>
       <div style="display:flex; align-items:center; gap: 12px;">
         <span class="updated" id="updatedTag" style="transition: color 0.3s; font-family:'IBM Plex Mono',monospace; font-size: 11.5px; color: var(--text-faint);">Ready</span>
-        <button id="manualSaveBtn" style="background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;">Force Save</button>
+        <button id="manualSaveBtn" style="background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;">Force Save</button>
       </div>
     </div>
     <section class="tab-panel active" id="tab-overview"></section>
     <section class="tab-panel" id="tab-raw"></section>
     <section class="tab-panel" id="tab-detail"></section>
     <section class="tab-panel" id="tab-pairs"></section>
+    <section class="tab-panel" id="tab-yield2y"></section>
   </main>
 </div>
 
@@ -305,7 +348,7 @@ function teLink(ccy, name){
 
 function seed(){
   return {
-    USD:{yield:10,seasonality:"Neutral",cotNet:"Bullish",cotChangeBias:"Bullish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    USD:{seasonality:"Neutral",cotNet:"Bullish",cotChangeBias:"Bullish",longPct:"",shortPct:"",changePct:"",
       interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"Fed held rates at 3.50-3.75%. Prioritizing inflation control over a solid growth backdrop.",
       growth:[{name:"GDP Growth Rate QoQ",weight:7,actual:"1.50%",forecast:"2.0%",bias:"Bearish"},
@@ -319,7 +362,7 @@ function seed(){
       labour:[{name:"Non Farm Payrolls",weight:8,actual:"57k",forecast:"110k",bias:"Bearish"},
         {name:"Unemployment Rate",weight:6,actual:"4.2%",forecast:"4.3%",bias:"Bullish"},
         {name:"Average Hr Earnings YoY",weight:10,actual:"3.5%",forecast:"3.5%",bias:"Neutral"}]},
-    GBP:{yield:10,seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    GBP:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOE held at 3.75%. More members are leaning hawkish as their focus shifts to inflation.",
       growth:[{name:"GDP Growth Rate",weight:10,actual:"0.60%",forecast:"0.60%",bias:"Neutral"},
@@ -333,7 +376,7 @@ function seed(){
       labour:[{name:"Unemployment Rate",weight:8,actual:"4.9%",forecast:"4.9%",bias:"Neutral"},
         {name:"Claimant Count Change",weight:7,actual:"6.7k",forecast:"29.4k",bias:"Bullish"},
         {name:"Average Earnings",weight:10,actual:"4.3%",forecast:"4.5%",bias:"Bearish"}]},
-    EUR:{yield:10,seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    EUR:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.4%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"ECB hiked rates by 0.25%. Their focus still remains on inflation.",
       growth:[{name:"GDP Growth Rate",weight:8,actual:"0.40%",forecast:"0.20%",bias:"Bullish"},
@@ -346,7 +389,7 @@ function seed(){
         {name:"Inflation Expectations 3Y",weight:7,actual:"2.9%",forecast:"-",bias:"Neutral"}],
       labour:[{name:"Unemployment Rate",weight:7,actual:"6.3%",forecast:"6.2%",bias:"Bearish"},
         {name:"Negotiated Wages",weight:10,actual:"2.46%",forecast:"-",bias:"Bearish"}]},
-    JPY:{yield:10,seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    JPY:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"1.0%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOJ hiked rates to 1.0%, and cites more hikes coming.",
       growth:[{name:"GDP Growth Rate",weight:8,actual:"0.50%",forecast:"0.40%",bias:"Bullish"},
@@ -360,7 +403,7 @@ function seed(){
       labour:[{name:"Unemployment Rate",weight:6,actual:"2.5%",forecast:"2.5%",bias:"Neutral"},
         {name:"Jobs/applications ratio",weight:8,actual:"1.18",forecast:"1.17",bias:"Bullish"},
         {name:"Average Earnings y/y",weight:10,actual:"3.2%",forecast:"3.4%",bias:"Bullish"}]},
-    AUD:{yield:10,seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    AUD:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"4.35%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"RBA held at 4.35%. Would hike again if inflation rises further.",
       growth:[{name:"GDP Growth Rate",weight:9,actual:"0.30%",forecast:"0.50%",bias:"Bearish"},
@@ -373,7 +416,7 @@ function seed(){
       labour:[{name:"Employment Change",weight:10,actual:"76.3k",forecast:"16.4k",bias:"Bullish"},
         {name:"Unemployment Rate",weight:9,actual:"4.4%",forecast:"4.4%",bias:"Neutral"},
         {name:"Wage Price Index YoY",weight:8,actual:"3.3%",forecast:"3.3%",bias:"Neutral"}]},
-    NZD:{yield:10,seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    NZD:{seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.50%",nextMove:"HIKE",conviction:"High conviction",
       guidance:"The RBNZ just raised its official interest rate by 25 basis points to 2.50%.",
       growth:[{name:"GDP Growth Rate",weight:9,actual:"0.80%",forecast:"0.80%",bias:"Neutral"},
@@ -387,7 +430,7 @@ function seed(){
       labour:[{name:"Unemployment Rate",weight:9,actual:"5.3%",forecast:"5.4%",bias:"Bullish"},
         {name:"Employment Change",weight:8,actual:"0.2%",forecast:"0.3%",bias:"Bearish"},
         {name:"Labor Cost Index q/q",weight:10,actual:"0.5%",forecast:"0.4%",bias:"Bullish"}]},
-    CAD:{yield:10,seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",prevYield:10,
+    CAD:{seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.25%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOC held at 2.25% as expected. No clear direction on policy yet, still data dependent.",
       growth:[{name:"GDP m/m",weight:10,actual:"0.30%",forecast:"0.20%",bias:"Bullish"},
@@ -404,6 +447,8 @@ function seed(){
 }
 
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
+var YIELD_ENGINE={history:[], current:{}};
+var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null;
 var isSaving=false, isTyping=false;
 var expandedRange="1M";
@@ -427,6 +472,7 @@ function loadLocalCache() {
       SETTINGS = parsed.SETTINGS || {passwordHash:null};
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
+      YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
       return true;
     }
   } catch(e) { console.error("Error reading cache", e); }
@@ -439,7 +485,7 @@ async function saveDataNow(){
   updateStatus("Saving to cloud...", "var(--text-dim)");
   try {
     DATA._updatedAt = new Date().toISOString();
-    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG };
+    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, YIELD_ENGINE: YIELD_ENGINE };
     var payload = JSON.stringify(state);
 
     // Keep a local backup, but Supabase is now the shared source of truth.
@@ -479,7 +525,8 @@ function sectorCalc(list){ var raw=0,max=0; for(var i=0;i<list.length;i++){ var 
 function fundFor(ccy){ var d=DATA[ccy]; var g=sectorCalc(d.growth), inf=sectorCalc(d.inflation), l=sectorCalc(d.labour);
   return {raw:g.raw+inf.raw+l.raw, max:g.max+inf.max+l.max, g:g, inf:inf, l:l}; }
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
-  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=(Number(d.yield)||0)/10, cotTerm=getCotScore(ccy)/6, seasTerm=b_seas(d.seasonality);
+  var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
+  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=b_seas(d.seasonality);
   return 100*(0.70*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.05*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + b_seas(d.seasonality); }
 function bandLabel(s){ if(s>=40) return "Very Bullish"; if(s>=21) return "Bullish"; if(s>=-20) return "Neutral"; if(s>=-39) return "Bearish"; return "Very Bearish"; }
@@ -588,7 +635,8 @@ var TAB_META={
   overview:{title:"Overview",sub:"Composite scoreboard, most bullish to most bearish."},
   raw:{title:"Raw Inputs",sub:"Yield, COT and seasonality per currency."},
   detail:{title:"Currency Detail",sub:"Everything about one currency, in one place."},
-  pairs:{title:"Pair Ranking",sub:"All 21 major-USD-universe crosses, most bullish to most bearish."}
+  pairs:{title:"Pair Ranking",sub:"All 21 major-USD-universe crosses, most bullish to most bearish."},
+  yield2y:{title:"2Y Yield Score",sub:"Current 2Y closes and historical yield data used to calculate the score."}
 };
 function switchTab(tab){
   activeTab=tab;
@@ -596,6 +644,274 @@ function switchTab(tab){
   var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
   document.getElementById("pageTitle").textContent=TAB_META[tab].title;
   document.getElementById("pageSub").textContent=TAB_META[tab].sub;
+}
+
+
+function y2Num(v){
+  if(v==null) return null;
+  var s=String(v).replace(/%/g,"").replace(/,/g,"").trim();
+  if(s==="") return null;
+  var n=Number(s);
+  return Number.isFinite(n)?n:null;
+}
+function y2SplitCsvLine(line){
+  var out=[], cur='', inQ=false;
+  for(var i=0;i<line.length;i++){
+    var ch=line[i];
+    if(inQ){
+      if(ch==='"'){ if(line[i+1]==='"'){cur+='"'; i++;} else inQ=false; }
+      else cur+=ch;
+    } else {
+      if(ch==='"') inQ=true;
+      else if(ch===','){ out.push(cur); cur=''; }
+      else cur+=ch;
+    }
+  }
+  out.push(cur);
+  return out;
+}
+function y2DateKey(v){
+  var d=new Date(v+"T00:00:00");
+  return isNaN(d.getTime())?null:d.toISOString().slice(0,10);
+}
+function y2SortedHistory(){
+  return (YIELD_ENGINE.history||[]).slice().filter(function(r){return r && r.date;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+}
+function y2ScoreBand(x, thresholds){
+  if(x==null) return 0;
+  if(x>=thresholds[3]) return 2;
+  if(x>=thresholds[2]) return 1;
+  if(x<=thresholds[0]) return -2;
+  if(x<=thresholds[1]) return -1;
+  return 0;
+}
+function y2Calc(ccy){
+  var hist=y2SortedHistory().filter(function(r){return y2Num(r[ccy])!=null;});
+  var cur=y2Num((YIELD_ENGINE.current||{})[ccy]);
+  if(cur==null && hist.length) cur=y2Num(hist[hist.length-1][ccy]);
+  if(cur==null) return {ccy:ccy,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null],histCount:hist.length};
+  var vals=hist.map(function(r){return y2Num(r[ccy]);});
+  var combined=hist.slice();
+  var lastHistDate=hist.length?hist[hist.length-1].date:null;
+  var currentDate=YIELD_ENGINE.currentDate||"";
+  var useCurrentAsLatest= currentDate && (!lastHistDate || currentDate>lastHistDate);
+  if(useCurrentAsLatest) combined=combined.concat([{date:currentDate, _current:true, [ccy]:cur}]);
+  else if(!combined.length || y2Num(combined[combined.length-1][ccy])!==cur) combined=combined.concat([{date:currentDate||"9999-12-31", _current:true, [ccy]:cur}]);
+  var all=combined.map(function(r){return y2Num(r[ccy]);}).filter(function(x){return x!=null;});
+  var sma21=all.length>=21?all.slice(-21).reduce(function(a,b){return a+b;},0)/21:null;
+  var avg60=all.length>=60?all.slice(-60).reduce(function(a,b){return a+b;},0)/60:null;
+  var prev5=hist.length>=5?vals[vals.length-5]:null;
+  var prev21=hist.length>=21?vals[vals.length-21]:null;
+  var week=prev5==null?null:cur-prev5;
+  var month=prev21==null?null:cur-prev21;
+  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -50,-25,25,50 ]);
+  var c2=week==null?null:y2ScoreBand(week*100,[ -25,-10,10,25 ]);
+  var c3=month==null?null:y2ScoreBand(month*100,[ -50,-20,20,50 ]);
+  var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -50,-20,20,50 ]);
+  var todayDist=sma21==null?null:(cur-sma21)*100;
+  var prevSma=null;
+  if(hist.length>=22){ var last22=vals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
+  var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
+  var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
+  var c5=distChange==null?null:y2ScoreBand(distChange,[ -25,-10,10,25 ]);
+  var comps=[c1,c2,c3,c4,c5];
+  var score=comps.every(function(x){return x!=null;})?comps.reduce(function(a,b){return a+b;},0):null;
+  return {ccy:ccy,current:cur,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps,histCount:hist.length};
+}
+function y2ScoreClass(x){ return x==null?'y2-neutral':x>0?'y2-positive':x<0?'y2-negative':'y2-neutral'; }
+function y2FmtPct(x){ return x==null?'—':x.toFixed(3)+'%'; }
+function y2FmtBp(x){ return x==null?'—':(x>0?'+':'')+x.toFixed(1)+' bp'; }
+function y2ScoreFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
+function y2CsvEscape(v){ var s=String(v==null?'':v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+function y2ExportCsv(){
+  var rows=y2SortedHistory();
+  var header=['Date'].concat(Y2_CCY_ORDER.map(function(c){return c+'_2Y';}));
+  var lines=[header.join(',')];
+  rows.forEach(function(r){lines.push([r.date].concat(Y2_CCY_ORDER.map(function(c){return y2Num(r[c])==null?'':y2Num(r[c]);})).map(y2CsvEscape).join(','));});
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='TWP_2Y_Yield_Master.csv'; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+}
+function y2ImportCsvText(text){
+  var lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(function(x){return x.trim();});
+  if(!lines.length) throw new Error('CSV is empty.');
+  var header=y2SplitCsvLine(lines[0]).map(function(x){return x.trim().replace(/^"|"$/g,'');});
+  var idx={}; header.forEach(function(h,i){idx[h]=i;});
+  if(idx.Date==null) throw new Error('CSV must contain a Date column.');
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var parts=y2SplitCsvLine(lines[i]); parts=parts.slice(0,header.length).map(function(x){return x.replace(/^"|"$/g,'').replace(/""/g,'"').trim();});
+    var date=y2DateKey(parts[idx.Date]); if(!date) continue;
+    var r={date:date}; Y2_CCY_ORDER.forEach(function(c){var k=c+'_2Y'; var raw=parts[idx[k]]; var n=y2Num(raw); if(n!=null) r[c]=n;}); rows.push(r);
+  }
+  var byDate={}; (YIELD_ENGINE.history||[]).forEach(function(r){byDate[r.date]=r;}); rows.forEach(function(r){byDate[r.date]=Object.assign({},byDate[r.date]||{},r);});
+  YIELD_ENGINE.history=Object.keys(byDate).sort().map(function(k){return byDate[k];});
+}
+function y2RenderRows(){
+  var tb=document.getElementById('y2Rows'); if(!tb) return;
+  var base=Y2_CCY_ORDER.map(y2Calc);
+  var usd=base.find(function(x){return x.ccy==='USD';});
+  var out='';
+  base.forEach(function(r){
+    var spread=(usd&&usd.current!=null&&r.current!=null&&r.ccy!=='USD')?(r.current-usd.current)*100:null;
+    var trCls=y2ScoreClass(r.score);
+    out+='<tr class="rowhover"><td class="ccy-name">'+r.ccy+'</td><td class="mono">'+y2FmtPct(r.current)+'</td><td class="mono">'+y2FmtPct(r.sma21)+'</td><td class="mono">'+y2FmtPct(r.avg60)+'</td><td class="mono '+trCls+'">'+y2ScoreFmt(r.score)+'</td><td class="'+y2TrendClass(r.score)+'">'+esc(y2TrendLabel(r.score))+'</td><td class="y2-spread '+y2ScoreClass(spread)+'">'+(r.ccy==='USD'?'—':y2FmtBp(spread))+'</td><td><div class="y2-track"><i></i><b class="'+(spread!=null&&spread<0?'neg':'')+'" style="'+(spread==null?'width:0;left:50%;':(spread>=0?'left:50%;width:'+Math.min(50,Math.abs(spread)/5)+'%;':'left:'+(50-Math.min(50,Math.abs(spread)/5))+'%;width:'+Math.min(50,Math.abs(spread)/5)+'%;'))+'"></b></div></td></tr>';
+  });
+  tb.innerHTML=out;
+}
+
+function y2LoadDemo(){
+  var base={USD:3.90,EUR:2.70,GBP:3.80,AUD:3.50,NZD:3.30,CAD:2.80,JPY:0.85};
+  var rows=[], d=new Date(); d.setDate(d.getDate()-115);
+  function isWeekday(x){return x.getDay()!==0&&x.getDay()!==6;}
+  while(rows.length<80){ if(isWeekday(d)){ var r={date:d.toISOString().slice(0,10)}; Y2_CCY_ORDER.forEach(function(c,i){r[c]=Number((base[c]+0.08*Math.sin(rows.length/8+i)+0.025*Math.cos(rows.length/3+i)).toFixed(3));}); rows.push(r); } d.setDate(d.getDate()+1); }
+  YIELD_ENGINE.history=rows; YIELD_ENGINE.currentDate=rows[rows.length-1].date; YIELD_ENGINE.current={}; Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=rows[rows.length-1][c];});
+}
+function renderYield2Y(){
+  var rows=y2SortedHistory(), latest=rows.length?rows[rows.length-1].date:'—';
+  var html='<div class="y2-grid">'+
+    '<div class="card"><h3>Current 2Y Yield Input</h3><div class="y2-input-grid">'+
+    Y2_CCY_ORDER.map(function(c){return '<label class="y2-small">'+c+'<input class="y2-input" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(YIELD_ENGINE.current[c]!=null?YIELD_ENGINE.current[c]:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';}).join('')+
+    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
+    (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
+    '<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div></div>'+ 
+    '<div class="card"><h3>2Y Yield Score</h3><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div>'+
+    '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
+    '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
+    '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
+    '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div></div>'+
+    '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
+    '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
+  document.getElementById('tab-yield2y').innerHTML=html;
+  var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value);});}
+  var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value;};
+  var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
+  var close=document.getElementById('y2SaveAsClose'); if(close) close.onclick=function(){
+    YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10));
+    var d=YIELD_ENGINE.currentDate, by={}; (YIELD_ENGINE.history||[]).forEach(function(r){by[r.date]=r;}); var row=Object.assign({},by[d]||{},{date:d});
+    Y2_CCY_ORDER.forEach(function(c){var n=y2Num(YIELD_ENGINE.current[c]); if(n!=null) row[c]=n;}); by[d]=row; YIELD_ENGINE.history=Object.keys(by).sort().map(function(k){return by[k];});
+    saveDataNow(); renderYield2Y(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Daily closes saved','var(--bullish-strong)');
+  };
+  var ex=document.getElementById('y2Export'); if(ex) ex.onclick=y2ExportCsv;
+  var demo=document.getElementById('y2Demo'); if(demo) demo.onclick=function(){if(!confirm('Load synthetic demo data? This replaces the current 2Y history in the dashboard.')) return; y2LoadDemo(); saveDataNow(); renderYield2Y(); updateStatus('Synthetic demo loaded','var(--amber)');};
+  var imp=document.getElementById('y2Import'); if(imp) imp.onchange=function(){var f=this.files&&this.files[0]; if(!f) return; var reader=new FileReader(); reader.onload=function(){try{y2ImportCsvText(reader.result); saveDataNow(); renderYield2Y(); updateStatus('CSV imported','var(--bullish-strong)');}catch(e){alert(e.message);}}; reader.readAsText(f);};
+  y2RenderRows();
+  initHistoricalSpreadPanel();
+}
+
+var HIST_SPREAD_PAIRS = [
+  ["AUDUSD","AUD","USD"],["NZDUSD","NZD","USD"],["AUDCAD","AUD","CAD"],
+  ["GBPUSD","GBP","USD"],["NZDCAD","NZD","CAD"],["EURUSD","EUR","USD"],
+  ["GBPCAD","GBP","CAD"],["EURCAD","EUR","CAD"],["AUDNZD","AUD","NZD"],
+  ["EURGBP","EUR","GBP"],["GBPNZD","GBP","NZD"],["USDCAD","USD","CAD"],
+  ["GBPAUD","GBP","AUD"],["EURNZD","EUR","NZD"],["EURAUD","EUR","AUD"],
+  ["AUDJPY","AUD","JPY"],["NZDJPY","NZD","JPY"],["GBPJPY","GBP","JPY"],
+  ["EURJPY","EUR","JPY"],["CADJPY","CAD","JPY"],["USDJPY","USD","JPY"]
+];
+var HIST_SPREAD_RANGE = 63;
+var HIST_SPREAD_ACTIVE = "EURUSD";
+
+function histSpreadLabel(code){
+  var x=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
+  return x ? x[1]+"/"+x[2] : code;
+}
+function histSpreadRows(code){
+  var pair=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
+  if(!pair) return [];
+  return y2SortedHistory().map(function(r){
+    var a=y2Num(r[pair[1]]), b=y2Num(r[pair[2]]);
+    return {date:r.date, spread:(a!=null&&b!=null)?(a-b)*100:null};
+  }).filter(function(x){return x.spread!=null;});
+}
+function histSpreadFmt(v){
+  if(v==null || !Number.isFinite(v)) return "—";
+  return (v>0?"+":"")+v.toFixed(1)+" bp";
+}
+function histSpreadDraw(){
+  var canvas=document.getElementById("histSpreadCanvas"), empty=document.getElementById("histSpreadEmpty");
+  var stats=document.getElementById("histSpreadStats"), select=document.getElementById("histSpreadPair");
+  if(!canvas || !select) return;
+  var code=select.value || HIST_SPREAD_ACTIVE;
+  HIST_SPREAD_ACTIVE=code;
+  var rows=histSpreadRows(code).slice(-HIST_SPREAD_RANGE);
+  var ctx=canvas.getContext("2d");
+  var rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  var W=Math.max(320,rect.width), H=Math.max(240,rect.height);
+  canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  if(!rows.length){
+    if(empty) empty.textContent="No historical observations for "+histSpreadLabel(code)+". Import a CSV containing the seven 2Y yield columns first.";
+    if(stats) stats.innerHTML="";
+    return;
+  }
+  if(empty) empty.textContent=rows.length<2?"Need at least two historical observations to draw the spread.":"";
+  if(rows.length<2){ if(stats) stats.innerHTML=""; return; }
+
+  var vals=rows.map(function(x){return x.spread;});
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+  if(min===max){min-=10;max+=10;}
+  var pad={l:64,r:18,t:18,b:38}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  var extra=(max-min)*0.08; min-=extra; max+=extra;
+  function X(i){return pad.l+(i/(rows.length-1))*pw;}
+  function Y(v){return pad.t+(max-v)/(max-min)*ph;}
+
+  ctx.font="11px Inter, sans-serif"; ctx.textBaseline="middle"; ctx.textAlign="right";
+  for(var g=0;g<=4;g++){
+    var gv=min+(max-min)*(g/4), gy=Y(gv);
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--border").trim()||"#d7dae0";
+    ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-dim").trim()||"#565e6d";
+    ctx.fillText(gv.toFixed(0)+" bp",pad.l-8,gy);
+  }
+  if(min<0 && max>0){
+    var zy=Y(0); ctx.save(); ctx.setLineDash([5,5]);
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
+    ctx.beginPath();ctx.moveTo(pad.l,zy);ctx.lineTo(W-pad.r,zy);ctx.stroke();ctx.restore();
+  }
+  var lineColor=vals[vals.length-1]>=vals[0]
+    ? (getComputedStyle(document.body).getPropertyValue("--bullish-strong").trim()||"#1c63c4")
+    : (getComputedStyle(document.body).getPropertyValue("--bearish-strong").trim()||"#c22e28");
+  ctx.strokeStyle=lineColor;ctx.lineWidth=2.5;ctx.lineJoin="round";ctx.lineCap="round";
+  ctx.beginPath();
+  rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
+  ctx.stroke();
+
+  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
+  ctx.textAlign="center";ctx.textBaseline="top";
+  var labelCount=Math.min(8,rows.length);
+  for(var li=0;li<labelCount;li++){
+    var ii=Math.round(li*(rows.length-1)/(labelCount-1));
+    ctx.fillText(rows[ii].date.slice(0,10),X(ii),H-pad.b+10);
+  }
+
+  var current=vals[vals.length-1], first=vals[0], high=Math.max.apply(null,vals), low=Math.min.apply(null,vals);
+  var change=current-first;
+  var statData=[["Current",histSpreadFmt(current)],["Change",histSpreadFmt(change)],["High",histSpreadFmt(high)],["Low",histSpreadFmt(low)],["Observations",String(rows.length)]];
+  if(stats) stats.innerHTML=statData.map(function(x){
+    return '<div class="hist-stat"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>';
+  }).join("");
+}
+function initHistoricalSpreadPanel(){
+  var select=document.getElementById("histSpreadPair");
+  var ranges=document.getElementById("histSpreadRanges");
+  if(!select) return;
+  select.innerHTML=HIST_SPREAD_PAIRS.map(function(p){
+    var label=p[1]+"/"+p[2];
+    return '<option value="'+p[0]+'" '+(p[0]===HIST_SPREAD_ACTIVE?'selected':'')+'>'+label+'</option>';
+  }).join("");
+  select.onchange=function(){HIST_SPREAD_ACTIVE=this.value;histSpreadDraw();};
+  if(ranges){
+    var btns=ranges.querySelectorAll("button");
+    for(var i=0;i<btns.length;i++){
+      btns[i].classList.toggle("active",Number(btns[i].dataset.range)===HIST_SPREAD_RANGE);
+      btns[i].onclick=function(){
+        HIST_SPREAD_RANGE=Number(this.dataset.range)||63;
+        var all=ranges.querySelectorAll("button");
+        for(var j=0;j<all.length;j++) all[j].classList.toggle("active",all[j]===this);
+        histSpreadDraw();
+      };
+    }
+  }
+  setTimeout(histSpreadDraw,0);
 }
 
 function renderOverview(){
@@ -609,8 +925,7 @@ function renderOverview(){
   var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><table><thead><tr>'+
     '<th>Symbol</th><th>Bias</th><th>Score</th><th>Economic Growth</th><th>Inflation</th><th>Labour Market</th></tr></thead>'+
     '<tbody id="overviewRows"></tbody></table>'+
-    '<div class="legend-line">Score = full composite (fundamentals 70% + yield 15% + COT 10% + seasonality 5%). '+
-    'The three sector columns are that sector\'s own weighted result, banded Very Weak to Very Strong. Bands: +40 to 100 Very Bullish · +21 to 39 Bullish · &minus;20 to +20 Neutral · &minus;21 to &minus;39 Bearish · &minus;40 to &minus;100 Very Bearish.</div></div>';
+    '</div></div>';
   document.getElementById("tab-overview").innerHTML=html;
   fillOverviewRows(scores);
 }
@@ -621,7 +936,7 @@ function fillOverviewRows(scores){
   for(var i=0;i<rows.length;i++){
     var c=rows[i], sc=scores[c], f=fundFor(c), label=bandLabel(sc);
     var gB=sectorBand(f.g.raw,f.g.max), iB=sectorBand(f.inf.raw,f.inf.max), lB=sectorBand(f.l.raw,f.l.max);
-    out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:12px;">'+CCY_NAME[c]+'</span></td>'+
+    out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:14px;">'+CCY_NAME[c]+'</span></td>'+
       '<td><span class="'+chipClass(label)+'">'+label+'</span></td>'+
       '<td class="mono">'+fmt(sc)+'</td>'+
       '<td class="'+sectorCellClass(gB.label)+'" style="border-radius:6px;">'+gB.label+'</td>'+
@@ -636,20 +951,16 @@ function fillOverviewRows(scores){
 function renderRaw(){
   if(!DATA) return;
   var html='<div class="card"><h3>Raw Inputs</h3><table><thead><tr>'+
-    '<th>Currency</th><th title="Auto-summed from Currency Detail">Fundamentals (raw / max)</th>'+
-    '<th>Yield (&minus;10 to 10)</th><th>Institutional Bias (&minus;6 to +6)</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table>'+
-    '<div class="legend-line">Fundamentals and Institutional Bias are auto-calculated from Currency Detail. Update them there!</div></div>'+
-    '';
+    '<th>Currency</th><th>Fundamentals</th><th>2Y Yield Score</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div>';
 
   document.getElementById("tab-raw").innerHTML=html;
   var tb=document.getElementById("rawRows"), out="";
   for(var i=0;i<CCYS.length;i++){
-    var c=CCYS[i], d=DATA[c], f=fundFor(c);
-    var cotScore = getCotScore(c);
+    var c=CCYS[i], d=DATA[c], f=fundFor(c), y2=y2Calc(c), cotScore=getCotScore(c);
     out += '<tr class="rowhover"><td class="ccy-name">'+c+'</td>'+
-      '<td class="mono" id="rawfund-'+c+'">'+(f.raw>0?"+":"")+f.raw+' / '+f.max+'</td>'+
-      '<td><input class="raw-input" type="number" data-role="ccyfield" data-ccy="'+c+'" data-field="yield" value="'+d.yield+'" '+(unlockedLocally?"":"disabled")+'></td>'+
-      '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+(cotScore>0?"+":"")+cotScore+'</td>'+
+      '<td class="mono">'+sectorBand(f.raw,f.max).label+'</td>'+
+      '<td class="mono '+y2TrendClass(y2.score)+'">'+y2ScoreFmt(y2.score)+' <span class="y2-small">'+esc(y2TrendLabel(y2.score))+'</span></td>'+
+      '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+cotInstBand(cotScore)+'</td>'+
       '<td><select class="raw-input" data-role="ccyfield" data-ccy="'+c+'" data-field="seasonality" '+(unlockedLocally?"":"disabled")+'>'+
         ["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.seasonality?"selected":"")+'>'+o+'</option>'; }).join("")+
       '</select></td></tr>';
@@ -705,11 +1016,17 @@ function gaugeSvg(ccy, score){
     '<line id="gaugeNeedle-'+ccy+'" x1="'+g.cx+'" y1="'+g.cy+'" x2="'+g.nx+'" y2="'+g.ny+'" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>'+
     '<circle cx="'+g.cx+'" cy="'+g.cy+'" r="5" fill="var(--text)"/></svg>';
 }
-function yieldArrow(ccy){
-  var d=DATA[ccy], v=Number(d.yield)||0;
-  if(v>0) return '<div style="color:var(--bullish-strong);font-size:11.5px;margin-top:2px;">The 2yr yield is rising &mdash; hawkish</div>';
-  if(v<0) return '<div style="color:var(--bearish-strong);font-size:11.5px;margin-top:2px;">The 2yr yield is falling &mdash; dovish</div>';
-  return '<div style="color:var(--text-faint);font-size:11.5px;margin-top:2px;">The 2yr yield is steady</div>';
+function y2TrendLabel(score){
+  if(score==null) return "No 2Y data";
+  if(score>=6) return "Rising — High conviction";
+  if(score>=2) return "Moderately Rising";
+  if(score<=-6) return "Falling — High conviction";
+  if(score<=-2) return "Moderately Falling";
+  return "Steady";
+}
+function y2TrendClass(score){
+  if(score==null || Math.abs(score)<=1) return "y2-neutral";
+  return score>0 ? "y2-positive" : "y2-negative";
 }
 
 function indicatorRows(ccy, sector, list){
@@ -749,6 +1066,7 @@ function renderDetailBody(ccy){
   var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
   var sectors=[["growth","Growth",f.g],["inflation","Inflation",f.inf],["labour","Labour",f.l]];
   var cotScore = getCotScore(ccy);
+  var y2Score = y2Calc(ccy).score;
   
   var html = '<div class="card"><div class="detail-grid">'+
     '<div class="left-col">'+
@@ -760,7 +1078,7 @@ function renderDetailBody(ccy){
         '<div class="stat-row"><span>TWP overall score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
         '<div class="stat-row"><span>Seasonality + COT score</span><span class="mono" id="statSeasCot-'+ccy+'" style="'+numColor(scCot)+'">'+fmt(scCot)+'</span></div>'+
         '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
-        '<div class="stat-row" style="align-items:flex-start;"><span>2Yr Yield [21 day SMA]</span><div style="text-align:right;"><span class="mono" id="statYieldVal-'+ccy+'">'+d.yield+'</span><span id="statYieldNote-'+ccy+'">'+yieldArrow(ccy)+'</span></div></div>'+
+        '<div class="stat-row" style="align-items:flex-start;"><span>2Y Yield Score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
       '</div>'+
       '<div class="rate-box">'+
         '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Interest rate</span>'+
@@ -803,7 +1121,7 @@ function renderDetailBody(ccy){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
     html += '<div class="sector-block"><div class="sector-title"><span class="label">'+lab+'</span>'+
       '<span class="'+sectorChipClass(band.label)+'" id="band-'+ccy+'-'+key+'">'+band.label+'</span>'+
-      '<span class="mono" style="color:var(--text-faint);font-size:13px;" id="secraw-'+ccy+'-'+key+'">'+(calc.raw>0?"+":"")+calc.raw+' / '+calc.max+'</span></div>'+
+      '<span class="mono" style="color:var(--text-faint);font-size:15px;" id="secraw-'+ccy+'-'+key+'">'+(calc.raw>0?"+":"")+calc.raw+' / '+calc.max+'</span></div>'+
       '<table><thead><tr><th>Indicator</th><th>Weight</th><th>Actual</th><th>Forecast</th><th>Surprise</th><th>Bias</th><th></th></tr></thead>'+
       '<tbody>'+indicatorRows(ccy,key,d[key])+'</tbody></table>'+
       (unlockedLocally? '<button class="add-btn" data-action="add" data-ccy="'+ccy+'" data-sector="'+key+'">+ add indicator</button>':'')+'</div>';
@@ -970,7 +1288,6 @@ function renderPairs(){
       LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
     }
     if(LOG.length>50) LOG=LOG.slice(0,50);
-    for(var m=0;m<CCYS.length;m++){ DATA[CCYS[m]].prevYield = Number(DATA[CCYS[m]].yield)||0; }
     saveDataNow();
     renderPairs();
   }; }
@@ -999,8 +1316,7 @@ function updateComputed(){
   var scores=allScores();
   if(document.getElementById("tab-overview")) fillOverviewRows(scores);
   for(var i=0;i<CCYS.length;i++){
-    var el=document.getElementById("rawfund-"+CCYS[i]); if(el){ var f=fundFor(CCYS[i]); el.textContent=(f.raw>0?"+":"")+f.raw+" / "+f.max; }
-    var cotEl=document.getElementById("rawcot-"+CCYS[i]); if(cotEl){ var cs=getCotScore(CCYS[i]); cotEl.textContent=(cs>0?"+":"")+cs; cotEl.setAttribute("style",numColor(cs)); }
+    var cotEl=document.getElementById("rawcot-"+CCYS[i]); if(cotEl){ var cs=getCotScore(CCYS[i]); cotEl.textContent=cotInstBand(cs); cotEl.setAttribute("style",instColorStyle(cotInstBand(cs))); }
   }
   
   if(document.getElementById("syncDataStr")){
@@ -1015,8 +1331,11 @@ function updateComputed(){
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
   var ssc=document.getElementById("statSeasCot-"+c); if(ssc){ var scv=seasCotScore(c); ssc.textContent=fmt(scv); ssc.setAttribute("style",numColor(scv)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
-  var syv=document.getElementById("statYieldVal-"+c); if(syv) syv.textContent=DATA[c].yield;
-  var syn=document.getElementById("statYieldNote-"+c); if(syn) syn.outerHTML=yieldArrow(c).replace('<div ','<div id="statYieldNote-'+c+'" ');
+  var y2Now=y2Calc(c);
+  var y2ScoreEl=document.getElementById("stat2YScore-"+c);
+  if(y2ScoreEl){ y2ScoreEl.textContent=y2ScoreFmt(y2Now.score); y2ScoreEl.className="mono "+y2TrendClass(y2Now.score); }
+  var y2TrendEl=document.getElementById("stat2YTrend-"+c);
+  if(y2TrendEl){ y2TrendEl.textContent=y2TrendLabel(y2Now.score); y2TrendEl.className="y2-small "+y2TrendClass(y2Now.score); }
   var seasEl=document.getElementById("seasTxt-"+c);
   if(seasEl){ seasEl.textContent=DATA[c].seasonality; seasEl.style.color = DATA[c].seasonality==="Bullish"?"var(--bullish-strong)":DATA[c].seasonality==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
   
@@ -1035,7 +1354,8 @@ function updateComputed(){
   if(document.getElementById("pairRows")) renderPairs();
 }
 
-function renderAllStatic(){ renderOverview(); renderRaw(); renderDetail(); renderPairs(); }
+function renderAllStatic(){ renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); }
+window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 
 async function init(){
   var savedTheme="white";
@@ -1059,6 +1379,17 @@ async function init(){
 
   let loaded = false;
 
+  function migrateLegacyYieldFields(){
+    if(!DATA) return false;
+    var changed=false;
+    for(var i=0;i<CCYS.length;i++){
+      var c=CCYS[i];
+      if(Object.prototype.hasOwnProperty.call(DATA[c],"yield")){ delete DATA[c].yield; changed=true; }
+      if(Object.prototype.hasOwnProperty.call(DATA[c],"prevYield")){ delete DATA[c].prevYield; changed=true; }
+    }
+    return changed;
+  }
+
   // Supabase is the shared source of truth. Load it first so every browser
   // starts from the same dashboard state.
   try {
@@ -1070,6 +1401,7 @@ async function init(){
         SETTINGS = parsed.SETTINGS || {passwordHash:null};
         DAILY = parsed.DAILY || {};
         LOG = parsed.LOG || [];
+        YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
         localStorage.setItem('twp_dashboard_state_v4', rows[0].payload);
         loaded = true;
       }
@@ -1097,6 +1429,10 @@ async function init(){
     }
   }
 
+  if(migrateLegacyYieldFields()){
+    await saveDataNow();
+  }
+
   renderLockBox();
   renderAllStatic();
 
@@ -1118,6 +1454,7 @@ async function init(){
       SETTINGS = parsed.SETTINGS || {passwordHash:null};
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
+      YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
       localStorage.setItem('twp_dashboard_state_v4', row.payload);
       if (!isTyping) {
         renderAllStatic();
@@ -1137,5 +1474,6 @@ async function init(){
 
 init();
 </script>
+
 </body>
 </html>
