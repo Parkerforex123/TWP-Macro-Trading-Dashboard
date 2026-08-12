@@ -158,20 +158,29 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .sector-block{margin-bottom:20px;}
 .sector-title{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .sector-title span.label{font-family:'Space Grotesk',sans-serif;font-size:13.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:700;}
-.ind-link{color:var(--text);text-decoration:none;font-size:14.5px;font-weight:500;border-bottom:1px dotted var(--text-faint);}
+.sector-block table{table-layout:fixed;}
+.sector-block table th,.sector-block table td{vertical-align:middle;}
+.sector-block table th:nth-child(1),.sector-block table td:nth-child(1){width:38%;text-align:left;}
+.sector-block table th:nth-child(2),.sector-block table td:nth-child(2){width:9%;text-align:center;}
+.sector-block table th:nth-child(3),.sector-block table td:nth-child(3){width:12%;text-align:center;}
+.sector-block table th:nth-child(4),.sector-block table td:nth-child(4){width:12%;text-align:center;}
+.sector-block table th:nth-child(5),.sector-block table td:nth-child(5){width:11%;text-align:center;}
+.sector-block table th:nth-child(6),.sector-block table td:nth-child(6){width:12%;text-align:center;}
+.sector-block table th:nth-child(7),.sector-block table td:nth-child(7){width:6%;text-align:center;}
+.ind-link{display:block;color:var(--text);text-decoration:none;font-size:15.5px;font-weight:500;border-bottom:1px dotted var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ind-link:hover{color:var(--amber);border-color:var(--amber);}
-.ind-name{width:100%;background:transparent;border:none;color:var(--text);font-size:14.5px;font-weight:500;padding:6px 4px;font-family:'Inter',sans-serif;}
-.ind-num{width:62px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;}
-.ind-txt{width:80px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;}
-.surprise{font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;}
+.ind-name{width:100%;background:transparent;border:none;color:var(--text);font-size:15.5px;font-weight:500;padding:7px 6px;font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ind-num{width:78px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;text-align:center;}
+.ind-txt{width:104px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;text-align:center;}
+.surprise{font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;white-space:nowrap;text-align:center;}
 th{font-size:11.5px;}
 .sector-block table thead th{background:var(--panel2);font-size:14px;}
-.bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-weight:700;}
+.bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-size:13.5px;font-weight:700;min-width:96px;}
 .bias-select.Bullish{color:var(--bullish-strong);} .bias-select.Bearish{color:var(--bearish-strong);} .bias-select.Neutral{color:var(--text-dim);}
 .bias-chip-text{font-weight:700;font-size:12.5px;}
 .bias-chip-text.Bullish{color:var(--bullish-strong);} .bias-chip-text.Bearish{color:var(--bearish-strong);} .bias-chip-text.Neutral{color:var(--text-dim);}
 .static-chip{display:inline-block;padding:6px 10px;border-radius:6px;background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12.5px;border:1px solid var(--border);}
-.rm-btn{background:transparent;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;padding:2px 6px;}
+.rm-btn{background:transparent;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;padding:2px 6px;display:inline-flex;align-items:center;justify-content:center;}
 .rm-btn:hover{color:var(--bearish);}
 .add-btn{background:var(--panel2);border:1px dashed var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:6px;}
 .add-btn:hover{color:var(--text);border-color:var(--amber);}
@@ -199,6 +208,10 @@ th{font-size:11.5px;}
 @media(max-width:820px){
   .shell{flex-direction:column;} .rail{width:100%;flex:none;height:auto;position:relative;}
   .content{padding:18px;}
+}
+@media(max-width:1100px){
+  .sector-block{overflow-x:auto;}
+  .sector-block table{min-width:980px;}
 }
 
 /* Historical 2Y yield differential */
