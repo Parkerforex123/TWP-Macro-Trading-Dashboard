@@ -703,27 +703,41 @@ function y2Calc(ccy){
   var cur=y2Num((YIELD_ENGINE.current||{})[ccy]);
   if(cur==null && hist.length) cur=y2Num(hist[hist.length-1][ccy]);
   if(cur==null) return {ccy:ccy,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null],histCount:hist.length};
-  var vals=hist.map(function(r){return y2Num(r[ccy]);});
-  var combined=hist.slice();
-  var lastHistDate=hist.length?hist[hist.length-1].date:null;
+
+  // Normalize the historical series by date before calculating moving averages.
+  // When the current observation is for a date that already exists in history,
+  // replace that day's stored value instead of appending a duplicate observation.
+  var byDate={};
+  hist.forEach(function(r){ byDate[r.date]=Object.assign({},r); });
   var currentDate=YIELD_ENGINE.currentDate||"";
-  var useCurrentAsLatest= currentDate && (!lastHistDate || currentDate>lastHistDate);
-  if(useCurrentAsLatest) combined=combined.concat([{date:currentDate, _current:true, [ccy]:cur}]);
-  else if(!combined.length || y2Num(combined[combined.length-1][ccy])!==cur) combined=combined.concat([{date:currentDate||"9999-12-31", _current:true, [ccy]:cur}]);
+  if(currentDate){
+    byDate[currentDate]=Object.assign({},byDate[currentDate]||{date:currentDate},{date:currentDate,_current:true});
+    byDate[currentDate][ccy]=cur;
+  }
+  var combined=Object.keys(byDate).sort().map(function(d){return byDate[d];});
+  if(!combined.length || (!currentDate && y2Num(combined[combined.length-1][ccy])!==cur)){
+    combined=combined.concat([{date:currentDate||"9999-12-31",_current:true,[ccy]:cur}]);
+  }
+
   var all=combined.map(function(r){return y2Num(r[ccy]);}).filter(function(x){return x!=null;});
   var sma21=all.length>=21?all.slice(-21).reduce(function(a,b){return a+b;},0)/21:null;
   var avg60=all.length>=60?all.slice(-60).reduce(function(a,b){return a+b;},0)/60:null;
-  var prev5=hist.length>=5?vals[vals.length-5]:null;
-  var prev21=hist.length>=21?vals[vals.length-21]:null;
+
+  // Weekly/monthly changes deliberately use the stored historical observations
+  // that precede the current observation, so the current close is never counted twice.
+  var histVals=hist.map(function(r){return y2Num(r[ccy]);});
+  var prev5=histVals.length>=5?histVals[histVals.length-5]:null;
+  var prev21=histVals.length>=21?histVals[histVals.length-21]:null;
   var week=prev5==null?null:cur-prev5;
   var month=prev21==null?null:cur-prev21;
+
   var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -50,-25,25,50 ]);
   var c2=week==null?null:y2ScoreBand(week*100,[ -25,-10,10,25 ]);
   var c3=month==null?null:y2ScoreBand(month*100,[ -50,-20,20,50 ]);
   var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -50,-20,20,50 ]);
   var todayDist=sma21==null?null:(cur-sma21)*100;
   var prevSma=null;
-  if(hist.length>=22){ var last22=vals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
+  if(histVals.length>=22){ var last22=histVals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
   var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
   var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
   var c5=distChange==null?null:y2ScoreBand(distChange,[ -25,-10,10,25 ]);
@@ -731,6 +745,7 @@ function y2Calc(ccy){
   var score=comps.every(function(x){return x!=null;})?comps.reduce(function(a,b){return a+b;},0):null;
   return {ccy:ccy,current:cur,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps,histCount:hist.length};
 }
+
 function y2ScoreClass(x){ return x==null?'y2-neutral':x>0?'y2-positive':x<0?'y2-negative':'y2-neutral'; }
 function y2FmtPct(x){ return x==null?'—':x.toFixed(3)+'%'; }
 function y2FmtBp(x){ return x==null?'—':(x>0?'+':'')+x.toFixed(1)+' bp'; }
