@@ -731,7 +731,7 @@ function y2Calc(ccy){
   var week=prev5==null?null:cur-prev5;
   var month=prev21==null?null:cur-prev21;
 
-  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -50,-25,25,50 ]);
+  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -50,-5,5,50 ]);
   var c2=week==null?null:y2ScoreBand(week*100,[ -25,-10,10,25 ]);
   var c3=month==null?null:y2ScoreBand(month*100,[ -50,-20,20,50 ]);
   var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -50,-20,20,50 ]);
@@ -1105,13 +1105,13 @@ function gaugeSvg(ccy, score){
 function y2TrendLabel(score){
   if(score==null) return "No 2Y data";
   if(score>=6) return "Rising — High conviction";
-  if(score>=2) return "Moderately Rising";
+  if(score>=1) return "Moderately Rising";
   if(score<=-6) return "Falling — High conviction";
-  if(score<=-2) return "Moderately Falling";
+  if(score<=-1) return "Moderately Falling";
   return "Steady";
 }
 function y2TrendClass(score){
-  if(score==null || Math.abs(score)<=1) return "y2-neutral";
+  if(score==null || score===0) return "y2-neutral";
   return score>0 ? "y2-positive" : "y2-negative";
 }
 
