@@ -278,9 +278,10 @@ const SUPABASE_TABLE = "dashboard_state";
 const SUPABASE_ROW_ID = 1;
 
 async function supabaseRequest(path, options = {}) {
+  const authToken = (options.useAuth && AUTH.accessToken) ? AUTH.accessToken : SUPABASE_KEY;
   const headers = Object.assign({
     "apikey": SUPABASE_KEY,
-    "Authorization": "Bearer " + SUPABASE_KEY,
+    "Authorization": "Bearer " + authToken,
     "Content-Type": "application/json",
     "Accept": "application/json"
   }, options.headers || {});
@@ -292,6 +293,82 @@ async function supabaseRequest(path, options = {}) {
   if (response.status === 204) return null;
   return response.json();
 }
+
+// --- Real Supabase Auth (email + password checked server-side, not a client-side comparison) ---
+var AUTH = { accessToken: null, refreshToken: null, expiresAt: null, email: null };
+
+function loadAuthFromStorage(){
+  try {
+    var raw = localStorage.getItem('twp_auth_session_v1');
+    if(!raw) return;
+    var parsed = JSON.parse(raw);
+    AUTH.accessToken = parsed.accessToken || null;
+    AUTH.refreshToken = parsed.refreshToken || null;
+    AUTH.expiresAt = parsed.expiresAt || null;
+    AUTH.email = parsed.email || null;
+  } catch(e) { console.error("Error reading auth session", e); }
+}
+function persistAuthToStorage(){
+  try {
+    if(AUTH.accessToken){
+      localStorage.setItem('twp_auth_session_v1', JSON.stringify(AUTH));
+    } else {
+      localStorage.removeItem('twp_auth_session_v1');
+    }
+  } catch(e) { console.error("Error saving auth session", e); }
+}
+
+async function authSignIn(email, password){
+  const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+    method: "POST",
+    headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password })
+  });
+  const data = await res.json();
+  if(!res.ok){
+    throw new Error((data && (data.error_description || data.msg || data.error)) || "Sign in failed");
+  }
+  AUTH.accessToken = data.access_token;
+  AUTH.refreshToken = data.refresh_token;
+  AUTH.expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+  AUTH.email = email;
+  persistAuthToStorage();
+}
+
+async function authRefresh(){
+  if(!AUTH.refreshToken) return false;
+  try {
+    const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+      method: "POST",
+      headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: AUTH.refreshToken })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error("refresh failed");
+    AUTH.accessToken = data.access_token;
+    AUTH.refreshToken = data.refresh_token;
+    AUTH.expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+    persistAuthToStorage();
+    return true;
+  } catch(e) {
+    console.error("Session refresh failed, signing out", e);
+    authSignOut();
+    return false;
+  }
+}
+
+function authSignOut(){
+  AUTH.accessToken = null; AUTH.refreshToken = null; AUTH.expiresAt = null; AUTH.email = null;
+  persistAuthToStorage();
+}
+
+// Keep the session alive: refresh a few minutes before expiry so an editing session
+// doesn't silently die mid-update.
+setInterval(function(){
+  if(AUTH.accessToken && AUTH.expiresAt && (AUTH.expiresAt - Date.now() < 5*60*1000)){
+    authRefresh();
+  }
+}, 60*1000);
 
 "use strict";
 
@@ -494,6 +571,10 @@ function loadLocalCache() {
 
 async function saveDataNow(){
   if(isSaving || !DATA) return;
+  if(!AUTH.accessToken){
+    updateStatus("Sign in to save changes", "var(--amber)");
+    return;
+  }
   isSaving = true;
   updateStatus("Saving to cloud...", "var(--text-dim)");
   try {
@@ -506,6 +587,7 @@ async function saveDataNow(){
 
     await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
       method: "PATCH",
+      useAuth: true,
       headers: { "Prefer": "return=minimal" },
       body: JSON.stringify({ payload: payload, updated_at: DATA._updatedAt })
     });
@@ -514,7 +596,12 @@ async function saveDataNow(){
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
   } catch(e) {
     console.error("Supabase save error:", e);
-    updateStatus("Cloud save failed", "var(--bearish-strong)");
+    if(String(e.message||"").indexOf("401") !== -1 || String(e.message||"").indexOf("403") !== -1){
+      updateStatus("Session expired — sign in again", "var(--bearish-strong)");
+      authSignOut(); unlockedLocally=false; renderLockBox();
+    } else {
+      updateStatus("Cloud save failed", "var(--bearish-strong)");
+    }
   } finally {
     isSaving = false;
   }
@@ -610,37 +697,35 @@ function applyTheme(name){
 function renderLockBox(){
   var box=document.getElementById("lockBox");
   if(!box) return;
-  if(!SETTINGS.passwordHash){
-    box.innerHTML='<div class="lock-state">&#128274; No edit password set</div>'+
-      '<input type="password" id="newPw" placeholder="Choose a password">'+
-      '<button id="setPwBtn">Set edit password</button>'+
-      '<div class="hint">Only you should know this. Anyone with the link sees live data as view-only until they enter it.</div>';
-    document.getElementById("setPwBtn").onclick=async function(){
-      var v=document.getElementById("newPw").value.trim(); if(!v) return;
-      SETTINGS.passwordHash=hashStr(v); saveDataNow(); unlockedLocally=true; renderLockBox(); renderAllStatic();
-    };
-  } else if(!unlockedLocally){
+  if(!AUTH.accessToken){
     box.innerHTML='<div class="lock-state">&#128274; View-only</div>'+
-      '<input type="password" id="unlockPw" placeholder="Password to edit">'+
-      '<button id="unlockBtn">Unlock editing</button>'+
-      '<div class="hint">Your team sees this same view, read-only, nothing hidden or blurred.</div>';
-    document.getElementById("unlockBtn").onclick=function(){
-      var v=document.getElementById("unlockPw").value;
-      if(hashStr(v)===SETTINGS.passwordHash){ unlockedLocally=true; renderLockBox(); renderAllStatic(); }
-      else{ var b=document.getElementById("unlockBtn"); b.textContent="Wrong password"; setTimeout(function(){ b.textContent="Unlock editing"; },1200); }
+      '<input type="email" id="authEmail" placeholder="Team email" autocomplete="username" style="margin-bottom:6px;">'+
+      '<input type="password" id="authPw" placeholder="Password" autocomplete="current-password">'+
+      '<button id="authSignInBtn">Sign in to edit</button>'+
+      '<div class="hint" id="authHint">Everyone sees this same view, read-only, until a team member signs in.</div>';
+    var doSignIn=async function(){
+      var email=document.getElementById("authEmail").value.trim();
+      var pw=document.getElementById("authPw").value;
+      var btn=document.getElementById("authSignInBtn");
+      var hint=document.getElementById("authHint");
+      if(!email || !pw) return;
+      btn.textContent="Signing in..."; btn.disabled=true;
+      try{
+        await authSignIn(email, pw);
+        unlockedLocally=true; renderLockBox(); renderAllStatic();
+      }catch(e){
+        hint.textContent="Sign in failed — check the email and password.";
+        hint.style.color="var(--bearish-strong)";
+        btn.textContent="Sign in to edit"; btn.disabled=false;
+      }
     };
+    document.getElementById("authSignInBtn").onclick=doSignIn;
+    document.getElementById("authPw").addEventListener("keydown",function(e){ if(e.key==="Enter") doSignIn(); });
   } else {
-    box.innerHTML='<div class="lock-state unlocked">&#128275; Editing on this device</div>'+
-      '<button id="lockBtn">Lock</button><span class="change-link" id="changePwLink">Change password</span><div id="changePwArea"></div>';
-    document.getElementById("lockBtn").onclick=function(){ unlockedLocally=false; renderLockBox(); renderAllStatic(); };
-    document.getElementById("changePwLink").onclick=function(){
-      document.getElementById("changePwArea").innerHTML='<input type="password" id="pw2" placeholder="New password" style="margin-top:8px;"><button id="pw2Btn">Save new password</button>';
-      document.getElementById("pw2Btn").onclick=async function(){
-        var v=document.getElementById("pw2").value.trim(); if(!v) return;
-        SETTINGS.passwordHash=hashStr(v); saveDataNow();
-        document.getElementById("changePwArea").innerHTML='<div class="hint">Password updated.</div>';
-      };
-    };
+    box.innerHTML='<div class="lock-state unlocked">&#128275; Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</div>'+
+      '<button id="lockBtn">Sign out</button>'+
+      '<div class="hint">Editing is enabled on this device until you sign out.</div>';
+    document.getElementById("lockBtn").onclick=function(){ authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic(); };
   }
 }
 
@@ -731,10 +816,10 @@ function y2Calc(ccy){
   var week=prev5==null?null:cur-prev5;
   var month=prev21==null?null:cur-prev21;
 
-  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -40,-15,15,40 ]);
+  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -50,-5,5,50 ]);
   var c2=week==null?null:y2ScoreBand(week*100,[ -25,-10,10,25 ]);
-  var c3=month==null?null:y2ScoreBand(month*100,[ -40,-15,15,40 ]);
-  var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -40,-15,15,40 ]);
+  var c3=month==null?null:y2ScoreBand(month*100,[ -50,-20,20,50 ]);
+  var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -50,-20,20,50 ]);
   var todayDist=sma21==null?null:(cur-sma21)*100;
   var prevSma=null;
   if(histVals.length>=22){ var last22=histVals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
@@ -1105,13 +1190,13 @@ function gaugeSvg(ccy, score){
 function y2TrendLabel(score){
   if(score==null) return "No 2Y data";
   if(score>=6) return "Rising — High conviction";
-  if(score>=2) return "Moderately Rising";
+  if(score>=1) return "Moderately Rising";
   if(score<=-6) return "Falling — High conviction";
-  if(score<=-2) return "Moderately Falling";
+  if(score<=-1) return "Moderately Falling";
   return "Steady";
 }
 function y2TrendClass(score){
-  if(score==null || Math.abs(score)<=1) return "y2-neutral";
+  if(score==null || score===0) return "y2-neutral";
   return score>0 ? "y2-positive" : "y2-negative";
 }
 
@@ -1444,6 +1529,14 @@ function renderAllStatic(){ renderOverview(); renderRaw(); renderDetail(); rende
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 
 async function init(){
+  loadAuthFromStorage();
+  if(AUTH.accessToken){
+    if(AUTH.expiresAt && AUTH.expiresAt - Date.now() < 5*60*1000){
+      await authRefresh();
+    }
+    if(AUTH.accessToken) unlockedLocally=true;
+  }
+
   var savedTheme="white";
   try{ savedTheme = localStorage.getItem('twp_theme_pref') || "white"; }catch(e){}
   applyTheme(savedTheme);
