@@ -585,12 +585,15 @@ async function saveDataNow(){
     // Keep a local backup, but Supabase is now the shared source of truth.
     localStorage.setItem('twp_dashboard_state_v4', payload);
 
-    await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+    var savedRows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
       method: "PATCH",
       useAuth: true,
-      headers: { "Prefer": "return=minimal" },
+      headers: { "Prefer": "return=representation" },
       body: JSON.stringify({ payload: payload, updated_at: DATA._updatedAt })
     });
+    if(!Array.isArray(savedRows) || savedRows.length !== 1 || String(savedRows[0].id) !== String(SUPABASE_ROW_ID)){
+      throw new Error("Cloud save returned no updated dashboard row.");
+    }
 
     updateStatus("Saved to cloud", "var(--bullish-strong)");
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
