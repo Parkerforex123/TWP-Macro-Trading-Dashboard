@@ -540,7 +540,7 @@ var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null;
-var isSaving=false, isTyping=false, isDirty=false;
+var isSaving=false, isTyping=false;
 var expandedRange="1M";
 
 function hashStr(s){ var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h|=0; } return (h>>>0).toString(16); }
@@ -594,8 +594,6 @@ async function saveDataNow(){
     if(!Array.isArray(savedRows) || savedRows.length !== 1 || String(savedRows[0].id) !== String(SUPABASE_ROW_ID)){
       throw new Error("Cloud save returned no updated dashboard row.");
     }
-    isDirty = false;
-    if(typeof lastCloudUpdatedAt !== "undefined") lastCloudUpdatedAt = savedRows[0].updated_at || DATA._updatedAt;
 
     updateStatus("Saved to cloud", "var(--bullish-strong)");
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
@@ -613,9 +611,8 @@ async function saveDataNow(){
 }
 
 function scheduleSave(){
-  isDirty = true;
   if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(function(){ saveDataNow(); }, 700);
+  saveTimer = setTimeout(saveDataNow, 700);
 }
 
 function getCotScore(ccy){
@@ -1564,18 +1561,12 @@ async function init(){
   
   var msb = document.getElementById("manualSaveBtn");
   if(msb) {
-    msb.onclick = async function() {
+    msb.onclick = function() {
+      saveDataNow();
+      var orig = this.textContent;
+      this.textContent = "Saved!";
       var btn = this;
-      var orig = btn.textContent;
-      isDirty = true;
-      btn.disabled = true;
-      btn.textContent = "Saving...";
-      try {
-        await saveDataNow();
-        btn.textContent = "Saved!";
-      } finally {
-        setTimeout(function(){ btn.textContent = orig; btn.disabled = false; }, 1200);
-      }
+      setTimeout(function(){ btn.textContent = orig; }, 1500);
     };
   }
 
@@ -1595,7 +1586,7 @@ async function init(){
   // Supabase is the shared source of truth. Load it first so every browser
   // starts from the same dashboard state.
   try {
-    const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at");
+    const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at", { useAuth: true });
     if (rows && rows.length && rows[0].payload) {
       const parsed = JSON.parse(rows[0].payload);
       if (parsed && parsed.DATA && Object.keys(parsed.DATA).length) {
@@ -1619,6 +1610,7 @@ async function init(){
     try {
       await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
         method: "PATCH",
+        useAuth: true,
         headers: { "Prefer": "return=minimal" },
         body: JSON.stringify({
           payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG}),
@@ -1644,12 +1636,12 @@ async function init(){
   let lastCloudUpdatedAt = null;
   async function pullCloudState(){
     try {
-      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at");
+      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at", { useAuth: true });
       if (!rows || !rows.length || !rows[0].payload) return;
       const row = rows[0];
       if (lastCloudUpdatedAt === row.updated_at) return;
-      if (isSaving || isDirty) return;
       lastCloudUpdatedAt = row.updated_at;
+      if (isSaving) return;
       const parsed = JSON.parse(row.payload);
       if (!parsed || !parsed.DATA) return;
       DATA = parsed.DATA;
@@ -1657,7 +1649,6 @@ async function init(){
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
-      isDirty = false;
       localStorage.setItem('twp_dashboard_state_v4', row.payload);
       if (!isTyping) {
         renderAllStatic();
