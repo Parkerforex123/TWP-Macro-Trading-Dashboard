@@ -585,15 +585,12 @@ async function saveDataNow(){
     // Keep a local backup, but Supabase is now the shared source of truth.
     localStorage.setItem('twp_dashboard_state_v4', payload);
 
-    var savedRows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+    await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
       method: "PATCH",
       useAuth: true,
-      headers: { "Prefer": "return=representation" },
+      headers: { "Prefer": "return=minimal" },
       body: JSON.stringify({ payload: payload, updated_at: DATA._updatedAt })
     });
-    if(!Array.isArray(savedRows) || savedRows.length !== 1 || String(savedRows[0].id) !== String(SUPABASE_ROW_ID)){
-      throw new Error("Cloud save returned no updated dashboard row.");
-    }
 
     updateStatus("Saved to cloud", "var(--bullish-strong)");
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
@@ -778,14 +775,12 @@ function y2DateKey(v){
 function y2SortedHistory(){
   return (YIELD_ENGINE.history||[]).slice().filter(function(r){return r && r.date;}).sort(function(a,b){return a.date.localeCompare(b.date);});
 }
-function y2ScoreBand(x, thresholds, maxScore){
+function y2ScoreBand(x, thresholds){
   if(x==null) return 0;
-  maxScore=maxScore==null?2:maxScore;
-  var midScore=maxScore===1?1:Math.max(1,Math.round(maxScore/2));
-  if(x>=thresholds[3]) return maxScore;
-  if(x>=thresholds[2]) return midScore;
-  if(x<=thresholds[0]) return -maxScore;
-  if(x<=thresholds[1]) return -midScore;
+  if(x>=thresholds[3]) return 2;
+  if(x>=thresholds[2]) return 1;
+  if(x<=thresholds[0]) return -2;
+  if(x<=thresholds[1]) return -1;
   return 0;
 }
 function y2Calc(ccy){
@@ -821,23 +816,16 @@ function y2Calc(ccy){
   var week=prev5==null?null:cur-prev5;
   var month=prev21==null?null:cur-prev21;
 
-  // Five confluences are kept, but their influence is balanced by information value:
-  // 1) position vs 21D trend is the main short-term anchor (3 points),
-  // 2) 1-week change confirms current momentum (2),
-  // 3) 1-month change confirms persistence (2),
-  // 4) 60D position is a slower structural check (1),
-  // 5) change in the 21D distance measures acceleration/deceleration (2).
-  // Total possible yield score remains exactly -10 to +10.
-  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -20,-8,8,20 ],3);
-  var c2=week==null?null:y2ScoreBand(week*100,[ -20,-7,7,20 ],2);
-  var c3=month==null?null:y2ScoreBand(month*100,[ -30,-10,10,30 ],2);
-  var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -30,-10,10,30 ],1);
+  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -40,-15,15,40 ]);
+  var c2=week==null?null:y2ScoreBand(week*100,[ -25,-10,10,25 ]);
+  var c3=month==null?null:y2ScoreBand(month*100,[ -40,-15,15,40 ]);
+  var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -40,-15,15,40 ]);
   var todayDist=sma21==null?null:(cur-sma21)*100;
   var prevSma=null;
   if(histVals.length>=22){ var last22=histVals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
   var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
   var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
-  var c5=distChange==null?null:y2ScoreBand(distChange,[ -15,-5,5,15 ],2);
+  var c5=distChange==null?null:y2ScoreBand(distChange,[ -25,-10,10,25 ]);
   var comps=[c1,c2,c3,c4,c5];
   var score=comps.every(function(x){return x!=null;})?comps.reduce(function(a,b){return a+b;},0):null;
   return {ccy:ccy,current:cur,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps,histCount:hist.length};
@@ -1203,10 +1191,8 @@ function y2TrendLabel(score){
   if(score==null) return "No 2Y data";
   if(score>=6) return "Rising — High conviction";
   if(score>=2) return "Moderately Rising";
-  if(score>=1) return "Early Rising";
   if(score<=-6) return "Falling — High conviction";
   if(score<=-2) return "Moderately Falling";
-  if(score<=-1) return "Early Falling";
   return "Steady";
 }
 function y2TrendClass(score){
@@ -1586,7 +1572,7 @@ async function init(){
   // Supabase is the shared source of truth. Load it first so every browser
   // starts from the same dashboard state.
   try {
-    const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at", { useAuth: true });
+    const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at");
     if (rows && rows.length && rows[0].payload) {
       const parsed = JSON.parse(rows[0].payload);
       if (parsed && parsed.DATA && Object.keys(parsed.DATA).length) {
@@ -1610,7 +1596,6 @@ async function init(){
     try {
       await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
         method: "PATCH",
-        useAuth: true,
         headers: { "Prefer": "return=minimal" },
         body: JSON.stringify({
           payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG}),
@@ -1636,7 +1621,7 @@ async function init(){
   let lastCloudUpdatedAt = null;
   async function pullCloudState(){
     try {
-      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at", { useAuth: true });
+      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at");
       if (!rows || !rows.length || !rows[0].payload) return;
       const row = rows[0];
       if (lastCloudUpdatedAt === row.updated_at) return;
@@ -1671,4 +1656,3 @@ init();
 
 </body>
 </html>
-
