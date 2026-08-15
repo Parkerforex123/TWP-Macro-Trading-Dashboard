@@ -53,11 +53,21 @@ body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-be
   font-size:14.5px;font-weight:500;padding:10px 12px;border-radius:8px;cursor:pointer;border-left:3px solid transparent;}
 .tab-btn:hover{background:var(--panel2);color:var(--text);}
 .tab-btn.active{background:var(--panel3);color:var(--text);border-left:3px solid var(--amber);font-weight:700;}
-.lock-box{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-dim);}
-.lock-state{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
+.lock-box{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-dim);transition:padding .15s,border-color .15s;}
+.lock-box.collapsed{padding-top:0;border-top-color:transparent;}
+.lock-box.collapsed .lock-state{justify-content:flex-end;margin-bottom:0;}
+.lock-box.collapsed .lock-state-label{display:none;}
+.lock-box.collapsed .lock-eye{width:18px;height:18px;font-size:14px;}
+.lock-state{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px;font-weight:700;}
+.lock-state-label{display:flex;align-items:center;gap:6px;}
 .lock-state.unlocked{color:var(--amber);}
+.lock-box button.lock-eye{background:transparent;border:none;color:var(--text-dim);width:18px;height:18px;border-radius:0;padding:0;margin:0;cursor:pointer;font-size:14px;line-height:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.lock-eye:hover{color:var(--text);}
+.lock-box.collapsed .lock-fields{display:none;}
 .lock-box input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
-  padding:7px 8px;border-radius:6px;font-size:15px;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  padding:7px 8px;border-radius:6px;font-size:15px;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;
+  -webkit-appearance:none;appearance:none;-webkit-text-fill-color:var(--text);}
+.lock-box input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--panel2) inset;-webkit-text-fill-color:var(--text);caret-color:var(--text);}
 .lock-box button{width:100%;background:var(--panel3);border:1px solid var(--border);color:var(--text);
   padding:7px 8px;border-radius:6px;font-size:12.5px;cursor:pointer;font-weight:700;}
 .lock-box button:hover{border-color:var(--amber);}
@@ -142,22 +152,15 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 
 .detail-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;}
 @media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
-@media(max-width:560px){
-  .stat-row{flex-direction:column;align-items:flex-start;gap:2px;}
-  .stat-row > *:last-child{text-align:left !important;max-width:100% !important;}
-  .rate-line{flex-direction:column;align-items:flex-start;gap:5px;}
-  .rate-line input, .rate-line select{width:100%;}
-  .info-grid{grid-template-columns:1fr;}
-}
 .left-col .ccy-big{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;}
 .left-col .ccy-full{color:var(--text-dim);font-size:15px;}
 .gauge-svg{width:100%;height:auto;display:block;}
 .gauge-num{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;text-align:center;margin-top:-50px;}
 .stat-block{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-.stat-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);row-gap:4px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);}
 .stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;padding:3px 10px;border-radius:6px;}
 .rate-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.rate-line{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:8px;row-gap:4px;}
+.rate-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
 .move-select.HIKE{color:var(--bullish-strong);background:rgba(47,127,224,.12);border-color:var(--bullish);}
 .move-select.CUT{color:var(--bearish-strong);background:rgba(224,69,63,.10);border-color:var(--bearish);}
@@ -559,7 +562,7 @@ function seed(){
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
-var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All";
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All", lockBoxCollapsed=false;
 var isSaving=false, isTyping=false;
 var expandedRange="1M";
 
@@ -772,12 +775,16 @@ function applyTheme(name){
 function renderLockBox(){
   var box=document.getElementById("lockBox");
   if(!box) return;
+  box.className="lock-box"+(lockBoxCollapsed?" collapsed":"");
+  var eyeIcon = lockBoxCollapsed ? "&#128274;" : "&#128065;";
   if(!AUTH.accessToken){
-    box.innerHTML='<div class="lock-state">&#128274; View-only</div>'+
+    box.innerHTML='<div class="lock-state"><span class="lock-state-label">&#128274; View-only</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
+      '<div class="lock-fields">'+
       '<input type="email" id="authEmail" placeholder="Team email" autocomplete="username" style="margin-bottom:6px;">'+
       '<input type="password" id="authPw" placeholder="Password" autocomplete="current-password">'+
       '<button id="authSignInBtn">Sign in to edit</button>'+
-      '<div class="hint" id="authHint">Everyone sees this same view, read-only, until a team member signs in.</div>';
+      '<div class="hint" id="authHint" style="display:none;"></div>'+
+      '</div>';
     var doSignIn=async function(){
       var email=document.getElementById("authEmail").value.trim();
       var pw=document.getElementById("authPw").value;
@@ -791,16 +798,18 @@ function renderLockBox(){
       }catch(e){
         hint.textContent="Sign in failed — check the email and password.";
         hint.style.color="var(--bearish-strong)";
+        hint.style.display="block";
         btn.textContent="Sign in to edit"; btn.disabled=false;
       }
     };
     document.getElementById("authSignInBtn").onclick=doSignIn;
     document.getElementById("authPw").addEventListener("keydown",function(e){ if(e.key==="Enter") doSignIn(); });
+    document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
   } else {
-    box.innerHTML='<div class="lock-state unlocked">&#128275; Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</div>'+
-      '<button id="lockBtn">Sign out</button>'+
-      '<div class="hint">Editing is enabled on this device until you sign out.</div>';
+    box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">&#128275; Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide">'+eyeIcon+'</button></div>'+
+      '<div class="lock-fields"><button id="lockBtn">Sign out</button></div>';
     document.getElementById("lockBtn").onclick=function(){ authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic(); };
+    document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
   }
 }
 
@@ -1143,7 +1152,7 @@ function histSpreadDraw(){
 
   ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
   ctx.textAlign="center";ctx.textBaseline="top";
-  var labelCount=Math.max(2,Math.min(8,rows.length,Math.floor(pw/68)));
+  var labelCount=Math.min(8,rows.length);
   for(var li=0;li<labelCount;li++){
     var ii=Math.round(li*(rows.length-1)/(labelCount-1));
     ctx.fillText(rows[ii].date.slice(0,10),X(ii),H-pad.b+10);
