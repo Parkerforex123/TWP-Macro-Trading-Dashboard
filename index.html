@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>try{var __t=localStorage.getItem('twp_theme_pref');if(__t==="ash"||__t==="black"){document.documentElement.classList.add(__t);}}catch(e){}</script>
 <title>TWP — Fundamentals Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23181b22%27/%3E%3Ctext x=%2732%27 y=%2742%27 text-anchor=%27middle%27 font-family=%27Arial,sans-serif%27 font-size=%2725%27 font-weight=%27700%27 fill=%27white%27%3ETWP%3C/text%3E%3C/svg%3E">
 <style>
@@ -15,24 +16,27 @@
   --bullish-lean:#9db8db; --bearish-lean:#dcaaa7;
   --neutral:#8b93a3; --amber:#a5690f; --radius:10px;
 }
-body.ash{
+body.ash, html.ash{
   --bg:#0a0c11; --panel:#12151d; --panel2:#171b26; --panel3:#1d2230; --border:#252b3a;
   --text:#e9ebf1; --text-dim:#8b93a8; --text-faint:#5c6478;
   --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
   --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
   --neutral:#6b7280; --amber:#e0a83e;
 }
-body.black{
+body.black, html.black{
   --bg:#0f0b08; --panel:#17110b; --panel2:#201811; --panel3:#291f16; --border:#3a2c1c;
   --text:#f0e6d2; --text-dim:#a79a85; --text-faint:#6e6353;
   --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
   --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
   --neutral:#777777; --amber:#e0a83e;
 }
-body.ash, body.black{ --dark:1; }
+body.ash, body.black, html.ash, html.black{ --dark:1; }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;}
-body{min-height:100vh;transition:background .15s;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100%;}
+html{min-height:100vh;min-height:100dvh;}
+body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-behavior-y:none;}
+.table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.table-scroll table{min-width:560px;}
 .mono{font-family:'IBM Plex Mono',monospace;font-weight:600;}
 
 .shell{display:flex;min-height:100vh;}
@@ -751,7 +755,8 @@ function surpriseFor(actual,forecast){
 
 function applyTheme(name){
   document.body.classList.remove("ash","black");
-  if(name==="ash"||name==="black") document.body.classList.add(name);
+  document.documentElement.classList.remove("ash","black");
+  if(name==="ash"||name==="black"){ document.body.classList.add(name); document.documentElement.classList.add(name); }
   var btns=document.querySelectorAll("#themeSwitch .theme-btn");
   for(var i=0;i<btns.length;i++){ btns[i].classList.toggle("active", btns[i].dataset.theme===name); }
   try{ localStorage.setItem('twp_theme_pref', name); }catch(e){}
@@ -1011,7 +1016,7 @@ function renderYield2Y(){
     '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
-    '<div class="card"><h3>2Y Yield Score</h3><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div>'+
+    '<div class="card"><h3>2Y Yield Score</h3><div class="table-scroll"><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
     '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
     '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
@@ -1176,9 +1181,9 @@ function renderOverview(){
   var divHtml = (hikers.length && cutters.length) ?
     '<div class="divergence on"><b>Divergence watch —</b> '+hikers.join("/")+" leaning HIKE against "+cutters.join("/")+" leaning CUT. Worth treating as this week's live divergence pair on top of the seven majors.</div>" :
     '';
-  var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><table><thead><tr>'+
+  var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><div class="table-scroll"><table><thead><tr>'+
     '<th>Symbol</th><th>Bias</th><th>Score</th><th>Alignment</th><th>Economic Growth</th><th>Inflation</th><th>Labour Market</th></tr></thead>'+
-    '<tbody id="overviewRows"></tbody></table>'+
+    '<tbody id="overviewRows"></tbody></table></div>'+
     '</div></div>';
   document.getElementById("tab-overview").innerHTML=html;
   fillOverviewRows(scores);
@@ -1190,11 +1195,13 @@ function fillOverviewRows(scores){
   for(var i=0;i<rows.length;i++){
     var c=rows[i], sc=scores[c], f=fundFor(c), label=bandLabel(sc), align=alignmentFor(c);
     var gB=sectorBand(f.g.raw,f.g.max), iB=sectorBand(f.inf.raw,f.inf.max), lB=sectorBand(f.l.raw,f.l.max);
-    var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:13.5px;font-weight:600;color:'+(align.pct>=80?(align.dir==="Bullish"?"var(--bullish-strong)":"var(--bearish-strong)"):"var(--text-dim)")+';">'+(align.pct>=80?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
+    var alignFlagged = align && align.pct>=80;
+    var alignCellClass = alignFlagged ? (align.dir==="Bullish"?"cell-vstrong":"cell-vweak") : "";
+    var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:13.5px;font-weight:'+(alignFlagged?"700":"600")+';'+(alignFlagged?"":"color:var(--text-dim);")+'">'+(alignFlagged?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
     out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:14px;">'+CCY_NAME[c]+'</span></td>'+
       '<td><span class="'+chipClass(label)+'">'+label+'</span></td>'+
       '<td class="mono">'+fmt(sc)+'</td>'+
-      '<td>'+alignCell+'</td>'+
+      '<td class="'+alignCellClass+'" style="'+(alignFlagged?"border-radius:6px;":"")+'">'+alignCell+'</td>'+
       '<td class="'+sectorCellClass(gB.label)+'" style="border-radius:6px;">'+gB.label+'</td>'+
       '<td class="'+sectorCellClass(iB.label)+'" style="border-radius:6px;">'+iB.label+'</td>'+
       '<td class="'+sectorCellClass(lB.label)+'" style="border-radius:6px;">'+lB.label+'</td></tr>';
@@ -1206,8 +1213,8 @@ function fillOverviewRows(scores){
 
 function renderRaw(){
   if(!DATA) return;
-  var html='<div class="card"><h3>Raw Inputs</h3><table><thead><tr>'+
-    '<th>Currency</th><th>Fundamentals</th><th>2Y Yield Score</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div>';
+  var html='<div class="card"><h3>Raw Inputs</h3><div class="table-scroll"><table><thead><tr>'+
+    '<th>Currency</th><th>Fundamentals</th><th>2Y Yield Score</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
 
   document.getElementById("tab-raw").innerHTML=html;
   var tb=document.getElementById("rawRows"), out="";
@@ -1603,9 +1610,9 @@ function renderPairs(){
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;"><h3 style="margin:0;">Pair Ranking — Most Bullish to Most Bearish</h3>'+
     '<div class="range-switch">'+filterBtns+'</div></div>'+
-    '<table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Relative</th><th>Trend (30d)</th></tr></thead>'+
-    '<tbody id="pairRows">'+rows+'</tbody></table></div>'+
-    (LOG.length? '<div class="card"><h3>Recalculation Log</h3><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div>':'');
+    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Relative</th><th>Trend (30d)</th></tr></thead>'+
+    '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
+    (LOG.length? '<div class="card"><h3>Recalculation Log</h3><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div>':'');
   document.getElementById("tab-pairs").innerHTML=html;
   var btn=document.getElementById("recalcBtn");
   if(btn){ btn.onclick=async function(){
