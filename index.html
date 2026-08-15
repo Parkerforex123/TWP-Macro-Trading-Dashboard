@@ -128,7 +128,7 @@ body.ash .cell-vweak, body.black .cell-vweak{color:#2a060a;}
 
 .raw-input{width:72px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;}
 select.raw-input{width:104px;}
-input:disabled, textarea:disabled{background:transparent;border-color:transparent;color:var(--text);opacity:1;cursor:default;padding-left:0;-webkit-text-fill-color:var(--text);}
+input:disabled, textarea:disabled{background:transparent;border-color:transparent;opacity:1;cursor:default;padding-left:0;-webkit-text-fill-color:inherit;}
 select:disabled{background:transparent;border-color:transparent;color:var(--text);opacity:1;cursor:default;-webkit-appearance:none;appearance:none;}
 
 .ccy-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
@@ -702,6 +702,20 @@ function numColor(n){
   if(n<0) return "color:var(--bearish-strong);";
   return "color:var(--text-dim);";
 }
+function changePctColor(v){
+  var p=parseNum(v);
+  if(!p) return "color:var(--text-dim);";
+  if(p.num>0) return "color:var(--bullish-strong);";
+  if(p.num<0) return "color:var(--bearish-strong);";
+  return "color:var(--text-dim);";
+}
+function longShortColors(longV, shortV){
+  var l=parseNum(longV), s=parseNum(shortV);
+  if(!l || !s) return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
+  if(l.num>s.num) return {longStyle:"color:var(--bullish-strong);", shortStyle:"color:var(--bearish-strong);"};
+  if(s.num>l.num) return {longStyle:"color:var(--bearish-strong);", shortStyle:"color:var(--bullish-strong);"};
+  return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
+}
 function allScores(){ var out={}; for(var i=0;i<CCYS.length;i++){ out[CCYS[i]]=compositeFor(CCYS[i]); } return out; }
 function buildPairs(scores){
   var pairs=[];
@@ -719,7 +733,7 @@ function parseNum(s){
   if(s===undefined||s===null) return null;
   var t=String(s).trim();
   if(t===""||t==="-"||t==="—") return null;
-  var m=t.match(/^(-?[\d,.]+)\s*(%|k|K|m|M)?$/);
+  var m=t.match(/^([+-]?[\d,.]+)\s*(%|k|K|m|M)?$/);
   if(!m) return null;
   var num=parseFloat(m[1].replace(/,/g,""));
   if(isNaN(num)) return null;
@@ -1377,10 +1391,10 @@ function renderDetailBody(ccy){
           : '<span class="v" id="cotChangeBiasTxt-'+ccy+'" style="color:'+((d.cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(d.cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+(d.cotChangeBias||"Neutral")+'</span>')+'</div>'+
           
         '<div class="info-item"><span class="k">Long % / Short %</span><div>'+
-          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="longPct" value="'+esc(d.longPct)+'" '+(unlockedLocally?"":"disabled")+'> / '+
-          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="shortPct" value="'+esc(d.shortPct)+'" '+(unlockedLocally?"":"disabled")+'></div></div>'+
+          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="longPct" value="'+esc(d.longPct)+'" style="'+longShortColors(d.longPct,d.shortPct).longStyle+'" '+(unlockedLocally?"":"disabled")+'> / '+
+          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="shortPct" value="'+esc(d.shortPct)+'" style="'+longShortColors(d.longPct,d.shortPct).shortStyle+'" '+(unlockedLocally?"":"disabled")+'></div></div>'+
         '<div class="info-item"><span class="k">Change %</span>'+
-          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="changePct" value="'+esc(d.changePct)+'" '+(unlockedLocally?"":"disabled")+'></div>'+
+          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="changePct" value="'+esc(d.changePct)+'" style="'+changePctColor(d.changePct)+'" '+(unlockedLocally?"":"disabled")+'></div>'+
       '</div>';
   for(var s=0;s<sectors.length;s++){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
@@ -1435,6 +1449,14 @@ function onDetailInput(e){
     if(t.dataset.field==="conviction"){ t.className="conv-select "+t.value.split(" ")[0]; }
     if(t.dataset.field==="guidance"){ autoGrowGuidance(t); }
     if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias" || t.dataset.field==="seasonality"){ t.className="bias-select "+t.value; }
+    if(t.dataset.field==="changePct"){ t.setAttribute("style", changePctColor(t.value)); }
+    if(t.dataset.field==="longPct" || t.dataset.field==="shortPct"){
+      var lsColors=longShortColors(DATA[ccy].longPct, DATA[ccy].shortPct);
+      var lEl=document.querySelector('input[data-ccy="'+ccy+'"][data-field="longPct"]');
+      var sEl=document.querySelector('input[data-ccy="'+ccy+'"][data-field="shortPct"]');
+      if(lEl) lEl.setAttribute("style", lsColors.longStyle);
+      if(sEl) sEl.setAttribute("style", lsColors.shortStyle);
+    }
     scheduleSave();
     updateComputed();
   }
@@ -1648,6 +1670,15 @@ function updateComputed(){
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
   var ssc=document.getElementById("statSeasCot-"+c); if(ssc){ var scv=seasCotScore(c); ssc.textContent=fmt(scv); ssc.setAttribute("style",numColor(scv)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
+  var alignEl=document.getElementById("statAlign-"+c);
+  if(alignEl){
+    var align2=alignmentFor(c);
+    var flagged2=align2 && align2.pct>=80;
+    var alignColor2=!align2?"color:var(--text-faint);":(align2.pct>=80?(align2.dir==="Bullish"?"color:var(--bullish-strong);":"color:var(--bearish-strong);"):"color:var(--text-dim);");
+    var alignTxt2=!align2?"No clear lean yet":((flagged2?'&#9873; ':'')+align2.pct+"% of the evidence agrees "+align2.dir.toLowerCase()+" ("+alignmentLabel(align2)+")");
+    alignEl.setAttribute("style", alignColor2+"text-align:right;max-width:170px;font-size:12.5px;font-weight:600;");
+    alignEl.innerHTML=alignTxt2;
+  }
   var y2Now=y2Calc(c);
   var y2ScoreEl=document.getElementById("stat2YScore-"+c);
   if(y2ScoreEl){ y2ScoreEl.textContent=y2ScoreFmt(y2Now.score); y2ScoreEl.className="mono "+y2TrendClass(y2Now.score); }
