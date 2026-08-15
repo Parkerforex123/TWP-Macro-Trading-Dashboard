@@ -12,25 +12,28 @@
   --bg:#eef0f3; --panel:#ffffff; --panel2:#f4f5f7; --panel3:#e9ebef; --border:#d7dae0;
   --text:#181b22; --text-dim:#565e6d; --text-faint:#8991a0;
   --bullish:#2f7fe0; --bullish-strong:#1c63c4; --bearish:#e0453f; --bearish-strong:#c22e28;
+  --bullish-lean:#9db8db; --bearish-lean:#dcaaa7;
   --neutral:#8b93a3; --amber:#a5690f; --radius:10px;
 }
 body.ash{
   --bg:#0a0c11; --panel:#12151d; --panel2:#171b26; --panel3:#1d2230; --border:#252b3a;
   --text:#e9ebf1; --text-dim:#8b93a8; --text-faint:#5c6478;
   --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
+  --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
   --neutral:#6b7280; --amber:#e0a83e;
 }
 body.black{
   --bg:#0f0b08; --panel:#17110b; --panel2:#201811; --panel3:#291f16; --border:#3a2c1c;
   --text:#f0e6d2; --text-dim:#a79a85; --text-faint:#6e6353;
   --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
+  --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
   --neutral:#777777; --amber:#e0a83e;
 }
 body.ash, body.black{ --dark:1; }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;}
 body{min-height:100vh;transition:background .15s;}
-.mono{font-family:'IBM Plex Mono',monospace;}
+.mono{font-family:'IBM Plex Mono',monospace;font-weight:600;}
 
 .shell{display:flex;min-height:100vh;}
 .rail{width:230px;flex:0 0 230px;background:var(--panel);border-right:1px solid var(--border);
@@ -80,6 +83,8 @@ body{min-height:100vh;transition:background .15s;}
 .y2-track b{position:absolute;top:0;bottom:0;background:var(--bullish);opacity:.8;}
 .y2-track b.neg{background:var(--bearish);}
 .y2-small{font-size:13px;color:var(--text-faint);}.y2-direction{font-size:12px;font-weight:700;}
+.y2-chg-arrow{font-size:14px;font-weight:900;margin-right:1px;display:inline-block;vertical-align:middle;}
+.y2-chg-arrow.up{color:var(--bullish-strong);} .y2-chg-arrow.down{color:var(--bearish-strong);} .y2-chg-arrow.flat{color:var(--text-faint);font-size:8px;}
 @media(max-width:1000px){.y2-grid{grid-template-columns:1fr;}.y2-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:600px){.y2-input-grid{grid-template-columns:1fr;}}
 
@@ -91,9 +96,9 @@ body{min-height:100vh;transition:background .15s;}
 .divergence.off{color:var(--text-dim);}
 .divergence b{color:var(--amber);}
 
-table{width:100%;border-collapse:collapse;font-size:16px;}
-th{text-align:left;font-family:'Space Grotesk',sans-serif;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);padding:9px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
-td{padding:11px 10px;border-bottom:1px solid var(--border);color:var(--text);}
+table{width:100%;border-collapse:collapse;font-size:15.5px;}
+th{text-align:left;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
+td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;}
 tr:last-child td{border-bottom:none;}
 tr.rowhover:hover td{filter:brightness(.98);}
 body.ash tr.rowhover:hover td, body.black tr.rowhover:hover td{filter:brightness(1.25);}
@@ -103,11 +108,15 @@ body.ash tr.rowhover:hover td, body.black tr.rowhover:hover td{filter:brightness
 .chip{display:inline-block;padding:4px 13px;border-radius:20px;font-size:12.5px;font-weight:700;letter-spacing:.3px;}
 .chip-bull{background:rgba(47,127,224,.14);color:var(--bullish-strong);}
 .chip-bull.strong{background:var(--bullish);color:#fff;}
+.chip-bull.lean{background:rgba(47,127,224,.06);color:var(--text-dim);border:1px solid rgba(47,127,224,.3);}
 .chip-bear{background:rgba(224,69,63,.13);color:var(--bearish-strong);}
 .chip-bear.strong{background:var(--bearish);color:#fff;}
+.chip-bear.lean{background:rgba(224,69,63,.06);color:var(--text-dim);border:1px solid rgba(224,69,63,.3);}
 .chip-neu{background:rgba(139,147,163,.18);color:var(--text-dim);}
 body.ash .chip-bull.strong, body.black .chip-bull.strong{background:rgba(59,167,255,.25);color:var(--bullish-strong);box-shadow:0 0 0 1px rgba(59,167,255,.4) inset;}
 body.ash .chip-bear.strong, body.black .chip-bear.strong{background:rgba(255,92,114,.25);color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(255,92,114,.4) inset;}
+body.ash .chip-bull.lean, body.black .chip-bull.lean{background:rgba(59,167,255,.08);color:var(--text-dim);border-color:rgba(59,167,255,.3);}
+body.ash .chip-bear.lean, body.black .chip-bear.lean{background:rgba(255,92,114,.08);color:var(--text-dim);border-color:rgba(255,92,114,.3);}
 
 .cell-vstrong{background:var(--bullish);color:#fff;font-weight:700;}
 .cell-strong{background:rgba(47,127,224,.28);color:var(--bullish-strong);font-weight:600;}
@@ -145,7 +154,7 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .conv-select.High{color:var(--amber);font-weight:700;}
 .conv-select.Medium{color:var(--text-dim);}
 .conv-select.Low{color:var(--text-faint);}
-.guidance-box{width:100%;min-height:170px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:vertical;margin-top:8px;overflow:hidden;}
+.guidance-box{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:none;margin-top:8px;overflow-y:auto;}
 .field-label{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
 
 .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin-bottom:18px;padding:14px 16px;background:var(--panel2);border-radius:8px;}
@@ -539,7 +548,7 @@ function seed(){
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
-var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null;
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All";
 var isSaving=false, isTyping=false;
 var expandedRange="1M";
 
@@ -632,10 +641,50 @@ function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=b_seas(d.seasonality);
   return 100*(0.70*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.05*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + b_seas(d.seasonality); }
-function bandLabel(s){ if(s>=40) return "Very Bullish"; if(s>=21) return "Bullish"; if(s>=-20) return "Neutral"; if(s>=-39) return "Bearish"; return "Very Bearish"; }
+function alignmentFor(ccy){
+  var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
+  var totalW=0, agreeW=0;
+  function vote(sign, weight){
+    if(sign===0 || !weight) return;
+    totalW+=weight;
+    if(dirSign!==0 && sign===dirSign) agreeW+=weight;
+  }
+  ["growth","inflation","labour"].forEach(function(sector){
+    (d[sector]||[]).forEach(function(ind){ vote(biasVal(ind.bias), Number(ind.weight)||0); });
+  });
+  var y2s=y2Calc(ccy).score;
+  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 10);
+  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 10);
+  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 10);
+  vote(b_seas(d.seasonality), 10);
+  if(dirSign===0 || totalW===0) return null;
+  return {pct:Math.round(agreeW/totalW*100), dir:dirSign>0?"Bullish":"Bearish"};
+}
+function alignmentLabel(a){
+  if(!a) return "—";
+  if(a.pct>=80) return "High";
+  if(a.pct>=55) return "Moderate";
+  return "Low";
+}
+function bandLabel(s){
+  if(s>=40) return "Very Bullish";
+  if(s>=21) return "Bullish";
+  if(s>=15) return "Neutral Leaning Bullish";
+  if(s>=-14) return "Neutral";
+  if(s>=-20) return "Neutral Leaning Bearish";
+  if(s>=-39) return "Bearish";
+  return "Very Bearish";
+}
 function chipClass(label){
   if(label==="Very Bullish") return "chip chip-bull strong"; if(label==="Bullish") return "chip chip-bull";
-  if(label==="Very Bearish") return "chip chip-bear strong"; if(label==="Bearish") return "chip chip-bear"; return "chip chip-neu"; }
+  if(label==="Neutral Leaning Bullish") return "chip chip-bull lean";
+  if(label==="Very Bearish") return "chip chip-bear strong"; if(label==="Bearish") return "chip chip-bear";
+  if(label==="Neutral Leaning Bearish") return "chip chip-bear lean";
+  return "chip chip-neu"; }
+function neutralTintStyle(score){
+  if(score>0) return " style=\"color:var(--bullish-strong);\"";
+  if(score<0) return " style=\"color:var(--bearish-strong);\"";
+  return ""; }
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
   if(a<20) label="Neutral"; else if(a<50) label=pct>0?"Strong":"Weak"; else label=pct>0?"Very Strong":"Very Weak"; return {pct:pct,label:label}; }
 function sectorChipClass(label){
@@ -777,6 +826,11 @@ function y2DateKey(v){
 }
 function y2SortedHistory(){
   return (YIELD_ENGINE.history||[]).slice().filter(function(r){return r && r.date;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+}
+function y2PrevClose(ccy){
+  var hist=y2SortedHistory().filter(function(r){return y2Num(r[ccy])!=null && r.date!==YIELD_ENGINE.currentDate;});
+  if(!hist.length) return null;
+  return y2Num(hist[hist.length-1][ccy]);
 }
 function y2ScoreBand(x, thresholds, maxScore){
   if(x==null) return 0;
@@ -936,10 +990,16 @@ function renderYield2Y(){
   var rows=y2SortedHistory(), latest=rows.length?rows[rows.length-1].date:'—';
   var html='<div class="y2-grid">'+
     '<div class="card"><h3>Current 2Y Yield Input</h3><div class="y2-input-grid">'+
-    Y2_CCY_ORDER.map(function(c){return '<label class="y2-small">'+c+'<input class="y2-input" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(YIELD_ENGINE.current[c]!=null?YIELD_ENGINE.current[c]:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';}).join('')+
+    Y2_CCY_ORDER.map(function(c){
+      var curVal=YIELD_ENGINE.current[c], prev=y2PrevClose(c);
+      var dir=(curVal!=null&&prev!=null)?(curVal>prev?1:(curVal<prev?-1:0)):null;
+      var arrow=dir==null?'':(dir>0?'<span class="y2-chg-arrow up">&#9650;</span>':(dir<0?'<span class="y2-chg-arrow down">&#9660;</span>':'<span class="y2-chg-arrow flat">&#9679;</span>'));
+      var inputStyle=dir==null?'':(dir>0?'color:var(--bullish-strong);font-weight:700;':(dir<0?'color:var(--bearish-strong);font-weight:700;':''));
+      return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';
+    }).join('')+
     '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
-    '<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div></div>'+ 
+    (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
     '<div class="card"><h3>2Y Yield Score</h3><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div>'+
     '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
@@ -1106,7 +1166,7 @@ function renderOverview(){
     '<div class="divergence on"><b>Divergence watch —</b> '+hikers.join("/")+" leaning HIKE against "+cutters.join("/")+" leaning CUT. Worth treating as this week's live divergence pair on top of the seven majors.</div>" :
     '';
   var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><table><thead><tr>'+
-    '<th>Symbol</th><th>Bias</th><th>Score</th><th>Economic Growth</th><th>Inflation</th><th>Labour Market</th></tr></thead>'+
+    '<th>Symbol</th><th>Bias</th><th>Score</th><th>Alignment</th><th>Economic Growth</th><th>Inflation</th><th>Labour Market</th></tr></thead>'+
     '<tbody id="overviewRows"></tbody></table>'+
     '</div></div>';
   document.getElementById("tab-overview").innerHTML=html;
@@ -1117,11 +1177,13 @@ function fillOverviewRows(scores){
   var rows=CCYS.slice().sort(function(a,b){ return scores[b]-scores[a]; });
   var out="";
   for(var i=0;i<rows.length;i++){
-    var c=rows[i], sc=scores[c], f=fundFor(c), label=bandLabel(sc);
+    var c=rows[i], sc=scores[c], f=fundFor(c), label=bandLabel(sc), align=alignmentFor(c);
     var gB=sectorBand(f.g.raw,f.g.max), iB=sectorBand(f.inf.raw,f.inf.max), lB=sectorBand(f.l.raw,f.l.max);
+    var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:13.5px;font-weight:600;color:'+(align.pct>=80?(align.dir==="Bullish"?"var(--bullish-strong)":"var(--bearish-strong)"):"var(--text-dim)")+';">'+(align.pct>=80?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
     out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:14px;">'+CCY_NAME[c]+'</span></td>'+
       '<td><span class="'+chipClass(label)+'">'+label+'</span></td>'+
       '<td class="mono">'+fmt(sc)+'</td>'+
+      '<td>'+alignCell+'</td>'+
       '<td class="'+sectorCellClass(gB.label)+'" style="border-radius:6px;">'+gB.label+'</td>'+
       '<td class="'+sectorCellClass(iB.label)+'" style="border-radius:6px;">'+iB.label+'</td>'+
       '<td class="'+sectorCellClass(lB.label)+'" style="border-radius:6px;">'+lB.label+'</td></tr>';
@@ -1141,10 +1203,10 @@ function renderRaw(){
   for(var i=0;i<CCYS.length;i++){
     var c=CCYS[i], d=DATA[c], f=fundFor(c), y2=y2Calc(c), cotScore=getCotScore(c);
     out += '<tr class="rowhover"><td class="ccy-name">'+c+'</td>'+
-      '<td class="mono">'+sectorBand(f.raw,f.max).label+'</td>'+
+      '<td class="mono '+sectorCellClass(sectorBand(f.raw,f.max).label)+'">'+sectorBand(f.raw,f.max).label+'</td>'+
       '<td class="mono '+y2TrendClass(y2.score)+'">'+y2ScoreFmt(y2.score)+' <span class="y2-small">'+esc(y2TrendLabel(y2.score))+'</span></td>'+
       '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+cotInstBand(cotScore)+'</td>'+
-      '<td><select class="raw-input" data-role="ccyfield" data-ccy="'+c+'" data-field="seasonality" '+(unlockedLocally?"":"disabled")+'>'+
+      '<td><select class="bias-select '+d.seasonality+'" data-role="ccyfield" data-ccy="'+c+'" data-field="seasonality" '+(unlockedLocally?"":"disabled")+'>'+
         ["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.seasonality?"selected":"")+'>'+o+'</option>'; }).join("")+
       '</select></td></tr>';
   }
@@ -1176,7 +1238,7 @@ function gaugeGeom(score){
 }
 function scoreAngle(cx,cy,r,v){ var angle=180-((v+100)/200)*180, rad=angle*Math.PI/180; return {x:cx+r*Math.cos(rad), y:cy-r*Math.sin(rad)}; }
 function gaugeArcs(cx,cy,r){
-  var zones=[[-100,-40,"var(--bearish-strong)"],[-40,-20,"var(--bearish)"],[-20,20,"var(--neutral)"],[20,40,"var(--bullish)"],[40,100,"var(--bullish-strong)"]];
+  var zones=[[-100,-40,"var(--bearish-strong)"],[-40,-20,"var(--bearish)"],[-20,-14,"var(--bearish-lean)"],[-14,14,"var(--neutral)"],[14,20,"var(--bullish-lean)"],[20,40,"var(--bullish)"],[40,100,"var(--bullish-strong)"]];
   var out="";
   for(var i=0;i<zones.length;i++){
     var p0=scoreAngle(cx,cy,r,zones[i][0]), p1=scoreAngle(cx,cy,r,zones[i][1]);
@@ -1235,7 +1297,23 @@ function indicatorRows(ccy, sector, list){
   }
   return rows;
 }
-function autoGrowGuidance(el){ if(!el) return; el.style.height="auto"; el.style.height=(el.scrollHeight+2)+"px"; }
+function autoGrowGuidance(el){
+  if(!el) return;
+  el.style.height="auto";
+  var natural=el.scrollHeight+2;
+  var leftCol=el.closest('.left-col');
+  var grid=leftCol?leftCol.closest('.detail-grid'):null;
+  var rightCol=grid?grid.querySelector('.right-col'):null;
+  if(rightCol && leftCol){
+    var rightH=rightCol.getBoundingClientRect().height;
+    var usedAbove=el.getBoundingClientRect().top-leftCol.getBoundingClientRect().top;
+    var avail=rightH-usedAbove-4;
+    var capped=Math.max(110, avail>110?Math.min(natural,avail):110);
+    el.style.height=capped+"px";
+  } else {
+    el.style.height=natural+"px";
+  }
+}
 function renderDetail(){
   if(!DATA) return;
   var html='<div class="ccy-pills" id="detailPills"></div><div id="detailBody"></div>';
@@ -1252,6 +1330,10 @@ function renderDetailBody(ccy){
   var sectors=[["growth","Growth",f.g],["inflation","Inflation",f.inf],["labour","Labour",f.l]];
   var cotScore = getCotScore(ccy);
   var y2Score = y2Calc(ccy).score;
+  var align = alignmentFor(ccy);
+  var flagged = align && align.pct>=80;
+  var alignColor = !align ? "color:var(--text-faint);" : (align.pct>=80?(align.dir==="Bullish"?"color:var(--bullish-strong);":"color:var(--bearish-strong);") : "color:var(--text-dim);");
+  var alignTxt = !align ? "No clear lean yet" : ((flagged?'&#9873; ':'')+align.pct+"% of the evidence agrees "+align.dir.toLowerCase()+" ("+alignmentLabel(align)+")");
   
   var html = '<div class="card"><div class="detail-grid">'+
     '<div class="left-col">'+
@@ -1261,6 +1343,7 @@ function renderDetailBody(ccy){
       '<div class="gauge-num mono" id="gaugeScoreTxt-'+ccy+'">'+fmt(sc)+'</div>'+
       '<div class="stat-block">'+
         '<div class="stat-row"><span>TWP overall score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
+        '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:170px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
         '<div class="stat-row"><span>Seasonality + COT score</span><span class="mono" id="statSeasCot-'+ccy+'" style="'+numColor(scCot)+'">'+fmt(scCot)+'</span></div>'+
         '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
         '<div class="stat-row" style="align-items:flex-start;"><span>2Y Yield Score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
@@ -1288,11 +1371,11 @@ function renderDetailBody(ccy){
         
         '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+' ('+(cotScore>0?"+":"")+cotScore+')</span></div>'+
         
-        '<div class="info-item"><span class="k">COT net positioning (Wt: 3)</span>'+(unlockedLocally?
+        '<div class="info-item"><span class="k">COT net positioning</span>'+(unlockedLocally?
           '<select class="'+ (d.cotNet==="Bullish"?"bias-select Bullish":d.cotNet==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotNetSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotNet">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.cotNet?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
           : '<span class="v" id="cotNetTxt-'+ccy+'" style="color:'+(d.cotNet==="Bullish"?"var(--bullish-strong)":d.cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.cotNet+'</span>')+'</div>'+
           
-        '<div class="info-item"><span class="k">Latest Buys &amp; Sells (Wt: 3)</span>'+(unlockedLocally?
+        '<div class="info-item"><span class="k">Latest Buys &amp; Sells</span>'+(unlockedLocally?
           '<select class="'+ ((d.cotChangeBias||"Neutral")==="Bullish"?"bias-select Bullish":(d.cotChangeBias||"Neutral")==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotChangeBiasSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotChangeBias">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===(d.cotChangeBias||"Neutral")?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
           : '<span class="v" id="cotChangeBiasTxt-'+ccy+'" style="color:'+((d.cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(d.cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+(d.cotChangeBias||"Neutral")+'</span>')+'</div>'+
           
@@ -1354,7 +1437,7 @@ function onDetailInput(e){
     if(t.dataset.field==="nextMove"){ t.className="move-select "+t.value; }
     if(t.dataset.field==="conviction"){ t.className="conv-select "+t.value.split(" ")[0]; }
     if(t.dataset.field==="guidance"){ autoGrowGuidance(t); }
-    if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias"){ t.className="bias-select "+t.value; }
+    if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias" || t.dataset.field==="seasonality"){ t.className="bias-select "+t.value; }
     scheduleSave();
     updateComputed();
   }
@@ -1386,11 +1469,31 @@ function smoothPath(pts){
 }
 function filterDaysByRange(days, range){
   if(!range || range==="ALL") return days;
-  var lookback = range==="1M" ? 30 : (range==="3M" ? 90 : null);
+  var lookback = range==="1M" ? 30 : (range==="3M" ? 90 : (range==="1Y" ? 365 : null));
   if(!lookback) return days;
   var cutoff = new Date(); cutoff.setDate(cutoff.getDate()-lookback);
   var cutoffKey = cutoff.toISOString().slice(0,10);
   return days.filter(function(d){ return d>=cutoffKey; });
+}
+function sparkline(pair){
+  var w=110,h=30,pad=3;
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
+  if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:12px;">—</span>';
+  var days=allDays.slice(-30);
+  var vals=days.map(function(dt){ return DAILY[dt][pair]; });
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
+  var range=max-min;
+  var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
+  var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+  var gradId="spark-"+pair.replace(/[^A-Za-z0-9]/g,"");
+  var linePath=smoothPath(pts), baseY=h-pad;
+  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;">'+
+    '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+col+'" stop-opacity="0.3"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
+    '</linearGradient></defs>'+
+    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
+    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 function bigChart(pair, rangeSel){
   var w=680,h=170,pad=30;
@@ -1407,30 +1510,53 @@ function bigChart(pair, rangeSel){
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
   var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+  var colStrong = vals[vals.length-1]>=vals[0] ? "var(--bullish-strong)" : "var(--bearish-strong)";
   var labels="";
   for(var i=0;i<days.length;i++){
     if(days.length>8 && i%Math.ceil(days.length/8)!==0 && i!==days.length-1) continue;
     var x=pad+(i/(vals.length-1))*(w-2*pad);
     labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="10" fill="var(--text-faint)" text-anchor="middle" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
+  var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
+  var linePath=smoothPath(pts);
+  var baseY=h-pad;
+  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
   return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;">'+
-    '<line x1="'+pad+'" y1="'+(h-pad)+'" x2="'+(w-pad)+'" y2="'+(h-pad)+'" stroke="var(--border)"/>'+
-    '<path d="'+smoothPath(pts)+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+labels+
+    '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
+      '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
+    '</linearGradient></defs>'+
+    '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
+    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
+    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+labels+
     '<text x="'+pad+'" y="16" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+max.toFixed(0)+'</text>'+
     '<text x="'+pad+'" y="'+(h-pad-2)+'" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+min.toFixed(0)+'</text>'+
     '</svg>';
 }
+function pairPassesFilter(bias){
+  if(pairFilter==="All") return true;
+  if(pairFilter==="Extremes") return bias==="Very Bullish"||bias==="Very Bearish";
+  if(pairFilter==="Bullish") return bias==="Bullish";
+  if(pairFilter==="Bearish") return bias==="Bearish";
+  return true;
+}
 function renderPairs(){
   if(!DATA) return;
-  var scores=allScores(), pairs=buildPairs(scores);
-  var maxAbs=Math.max.apply(null, pairs.map(function(p){ return Math.abs(p.score); })) || 1;
+  var scores=allScores(), pairsAll=buildPairs(scores);
+  var pairs=pairsAll.filter(function(p){ return pairPassesFilter(p.bias); });
+  if(pairFilter==="Bearish") pairs=pairs.slice().reverse();
+  var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
+  if(!pairs.length){
+    rows='<tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+  }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
     rows += '<tr class="rowhover pair-row" data-pair="'+p.pair+'"><td class="mono" style="color:var(--text-faint);">'+(i+1)+'</td>'+
-      '<td class="ccy-name">'+p.pair+'</td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+
+      '<td class="ccy-name">'+p.pair+'</td><td><span class="'+chipClass(p.bias)+'"'+(p.bias==="Neutral"?neutralTintStyle(p.score):"")+'>'+p.bias+'</span></td>'+
       '<td class="mono">'+fmt(p.score)+'</td>'+
-      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td></tr>';
+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+
+      '<td>'+sparkline(p.pair)+'</td></tr>';
   }
   var logRows="";
   for(var j=0;j<Math.min(LOG.length,8);j++){
@@ -1440,7 +1566,7 @@ function renderPairs(){
   }
   var expandedHtml="";
   if(expandedPair){
-    var rangeBtns = ["1M","3M","ALL"].map(function(r){
+    var rangeBtns = ["1M","3M","1Y","ALL"].map(function(r){
       return '<button class="range-btn'+(expandedRange===r?" active":"")+'" data-range="'+r+'">'+r+'</button>';
     }).join("");
     expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span>'+
@@ -1448,12 +1574,17 @@ function renderPairs(){
       '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
       bigChart(expandedPair, expandedRange)+'</div></div>';
   }
+  var filterBtns = [["All","All"],["Extremes","Extremes only"],["Bullish","Bullish only"],["Bearish","Bearish only"]].map(function(fb){
+    return '<button class="range-btn'+(pairFilter===fb[0]?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
+  }).join("");
   var html = '<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
     '<div class="legend-line" style="margin:0;">Pair direction follows standard FX convention: EUR &gt; GBP &gt; AUD &gt; NZD &gt; USD &gt; CAD &gt; JPY as base. Click any row to pop its trend chart up here.</div>'+
     (unlockedLocally? '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>':'')+'</div>'+
     expandedHtml+
-    '<div class="card"><h3>Pair Ranking — Most Bullish to Most Bearish</h3><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Relative</th></tr></thead>'+
+    '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;"><h3 style="margin:0;">Pair Ranking — Most Bullish to Most Bearish</h3>'+
+    '<div class="range-switch">'+filterBtns+'</div></div>'+
+    '<table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Relative</th><th>Trend (30d)</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div>'+
     (LOG.length? '<div class="card"><h3>Recalculation Log</h3><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div>':'');
   document.getElementById("tab-pairs").innerHTML=html;
@@ -1488,7 +1619,11 @@ function renderPairs(){
   var closeX=document.getElementById("closeChart");
   if(closeX){ closeX.onclick=function(){ expandedPair=null; renderPairs(); }; }
   var rangeBtnsEl=document.querySelectorAll(".range-btn");
-  for(var rI=0;rI<rangeBtnsEl.length;rI++){ rangeBtnsEl[rI].onclick=function(e){ e.stopPropagation(); expandedRange=this.dataset.range; renderPairs(); }; }
+  for(var rI=0;rI<rangeBtnsEl.length;rI++){ rangeBtnsEl[rI].onclick=function(e){
+    e.stopPropagation();
+    if(this.dataset.filter){ pairFilter=this.dataset.filter; renderPairs(); return; }
+    expandedRange=this.dataset.range; renderPairs();
+  }; }
 }
 
 function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
