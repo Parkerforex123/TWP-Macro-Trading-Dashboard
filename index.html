@@ -667,6 +667,7 @@ function alignmentLabel(a){
   return "Low";
 }
 function bandLabel(s){
+  s=Math.round(s);
   if(s>=40) return "Very Bullish";
   if(s>=21) return "Bullish";
   if(s>=15) return "Neutral Leaning Bullish";
