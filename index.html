@@ -142,15 +142,22 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 
 .detail-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;}
 @media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
+@media(max-width:560px){
+  .stat-row{flex-direction:column;align-items:flex-start;gap:2px;}
+  .stat-row > *:last-child{text-align:left !important;max-width:100% !important;}
+  .rate-line{flex-direction:column;align-items:flex-start;gap:5px;}
+  .rate-line input, .rate-line select{width:100%;}
+  .info-grid{grid-template-columns:1fr;}
+}
 .left-col .ccy-big{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;}
 .left-col .ccy-full{color:var(--text-dim);font-size:15px;}
 .gauge-svg{width:100%;height:auto;display:block;}
 .gauge-num{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;text-align:center;margin-top:-50px;}
 .stat-block{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);}
+.stat-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);row-gap:4px;}
 .stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;padding:3px 10px;border-radius:6px;}
 .rate-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.rate-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.rate-line{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:8px;row-gap:4px;}
 .rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
 .move-select.HIKE{color:var(--bullish-strong);background:rgba(47,127,224,.12);border-color:var(--bullish);}
 .move-select.CUT{color:var(--bearish-strong);background:rgba(224,69,63,.10);border-color:var(--bearish);}
@@ -1136,7 +1143,7 @@ function histSpreadDraw(){
 
   ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
   ctx.textAlign="center";ctx.textBaseline="top";
-  var labelCount=Math.min(8,rows.length);
+  var labelCount=Math.max(2,Math.min(8,rows.length,Math.floor(pw/68)));
   for(var li=0;li<labelCount;li++){
     var ii=Math.round(li*(rows.length-1)/(labelCount-1));
     ctx.fillText(rows[ii].date.slice(0,10),X(ii),H-pad.b+10);
