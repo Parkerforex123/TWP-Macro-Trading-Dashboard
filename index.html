@@ -682,10 +682,6 @@ function chipClass(label){
   if(label==="Very Bearish") return "chip chip-bear strong"; if(label==="Bearish") return "chip chip-bear";
   if(label==="Neutral Leaning Bearish") return "chip chip-bear lean";
   return "chip chip-neu"; }
-function neutralTintStyle(score){
-  if(score>0) return " style=\"color:var(--bullish-strong);\"";
-  if(score<0) return " style=\"color:var(--bearish-strong);\"";
-  return ""; }
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
   if(a<20) label="Neutral"; else if(a<50) label=pct>0?"Strong":"Weak"; else label=pct>0?"Very Strong":"Very Weak"; return {pct:pct,label:label}; }
 function sectorChipClass(label){
@@ -1554,7 +1550,7 @@ function renderPairs(){
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
     rows += '<tr class="rowhover pair-row" data-pair="'+p.pair+'"><td class="mono" style="color:var(--text-faint);">'+(i+1)+'</td>'+
-      '<td class="ccy-name">'+p.pair+'</td><td><span class="'+chipClass(p.bias)+'"'+(p.bias==="Neutral"?neutralTintStyle(p.score):"")+'>'+p.bias+'</span></td>'+
+      '<td class="ccy-name">'+p.pair+'</td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+
       '<td class="mono">'+fmt(p.score)+'</td>'+
       '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+
       '<td>'+sparkline(p.pair)+'</td></tr>';
