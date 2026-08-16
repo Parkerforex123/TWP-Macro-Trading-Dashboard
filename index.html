@@ -415,6 +415,8 @@ var TE_OVERRIDE = {
   "USD|core pce yoy":"https://tradingeconomics.com/united-states/core-pce-price-index-annual-change",
   "USD|5y inflation expectations":"https://tradingeconomics.com/united-states/michigan-5-year-inflation-expectations",
   "USD|average hr earnings yoy":"https://tradingeconomics.com/united-states/average-hourly-earnings-yoy",
+  "USD|inflation rate yoy":"https://tradingeconomics.com/united-states/inflation-cpi",
+  "USD|jolts job openings":"https://tradingeconomics.com/united-states/job-offers",
   "GBP|retail sales mom":"https://tradingeconomics.com/united-kingdom/retail-sales",
   "GBP|services inflation":"https://tradingeconomics.com/united-kingdom/services-inflation",
   "GBP|3m output price exp":"https://tradingeconomics.com/united-kingdom/dmp-3m-output-price-expectations",
@@ -426,6 +428,9 @@ var TE_OVERRIDE = {
   "EUR|services inflation":"https://tradingeconomics.com/euro-area/services-inflation",
   "EUR|inflation expectations 3y":"https://tradingeconomics.com/euro-area/inflation-expectations-3y",
   "EUR|negotiated wages":"https://tradingeconomics.com/euro-area/negotiated-wage-growth",
+  "EUR|ifo business climate":"https://tradingeconomics.com/germany/business-confidence",
+  "EUR|employment change":"https://tradingeconomics.com/euro-area/employment-change",
+  "EUR|zew economic sentiment":"https://tradingeconomics.com/euro-area/zew-economic-sentiment-index",
   "JPY|tankan manufacturers":"https://tradingeconomics.com/japan/business-confidence",
   "JPY|retail sales yoy":"https://tradingeconomics.com/japan/retail-sales-annual",
   "JPY|tokyo core cpi yoy":"https://tradingeconomics.com/japan/tokyo-core-cpi",
@@ -439,16 +444,19 @@ var TE_OVERRIDE = {
   "AUD|rba weighted median cpi yoy":"https://tradingeconomics.com/australia/weighted-median-cpi-yoy",
   "AUD|wage price index yoy":"https://tradingeconomics.com/australia/wage-growth",
   "AUD|trimmed mean cpi yoy":"https://tradingeconomics.com/australia/core-inflation-rate",
+  "AUD|terms of trade":"https://tradingeconomics.com/australia/terms-of-trade",
   "NZD|retail sales mom":"https://tradingeconomics.com/new-zealand/retail-sales",
   "NZD|global dairy trade price":"https://tradingeconomics.com/new-zealand/global-dairy-trade-price-index",
   "NZD|inflation rate yoy":"https://tradingeconomics.com/new-zealand/inflation-cpi",
   "NZD|business inflation exp":"https://tradingeconomics.com/new-zealand/inflation-expectations",
   "NZD|labor cost index q q":"https://www.forexfactory.com/calendar/183-nz-labor-cost-index-qq",
+  "NZD|terms of trade":"https://tradingeconomics.com/new-zealand/terms-of-trade",
   "CAD|ivey pmi s a":"https://tradingeconomics.com/canada/business-confidence",
   "CAD|inflation rate yoy":"https://tradingeconomics.com/canada/inflation-cpi",
   "CAD|cpi trimmed mean yoy":"https://tradingeconomics.com/canada/cpi-trimmed-mean",
   "CAD|cpi median yoy":"https://tradingeconomics.com/canada/cpi-median",
-  "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/wage-growth"
+  "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/wage-growth",
+  "CAD|terms of trade":"https://tradingeconomics.com/canada/terms-of-trade"
 };
 
 function normalize(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
@@ -574,6 +582,75 @@ function updateStatus(msg, color) {
     tag.textContent = msg;
     tag.style.color = color || "var(--text-faint)";
   }
+}
+
+function migrateFundamentalModel(){
+  if(!DATA) return false;
+  var changed=false;
+  var weights={
+    USD:{growth:{"GDP Growth Rate QoQ":7,"ISM Manufacturing PMI":6,"ISM Services PMI":10,"Retail Sales MoM":8},inflation:{"Core PCE YoY":10,"Core Inflation Rate MoM":7,"Core Inflation Rate YoY":8,"Inflation Rate YoY":9},labour:{"Non Farm Payrolls":10,"Unemployment Rate":8,"Average Hr Earnings YoY":9,"JOLTs Job Openings":6}},
+    GBP:{growth:{"GDP Growth Rate":7,"Composite PMI Flash":5,"Services PMI":9,"Retail Sales MoM":6},inflation:{"Services Inflation":9,"Core Inflation Rate YoY":7,"3M Output Price Exp":4,"Inflation Rate YoY":10},labour:{"Unemployment Rate":5,"Claimant Count Change":6,"Average Earnings":10}},
+    EUR:{growth:{"GDP Growth Rate":6,"Services PMI":8,"Composite PMI":8,"Retail Sales m/m":5,"IFO Business Climate":5,"ZEW Economic Sentiment":4},inflation:{"Core Inflation Rate YoY":9,"Inflation Rate YoY":10,"Services Inflation":9,"Inflation Expectations 3Y":5},labour:{"Negotiated Wages":8,"Unemployment Rate":4,"Employment Change":5}},
+    JPY:{growth:{"GDP Growth Rate":6,"Tankan Manufacturers":8,"Industrial Prod MoM":5,"Retail Sales YoY":5},inflation:{"Tokyo Core CPI YoY":9,"CPI Ex-Food & Energy":7,"National Core CPI y/y":10,"Services Inflation":7},labour:{"Unemployment Rate":3,"Jobs/applications ratio":4,"Average Earnings y/y":10}},
+    AUD:{growth:{"GDP Growth Rate":6,"Household Spending YoY":5,"NAB Business Confidence":5,"Manufacturing PMI":4,"Terms of Trade":5},inflation:{"Inflation Rate YoY":9,"Trimmed Mean CPI YoY":10,"RBA Weighted Median CPI YoY":8},labour:{"Employment Change":9,"Unemployment Rate":8,"Wage Price Index YoY":7}},
+    NZD:{growth:{"GDP Growth Rate":6,"ANZ Business Confidence":6,"Retail Sales MoM":4,"Manufacturing PMI":4,"Global Dairy Trade Price":7,"Terms of Trade":5},inflation:{"Inflation Rate YoY":10,"Core Inflation Rate":8,"Business Inflation Exp":6},labour:{"Unemployment Rate":5,"Employment Change":5,"Labor Cost Index q/q":8}},
+    CAD:{growth:{"GDP m/m":6,"Ivey PMI s.a":4,"Capacity Utilization":5,"Retail Sales Ex Autos":5,"Terms of Trade":5},inflation:{"Inflation Rate YoY":8,"CPI Trimmed-Mean YoY":9,"CPI Median YoY":9},labour:{"Employment Change":8,"Unemployment Rate":6,"Average Hr Wages YoY":6}}
+  };
+  // EUR Employment Change belongs to Labour, not Growth. Preserve its existing release data when moving it.
+  if(DATA.EUR){
+    var eurGrowth=Array.isArray(DATA.EUR.growth)?DATA.EUR.growth:[];
+    var eurLabour=Array.isArray(DATA.EUR.labour)?DATA.EUR.labour:[];
+    var movedEmployment=null;
+    for(var ei=eurGrowth.length-1;ei>=0;ei--){
+      if(normalize(eurGrowth[ei].name)==="employment change") {
+        movedEmployment = eurGrowth.splice(ei,1)[0];
+        changed=true;
+        break;
+      }
+    }
+    var labourEmployment=null;
+    for(var ej=0;ej<eurLabour.length;ej++){
+      if(normalize(eurLabour[ej].name)==="employment change") { labourEmployment=eurLabour[ej]; break; }
+    }
+    if(movedEmployment && !labourEmployment){
+      movedEmployment.weight=5;
+      eurLabour.push(movedEmployment);
+      changed=true;
+    } else if(labourEmployment){
+      if(Number(labourEmployment.weight)!==5){ labourEmployment.weight=5; changed=true; }
+    }
+    DATA.EUR.growth=eurGrowth;
+    DATA.EUR.labour=eurLabour;
+  }
+
+  Object.keys(weights).forEach(function(ccy){
+    var d=DATA[ccy]; if(!d) return;
+    ["growth","inflation","labour"].forEach(function(sector){
+      if(!Array.isArray(d[sector])) d[sector]=[];
+      var list=d[sector];
+      // Remove accidental blank indicator rows and the one explicitly retired scored series.
+      for(var i=list.length-1;i>=0;i--){
+        var nm=String(list[i]&&list[i].name||"").trim();
+        if(!nm || (ccy==="USD" && normalize(nm)==="5y inflation expectations")){
+          list.splice(i,1); changed=true;
+        }
+      }
+      var desired=weights[ccy][sector]||{};
+      Object.keys(desired).forEach(function(name){
+        var found=null;
+        for(var i=0;i<list.length;i++){
+          if(normalize(list[i].name)===normalize(name)){ found=list[i]; break; }
+        }
+        if(!found){
+          found={name:name,weight:desired[name],actual:"",forecast:"",bias:"Neutral"};
+          list.push(found); changed=true;
+        } else if(Number(found.weight)!==Number(desired[name])){
+          found.weight=desired[name]; changed=true;
+        }
+      });
+    });
+  });
+  return changed;
 }
 
 function loadLocalCache() {
@@ -1809,8 +1886,18 @@ async function init(){
     }
   }
 
+  // Apply the fundamental model migration to the loaded DATA before rendering.
+  // When cloud auth is unavailable, keep the migrated local/in-memory state rather
+  // than letting the first cloud poll overwrite it with the old saved roster.
+  var fundamentalMigrated = migrateFundamentalModel();
+  if(fundamentalMigrated){
+    try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE})); } catch(e) {}
+    if(AUTH.accessToken){ await saveDataNow(); }
+  }
+
   if(migrateLegacyYieldFields()){
-    await saveDataNow();
+    if(AUTH.accessToken){ await saveDataNow(); }
+    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE})); } catch(e) {} }
   }
 
   renderLockBox();
@@ -1835,7 +1922,19 @@ async function init(){
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
-      localStorage.setItem('twp_dashboard_state_v4', row.payload);
+      var pullMigrated = migrateFundamentalModel();
+      var migratedPayload = JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE});
+      localStorage.setItem('twp_dashboard_state_v4', migratedPayload);
+      if(pullMigrated && AUTH.accessToken){
+        try {
+          DATA._updatedAt = new Date().toISOString();
+          await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+            method:"PATCH", useAuth:true, headers:{"Prefer":"return=minimal"},
+            body:JSON.stringify({payload:migratedPayload, updated_at:DATA._updatedAt})
+          });
+          lastCloudUpdatedAt = null;
+        } catch(e) { console.error("Cloud fundamental migration save failed:", e); }
+      }
       if (!isTyping) {
         renderAllStatic();
         renderLockBox();
