@@ -959,6 +959,15 @@ function y2ScoreBand(x, thresholds, maxScore){
   if(x<=thresholds[1]) return -midScore;
   return 0;
 }
+function y2EarlyScoreBand(x, fullThreshold, earlyThreshold, maxScore){
+  if(x==null) return 0;
+  maxScore=maxScore==null?2:maxScore;
+  if(x>=fullThreshold) return maxScore;
+  if(x>=earlyThreshold) return 1;
+  if(x<=-fullThreshold) return -maxScore;
+  if(x<=-earlyThreshold) return -1;
+  return 0;
+}
 function y2Calc(ccy){
   var hist=y2SortedHistory().filter(function(r){return y2Num(r[ccy])!=null;});
   var cur=y2Num((YIELD_ENGINE.current||{})[ccy]);
@@ -992,14 +1001,18 @@ function y2Calc(ccy){
   var week=prev5==null?null:cur-prev5;
   var month=prev21==null?null:cur-prev21;
 
-  // Five confluences are kept, but their influence is balanced by information value:
+  // Five confluences are kept, but the short-term layer now has an explicit
+  // early-warning zone so the score can react to a modest 21D rollover
+  // without treating every tiny yield wiggle as a full trend change.
   // 1) position vs 21D trend is the main short-term anchor (3 points),
   // 2) 1-week change confirms current momentum (2),
   // 3) 1-month change confirms persistence (2),
   // 4) 60D position is a slower structural check (1),
   // 5) change in the 21D distance measures acceleration/deceleration (2).
   // Total possible yield score remains exactly -10 to +10.
-  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -20,-8,8,20 ],3);
+  // Early-warning thresholds: +/-2bp gives a 1-point signal; +/-8bp
+  // confirms the full short-term 3-point position signal.
+  var c1=sma21==null?null:y2EarlyScoreBand((cur-sma21)*100,8,2,3);
   var c2=week==null?null:y2ScoreBand(week*100,[ -20,-7,7,20 ],2);
   var c3=month==null?null:y2ScoreBand(month*100,[ -30,-10,10,30 ],2);
   var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -30,-10,10,30 ],1);
@@ -1008,7 +1021,9 @@ function y2Calc(ccy){
   if(histVals.length>=22){ var last22=histVals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
   var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
   var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
-  var c5=distChange==null?null:y2ScoreBand(distChange,[ -15,-5,5,15 ],2);
+  // The acceleration layer also gets an early-warning zone. A modest
+  // deterioration in SMA distance is enough for -1 before -5bp confirms it.
+  var c5=distChange==null?null:y2EarlyScoreBand(distChange,5,2,2);
   var comps=[c1,c2,c3,c4,c5];
   var score=comps.every(function(x){return x!=null;})?comps.reduce(function(a,b){return a+b;},0):null;
   return {ccy:ccy,current:cur,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps,histCount:hist.length};
@@ -1168,7 +1183,7 @@ function renderYield2Y(){
     '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
-    '<div class="card"><h3>2Y Yield Score</h3><div class="table-scroll"><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
+    '<div class="card"><h3>2Y Yield Score</h3><div class="legend-line" style="margin:0 0 8px 0;">Early-warning layer: a modest 21D SMA cross or deterioration in SMA distance can register before the move reaches full confirmation.</div><div class="table-scroll"><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
     '<div id="yieldConflictPanel"></div>'+
     '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
