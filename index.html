@@ -85,20 +85,18 @@ body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-be
 .y2-input{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;width:100%;}
 .y2-input:focus{outline:none;border-color:var(--amber);}
 .y2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-.conflict-row{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 0;border-top:1px solid var(--border);font-size:13px;}
-.conflict-row:first-of-type{border-top:none;margin-top:8px;}
-.conflict-date{color:var(--text-dim);min-width:90px;}
-.conflict-ccy{font-weight:700;color:var(--amber);min-width:36px;}
-.conflict-vals{flex:1 1 200px;color:var(--text-dim);}
-.conflict-vals b{color:var(--text);}
-.conflict-actions{display:flex;gap:6px;flex:0 0 auto;}
-.conflict-actions .y2-btn{padding:5px 10px;font-size:11.5px;width:auto;}
 .y2-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
 .y2-btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
 .y2-btn:hover{filter:brightness(.97);}
 .y2-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:9px;}
 .y2-score{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;}
 .y2-positive{color:var(--bullish-strong) !important;} .y2-negative{color:var(--bearish-strong) !important;} .y2-neutral{color:var(--text-dim) !important;}
+.y2-partial{color:var(--amber);font-size:10.5px;font-weight:700;margin-top:3px;white-space:nowrap;}
+.y2-comp{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;text-align:center;}
+.y2-comp.pos{color:var(--bullish-strong);} .y2-comp.neg{color:var(--bearish-strong);} .y2-comp.neu{color:var(--text-dim);} .y2-comp.miss{color:var(--text-faint);}
+.y2-score-table{min-width:1180px;}
+.y2-component-note{font-size:11.5px;color:var(--text-faint);line-height:1.55;margin-top:10px;}
+.y2-component-note b{color:var(--text-dim);}
 .y2-spread{font-family:'IBM Plex Mono',monospace;font-weight:700;}
 .y2-track{height:7px;background:var(--panel3);border-radius:20px;position:relative;min-width:130px;overflow:hidden;}
 .y2-track i{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);left:50%;}
@@ -1010,16 +1008,16 @@ function y2Calc(ccy){
   var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
   var c5=distChange==null?null:y2ScoreBand(distChange,[ -15,-5,5,15 ],2);
   var comps=[c1,c2,c3,c4,c5];
-  // Score is normalized to the full -10..+10 scale using only the components that are
-  // actually available, instead of requiring all five (which previously made the whole
-  // score go blank the moment even one component lacked enough history). `complete`
-  // and `availCount` flag when it's a partial read so the UI can show that plainly
-  // rather than presenting a 3-component score as if it were a full 5-component one.
+  // Normalize to the full -10..+10 scale using only components that are available.
+  // A missing component no longer blanks the entire yield score. The component
+  // weights remain 3/2/2/1/2, so partial-history reads preserve the same scale.
   var compWeights=[3,2,2,1,2];
   var availCount=0, availWeight=0, rawSum=0;
-  comps.forEach(function(x,i){ if(x!=null){ availCount++; availWeight+=compWeights[i]; rawSum+=x; } });
+  comps.forEach(function(x,i){
+    if(x!=null){ availCount++; availWeight+=compWeights[i]; rawSum+=x; }
+  });
   var complete=availCount===5;
-  var score=availWeight>0?Math.round((rawSum/availWeight*10)*10)/10:null;
+  var score=availWeight>0 ? Math.round((rawSum/availWeight*10)*10)/10 : null;
   return {ccy:ccy,current:cur,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps,complete:complete,availCount:availCount,histCount:hist.length};
 }
 
@@ -1027,6 +1025,11 @@ function y2ScoreClass(x){ return x==null?'y2-neutral':x>0?'y2-positive':x<0?'y2-
 function y2FmtPct(x){ return x==null?'—':x.toFixed(3)+'%'; }
 function y2FmtBp(x){ return x==null?'—':(x>0?'+':'')+x.toFixed(1)+' bp'; }
 function y2ScoreFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
+function y2CompClass(x){ return x==null?'y2-comp miss':(x>0?'y2-comp pos':(x<0?'y2-comp neg':'y2-comp neu')); }
+function y2CompFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
+function y2ScoreCell(r){
+  return '<div class="mono '+y2ScoreClass(r.score)+'">'+y2ScoreFmt(r.score)+'</div>';
+}
 function y2CsvEscape(v){ var s=String(v==null?'':v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
 function y2ExportCsv(){
   var rows=y2SortedHistory();
@@ -1073,8 +1076,7 @@ function y2ImportCsvText(text){
       if(oldVal==null || Math.abs(oldVal-r[c])>0.0005){ mismatch.push(c); }
     });
     if(mismatch.length){
-      var detail=mismatch.map(function(c){ return {ccy:c, stored:y2Num(old[c]), imported:r[c]}; });
-      conflicts.push({date:r.date, currencies:mismatch, detail:detail});
+      conflicts.push({date:r.date, currencies:mismatch});
     } else {
       skipped++;
     }
@@ -1093,56 +1095,6 @@ function y2ImportCsvText(text){
     finalCount:finalCount
   };
 }
-var PENDING_YIELD_CONFLICTS=[];
-function y2ResolveConflict(date, ccy, useImported){
-  // Applies an explicit, per-cell decision the user already reviewed and approved.
-  // Scope is strictly limited to this one date+currency cell — nothing else in
-  // the historical record is touched, and this never runs automatically.
-  var idx=(YIELD_ENGINE.history||[]).findIndex(function(r){return r.date===date;});
-  if(idx===-1) return false;
-  if(useImported){
-    var conflict=PENDING_YIELD_CONFLICTS.find(function(c){return c.date===date;});
-    var d=conflict?conflict.detail.find(function(x){return x.ccy===ccy;}):null;
-    if(!d) return false;
-    YIELD_ENGINE.history[idx][ccy]=d.imported;
-  }
-  // Remove this cell from the pending list either way — "keep stored" just dismisses it.
-  PENDING_YIELD_CONFLICTS.forEach(function(c){
-    if(c.date===date){ c.detail=c.detail.filter(function(x){return x.ccy!==ccy;}); c.currencies=c.currencies.filter(function(x){return x!==ccy;}); }
-  });
-  PENDING_YIELD_CONFLICTS=PENDING_YIELD_CONFLICTS.filter(function(c){return c.detail.length>0;});
-  return true;
-}
-function renderYieldConflictPanel(){
-  var host=document.getElementById('yieldConflictPanel');
-  if(!host) return;
-  if(!PENDING_YIELD_CONFLICTS.length){ host.innerHTML=''; return; }
-  var rows='';
-  PENDING_YIELD_CONFLICTS.forEach(function(c){
-    c.detail.forEach(function(d){
-      rows+='<div class="conflict-row">'+
-        '<span class="conflict-date mono">'+c.date+'</span>'+
-        '<span class="conflict-ccy">'+d.ccy.replace("_2Y","")+'</span>'+
-        '<span class="conflict-vals">Stored <b class="mono">'+d.stored+'</b> &nbsp;vs&nbsp; Imported <b class="mono">'+d.imported+'</b></span>'+
-        '<span class="conflict-actions">'+
-          '<button class="y2-btn" data-resolve="keep" data-date="'+c.date+'" data-ccy="'+d.ccy+'">Keep stored</button>'+
-          '<button class="y2-btn primary" data-resolve="use" data-date="'+c.date+'" data-ccy="'+d.ccy+'">Use imported</button>'+
-        '</span></div>';
-    });
-  });
-  host.innerHTML='<div class="card"><h3>Unresolved yield conflicts</h3>'+
-    '<div class="legend-line">These dates already exist in your history with a different value than the file you imported. Nothing has been changed. Review each one and choose which value is correct — only that exact cell will be updated.</div>'+
-    rows+'</div>';
-  host.querySelectorAll('[data-resolve]').forEach(function(btn){
-    btn.onclick=function(){
-      var date=btn.dataset.date, ccy=btn.dataset.ccy, useImported=btn.dataset.resolve==='use';
-      if(y2ResolveConflict(date, ccy, useImported)){
-        saveDataNow(); renderYield2Y(); renderYieldConflictPanel();
-        updateStatus(useImported?('Updated '+ccy.replace("_2Y","")+' '+date+' to imported value'):('Kept stored value for '+ccy.replace("_2Y","")+' '+date), 'var(--bullish-strong)');
-      }
-    };
-  });
-}
 function y2RenderRows(){
   var tb=document.getElementById('y2Rows'); if(!tb) return;
   var base=Y2_CCY_ORDER.map(y2Calc);
@@ -1150,9 +1102,15 @@ function y2RenderRows(){
   var out='';
   base.forEach(function(r){
     var spread=(usd&&usd.current!=null&&r.current!=null&&r.ccy!=='USD')?(r.current-usd.current)*100:null;
-    var trCls=y2ScoreClass(r.score);
-    var partialNote=(r.score!=null&&!r.complete)?(' <span class="y2-small" title="Based on '+r.availCount+' of 5 signals — the rest don\'t have enough history yet, so this reading is scaled up from fewer inputs than usual">('+r.availCount+'/5)</span>'):'';
-    out+='<tr class="rowhover"><td class="ccy-name">'+r.ccy+'</td><td class="mono">'+y2FmtPct(r.current)+'</td><td class="mono">'+y2FmtPct(r.sma21)+'</td><td class="mono '+trCls+'">'+y2ScoreFmt(r.score)+partialNote+'</td><td class="'+y2TrendClass(r.score)+'">'+esc(y2TrendLabel(r.score))+'</td><td class="y2-spread '+y2ScoreClass(spread)+'">'+(r.ccy==='USD'?'—':y2FmtBp(spread))+'</td><td><div class="y2-track"><i></i><b class="'+(spread!=null&&spread<0?'neg':'')+'" style="'+(spread==null?'width:0;left:50%;':(spread>=0?'left:50%;width:'+Math.min(50,Math.abs(spread)/5)+'%;':'left:'+(50-Math.min(50,Math.abs(spread)/5))+'%;width:'+Math.min(50,Math.abs(spread)/5)+'%;'))+'"></b></div></td></tr>';
+    out+='<tr class="rowhover">'+
+      '<td class="ccy-name">'+r.ccy+'</td>'+
+      '<td class="mono">'+y2FmtPct(r.current)+'</td>'+
+      '<td class="mono">'+y2FmtPct(r.sma21)+'</td>'+
+      '<td>'+y2ScoreCell(r)+'</td>'+
+      '<td class="'+y2TrendClass(r.score)+'">'+esc(y2TrendLabel(r.score))+'</td>'+
+      '<td class="y2-spread '+y2ScoreClass(spread)+'">'+(r.ccy==='USD'?'—':y2FmtBp(spread))+'</td>'+
+      '<td><div class="y2-track"><i></i><b class="'+(spread!=null&&spread<0?'neg':'')+'" style="'+(spread==null?'width:0;left:50%;':(spread>=0?'left:50%;width:'+Math.min(50,Math.abs(spread)/5)+'%;':'left:'+(50-Math.min(50,Math.abs(spread)/5))+'%;width:'+Math.min(50,Math.abs(spread)/5)+'%;'))+'"></b></div></td>'+
+      '</tr>';
   });
   tb.innerHTML=out;
 }
@@ -1178,8 +1136,7 @@ function renderYield2Y(){
     '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
-    '<div class="card"><h3>2Y Yield Score</h3><div class="table-scroll"><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
-    '<div id="yieldConflictPanel"></div>'+
+    '<div class="card"><h3>2Y Yield Score</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
     '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
     '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
@@ -1208,9 +1165,8 @@ function renderYield2Y(){
         'Final rows: '+report.finalCount+
         (report.newDates.length?'\n\nNew date range: '+report.newDates[0]+' \u2192 '+report.newDates[report.newDates.length-1]:'');
       if(report.conflicts.length){
-        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed.\nScroll down to \u201cUnresolved yield conflicts\u201d to review and resolve each one.';
-        PENDING_YIELD_CONFLICTS=report.conflicts;
-        renderYieldConflictPanel();
+        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed:\n';
+        report.conflicts.forEach(function(c){ msg+='  '+c.date+': '+c.currencies.join(', ')+'\n'; });
       }
       saveDataNow(); renderYield2Y();
       updateStatus(report.conflicts.length?('CSV imported \u2014 '+report.conflicts.length+' conflict(s) flagged'):'CSV imported \u2014 append-only', report.conflicts.length?'var(--amber)':'var(--bullish-strong)');
@@ -1218,7 +1174,6 @@ function renderYield2Y(){
     }catch(e){alert(e.message);}
   }; reader.readAsText(f);};
   y2RenderRows();
-  renderYieldConflictPanel();
   initHistoricalSpreadPanel();
 }
 
