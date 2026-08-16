@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>try{var __t=localStorage.getItem('twp_theme_pref');if(__t==="ash"||__t==="black"){document.documentElement.classList.add(__t);}}catch(e){}</script>
+<title>TWP — Fundamentals Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23181b22%27/%3E%3Ctext x=%2732%27 y=%2742%27 text-anchor=%27middle%27 font-family=%27Arial,sans-serif%27 font-size=%2725%27 font-weight=%27700%27 fill=%27white%27%3ETWP%3C/text%3E%3C/svg%3E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#eef0f3; --panel:#ffffff; --panel2:#f4f5f7; --panel3:#e9ebef; --border:#d7dae0;
+  --text:#181b22; --text-dim:#565e6d; --text-faint:#8991a0;
+  --bullish:#2f7fe0; --bullish-strong:#1c63c4; --bearish:#e0453f; --bearish-strong:#c22e28;
+  --bullish-lean:#9db8db; --bearish-lean:#dcaaa7;
+  --neutral:#8b93a3; --amber:#a5690f; --radius:10px;
+}
+body.ash, html.ash{
+  --bg:#0a0c11; --panel:#12151d; --panel2:#171b26; --panel3:#1d2230; --border:#252b3a;
+  --text:#e9ebf1; --text-dim:#8b93a8; --text-faint:#5c6478;
+  --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
+  --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
+  --neutral:#6b7280; --amber:#e0a83e;
+}
+body.black, html.black{
+  --bg:#0f0b08; --panel:#17110b; --panel2:#201811; --panel3:#291f16; --border:#3a2c1c;
+  --text:#f0e6d2; --text-dim:#a79a85; --text-faint:#6e6353;
+  --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
+  --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
+  --neutral:#777777; --amber:#e0a83e;
+}
+body.ash, body.black, html.ash, html.black{ --dark:1; }
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100%;}
+html{min-height:100vh;min-height:100dvh;}
+body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-behavior-y:none;}
+.table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.table-scroll table{min-width:560px;}
+.mono{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+
+.shell{display:flex;min-height:100vh;}
+.rail{width:230px;flex:0 0 230px;background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:20px 14px;gap:20px;position:sticky;top:0;height:100vh;}
+.brand{padding:2px 6px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.brand-mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:.5px;}
+.theme-switch{display:flex;gap:4px;}
+.theme-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:5px 8px;cursor:pointer;font-size:11.5px;font-weight:600;}
+.theme-btn:hover{color:var(--text);}
+.theme-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+.tabs{display:flex;flex-direction:column;gap:4px;}
+.tab-btn{text-align:left;background:transparent;border:none;color:var(--text-dim);font-family:'Inter',sans-serif;
+  font-size:14.5px;font-weight:500;padding:10px 12px;border-radius:8px;cursor:pointer;border-left:3px solid transparent;}
+.tab-btn:hover{background:var(--panel2);color:var(--text);}
+.tab-btn.active{background:var(--panel3);color:var(--text);border-left:3px solid var(--amber);font-weight:700;}
+.lock-box{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-dim);transition:padding .15s,border-color .15s;}
+.lock-box.collapsed{padding-top:0;border-top-color:transparent;}
+.lock-box.collapsed .lock-state{justify-content:flex-end;margin-bottom:0;}
+.lock-box.collapsed .lock-state-label{display:none;}
+.lock-box.collapsed .lock-eye{width:18px;height:18px;font-size:14px;}
+.lock-state{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px;font-weight:700;}
+.lock-state-label{display:flex;align-items:center;gap:6px;}
+.lock-state.unlocked{color:var(--amber);}
+.lock-box button.lock-eye{background:transparent;border:none;color:var(--text-dim);width:18px;height:18px;border-radius:0;padding:0;margin:0;cursor:pointer;font-size:14px;line-height:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.lock-eye:hover{color:var(--text);}
+.lock-box.collapsed .lock-fields{display:none;}
+.lock-box input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  padding:7px 8px;border-radius:6px;font-size:15px;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;
+  -webkit-appearance:none;appearance:none;-webkit-text-fill-color:var(--text);}
+.lock-box input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--panel2) inset;-webkit-text-fill-color:var(--text);caret-color:var(--text);}
+.lock-box button{width:100%;background:var(--panel3);border:1px solid var(--border);color:var(--text);
+  padding:7px 8px;border-radius:6px;font-size:12.5px;cursor:pointer;font-weight:700;}
+.lock-box button:hover{border-color:var(--amber);}
+.lock-box .hint{font-size:13px;color:var(--text-faint);margin-top:6px;line-height:1.4;}
+.lock-box .change-link{font-size:11.5px;color:var(--text-faint);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
+
+.content{flex:1;padding:26px 32px 60px;max-width:1260px;}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:700;margin:0;}
+.page-sub{color:var(--text-dim);font-size:13.5px;margin-top:4px;}
+.updated{font-size:11.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+.tab-panel{display:none;} .tab-panel.active{display:block;}
+.y2-grid{display:grid;grid-template-columns:1.1fr 1.9fr;gap:16px;}
+.y2-input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.y2-input{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;width:100%;}
+.y2-input:focus{outline:none;border-color:var(--amber);}
+.y2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.y2-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
+.y2-btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
+.y2-btn:hover{filter:brightness(.97);}
+.y2-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:9px;}
+.y2-score{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;}
+.y2-positive{color:var(--bullish-strong) !important;} .y2-negative{color:var(--bearish-strong) !important;} .y2-neutral{color:var(--text-dim) !important;}
+.y2-partial{color:var(--amber);font-size:10.5px;font-weight:700;margin-top:3px;white-space:nowrap;}
+.y2-comp{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;text-align:center;}
+.y2-comp.pos{color:var(--bullish-strong);} .y2-comp.neg{color:var(--bearish-strong);} .y2-comp.neu{color:var(--text-dim);} .y2-comp.miss{color:var(--text-faint);}
+.y2-score-table{min-width:1180px;}
+.y2-component-note{font-size:11.5px;color:var(--text-faint);line-height:1.55;margin-top:10px;}
+.y2-component-note b{color:var(--text-dim);}
+.y2-spread{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+.y2-track{height:7px;background:var(--panel3);border-radius:20px;position:relative;min-width:130px;overflow:hidden;}
+.y2-track i{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);left:50%;}
+.y2-track b{position:absolute;top:0;bottom:0;background:var(--bullish);opacity:.8;}
+.y2-track b.neg{background:var(--bearish);}
+.y2-small{font-size:13px;color:var(--text-faint);}.y2-direction{font-size:12px;font-weight:700;}
+.y2-chg-arrow{font-size:14px;font-weight:900;margin-right:1px;display:inline-block;vertical-align:middle;}
+.y2-chg-arrow.up{color:var(--bullish-strong);} .y2-chg-arrow.down{color:var(--bearish-strong);} .y2-chg-arrow.flat{color:var(--text-faint);font-size:8px;}
+@media(max-width:1000px){.y2-grid{grid-template-columns:1fr;}.y2-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.y2-input-grid{grid-template-columns:1fr;}}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+.card h3{font-family:'Space Grotesk',sans-serif;font-size:13.5px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:0 0 14px;font-weight:700;}
+
+.divergence{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:13.5px;line-height:1.5;border:1px solid var(--border);}
+.divergence.on{background:rgba(165,105,15,.08);border-color:rgba(165,105,15,.4);}
+.divergence.off{color:var(--text-dim);}
+.divergence b{color:var(--amber);}
+
+table{width:100%;border-collapse:collapse;font-size:15.5px;}
+th{text-align:left;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
+td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;}
+tr:last-child td{border-bottom:none;}
+tr.rowhover:hover td{filter:brightness(.98);}
+body.ash tr.rowhover:hover td, body.black tr.rowhover:hover td{filter:brightness(1.25);}
+.ccy-name{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.5px;}
+.legend-line{font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.5;}
+
+.chip{display:inline-block;padding:4px 13px;border-radius:20px;font-size:12.5px;font-weight:700;letter-spacing:.3px;}
+.chip-bull{background:rgba(47,127,224,.14);color:var(--bullish-strong);}
+.chip-bull.strong{background:var(--bullish);color:#fff;}
+.chip-bull.lean{background:rgba(47,127,224,.06);color:var(--text-dim);border:1px solid rgba(47,127,224,.3);}
+.chip-bear{background:rgba(224,69,63,.13);color:var(--bearish-strong);}
+.chip-bear.strong{background:var(--bearish);color:#fff;}
+.chip-bear.lean{background:rgba(224,69,63,.06);color:var(--text-dim);border:1px solid rgba(224,69,63,.3);}
+.chip-neu{background:rgba(139,147,163,.18);color:var(--text-dim);}
+body.ash .chip-bull.strong, body.black .chip-bull.strong{background:rgba(59,167,255,.25);color:var(--bullish-strong);box-shadow:0 0 0 1px rgba(59,167,255,.4) inset;}
+body.ash .chip-bear.strong, body.black .chip-bear.strong{background:rgba(255,92,114,.25);color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(255,92,114,.4) inset;}
+body.ash .chip-bull.lean, body.black .chip-bull.lean{background:rgba(59,167,255,.08);color:var(--text-dim);border-color:rgba(59,167,255,.3);}
+body.ash .chip-bear.lean, body.black .chip-bear.lean{background:rgba(255,92,114,.08);color:var(--text-dim);border-color:rgba(255,92,114,.3);}
+
+.cell-vstrong{background:var(--bullish);color:#fff;font-weight:700;}
+.cell-strong{background:rgba(47,127,224,.28);color:var(--bullish-strong);font-weight:600;}
+.cell-neutral{background:transparent;color:var(--text-dim);}
+.cell-weak{background:rgba(224,69,63,.24);color:var(--bearish-strong);font-weight:600;}
+.cell-vweak{background:var(--bearish);color:#fff;font-weight:700;}
+body.ash .cell-vstrong, body.black .cell-vstrong{color:#06131f;}
+body.ash .cell-vweak, body.black .cell-vweak{color:#2a060a;}
+
+.raw-input{width:72px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;}
+select.raw-input{width:104px;}
+input:disabled, textarea:disabled{background:transparent;border-color:transparent;opacity:1;cursor:default;padding-left:0;-webkit-text-fill-color:inherit;}
+select:disabled{background:transparent;border-color:transparent;color:var(--text);opacity:1;cursor:default;-webkit-appearance:none;appearance:none;}
+
+.ccy-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.ccy-pill{background:var(--panel);border:1px solid var(--border);color:var(--text-dim);padding:9px 18px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;letter-spacing:.5px;}
+.ccy-pill:hover{color:var(--text);}
+.ccy-pill.active{background:var(--panel3);color:var(--text);border-color:var(--amber);}
+
+.detail-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;}
+@media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
+.left-col .ccy-big{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;}
+.left-col .ccy-full{color:var(--text-dim);font-size:15px;}
+.gauge-svg{width:100%;height:auto;display:block;}
+.gauge-num{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;text-align:center;margin-top:-50px;}
+.stat-block{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);}
+.stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;padding:3px 10px;border-radius:6px;}
+.rate-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.rate-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.move-select.HIKE{color:var(--bullish-strong);background:rgba(47,127,224,.12);border-color:var(--bullish);}
+.move-select.CUT{color:var(--bearish-strong);background:rgba(224,69,63,.10);border-color:var(--bearish);}
+.move-select.HOLD{color:var(--text-dim);}
+.conv-select.High{color:var(--amber);font-weight:700;}
+.conv-select.Medium{color:var(--text-dim);}
+.conv-select.Low{color:var(--text-faint);}
+.guidance-box{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:none;margin-top:8px;overflow-y:auto;}
+.field-label{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin-bottom:18px;padding:14px 16px;background:var(--panel2);border-radius:8px;}
+.info-item{display:flex;flex-direction:column;gap:4px;}
+.info-item .k{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
+.info-item .v{font-size:13.5px;font-weight:600;}
+.info-item input{width:70px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
+.info-item select{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:12.5px;}
+
+.sector-block{margin-bottom:20px;}
+.sector-title{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.sector-title span.label{font-family:'Space Grotesk',sans-serif;font-size:13.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:700;}
+.sector-block table{table-layout:fixed;}
+.sector-block table th,.sector-block table td{vertical-align:middle;}
+.sector-block table th:nth-child(1),.sector-block table td:nth-child(1){width:38%;text-align:left;}
+.sector-block table th:nth-child(2),.sector-block table td:nth-child(2){width:9%;text-align:center;}
+.sector-block table th:nth-child(3),.sector-block table td:nth-child(3){width:12%;text-align:center;}
+.sector-block table th:nth-child(4),.sector-block table td:nth-child(4){width:12%;text-align:center;}
+.sector-block table th:nth-child(5),.sector-block table td:nth-child(5){width:11%;text-align:center;}
+.sector-block table th:nth-child(6),.sector-block table td:nth-child(6){width:12%;text-align:center;}
+.sector-block table th:nth-child(7),.sector-block table td:nth-child(7){width:6%;text-align:center;}
+.ind-link{display:block;color:var(--text);text-decoration:none;font-size:15.5px;font-weight:500;border-bottom:1px dotted var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ind-link:hover{color:var(--amber);border-color:var(--amber);}
+.ind-name{width:100%;background:transparent;border:none;color:var(--text);font-size:15.5px;font-weight:500;padding:7px 6px;font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ind-num{width:78px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;text-align:center;}
+.ind-txt{width:104px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;text-align:center;}
+.surprise{font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;white-space:nowrap;text-align:center;}
+th{font-size:11.5px;}
+.sector-block table thead th{background:var(--panel2);font-size:14px;}
+.bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-size:13.5px;font-weight:700;min-width:96px;}
+.bias-select.Bullish{color:var(--bullish-strong);} .bias-select.Bearish{color:var(--bearish-strong);} .bias-select.Neutral{color:var(--text-dim);}
+.bias-chip-text{font-weight:700;font-size:12.5px;}
+.bias-chip-text.Bullish{color:var(--bullish-strong);} .bias-chip-text.Bearish{color:var(--bearish-strong);} .bias-chip-text.Neutral{color:var(--text-dim);}
+.static-chip{display:inline-block;padding:6px 10px;border-radius:6px;background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12.5px;border:1px solid var(--border);}
+.rm-btn{background:transparent;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;padding:2px 6px;display:inline-flex;align-items:center;justify-content:center;}
+.rm-btn:hover{color:var(--bearish);}
+.add-btn{background:var(--panel2);border:1px dashed var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:6px;}
+.add-btn:hover{color:var(--text);border-color:var(--amber);}
+.te-note{font-size:13px;color:var(--text-faint);margin-bottom:14px;}
+
+.pair-bar{height:6px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden;width:120px;}
+.pair-bar i{position:absolute;top:0;bottom:0;border-radius:4px;}
+.recalc-btn{background:var(--amber);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;}
+.recalc-btn:hover{filter:brightness(1.08);}
+.building{color:var(--text-faint);font-size:11.5px;font-style:italic;}
+.pair-row{cursor:pointer;}
+.bigchart{margin-top:6px;padding:16px;background:var(--panel2);border-radius:8px;}
+.bigchart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px;color:var(--text-dim);}
+.bigchart-head b{color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.close-x{cursor:pointer;color:var(--text-faint);font-size:16px;}
+.close-x:hover{color:var(--text);}
+.range-switch{display:flex;gap:4px;}
+.range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.range-btn:hover{color:var(--text);}
+.range-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--panel3);border-radius:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+@media(max-width:820px){
+  .shell{flex-direction:column;} .rail{width:100%;flex:none;height:auto;position:relative;}
+  .content{padding:18px;}
+}
+@media(max-width:1100px){
+  .sector-block{overflow-x:auto;}
+  .sector-block table{min-width:980px;}
+}
+
+/* Historical 2Y yield differential */
+.hist-spread-card{margin-top:16px;}
+.hist-spread-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+.hist-spread-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.hist-spread-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.hist-range{display:flex;gap:4px;}
+.hist-range button{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:7px 10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.hist-range button.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+.hist-spread-chart{height:330px;margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;}
+.hist-spread-chart canvas{width:100%;height:100%;display:block;}
+.hist-spread-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--text-faint);font-size:12.5px;}
+.hist-spread-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px;}
+.hist-stat{padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);}
+.hist-stat .k{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.7px;}
+.hist-stat .v{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;margin-top:4px;}
+.hist-spread-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:10px;}
+@media(max-width:900px){.hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.hist-spread-stats{grid-template-columns:1fr;}.hist-spread-chart{height:280px;}}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <div class="brand"><div class="brand-mark">TWP</div>
+      <div class="theme-switch" id="themeSwitch">
+        <button class="theme-btn" data-theme="white">White</button>
+        <button class="theme-btn" data-theme="ash">Ash</button>
+        <button class="theme-btn" data-theme="black">Black</button>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="raw">Raw Inputs</button>
+      <button class="tab-btn" data-tab="detail">Currency Detail</button>
+      <button class="tab-btn" data-tab="pairs">Pair Ranking</button>
+      <button class="tab-btn" data-tab="yield2y">2Y Yield Score</button>
+    </nav>
+    <div class="lock-box" id="lockBox"></div>
+  </aside>
+  <main class="content">
+    <div class="page-head">
+      <div><p class="page-title" id="pageTitle">Overview</p><p class="page-sub" id="pageSub"></p></div>
+      <div style="display:flex; align-items:center; gap: 12px;">
+        <span class="updated" id="updatedTag" style="transition: color 0.3s; font-family:'IBM Plex Mono',monospace; font-size: 11.5px; color: var(--text-faint);">Ready</span>
+        <button id="manualSaveBtn" style="background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;">Force Save</button>
+      </div>
+    </div>
+    <section class="tab-panel active" id="tab-overview"></section>
+    <section class="tab-panel" id="tab-raw"></section>
+    <section class="tab-panel" id="tab-detail"></section>
+    <section class="tab-panel" id="tab-pairs"></section>
+    <section class="tab-panel" id="tab-yield2y"></section>
+  </main>
+</div>
+
+<script type="module">
+// Supabase cloud sync
+const SUPABASE_URL = "https://uxcluyadxdngcepwique.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JpSv5ckmnMb0fjdvrr6g_Q_AM6PLJMo";
+const SUPABASE_TABLE = "dashboard_state";
+const SUPABASE_ROW_ID = 1;
+
+async function supabaseRequest(path, options = {}) {
+  const authToken = (options.useAuth && AUTH.accessToken) ? AUTH.accessToken : SUPABASE_KEY;
+  const headers = Object.assign({
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + authToken,
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  }, options.headers || {});
+  const response = await fetch(SUPABASE_URL + "/rest/v1/" + path, Object.assign({}, options, { headers }));
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error("Supabase " + response.status + ": " + text);
+  }
+  if (response.status === 204) return null;
+  return response.json();
+}
+
+// --- Real Supabase Auth (email + password checked server-side, not a client-side comparison) ---
+var AUTH = { accessToken: null, refreshToken: null, expiresAt: null, email: null };
+
+function loadAuthFromStorage(){
+  try {
+    var raw = localStorage.getItem('twp_auth_session_v1');
+    if(!raw) return;
+    var parsed = JSON.parse(raw);
+    AUTH.accessToken = parsed.accessToken || null;
+    AUTH.refreshToken = parsed.refreshToken || null;
+    AUTH.expiresAt = parsed.expiresAt || null;
+    AUTH.email = parsed.email || null;
+  } catch(e) { console.error("Error reading auth session", e); }
+}
+function persistAuthToStorage(){
+  try {
+    if(AUTH.accessToken){
+      localStorage.setItem('twp_auth_session_v1', JSON.stringify(AUTH));
+    } else {
+      localStorage.removeItem('twp_auth_session_v1');
+    }
+  } catch(e) { console.error("Error saving auth session", e); }
+}
+
+async function authSignIn(email, password){
+  const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+    method: "POST",
+    headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password })
+  });
+  const data = await res.json();
+  if(!res.ok){
+    throw new Error((data && (data.error_description || data.msg || data.error)) || "Sign in failed");
+  }
+  AUTH.accessToken = data.access_token;
+  AUTH.refreshToken = data.refresh_token;
+  AUTH.expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+  AUTH.email = email;
+  persistAuthToStorage();
+}
+
+async function authRefresh(){
+  if(!AUTH.refreshToken) return false;
+  try {
+    const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+      method: "POST",
+      headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: AUTH.refreshToken })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error("refresh failed");
+    AUTH.accessToken = data.access_token;
+    AUTH.refreshToken = data.refresh_token;
+    AUTH.expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+    persistAuthToStorage();
+    return true;
+  } catch(e) {
+    console.error("Session refresh failed, signing out", e);
+    authSignOut();
+    return false;
+  }
+}
+
+function authSignOut(){
+  AUTH.accessToken = null; AUTH.refreshToken = null; AUTH.expiresAt = null; AUTH.email = null;
+  persistAuthToStorage();
+}
+
+// Keep the session alive: refresh a few minutes before expiry so an editing session
+// doesn't silently die mid-update.
+setInterval(function(){
+  if(AUTH.accessToken && AUTH.expiresAt && (AUTH.expiresAt - Date.now() < 5*60*1000)){
+    authRefresh();
+  }
+}, 60*1000);
+
+"use strict";
+
+var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD"];
+var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","JPY"];
+var CCY_NAME = {USD:"US Dollar",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar"};
+var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada"};
+var TE_EXACT = {
+  "gdp growth rate qoq":"gdp-growth","gdp growth rate":"gdp-growth","gdp m m":"gdp-growth",
+  "ism manufacturing pmi":"manufacturing-pmi","manufacturing pmi":"manufacturing-pmi","ism services pmi":"non-manufacturing-pmi",
+  "composite pmi flash":"composite-pmi","composite pmi":"composite-pmi","services pmi":"services-pmi",
+  "retail sales mom":"retail-sales-mom","retail sales m m":"retail-sales-mom","retail sales yoy":"retail-sales-yoy","retail sales ex autos":"retail-sales-ex-autos",
+  "core inflation rate yoy":"core-inflation-rate","core inflation rate mom":"core-inflation-rate-mom","core inflation rate":"core-inflation-rate",
+  "inflation rate yoy":"inflation-rate","cpi ex food energy":"core-inflation-rate",
+  "unemployment rate":"unemployment-rate","non farm payrolls":"non-farm-payrolls","employment change":"employment-change",
+  "business confidence":"business-confidence","nab business confidence":"business-confidence","anz business confidence":"business-confidence",
+  "capacity utilization":"capacity-utilization","industrial prod mom":"industrial-production-mom","average hr earnings yoy":"average-hourly-earnings"
+};
+var TE_OVERRIDE = {
+  "USD|retail sales mom":"https://tradingeconomics.com/united-states/retail-sales-control-group",
+  "USD|core pce yoy":"https://tradingeconomics.com/united-states/core-pce-price-index-annual-change",
+  "USD|5y inflation expectations":"https://tradingeconomics.com/united-states/michigan-5-year-inflation-expectations",
+  "USD|average hr earnings yoy":"https://tradingeconomics.com/united-states/average-hourly-earnings-yoy",
+  "USD|inflation rate yoy":"https://tradingeconomics.com/united-states/inflation-cpi",
+  "USD|jolts job openings":"https://tradingeconomics.com/united-states/job-offers",
+  "GBP|retail sales mom":"https://tradingeconomics.com/united-kingdom/retail-sales",
+  "GBP|services inflation":"https://tradingeconomics.com/united-kingdom/services-inflation",
+  "GBP|3m output price exp":"https://tradingeconomics.com/united-kingdom/dmp-3m-output-price-expectations",
+  "GBP|inflation rate yoy":"https://tradingeconomics.com/united-kingdom/inflation-cpi",
+  "GBP|claimant count change":"https://tradingeconomics.com/united-kingdom/claimant-count-change",
+  "GBP|average earnings":"https://tradingeconomics.com/united-kingdom/wage-growth",
+  "EUR|retail sales m m":"https://tradingeconomics.com/euro-area/retail-sales",
+  "EUR|inflation rate yoy":"https://tradingeconomics.com/euro-area/inflation-cpi",
+  "EUR|services inflation":"https://tradingeconomics.com/euro-area/services-inflation",
+  "EUR|inflation expectations 3y":"https://tradingeconomics.com/euro-area/inflation-expectations-3y",
+  "EUR|negotiated wages":"https://tradingeconomics.com/euro-area/negotiated-wage-growth",
+  "EUR|ifo business climate":"https://tradingeconomics.com/germany/business-confidence",
+  "EUR|employment change":"https://tradingeconomics.com/euro-area/employment-change",
+  "EUR|zew economic sentiment":"https://tradingeconomics.com/euro-area/zew-economic-sentiment-index",
+  "JPY|tankan manufacturers":"https://tradingeconomics.com/japan/business-confidence",
+  "JPY|retail sales yoy":"https://tradingeconomics.com/japan/retail-sales-annual",
+  "JPY|tokyo core cpi yoy":"https://tradingeconomics.com/japan/tokyo-core-cpi",
+  "JPY|cpi ex food energy":"https://tradingeconomics.com/japan/cpi-core-core",
+  "JPY|national core cpi y y":"https://www.forexfactory.com/calendar/174-jn-national-core-cpi-yy",
+  "JPY|services inflation":"https://tradingeconomics.com/japan/services-inflation",
+  "JPY|jobs applications ratio":"https://tradingeconomics.com/japan/jobs-to-applications-ratio",
+  "JPY|average earnings y y":"https://tradingeconomics.com/japan/wage-growth",
+  "AUD|household spending yoy":"https://tradingeconomics.com/australia/household-spending",
+  "AUD|inflation rate yoy":"https://tradingeconomics.com/australia/inflation-cpi",
+  "AUD|rba weighted median cpi yoy":"https://tradingeconomics.com/australia/weighted-median-cpi-yoy",
+  "AUD|wage price index yoy":"https://tradingeconomics.com/australia/wage-growth",
+  "AUD|trimmed mean cpi yoy":"https://tradingeconomics.com/australia/core-inflation-rate",
+  "AUD|terms of trade":"https://tradingeconomics.com/australia/terms-of-trade",
+  "NZD|retail sales mom":"https://tradingeconomics.com/new-zealand/retail-sales",
+  "NZD|global dairy trade price":"https://tradingeconomics.com/new-zealand/global-dairy-trade-price-index",
+  "NZD|inflation rate yoy":"https://tradingeconomics.com/new-zealand/inflation-cpi",
+  "NZD|business inflation exp":"https://tradingeconomics.com/new-zealand/inflation-expectations",
+  "NZD|labor cost index q q":"https://www.forexfactory.com/calendar/183-nz-labor-cost-index-qq",
+  "NZD|terms of trade":"https://tradingeconomics.com/new-zealand/terms-of-trade",
+  "CAD|ivey pmi s a":"https://tradingeconomics.com/canada/business-confidence",
+  "CAD|inflation rate yoy":"https://tradingeconomics.com/canada/inflation-cpi",
+  "CAD|cpi trimmed mean yoy":"https://tradingeconomics.com/canada/cpi-trimmed-mean",
+  "CAD|cpi median yoy":"https://tradingeconomics.com/canada/cpi-median",
+  "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/wage-growth",
+  "CAD|terms of trade":"https://tradingeconomics.com/canada/terms-of-trade"
+};
+
+function normalize(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
+function teLink(ccy, name){
+  var override=TE_OVERRIDE[ccy+"|"+normalize(name)];
+  if(override) return override;
+  var country=TE_COUNTRY[ccy], slug=TE_EXACT[normalize(name)];
+  return slug ? ("https://tradingeconomics.com/"+country+"/"+slug) : ("https://tradingeconomics.com/"+country+"/indicators");
+}
+
+function seed(){
+  return {
+    USD:{seasonality:"Neutral",cotNet:"Bullish",cotChangeBias:"Bullish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
+      guidance:"Fed held rates at 3.50-3.75%. Prioritizing inflation control over a solid growth backdrop.",
+      growth:[{name:"GDP Growth Rate QoQ",weight:7,actual:"1.50%",forecast:"2.0%",bias:"Bearish"},
+        {name:"ISM Manufacturing PMI",weight:6,actual:"55.6",forecast:"53.9",bias:"Bullish"},
+        {name:"ISM Services PMI",weight:10,actual:"54.0",forecast:"54.2",bias:"Bearish"},
+        {name:"Retail Sales MoM",weight:8,actual:"0.50%",forecast:"0.50%",bias:"Neutral"}],
+      inflation:[{name:"Core PCE YoY",weight:10,actual:"3.3%",forecast:"3.3%",bias:"Neutral"},
+        {name:"5y Inflation Expectations",weight:10,actual:"3.3%",forecast:"3.3%",bias:"Neutral"},
+        {name:"Core Inflation Rate MoM",weight:7,actual:"0%",forecast:"0.20%",bias:"Bearish"},
+        {name:"Core Inflation Rate YoY",weight:8,actual:"2.6%",forecast:"2.9%",bias:"Bearish"}],
+      labour:[{name:"Non Farm Payrolls",weight:8,actual:"57k",forecast:"110k",bias:"Bearish"},
+        {name:"Unemployment Rate",weight:6,actual:"4.2%",forecast:"4.3%",bias:"Bullish"},
+        {name:"Average Hr Earnings YoY",weight:10,actual:"3.5%",forecast:"3.5%",bias:"Neutral"}]},
+    GBP:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
+      guidance:"BOE held at 3.75%. More members are leaning hawkish as their focus shifts to inflation.",
+      growth:[{name:"GDP Growth Rate",weight:10,actual:"0.60%",forecast:"0.60%",bias:"Neutral"},
+        {name:"Composite PMI Flash",weight:6,actual:"52.1",forecast:"49.7",bias:"Bullish"},
+        {name:"Services PMI",weight:9,actual:"51.8",forecast:"49.4",bias:"Bullish"},
+        {name:"Retail Sales MoM",weight:8,actual:"1.0%",forecast:"-0.3%",bias:"Bullish"}],
+      inflation:[{name:"Services Inflation",weight:10,actual:"3.6%",forecast:"-",bias:"Bearish"},
+        {name:"Core Inflation Rate YoY",weight:7,actual:"2.6%",forecast:"2.5%",bias:"Bullish"},
+        {name:"3M Output Price Exp",weight:8,actual:"3.9%",forecast:"2.7%",bias:"Bearish"},
+        {name:"Inflation Rate YoY",weight:8,actual:"2.6%",forecast:"2.7%",bias:"Bearish"}],
+      labour:[{name:"Unemployment Rate",weight:8,actual:"4.9%",forecast:"4.9%",bias:"Neutral"},
+        {name:"Claimant Count Change",weight:7,actual:"6.7k",forecast:"29.4k",bias:"Bullish"},
+        {name:"Average Earnings",weight:10,actual:"4.3%",forecast:"4.5%",bias:"Bearish"}]},
+    EUR:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"2.4%",nextMove:"HOLD",conviction:"High conviction",
+      guidance:"ECB hiked rates by 0.25%. Their focus still remains on inflation.",
+      growth:[{name:"GDP Growth Rate",weight:8,actual:"0.40%",forecast:"0.20%",bias:"Bullish"},
+        {name:"Services PMI",weight:10,actual:"51.6",forecast:"49.8",bias:"Bullish"},
+        {name:"Composite PMI",weight:9,actual:"51.9",forecast:"50.3",bias:"Bullish"},
+        {name:"Retail Sales m/m",weight:6,actual:"0.20%",forecast:"0.20%",bias:"Neutral"}],
+      inflation:[{name:"Core Inflation Rate YoY",weight:10,actual:"2.5%",forecast:"2.4%",bias:"Bullish"},
+        {name:"Inflation Rate YoY",weight:9,actual:"2.9%",forecast:"2.9%",bias:"Neutral"},
+        {name:"Services Inflation",weight:8,actual:"3.2%",forecast:"-",bias:"Bearish"},
+        {name:"Inflation Expectations 3Y",weight:7,actual:"2.9%",forecast:"-",bias:"Neutral"}],
+      labour:[{name:"Unemployment Rate",weight:7,actual:"6.3%",forecast:"6.2%",bias:"Bearish"},
+        {name:"Negotiated Wages",weight:10,actual:"2.46%",forecast:"-",bias:"Bearish"}]},
+    JPY:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"1.0%",nextMove:"HOLD",conviction:"High conviction",
+      guidance:"BOJ hiked rates to 1.0%, and cites more hikes coming.",
+      growth:[{name:"GDP Growth Rate",weight:8,actual:"0.50%",forecast:"0.40%",bias:"Bullish"},
+        {name:"Tankan Manufacturers",weight:10,actual:"22",forecast:"16",bias:"Bullish"},
+        {name:"Industrial Prod MoM",weight:7,actual:"1.3%",forecast:"0.70%",bias:"Bullish"},
+        {name:"Retail Sales YoY",weight:6,actual:"0.5%",forecast:"3.1%",bias:"Bearish"}],
+      inflation:[{name:"Tokyo Core CPI YoY",weight:9,actual:"1.9%",forecast:"1.7%",bias:"Bullish"},
+        {name:"CPI Ex-Food & Energy",weight:10,actual:"1.7%",forecast:"-",bias:"Bearish"},
+        {name:"National Core CPI y/y",weight:8,actual:"1.6%",forecast:"1.6%",bias:"Neutral"},
+        {name:"Services Inflation",weight:7,actual:"1.0%",forecast:"-",bias:"Neutral"}],
+      labour:[{name:"Unemployment Rate",weight:6,actual:"2.5%",forecast:"2.5%",bias:"Neutral"},
+        {name:"Jobs/applications ratio",weight:8,actual:"1.18",forecast:"1.17",bias:"Bullish"},
+        {name:"Average Earnings y/y",weight:10,actual:"3.2%",forecast:"3.4%",bias:"Bullish"}]},
+    AUD:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"4.35%",nextMove:"HOLD",conviction:"High conviction",
+      guidance:"RBA held at 4.35%. Would hike again if inflation rises further.",
+      growth:[{name:"GDP Growth Rate",weight:9,actual:"0.30%",forecast:"0.50%",bias:"Bearish"},
+        {name:"Household Spending YoY",weight:7,actual:"5.5%",forecast:"-",bias:"Bullish"},
+        {name:"NAB Business Confidence",weight:10,actual:"-5",forecast:"-",bias:"Bullish"},
+        {name:"Manufacturing PMI",weight:6,actual:"52.0",forecast:"51.7",bias:"Bullish"}],
+      inflation:[{name:"Inflation Rate YoY",weight:7,actual:"3.8%",forecast:"4.0%",bias:"Bearish"},
+        {name:"Trimmed Mean CPI YoY",weight:10,actual:"3.6%",forecast:"3.7%",bias:"Bearish"},
+        {name:"RBA Weighted Median CPI YoY",weight:9,actual:"3.7%",forecast:"-",bias:"Bullish"}],
+      labour:[{name:"Employment Change",weight:10,actual:"76.3k",forecast:"16.4k",bias:"Bullish"},
+        {name:"Unemployment Rate",weight:9,actual:"4.4%",forecast:"4.4%",bias:"Neutral"},
+        {name:"Wage Price Index YoY",weight:8,actual:"3.3%",forecast:"3.3%",bias:"Neutral"}]},
+    NZD:{seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"2.50%",nextMove:"HIKE",conviction:"High conviction",
+      guidance:"The RBNZ just raised its official interest rate by 25 basis points to 2.50%.",
+      growth:[{name:"GDP Growth Rate",weight:9,actual:"0.80%",forecast:"0.80%",bias:"Neutral"},
+        {name:"ANZ Business Confidence",weight:10,actual:"56.1",forecast:"-",bias:"Bullish"},
+        {name:"Retail Sales MoM",weight:6,actual:"0.90%",forecast:"0.50%",bias:"Bullish"},
+        {name:"Manufacturing PMI",weight:7,actual:"59.7",forecast:"-",bias:"Bullish"},
+        {name:"Global Dairy Trade Price",weight:7,actual:"1.5%",forecast:"-",bias:"Bullish"}],
+      inflation:[{name:"Inflation Rate YoY",weight:8,actual:"4.1%",forecast:"4.0%",bias:"Bullish"},
+        {name:"Core Inflation Rate",weight:9,actual:"3.2%",forecast:"-",bias:"Neutral"},
+        {name:"Business Inflation Exp",weight:7,actual:"2.53%",forecast:"-",bias:"Bullish"}],
+      labour:[{name:"Unemployment Rate",weight:9,actual:"5.3%",forecast:"5.4%",bias:"Bullish"},
+        {name:"Employment Change",weight:8,actual:"0.2%",forecast:"0.3%",bias:"Bearish"},
+        {name:"Labor Cost Index q/q",weight:10,actual:"0.5%",forecast:"0.4%",bias:"Bullish"}]},
+    CAD:{seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      interestRate:"2.25%",nextMove:"HOLD",conviction:"High conviction",
+      guidance:"BOC held at 2.25% as expected. No clear direction on policy yet, still data dependent.",
+      growth:[{name:"GDP m/m",weight:10,actual:"0.30%",forecast:"0.20%",bias:"Bullish"},
+        {name:"Ivey PMI s.a",weight:7,actual:"56.2",forecast:"59.1",bias:"Bearish"},
+        {name:"Capacity Utilization",weight:6,actual:"82.5%",forecast:"-",bias:"Bullish"},
+        {name:"Retail Sales Ex Autos",weight:8,actual:"1.2%",forecast:"1.4%",bias:"Bearish"}],
+      inflation:[{name:"Inflation Rate YoY",weight:7,actual:"2.8%",forecast:"2.9%",bias:"Bearish"},
+        {name:"CPI Trimmed-Mean YoY",weight:10,actual:"1.8%",forecast:"2.0%",bias:"Bearish"},
+        {name:"CPI Median YoY",weight:10,actual:"1.9%",forecast:"2.1%",bias:"Bearish"}],
+      labour:[{name:"Employment Change",weight:10,actual:"18.2k",forecast:"10k",bias:"Bullish"},
+        {name:"Unemployment Rate",weight:9,actual:"6.5%",forecast:"6.6%",bias:"Bullish"},
+        {name:"Average Hr Wages YoY",weight:7,actual:"3.7%",forecast:"-",bias:"Bullish"}]}
+  };
+}
+
+var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
+var YIELD_ENGINE={history:[], current:{}};
+var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All", lockBoxCollapsed=false;
+var isSaving=false, isTyping=false;
+var expandedRange="1M";
+
+function hashStr(s){ var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h|=0; } return (h>>>0).toString(16); }
+
+function updateStatus(msg, color) {
+  var tag=document.getElementById("updatedTag");
+  if(tag) {
+    tag.textContent = msg;
+    tag.style.color = color || "var(--text-faint)";
+  }
+}
+
+function migrateFundamentalModel(){
+  if(!DATA) return false;
+  var changed=false;
+  var weights={
+    USD:{growth:{"GDP Growth Rate QoQ":7,"ISM Manufacturing PMI":6,"ISM Services PMI":10,"Retail Sales MoM":8},inflation:{"Core PCE YoY":10,"Core Inflation Rate MoM":7,"Core Inflation Rate YoY":8,"Inflation Rate YoY":9},labour:{"Non Farm Payrolls":10,"Unemployment Rate":8,"Average Hr Earnings YoY":9,"JOLTs Job Openings":6}},
+    GBP:{growth:{"GDP Growth Rate":7,"Composite PMI Flash":5,"Services PMI":9,"Retail Sales MoM":6},inflation:{"Services Inflation":9,"Core Inflation Rate YoY":7,"3M Output Price Exp":4,"Inflation Rate YoY":10},labour:{"Unemployment Rate":5,"Claimant Count Change":6,"Average Earnings":10}},
+    EUR:{growth:{"GDP Growth Rate":6,"Services PMI":8,"Composite PMI":8,"Retail Sales m/m":5,"IFO Business Climate":5,"ZEW Economic Sentiment":4},inflation:{"Core Inflation Rate YoY":9,"Inflation Rate YoY":10,"Services Inflation":9,"Inflation Expectations 3Y":5},labour:{"Negotiated Wages":8,"Unemployment Rate":4,"Employment Change":5}},
+    JPY:{growth:{"GDP Growth Rate":6,"Tankan Manufacturers":8,"Industrial Prod MoM":5,"Retail Sales YoY":5},inflation:{"Tokyo Core CPI YoY":9,"CPI Ex-Food & Energy":7,"National Core CPI y/y":10,"Services Inflation":7},labour:{"Unemployment Rate":3,"Jobs/applications ratio":4,"Average Earnings y/y":10}},
+    AUD:{growth:{"GDP Growth Rate":6,"Household Spending YoY":5,"NAB Business Confidence":5,"Manufacturing PMI":4,"Terms of Trade":5},inflation:{"Inflation Rate YoY":9,"Trimmed Mean CPI YoY":10,"RBA Weighted Median CPI YoY":8},labour:{"Employment Change":9,"Unemployment Rate":8,"Wage Price Index YoY":7}},
+    NZD:{growth:{"GDP Growth Rate":6,"ANZ Business Confidence":6,"Retail Sales MoM":4,"Manufacturing PMI":4,"Global Dairy Trade Price":7,"Terms of Trade":5},inflation:{"Inflation Rate YoY":10,"Core Inflation Rate":8,"Business Inflation Exp":6},labour:{"Unemployment Rate":5,"Employment Change":5,"Labor Cost Index q/q":8}},
+    CAD:{growth:{"GDP m/m":6,"Ivey PMI s.a":4,"Capacity Utilization":5,"Retail Sales Ex Autos":5,"Terms of Trade":5},inflation:{"Inflation Rate YoY":8,"CPI Trimmed-Mean YoY":9,"CPI Median YoY":9},labour:{"Employment Change":8,"Unemployment Rate":6,"Average Hr Wages YoY":6}}
+  };
+  // EUR Employment Change belongs to Labour, not Growth. Preserve its existing release data when moving it.
+  if(DATA.EUR){
+    var eurGrowth=Array.isArray(DATA.EUR.growth)?DATA.EUR.growth:[];
+    var eurLabour=Array.isArray(DATA.EUR.labour)?DATA.EUR.labour:[];
+    var movedEmployment=null;
+    for(var ei=eurGrowth.length-1;ei>=0;ei--){
+      if(normalize(eurGrowth[ei].name)==="employment change") {
+        movedEmployment = eurGrowth.splice(ei,1)[0];
+        changed=true;
+        break;
+      }
+    }
+    var labourEmployment=null;
+    for(var ej=0;ej<eurLabour.length;ej++){
+      if(normalize(eurLabour[ej].name)==="employment change") { labourEmployment=eurLabour[ej]; break; }
+    }
+    if(movedEmployment && !labourEmployment){
+      movedEmployment.weight=5;
+      eurLabour.push(movedEmployment);
+      changed=true;
+    } else if(labourEmployment){
+      if(Number(labourEmployment.weight)!==5){ labourEmployment.weight=5; changed=true; }
+    }
+    DATA.EUR.growth=eurGrowth;
+    DATA.EUR.labour=eurLabour;
+  }
+
+  Object.keys(weights).forEach(function(ccy){
+    var d=DATA[ccy]; if(!d) return;
+    ["growth","inflation","labour"].forEach(function(sector){
+      if(!Array.isArray(d[sector])) d[sector]=[];
+      var list=d[sector];
+      // Remove accidental blank indicator rows and the one explicitly retired scored series.
+      for(var i=list.length-1;i>=0;i--){
+        var nm=String(list[i]&&list[i].name||"").trim();
+        if(!nm || (ccy==="USD" && normalize(nm)==="5y inflation expectations")){
+          list.splice(i,1); changed=true;
+        }
+      }
+      var desired=weights[ccy][sector]||{};
+      Object.keys(desired).forEach(function(name){
+        var found=null;
+        for(var i=0;i<list.length;i++){
+          if(normalize(list[i].name)===normalize(name)){ found=list[i]; break; }
+        }
+        if(!found){
+          found={name:name,weight:desired[name],actual:"",forecast:"",bias:"Neutral"};
+          list.push(found); changed=true;
+        } else if(Number(found.weight)!==Number(desired[name])){
+          found.weight=desired[name]; changed=true;
+        }
+      });
+    });
+  });
+  return changed;
+}
+
+function loadLocalCache() {
+  try {
+    var stored = localStorage.getItem('twp_dashboard_state_v4');
+    if (stored) {
+      var parsed = JSON.parse(stored);
+      DATA = parsed.DATA;
+      SETTINGS = parsed.SETTINGS || {passwordHash:null};
+      DAILY = parsed.DAILY || {};
+      LOG = parsed.LOG || [];
+      YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
+      return true;
+    }
+  } catch(e) { console.error("Error reading cache", e); }
+  return false;
+}
+
+async function saveDataNow(){
+  if(isSaving || !DATA) return;
+  if(!AUTH.accessToken){
+    updateStatus("Sign in to save changes", "var(--amber)");
+    return;
+  }
+  isSaving = true;
+  updateStatus("Saving to cloud...", "var(--text-dim)");
+  try {
+    DATA._updatedAt = new Date().toISOString();
+    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, YIELD_ENGINE: YIELD_ENGINE };
+    var payload = JSON.stringify(state);
+
+    // Keep a local backup, but Supabase is now the shared source of truth.
+    localStorage.setItem('twp_dashboard_state_v4', payload);
+
+    var savedRows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+      method: "PATCH",
+      useAuth: true,
+      headers: { "Prefer": "return=representation" },
+      body: JSON.stringify({ payload: payload, updated_at: DATA._updatedAt })
+    });
+    if(!Array.isArray(savedRows) || savedRows.length !== 1 || String(savedRows[0].id) !== String(SUPABASE_ROW_ID)){
+      throw new Error("Cloud save returned no updated dashboard row.");
+    }
+
+    updateStatus("Saved to cloud", "var(--bullish-strong)");
+    setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
+  } catch(e) {
+    console.error("Supabase save error:", e);
+    if(String(e.message||"").indexOf("401") !== -1 || String(e.message||"").indexOf("403") !== -1){
+      updateStatus("Session expired — sign in again", "var(--bearish-strong)");
+      authSignOut(); unlockedLocally=false; renderLockBox();
+    } else {
+      updateStatus("Cloud save failed", "var(--bearish-strong)");
+    }
+  } finally {
+    isSaving = false;
+  }
+}
+
+function scheduleSave(){
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDataNow, 700);
+}
+
+function getCotScore(ccy){
+  var d=DATA[ccy];
+  var net = d.cotNet==="Bullish" ? 3 : (d.cotNet==="Bearish" ? -3 : 0);
+  var chg = (d.cotChangeBias||"Neutral")==="Bullish" ? 3 : ((d.cotChangeBias||"Neutral")==="Bearish" ? -3 : 0);
+  return net + chg;
+}
+
+function biasVal(b){ return b==="Bullish"?1:(b==="Bearish"?-1:0); }
+function b_seas(s){ return s==="Bullish"?1:(s==="Bearish"?-1:0); }
+function sectorCalc(list){ var raw=0,max=0; for(var i=0;i<list.length;i++){ var w=Number(list[i].weight)||0; raw+=w*biasVal(list[i].bias); max+=w; } return {raw:raw,max:max}; }
+function fundFor(ccy){ var d=DATA[ccy]; var g=sectorCalc(d.growth), inf=sectorCalc(d.inflation), l=sectorCalc(d.labour);
+  return {raw:g.raw+inf.raw+l.raw, max:g.max+inf.max+l.max, g:g, inf:inf, l:l}; }
+function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
+  var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
+  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=b_seas(d.seasonality);
+  return 100*(0.70*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.05*seasTerm); }
+function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + b_seas(d.seasonality); }
+function alignmentFor(ccy){
+  var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
+  var totalW=0, agreeW=0;
+  function vote(sign, weight){
+    if(sign===0 || !weight) return;
+    totalW+=weight;
+    if(dirSign!==0 && sign===dirSign) agreeW+=weight;
+  }
+  ["growth","inflation","labour"].forEach(function(sector){
+    (d[sector]||[]).forEach(function(ind){ vote(biasVal(ind.bias), Number(ind.weight)||0); });
+  });
+  var y2s=y2Calc(ccy).score;
+  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 10);
+  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 10);
+  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 10);
+  vote(b_seas(d.seasonality), 10);
+  if(dirSign===0 || totalW===0) return null;
+  return {pct:Math.round(agreeW/totalW*100), dir:dirSign>0?"Bullish":"Bearish"};
+}
+function alignmentLabel(a){
+  if(!a) return "—";
+  if(a.pct>=80) return "High";
+  if(a.pct>=55) return "Moderate";
+  return "Low";
+}
+function bandLabel(s){
+  s=Math.round(s);
+  if(s>=40) return "Very Bullish";
+  if(s>=21) return "Bullish";
+  if(s>=15) return "Neutral Leaning Bullish";
+  if(s>=-14) return "Neutral";
+  if(s>=-20) return "Neutral Leaning Bearish";
+  if(s>=-39) return "Bearish";
+  return "Very Bearish";
+}
+function chipClass(label){
+  if(label==="Very Bullish") return "chip chip-bull strong"; if(label==="Bullish") return "chip chip-bull";
+  if(label==="Neutral Leaning Bullish") return "chip chip-bull lean";
+  if(label==="Very Bearish") return "chip chip-bear strong"; if(label==="Bearish") return "chip chip-bear";
+  if(label==="Neutral Leaning Bearish") return "chip chip-bear lean";
+  return "chip chip-neu"; }
+function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
+  if(a<20) label="Neutral"; else if(a<50) label=pct>0?"Strong":"Weak"; else label=pct>0?"Very Strong":"Very Weak"; return {pct:pct,label:label}; }
+function sectorChipClass(label){
+  if(label==="Very Strong") return "chip chip-bull strong"; if(label==="Strong") return "chip chip-bull";
+  if(label==="Very Weak") return "chip chip-bear strong"; if(label==="Weak") return "chip chip-bear"; return "chip chip-neu"; }
+function sectorCellClass(label){
+  if(label==="Very Strong") return "cell-vstrong"; if(label==="Strong") return "cell-strong";
+  if(label==="Very Weak") return "cell-vweak"; if(label==="Weak") return "cell-weak"; return "cell-neutral"; }
+function cotBiasLabel(cot){ var v=Number(cot)||0; return v>0?"Bullish":(v<0?"Bearish":"Neutral"); }
+function cotInstBand(cot){ var v=Number(cot)||0; if(v>=4) return "Very Bullish"; if(v>=1.5) return "Bullish"; if(v<=-4) return "Very Bearish"; if(v<=-1.5) return "Bearish"; return "Neutral"; }
+function instColorStyle(label){
+  if(label==="Very Bullish"||label==="Bullish") return "color:var(--bullish-strong);font-weight:700;";
+  if(label==="Very Bearish"||label==="Bearish") return "color:var(--bearish-strong);font-weight:700;";
+  return "color:var(--text-dim);";
+}
+function numColor(n){
+  if(n>0) return "color:var(--bullish-strong);";
+  if(n<0) return "color:var(--bearish-strong);";
+  return "color:var(--text-dim);";
+}
+function changePctColor(v){
+  var p=parseNum(v);
+  if(!p) return "color:var(--text-dim);";
+  if(p.num>0) return "color:var(--bullish-strong);";
+  if(p.num<0) return "color:var(--bearish-strong);";
+  return "color:var(--text-dim);";
+}
+function longShortColors(longV, shortV){
+  var l=parseNum(longV), s=parseNum(shortV);
+  if(!l || !s) return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
+  if(l.num>s.num) return {longStyle:"color:var(--bullish-strong);", shortStyle:"color:var(--bearish-strong);"};
+  if(s.num>l.num) return {longStyle:"color:var(--bearish-strong);", shortStyle:"color:var(--bullish-strong);"};
+  return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
+}
+function allScores(){ var out={}; for(var i=0;i<CCYS.length;i++){ out[CCYS[i]]=compositeFor(CCYS[i]); } return out; }
+function buildPairs(scores){
+  var pairs=[];
+  for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
+    var base=CCY_ORDER[i], quote=CCY_ORDER[j], raw=scores[base]-scores[quote], sc=Math.round(raw);
+    pairs.push({pair:base+quote, base:base, quote:quote, score:sc, bias:bandLabel(sc)});
+  } }
+  pairs.sort(function(a,b){ return b.score-a.score; });
+  return pairs;
+}
+function fmt(n){ return (n>0?"+":"") + Math.round(n); }
+function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+
+function parseNum(s){
+  if(s===undefined||s===null) return null;
+  var t=String(s).trim();
+  if(t===""||t==="-"||t==="—") return null;
+  var m=t.match(/^([+-]?[\d,.]+)\s*(%|k|K|m|M)?$/);
+  if(!m) return null;
+  var num=parseFloat(m[1].replace(/,/g,""));
+  if(isNaN(num)) return null;
+  return {num:num, suffix:m[2]||""};
+}
+function surpriseFor(actual,forecast){
+  var a=parseNum(actual), f=parseNum(forecast);
+  if(!a||!f) return "—";
+  var diff=a.num-f.num;
+  var suf=a.suffix||f.suffix||"";
+  var rounded=Math.round(diff*100)/100;
+  var out=(rounded>0?"+":"")+ (Math.abs(rounded)<10? rounded.toFixed(2).replace(/0+$/,"").replace(/\.$/,""): Math.round(rounded));
+  return out+suf;
+}
+
+function applyTheme(name){
+  document.body.classList.remove("ash","black");
+  document.documentElement.classList.remove("ash","black");
+  if(name==="ash"||name==="black"){ document.body.classList.add(name); document.documentElement.classList.add(name); }
+  var btns=document.querySelectorAll("#themeSwitch .theme-btn");
+  for(var i=0;i<btns.length;i++){ btns[i].classList.toggle("active", btns[i].dataset.theme===name); }
+  try{ localStorage.setItem('twp_theme_pref', name); }catch(e){}
+}
+
+function renderLockBox(){
+  var box=document.getElementById("lockBox");
+  if(!box) return;
+  box.className="lock-box"+(lockBoxCollapsed?" collapsed":"");
+  var eyeIcon = lockBoxCollapsed ? "&#128274;" : "&#128065;";
+  if(!AUTH.accessToken){
+    box.innerHTML='<div class="lock-state"><span class="lock-state-label">&#128274; View-only</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
+      '<div class="lock-fields">'+
+      '<input type="email" id="authEmail" placeholder="Team email" autocomplete="username" style="margin-bottom:6px;">'+
+      '<input type="password" id="authPw" placeholder="Password" autocomplete="current-password">'+
+      '<button id="authSignInBtn">Sign in to edit</button>'+
+      '<div class="hint" id="authHint" style="display:none;"></div>'+
+      '</div>';
+    var doSignIn=async function(){
+      var email=document.getElementById("authEmail").value.trim();
+      var pw=document.getElementById("authPw").value;
+      var btn=document.getElementById("authSignInBtn");
+      var hint=document.getElementById("authHint");
+      if(!email || !pw) return;
+      btn.textContent="Signing in..."; btn.disabled=true;
+      try{
+        await authSignIn(email, pw);
+        unlockedLocally=true; renderLockBox(); renderAllStatic();
+      }catch(e){
+        hint.textContent="Sign in failed — check the email and password.";
+        hint.style.color="var(--bearish-strong)";
+        hint.style.display="block";
+        btn.textContent="Sign in to edit"; btn.disabled=false;
+      }
+    };
+    document.getElementById("authSignInBtn").onclick=doSignIn;
+    document.getElementById("authPw").addEventListener("keydown",function(e){ if(e.key==="Enter") doSignIn(); });
+    document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
+  } else {
+    box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">&#128275; Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide">'+eyeIcon+'</button></div>'+
+      '<div class="lock-fields"><button id="lockBtn">Sign out</button></div>';
+    document.getElementById("lockBtn").onclick=function(){ authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic(); };
+    document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
+  }
+}
+
+var TAB_META={
+  overview:{title:"Overview",sub:"Composite scoreboard, most bullish to most bearish."},
+  raw:{title:"Raw Inputs",sub:"Yield, COT and seasonality per currency."},
+  detail:{title:"Currency Detail",sub:"Everything about one currency, in one place."},
+  pairs:{title:"Pair Ranking",sub:"All 21 major-USD-universe crosses, most bullish to most bearish."},
+  yield2y:{title:"2Y Yield Score",sub:"Current 2Y closes and historical yield data used to calculate the score."}
+};
+function switchTab(tab){
+  activeTab=tab;
+  var btns=document.querySelectorAll(".tab-btn"); for(var i=0;i<btns.length;i++){ btns[i].classList.toggle("active", btns[i].dataset.tab===tab); }
+  var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
+  document.getElementById("pageTitle").textContent=TAB_META[tab].title;
+  document.getElementById("pageSub").textContent=TAB_META[tab].sub;
+}
+
+
+function y2Num(v){
+  if(v==null) return null;
+  var s=String(v).replace(/%/g,"").replace(/,/g,"").trim();
+  if(s==="") return null;
+  var n=Number(s);
+  return Number.isFinite(n)?n:null;
+}
+function y2SplitCsvLine(line){
+  var out=[], cur='', inQ=false;
+  for(var i=0;i<line.length;i++){
+    var ch=line[i];
+    if(inQ){
+      if(ch==='"'){ if(line[i+1]==='"'){cur+='"'; i++;} else inQ=false; }
+      else cur+=ch;
+    } else {
+      if(ch==='"') inQ=true;
+      else if(ch===','){ out.push(cur); cur=''; }
+      else cur+=ch;
+    }
+  }
+  out.push(cur);
+  return out;
+}
+function y2DateKey(v){
+  var d=new Date(v+"T00:00:00");
+  return isNaN(d.getTime())?null:d.toISOString().slice(0,10);
+}
+function y2SortedHistory(){
+  return (YIELD_ENGINE.history||[]).slice().filter(function(r){return r && r.date;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+}
+function y2PrevClose(ccy){
+  var hist=y2SortedHistory().filter(function(r){return y2Num(r[ccy])!=null && r.date!==YIELD_ENGINE.currentDate;});
+  if(!hist.length) return null;
+  return y2Num(hist[hist.length-1][ccy]);
+}
+function y2ScoreBand(x, thresholds, maxScore){
+  if(x==null) return 0;
+  maxScore=maxScore==null?2:maxScore;
+  var midScore=maxScore===1?1:Math.max(1,Math.round(maxScore/2));
+  if(x>=thresholds[3]) return maxScore;
+  if(x>=thresholds[2]) return midScore;
+  if(x<=thresholds[0]) return -maxScore;
+  if(x<=thresholds[1]) return -midScore;
+  return 0;
+}
+function y2Calc(ccy){
+  var hist=y2SortedHistory().filter(function(r){return y2Num(r[ccy])!=null;});
+  var cur=y2Num((YIELD_ENGINE.current||{})[ccy]);
+  if(cur==null && hist.length) cur=y2Num(hist[hist.length-1][ccy]);
+  if(cur==null) return {ccy:ccy,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null],histCount:hist.length};
+
+  // Normalize the historical series by date before calculating moving averages.
+  // When the current observation is for a date that already exists in history,
+  // replace that day's stored value instead of appending a duplicate observation.
+  var byDate={};
+  hist.forEach(function(r){ byDate[r.date]=Object.assign({},r); });
+  var currentDate=YIELD_ENGINE.currentDate||"";
+  if(currentDate){
+    byDate[currentDate]=Object.assign({},byDate[currentDate]||{date:currentDate},{date:currentDate,_current:true});
+    byDate[currentDate][ccy]=cur;
+  }
+  var combined=Object.keys(byDate).sort().map(function(d){return byDate[d];});
+  if(!combined.length || (!currentDate && y2Num(combined[combined.length-1][ccy])!==cur)){
+    combined=combined.concat([{date:currentDate||"9999-12-31",_current:true,[ccy]:cur}]);
+  }
+
+  var all=combined.map(function(r){return y2Num(r[ccy]);}).filter(function(x){return x!=null;});
+  var sma21=all.length>=21?all.slice(-21).reduce(function(a,b){return a+b;},0)/21:null;
+  var avg60=all.length>=60?all.slice(-60).reduce(function(a,b){return a+b;},0)/60:null;
+
+  // Weekly/monthly changes deliberately use the stored historical observations
+  // that precede the current observation, so the current close is never counted twice.
+  var histVals=hist.map(function(r){return y2Num(r[ccy]);});
+  var prev5=histVals.length>=5?histVals[histVals.length-5]:null;
+  var prev21=histVals.length>=21?histVals[histVals.length-21]:null;
+  var week=prev5==null?null:cur-prev5;
+  var month=prev21==null?null:cur-prev21;
+
+  // Five confluences are kept, but their influence is balanced by information value:
+  // 1) position vs 21D trend is the main short-term anchor (3 points),
+  // 2) 1-week change confirms current momentum (2),
+  // 3) 1-month change confirms persistence (2),
+  // 4) 60D position is a slower structural check (1),
+  // 5) change in the 21D distance measures acceleration/deceleration (2).
+  // Total possible yield score remains exactly -10 to +10.
+  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -20,-8,8,20 ],3);
+  var c2=week==null?null:y2ScoreBand(week*100,[ -20,-7,7,20 ],2);
+  var c3=month==null?null:y2ScoreBand(month*100,[ -30,-10,10,30 ],2);
+  var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -30,-10,10,30 ],1);
+  var todayDist=sma21==null?null:(cur-sma21)*100;
+  var prevSma=null;
+  if(histVals.length>=22){ var last22=histVals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
+  var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
+  var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
+  var c5=distChange==null?null:y2ScoreBand(distChange,[ -15,-5,5,15 ],2);
+  var comps=[c1,c2,c3,c4,c5];
+  var score=comps.every(function(x){return x!=null;})?comps.reduce(function(a,b){return a+b;},0):null;
+  return {ccy:ccy,current:cur,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps,histCount:hist.length};
+}
+
+function y2ScoreClass(x){ return x==null?'y2-neutral':x>0?'y2-positive':x<0?'y2-negative':'y2-neutral'; }
+function y2FmtPct(x){ return x==null?'—':x.toFixed(3)+'%'; }
+function y2FmtBp(x){ return x==null?'—':(x>0?'+':'')+x.toFixed(1)+' bp'; }
+function y2ScoreFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
+function y2CompClass(x){ return x==null?'y2-comp miss':(x>0?'y2-comp pos':(x<0?'y2-comp neg':'y2-comp neu')); }
+function y2CompFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
+function y2ScoreCell(r){
+  return '<div class="mono '+y2ScoreClass(r.score)+'">'+y2ScoreFmt(r.score)+'</div>';
+}
+function y2CsvEscape(v){ var s=String(v==null?'':v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+function y2ExportCsv(){
+  var rows=y2SortedHistory();
+  var header=['Date'].concat(Y2_CCY_ORDER.map(function(c){return c+'_2Y';}));
+  var lines=[header.join(',')];
+  rows.forEach(function(r){lines.push([r.date].concat(Y2_CCY_ORDER.map(function(c){return y2Num(r[c])==null?'':y2Num(r[c]);})).map(y2CsvEscape).join(','));});
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='TWP_2Y_Yield_Master.csv'; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+}
+function y2ImportCsvText(text){
+  // Append-only importer: existing dates are never overwritten. A date already
+  // present in history is either skipped (values match) or flagged as a
+  // conflict (values differ) and left untouched. Only genuinely new dates are
+  // appended. This enforces the TWP CSV Update Protocol at the import layer,
+  // not just as a written instruction to an AI.
+  var lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(function(x){return x.trim();});
+  if(!lines.length) throw new Error('CSV is empty.');
+  var header=y2SplitCsvLine(lines[0]).map(function(x){return x.trim().replace(/^"|"$/g,'');});
+  var idx={}; header.forEach(function(h,i){idx[h]=i;});
+  if(idx.Date==null) throw new Error('CSV must contain a Date column.');
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var parts=y2SplitCsvLine(lines[i]); parts=parts.slice(0,header.length).map(function(x){return x.replace(/^"|"$/g,'').replace(/""/g,'"').trim();});
+    var date=y2DateKey(parts[idx.Date]); if(!date) continue;
+    var r={date:date}; Y2_CCY_ORDER.forEach(function(c){var k=c+'_2Y'; var raw=parts[idx[k]]; var n=y2Num(raw); if(n!=null) r[c]=n;}); rows.push(r);
+  }
+
+  var existing={}; (YIELD_ENGINE.history||[]).forEach(function(r){existing[r.date]=r;});
+  var originalCount=Object.keys(existing).length;
+  var toAdd={}, skipped=0, conflicts=[], newDates=[];
+
+  rows.forEach(function(r){
+    var old=existing[r.date];
+    if(!old){
+      toAdd[r.date]=r; newDates.push(r.date);
+      return;
+    }
+    // Date already exists in history — never overwrite. Check whether every
+    // currency value supplied in this row matches what's already stored.
+    var mismatch=[];
+    Y2_CCY_ORDER.forEach(function(c){
+      if(r[c]==null) return; // currency not present in this row, nothing to compare
+      var oldVal=y2Num(old[c]);
+      if(oldVal==null || Math.abs(oldVal-r[c])>0.0005){ mismatch.push(c); }
+    });
+    if(mismatch.length){
+      conflicts.push({date:r.date, currencies:mismatch});
+    } else {
+      skipped++;
+    }
+  });
+
+  var merged=Object.assign({}, existing, toAdd);
+  YIELD_ENGINE.history=Object.keys(merged).sort().map(function(k){return merged[k];});
+  var finalCount=Object.keys(merged).length;
+
+  return {
+    originalCount:originalCount,
+    newAdded:newDates.length,
+    newDates:newDates.sort(),
+    skippedExisting:skipped,
+    conflicts:conflicts,
+    finalCount:finalCount
+  };
+}
+function y2RenderRows(){
+  var tb=document.getElementById('y2Rows'); if(!tb) return;
+  var base=Y2_CCY_ORDER.map(y2Calc);
+  var usd=base.find(function(x){return x.ccy==='USD';});
+  var out='';
+  base.forEach(function(r){
+    var spread=(usd&&usd.current!=null&&r.current!=null&&r.ccy!=='USD')?(r.current-usd.current)*100:null;
+    out+='<tr class="rowhover">'+
+      '<td class="ccy-name">'+r.ccy+'</td>'+
+      '<td class="mono">'+y2FmtPct(r.current)+'</td>'+
+      '<td class="mono">'+y2FmtPct(r.sma21)+'</td>'+
+      '<td>'+y2ScoreCell(r)+'</td>'+
+      '<td class="'+y2TrendClass(r.score)+'">'+esc(y2TrendLabel(r.score))+'</td>'+
+      '<td class="y2-spread '+y2ScoreClass(spread)+'">'+(r.ccy==='USD'?'—':y2FmtBp(spread))+'</td>'+
+      '<td><div class="y2-track"><i></i><b class="'+(spread!=null&&spread<0?'neg':'')+'" style="'+(spread==null?'width:0;left:50%;':(spread>=0?'left:50%;width:'+Math.min(50,Math.abs(spread)/5)+'%;':'left:'+(50-Math.min(50,Math.abs(spread)/5))+'%;width:'+Math.min(50,Math.abs(spread)/5)+'%;'))+'"></b></div></td>'+
+      '</tr>';
+  });
+  tb.innerHTML=out;
+}
+
+function y2LoadDemo(){
+  var base={USD:3.90,EUR:2.70,GBP:3.80,AUD:3.50,NZD:3.30,CAD:2.80,JPY:0.85};
+  var rows=[], d=new Date(); d.setDate(d.getDate()-115);
+  function isWeekday(x){return x.getDay()!==0&&x.getDay()!==6;}
+  while(rows.length<80){ if(isWeekday(d)){ var r={date:d.toISOString().slice(0,10)}; Y2_CCY_ORDER.forEach(function(c,i){r[c]=Number((base[c]+0.08*Math.sin(rows.length/8+i)+0.025*Math.cos(rows.length/3+i)).toFixed(3));}); rows.push(r); } d.setDate(d.getDate()+1); }
+  YIELD_ENGINE.history=rows; YIELD_ENGINE.currentDate=rows[rows.length-1].date; YIELD_ENGINE.current={}; Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=rows[rows.length-1][c];});
+}
+function renderYield2Y(){
+  var rows=y2SortedHistory(), latest=rows.length?rows[rows.length-1].date:'—';
+  var html='<div class="y2-grid">'+
+    '<div class="card"><h3>Current 2Y Yield Input</h3><div class="y2-input-grid">'+
+    Y2_CCY_ORDER.map(function(c){
+      var curVal=YIELD_ENGINE.current[c], prev=y2PrevClose(c);
+      var dir=(curVal!=null&&prev!=null)?(curVal>prev?1:(curVal<prev?-1:0)):null;
+      var arrow=dir==null?'':(dir>0?'<span class="y2-chg-arrow up">&#9650;</span>':(dir<0?'<span class="y2-chg-arrow down">&#9660;</span>':'<span class="y2-chg-arrow flat">&#9679;</span>'));
+      var inputStyle=dir==null?'':(dir>0?'color:var(--bullish-strong);font-weight:700;':(dir<0?'color:var(--bearish-strong);font-weight:700;':''));
+      return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';
+    }).join('')+
+    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
+    (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
+    (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
+    '<div class="card"><h3>2Y Yield Score</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
+    '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
+    '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
+    '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
+    '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div></div>'+
+    '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
+    '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
+  document.getElementById('tab-yield2y').innerHTML=html;
+  var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value);});}
+  var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value;};
+  var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
+  var close=document.getElementById('y2SaveAsClose'); if(close) close.onclick=function(){
+    YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10));
+    var d=YIELD_ENGINE.currentDate, by={}; (YIELD_ENGINE.history||[]).forEach(function(r){by[r.date]=r;}); var row=Object.assign({},by[d]||{},{date:d});
+    Y2_CCY_ORDER.forEach(function(c){var n=y2Num(YIELD_ENGINE.current[c]); if(n!=null) row[c]=n;}); by[d]=row; YIELD_ENGINE.history=Object.keys(by).sort().map(function(k){return by[k];});
+    saveDataNow(); renderYield2Y(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Daily closes saved','var(--bullish-strong)');
+  };
+  var ex=document.getElementById('y2Export'); if(ex) ex.onclick=y2ExportCsv;
+  var demo=document.getElementById('y2Demo'); if(demo) demo.onclick=function(){if(!confirm('Load synthetic demo data? This replaces the current 2Y history in the dashboard.')) return; y2LoadDemo(); saveDataNow(); renderYield2Y(); updateStatus('Synthetic demo loaded','var(--amber)');};
+  var imp=document.getElementById('y2Import'); if(imp) imp.onchange=function(){var f=this.files&&this.files[0]; if(!f) return; var reader=new FileReader(); reader.onload=function(){
+    try{
+      var report=y2ImportCsvText(reader.result);
+      var msg='Existing rows: '+report.originalCount+'\n'+
+        'New rows added: '+report.newAdded+'\n'+
+        'Existing dates skipped (match): '+report.skippedExisting+'\n'+
+        'Conflicts (NOT saved): '+report.conflicts.length+'\n'+
+        'Final rows: '+report.finalCount+
+        (report.newDates.length?'\n\nNew date range: '+report.newDates[0]+' \u2192 '+report.newDates[report.newDates.length-1]:'');
+      if(report.conflicts.length){
+        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed:\n';
+        report.conflicts.forEach(function(c){ msg+='  '+c.date+': '+c.currencies.join(', ')+'\n'; });
+      }
+      saveDataNow(); renderYield2Y();
+      updateStatus(report.conflicts.length?('CSV imported \u2014 '+report.conflicts.length+' conflict(s) flagged'):'CSV imported \u2014 append-only', report.conflicts.length?'var(--amber)':'var(--bullish-strong)');
+      alert(msg);
+    }catch(e){alert(e.message);}
+  }; reader.readAsText(f);};
+  y2RenderRows();
+  initHistoricalSpreadPanel();
+}
+
+var HIST_SPREAD_PAIRS = [
+  ["AUDUSD","AUD","USD"],["NZDUSD","NZD","USD"],["AUDCAD","AUD","CAD"],
+  ["GBPUSD","GBP","USD"],["NZDCAD","NZD","CAD"],["EURUSD","EUR","USD"],
+  ["GBPCAD","GBP","CAD"],["EURCAD","EUR","CAD"],["AUDNZD","AUD","NZD"],
+  ["EURGBP","EUR","GBP"],["GBPNZD","GBP","NZD"],["USDCAD","USD","CAD"],
+  ["GBPAUD","GBP","AUD"],["EURNZD","EUR","NZD"],["EURAUD","EUR","AUD"],
+  ["AUDJPY","AUD","JPY"],["NZDJPY","NZD","JPY"],["GBPJPY","GBP","JPY"],
+  ["EURJPY","EUR","JPY"],["CADJPY","CAD","JPY"],["USDJPY","USD","JPY"]
+];
+var HIST_SPREAD_RANGE = 63;
+var HIST_SPREAD_ACTIVE = "EURUSD";
+
+function histSpreadLabel(code){
+  var x=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
+  return x ? x[1]+"/"+x[2] : code;
+}
+function histSpreadRows(code){
+  var pair=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
+  if(!pair) return [];
+  return y2SortedHistory().map(function(r){
+    var a=y2Num(r[pair[1]]), b=y2Num(r[pair[2]]);
+    return {date:r.date, spread:(a!=null&&b!=null)?(a-b)*100:null};
+  }).filter(function(x){return x.spread!=null;});
+}
+function histSpreadFmt(v){
+  if(v==null || !Number.isFinite(v)) return "—";
+  return (v>0?"+":"")+v.toFixed(1)+" bp";
+}
+function histSpreadDraw(){
+  var canvas=document.getElementById("histSpreadCanvas"), empty=document.getElementById("histSpreadEmpty");
+  var stats=document.getElementById("histSpreadStats"), select=document.getElementById("histSpreadPair");
+  if(!canvas || !select) return;
+  var code=select.value || HIST_SPREAD_ACTIVE;
+  HIST_SPREAD_ACTIVE=code;
+  var rows=histSpreadRows(code).slice(-HIST_SPREAD_RANGE);
+  var ctx=canvas.getContext("2d");
+  var rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  var W=Math.max(320,rect.width), H=Math.max(240,rect.height);
+  canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  if(!rows.length){
+    if(empty) empty.textContent="No historical observations for "+histSpreadLabel(code)+". Import a CSV containing the seven 2Y yield columns first.";
+    if(stats) stats.innerHTML="";
+    return;
+  }
+  if(empty) empty.textContent=rows.length<2?"Need at least two historical observations to draw the spread.":"";
+  if(rows.length<2){ if(stats) stats.innerHTML=""; return; }
+
+  var vals=rows.map(function(x){return x.spread;});
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+  if(min===max){min-=10;max+=10;}
+  var pad={l:64,r:18,t:18,b:38}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  var extra=(max-min)*0.08; min-=extra; max+=extra;
+  function X(i){return pad.l+(i/(rows.length-1))*pw;}
+  function Y(v){return pad.t+(max-v)/(max-min)*ph;}
+
+  ctx.font="11px Inter, sans-serif"; ctx.textBaseline="middle"; ctx.textAlign="right";
+  for(var g=0;g<=4;g++){
+    var gv=min+(max-min)*(g/4), gy=Y(gv);
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--border").trim()||"#d7dae0";
+    ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-dim").trim()||"#565e6d";
+    ctx.fillText(gv.toFixed(0)+" bp",pad.l-8,gy);
+  }
+  if(min<0 && max>0){
+    var zy=Y(0); ctx.save(); ctx.setLineDash([5,5]);
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
+    ctx.beginPath();ctx.moveTo(pad.l,zy);ctx.lineTo(W-pad.r,zy);ctx.stroke();ctx.restore();
+  }
+  var lineColor=vals[vals.length-1]>=vals[0]
+    ? (getComputedStyle(document.body).getPropertyValue("--bullish-strong").trim()||"#1c63c4")
+    : (getComputedStyle(document.body).getPropertyValue("--bearish-strong").trim()||"#c22e28");
+  ctx.strokeStyle=lineColor;ctx.lineWidth=2.5;ctx.lineJoin="round";ctx.lineCap="round";
+  ctx.beginPath();
+  rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
+  ctx.stroke();
+
+  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
+  ctx.textAlign="center";ctx.textBaseline="top";
+  var labelCount=Math.min(8,rows.length);
+  for(var li=0;li<labelCount;li++){
+    var ii=Math.round(li*(rows.length-1)/(labelCount-1));
+    ctx.fillText(rows[ii].date.slice(0,10),X(ii),H-pad.b+10);
+  }
+
+  var current=vals[vals.length-1], first=vals[0], high=Math.max.apply(null,vals), low=Math.min.apply(null,vals);
+  var change=current-first;
+  var statData=[["Current",histSpreadFmt(current)],["Change",histSpreadFmt(change)],["High",histSpreadFmt(high)],["Low",histSpreadFmt(low)],["Observations",String(rows.length)]];
+  if(stats) stats.innerHTML=statData.map(function(x){
+    return '<div class="hist-stat"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>';
+  }).join("");
+}
+function initHistoricalSpreadPanel(){
+  var select=document.getElementById("histSpreadPair");
+  var ranges=document.getElementById("histSpreadRanges");
+  if(!select) return;
+  select.innerHTML=HIST_SPREAD_PAIRS.map(function(p){
+    var label=p[1]+"/"+p[2];
+    return '<option value="'+p[0]+'" '+(p[0]===HIST_SPREAD_ACTIVE?'selected':'')+'>'+label+'</option>';
+  }).join("");
+  select.onchange=function(){HIST_SPREAD_ACTIVE=this.value;histSpreadDraw();};
+  if(ranges){
+    var btns=ranges.querySelectorAll("button");
+    for(var i=0;i<btns.length;i++){
+      btns[i].classList.toggle("active",Number(btns[i].dataset.range)===HIST_SPREAD_RANGE);
+      btns[i].onclick=function(){
+        HIST_SPREAD_RANGE=Number(this.dataset.range)||63;
+        var all=ranges.querySelectorAll("button");
+        for(var j=0;j<all.length;j++) all[j].classList.toggle("active",all[j]===this);
+        histSpreadDraw();
+      };
+    }
+  }
+  setTimeout(histSpreadDraw,0);
+}
+
+function renderOverview(){
+  if(!DATA) return;
+  var scores=allScores();
+  var hikers=CCYS.filter(function(c){ return DATA[c].nextMove==="HIKE"; });
+  var cutters=CCYS.filter(function(c){ return DATA[c].nextMove==="CUT"; });
+  var divHtml = (hikers.length && cutters.length) ?
+    '<div class="divergence on"><b>Divergence watch —</b> '+hikers.join("/")+" leaning HIKE against "+cutters.join("/")+" leaning CUT. Worth treating as this week's live divergence pair on top of the seven majors.</div>" :
+    '';
+  var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><div class="table-scroll"><table><thead><tr>'+
+    '<th>Symbol</th><th>Bias</th><th>Score</th><th>Alignment</th><th>Economic Growth</th><th>Inflation</th><th>Labour Market</th></tr></thead>'+
+    '<tbody id="overviewRows"></tbody></table></div>'+
+    '</div></div>';
+  document.getElementById("tab-overview").innerHTML=html;
+  fillOverviewRows(scores);
+}
+function fillOverviewRows(scores){
+  var tb=document.getElementById("overviewRows"); if(!tb) return;
+  var rows=CCYS.slice().sort(function(a,b){ return scores[b]-scores[a]; });
+  var out="";
+  for(var i=0;i<rows.length;i++){
+    var c=rows[i], sc=scores[c], f=fundFor(c), label=bandLabel(sc), align=alignmentFor(c);
+    var gB=sectorBand(f.g.raw,f.g.max), iB=sectorBand(f.inf.raw,f.inf.max), lB=sectorBand(f.l.raw,f.l.max);
+    var alignFlagged = align && align.pct>=80;
+    var alignCellClass = alignFlagged ? (align.dir==="Bullish"?"cell-vstrong":"cell-vweak") : "";
+    var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:13.5px;font-weight:'+(alignFlagged?"700":"600")+';'+(alignFlagged?"":"color:var(--text-dim);")+'">'+(alignFlagged?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
+    out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:14px;">'+CCY_NAME[c]+'</span></td>'+
+      '<td><span class="'+chipClass(label)+'">'+label+'</span></td>'+
+      '<td class="mono">'+fmt(sc)+'</td>'+
+      '<td class="'+alignCellClass+'" style="'+(alignFlagged?"border-radius:6px;":"")+'">'+alignCell+'</td>'+
+      '<td class="'+sectorCellClass(gB.label)+'" style="border-radius:6px;">'+gB.label+'</td>'+
+      '<td class="'+sectorCellClass(iB.label)+'" style="border-radius:6px;">'+iB.label+'</td>'+
+      '<td class="'+sectorCellClass(lB.label)+'" style="border-radius:6px;">'+lB.label+'</td></tr>';
+  }
+  tb.innerHTML=out;
+  var gotos=tb.querySelectorAll("[data-goto]");
+  for(var k=0;k<gotos.length;k++){ gotos[k].onclick=function(){ activeDetailCcy=this.dataset.goto; switchTab("detail"); renderDetail(); }; }
+}
+
+function renderRaw(){
+  if(!DATA) return;
+  var html='<div class="card"><h3>Raw Inputs</h3><div class="table-scroll"><table><thead><tr>'+
+    '<th>Currency</th><th>Fundamentals</th><th>2Y Yield Score</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
+
+  document.getElementById("tab-raw").innerHTML=html;
+  var tb=document.getElementById("rawRows"), out="";
+  for(var i=0;i<CCYS.length;i++){
+    var c=CCYS[i], d=DATA[c], f=fundFor(c), y2=y2Calc(c), cotScore=getCotScore(c);
+    out += '<tr class="rowhover"><td class="ccy-name">'+c+'</td>'+
+      '<td class="mono '+sectorCellClass(sectorBand(f.raw,f.max).label)+'">'+sectorBand(f.raw,f.max).label+'</td>'+
+      '<td class="mono '+y2TrendClass(y2.score)+'">'+y2ScoreFmt(y2.score)+' <span class="y2-small">'+esc(y2TrendLabel(y2.score))+'</span></td>'+
+      '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+cotInstBand(cotScore)+'</td>'+
+      '<td><select class="bias-select '+d.seasonality+'" data-role="ccyfield" data-ccy="'+c+'" data-field="seasonality" '+(unlockedLocally?"":"disabled")+'>'+
+        ["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.seasonality?"selected":"")+'>'+o+'</option>'; }).join("")+
+      '</select></td></tr>';
+  }
+  tb.innerHTML=out;
+  var body=document.getElementById("tab-raw");
+  body.addEventListener("input", onCcyFieldInput); body.addEventListener("change", onCcyFieldInput);
+
+  var impBtn = document.getElementById("importSyncBtn");
+  if(impBtn){
+    impBtn.onclick = function(){
+      try {
+        var str = document.getElementById("syncDataStr").value.trim();
+        var parsed = JSON.parse(atob(str));
+        if(parsed && parsed.DATA) {
+          DATA = parsed.DATA; SETTINGS = parsed.SETTINGS || {passwordHash:null}; DAILY = parsed.DAILY || {}; LOG = parsed.LOG || [];
+          saveDataNow(); renderAllStatic();
+          alert("Data imported successfully! The dashboard is now synced to the copied state.");
+        }
+      } catch(e) {
+        alert("Invalid data code. Please ensure you pasted the entire block exactly as copied.");
+      }
+    };
+  }
+}
+
+function gaugeGeom(score){
+  var cx=120, cy=104, r=80, s=clamp(score,-100,100), angle=180-((s+100)/200)*180, rad=angle*Math.PI/180;
+  return {cx:cx,cy:cy,r:r,nx:cx+(r-16)*Math.cos(rad),ny:cy-(r-16)*Math.sin(rad)};
+}
+function scoreAngle(cx,cy,r,v){ var angle=180-((v+100)/200)*180, rad=angle*Math.PI/180; return {x:cx+r*Math.cos(rad), y:cy-r*Math.sin(rad)}; }
+function gaugeArcs(cx,cy,r){
+  var zones=[[-100,-40,"var(--bearish-strong)"],[-40,-20,"var(--bearish)"],[-20,-14,"var(--bearish-lean)"],[-14,14,"var(--neutral)"],[14,20,"var(--bullish-lean)"],[20,40,"var(--bullish)"],[40,100,"var(--bullish-strong)"]];
+  var out="";
+  for(var i=0;i<zones.length;i++){
+    var p0=scoreAngle(cx,cy,r,zones[i][0]), p1=scoreAngle(cx,cy,r,zones[i][1]);
+    out += '<path d="M '+p0.x+' '+p0.y+' A '+r+' '+r+' 0 0 1 '+p1.x+' '+p1.y+'" fill="none" stroke="'+zones[i][2]+'" stroke-width="13"/>';
+  }
+  return out;
+}
+function gaugeTicks(cx,cy,r){
+  var vals=[-100,-40,-20,0,20,40,100], out="";
+  for(var i=0;i<vals.length;i++){
+    var v=vals[i], p1=scoreAngle(cx,cy,r+2,v), p2=scoreAngle(cx,cy,r+9,v), lp=scoreAngle(cx,cy,r+22,v);
+    out += '<line x1="'+p1.x+'" y1="'+p1.y+'" x2="'+p2.x+'" y2="'+p2.y+'" stroke="var(--text-faint)" stroke-width="2"/>';
+    out += '<text x="'+lp.x+'" y="'+(lp.y+4)+'" font-size="9.5" fill="var(--text-faint)" text-anchor="middle" font-family="IBM Plex Mono, monospace">'+v+'</text>';
+  }
+  return out;
+}
+function gaugeSvg(ccy, score){
+  var g=gaugeGeom(score);
+  return '<svg viewBox="0 0 240 132" class="gauge-svg">'+gaugeArcs(g.cx,g.cy,g.r)+gaugeTicks(g.cx,g.cy,g.r)+
+    '<line id="gaugeNeedle-'+ccy+'" x1="'+g.cx+'" y1="'+g.cy+'" x2="'+g.nx+'" y2="'+g.ny+'" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>'+
+    '<circle cx="'+g.cx+'" cy="'+g.cy+'" r="5" fill="var(--text)"/></svg>';
+}
+function y2TrendLabel(score){
+  if(score==null) return "No 2Y data";
+  if(score>=6) return "Rising — High conviction";
+  if(score>=2) return "Moderately Rising";
+  if(score>=1) return "Early Rising";
+  if(score<=-6) return "Falling — High conviction";
+  if(score<=-2) return "Moderately Falling";
+  if(score<=-1) return "Early Falling";
+  return "Steady";
+}
+function y2TrendClass(score){
+  if(score==null || Math.abs(score)<=1) return "y2-neutral";
+  return score>0 ? "y2-positive" : "y2-negative";
+}
+
+function indicatorRows(ccy, sector, list){
+  var rows="";
+  for(var i=0;i<list.length;i++){
+    var ind=list[i];
+    var link = teLink(ccy,ind.name);
+    rows += '<tr class="rowhover">'+
+      '<td>'+(unlockedLocally?
+        '<input class="ind-name" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="name" value="'+esc(ind.name)+'">'
+        : '<a class="ind-link" href="'+link+'" target="_blank" rel="noopener">'+esc(ind.name)+'</a>')+'</td>'+
+      '<td><input class="ind-num" type="number" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="weight" value="'+ind.weight+'" '+(unlockedLocally?"":"disabled")+'></td>'+
+      '<td><input class="ind-txt" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="actual" value="'+esc(ind.actual)+'" '+(unlockedLocally?"":"disabled")+'></td>'+
+      '<td><input class="ind-txt" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="forecast" value="'+esc(ind.forecast)+'" '+(unlockedLocally?"":"disabled")+'></td>'+
+      '<td class="surprise" id="surprise-'+ccy+'-'+sector+'-'+i+'" style="color:'+(ind.bias==="Bullish"?"var(--bullish-strong)":ind.bias==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+surpriseFor(ind.actual,ind.forecast)+'</td>'+
+      '<td>'+(unlockedLocally?
+        '<select class="bias-select '+ind.bias+'" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="bias">'+
+        ["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===ind.bias?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+        : '<span class="bias-chip-text '+ind.bias+'">'+ind.bias+'</span>')+'</td>'+
+      '<td>'+(unlockedLocally? '<button class="rm-btn" data-action="rm" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'">&times;</button>':'')+'</td></tr>';
+  }
+  return rows;
+}
+function autoGrowGuidance(el){
+  if(!el) return;
+  el.style.height="auto";
+  var natural=el.scrollHeight+2;
+  var leftCol=el.closest('.left-col');
+  var grid=leftCol?leftCol.closest('.detail-grid'):null;
+  var rightCol=grid?grid.querySelector('.right-col'):null;
+  if(rightCol && leftCol){
+    var rightH=rightCol.getBoundingClientRect().height;
+    var usedAbove=el.getBoundingClientRect().top-leftCol.getBoundingClientRect().top;
+    var avail=rightH-usedAbove-4;
+    var capped=Math.max(110, avail>110?Math.min(natural,avail):110);
+    el.style.height=capped+"px";
+  } else {
+    el.style.height=natural+"px";
+  }
+}
+function renderDetail(){
+  if(!DATA) return;
+  var html='<div class="ccy-pills" id="detailPills"></div><div id="detailBody"></div>';
+  document.getElementById("tab-detail").innerHTML=html;
+  var pillsHtml=""; for(var i=0;i<CCYS.length;i++){ pillsHtml += '<button class="ccy-pill '+(CCYS[i]===activeDetailCcy?"active":"")+'" data-ccy="'+CCYS[i]+'">'+CCYS[i]+'</button>'; }
+  document.getElementById("detailPills").innerHTML=pillsHtml;
+  var pills=document.querySelectorAll("#detailPills .ccy-pill");
+  for(var p=0;p<pills.length;p++){ pills[p].onclick=function(){ activeDetailCcy=this.dataset.ccy; renderDetail(); }; }
+  renderDetailBody(activeDetailCcy);
+}
+function renderDetailBody(ccy){
+  if(!DATA || !DATA[ccy]) return;
+  var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
+  var sectors=[["growth","Growth",f.g],["inflation","Inflation",f.inf],["labour","Labour",f.l]];
+  var cotScore = getCotScore(ccy);
+  var y2Score = y2Calc(ccy).score;
+  var align = alignmentFor(ccy);
+  var flagged = align && align.pct>=80;
+  var alignColor = !align ? "color:var(--text-faint);" : (align.pct>=80?(align.dir==="Bullish"?"color:var(--bullish-strong);":"color:var(--bearish-strong);") : "color:var(--text-dim);");
+  var alignTxt = !align ? "No clear lean yet" : ((flagged?'&#9873; ':'')+align.pct+"% of the evidence agrees "+align.dir.toLowerCase()+" ("+alignmentLabel(align)+")");
+  
+  var html = '<div class="card"><div class="detail-grid">'+
+    '<div class="left-col">'+
+      '<div><span class="ccy-big">'+ccy+'</span> <span class="'+chipClass(label)+'" id="gaugeBiasChip-'+ccy+'">'+label+'</span></div>'+
+      '<div class="ccy-full">'+CCY_NAME[ccy]+'</div>'+
+      gaugeSvg(ccy,sc)+
+      '<div class="gauge-num mono" id="gaugeScoreTxt-'+ccy+'">'+fmt(sc)+'</div>'+
+      '<div class="stat-block">'+
+        '<div class="stat-row"><span>TWP overall score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
+        '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:170px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
+        '<div class="stat-row"><span>Seasonality + COT score</span><span class="mono" id="statSeasCot-'+ccy+'" style="'+numColor(scCot)+'">'+fmt(scCot)+'</span></div>'+
+        '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
+        '<div class="stat-row" style="align-items:flex-start;"><span>2Y Yield Score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
+      '</div>'+
+      '<div class="rate-box">'+
+        '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Interest rate</span>'+
+          '<input type="text" data-role="ccyfield" data-ccy="'+ccy+'" data-field="interestRate" value="'+esc(d.interestRate)+'" style="width:64px;" '+(unlockedLocally?"":"disabled")+'></div>'+
+        '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Next move</span>'+
+          (unlockedLocally?
+            '<select class="move-select '+d.nextMove+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="nextMove">'+
+            ["HIKE","HOLD","CUT"].map(function(o){ return '<option '+(o===d.nextMove?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+            : '<span class="move-select '+d.nextMove+' static-chip">'+d.nextMove+'</span>')+'</div>'+
+        '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Conviction</span>'+
+          (unlockedLocally?
+            '<select class="conv-select '+d.conviction.split(" ")[0]+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="conviction">'+
+            ["High conviction","Medium conviction","Low conviction"].map(function(o){ return '<option '+(o===d.conviction?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+            : '<span class="conv-select '+d.conviction.split(" ")[0]+' static-chip">'+d.conviction+'</span>')+'</div>'+
+        '<div class="field-label">Forward guidance</div>'+
+        '<textarea class="guidance-box" data-role="ccyfield" data-ccy="'+ccy+'" data-field="guidance" '+(unlockedLocally?"":"disabled")+'>'+esc(d.guidance)+'</textarea>'+
+      '</div>'+
+    '</div>'+
+    '<div class="right-col">'+
+      '<div class="info-grid">'+
+        '<div class="info-item"><span class="k">Seasonality trend</span><span class="v" id="seasTxt-'+ccy+'" style="color:'+(d.seasonality==="Bullish"?"var(--bullish-strong)":d.seasonality==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.seasonality+'</span></div>'+
+        
+        '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+' ('+(cotScore>0?"+":"")+cotScore+')</span></div>'+
+        
+        '<div class="info-item"><span class="k">COT net positioning</span>'+(unlockedLocally?
+          '<select class="'+ (d.cotNet==="Bullish"?"bias-select Bullish":d.cotNet==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotNetSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotNet">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.cotNet?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+          : '<span class="v" id="cotNetTxt-'+ccy+'" style="color:'+(d.cotNet==="Bullish"?"var(--bullish-strong)":d.cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.cotNet+'</span>')+'</div>'+
+          
+        '<div class="info-item"><span class="k">Latest Buys &amp; Sells</span>'+(unlockedLocally?
+          '<select class="'+ ((d.cotChangeBias||"Neutral")==="Bullish"?"bias-select Bullish":(d.cotChangeBias||"Neutral")==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotChangeBiasSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotChangeBias">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===(d.cotChangeBias||"Neutral")?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+          : '<span class="v" id="cotChangeBiasTxt-'+ccy+'" style="color:'+((d.cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(d.cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+(d.cotChangeBias||"Neutral")+'</span>')+'</div>'+
+          
+        '<div class="info-item"><span class="k">Long % / Short %</span><div>'+
+          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="longPct" value="'+esc(d.longPct)+'" style="'+longShortColors(d.longPct,d.shortPct).longStyle+'" '+(unlockedLocally?"":"disabled")+'> / '+
+          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="shortPct" value="'+esc(d.shortPct)+'" style="'+longShortColors(d.longPct,d.shortPct).shortStyle+'" '+(unlockedLocally?"":"disabled")+'></div></div>'+
+        '<div class="info-item"><span class="k">Change %</span>'+
+          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="changePct" value="'+esc(d.changePct)+'" style="'+changePctColor(d.changePct)+'" '+(unlockedLocally?"":"disabled")+'></div>'+
+      '</div>';
+  for(var s=0;s<sectors.length;s++){
+    var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
+    html += '<div class="sector-block"><div class="sector-title"><span class="label">'+lab+'</span>'+
+      '<span class="'+sectorChipClass(band.label)+'" id="band-'+ccy+'-'+key+'">'+band.label+'</span>'+
+      '<span class="mono" style="color:var(--text-faint);font-size:15px;" id="secraw-'+ccy+'-'+key+'">'+(calc.raw>0?"+":"")+calc.raw+' / '+calc.max+'</span></div>'+
+      '<table><thead><tr><th>Indicator</th><th>Weight</th><th>Actual</th><th>Forecast</th><th>Surprise</th><th>Bias</th><th></th></tr></thead>'+
+      '<tbody>'+indicatorRows(ccy,key,d[key])+'</tbody></table>'+
+      (unlockedLocally? '<button class="add-btn" data-action="add" data-ccy="'+ccy+'" data-sector="'+key+'">+ add indicator</button>':'')+'</div>';
+  }
+  html += '</div></div></div>';
+  document.getElementById("detailBody").innerHTML=html;
+  wireDetailEvents();
+  autoGrowGuidance(document.querySelector('.guidance-box[data-ccy="'+ccy+'"]'));
+}
+
+function wireDetailEvents(){
+  var body=document.getElementById("detailBody"); if(!body) return;
+  body.addEventListener("input", onDetailInput); body.addEventListener("change", onDetailInput);
+  body.addEventListener("focusin", function(){ isTyping = true; });
+  body.addEventListener("focusout", function(){ isTyping = false; });
+
+  var rmBtns=body.querySelectorAll('[data-action="rm"]');
+  for(var i=0;i<rmBtns.length;i++){ rmBtns[i].onclick=function(){
+    if(!unlockedLocally) return;
+    var ccy=this.dataset.ccy, sector=this.dataset.sector, idx=+this.dataset.idx;
+    DATA[ccy][sector].splice(idx,1); scheduleSave(); renderDetailBody(ccy); updateComputed();
+  }; }
+  var addBtns=body.querySelectorAll('[data-action="add"]');
+  for(var j=0;j<addBtns.length;j++){ addBtns[j].onclick=function(){
+    if(!unlockedLocally) return;
+    var ccy=this.dataset.ccy, sector=this.dataset.sector;
+    DATA[ccy][sector].push({name:"New indicator",weight:5,actual:"",forecast:"",bias:"Neutral"});
+    scheduleSave(); renderDetailBody(ccy); updateComputed();
+  }; }
+}
+function onDetailInput(e){
+  var t=e.target; if(!unlockedLocally || !t.dataset || !t.dataset.role) return;
+  var ccy=t.dataset.ccy;
+  if(t.dataset.role==="indicator"){
+    var sector=t.dataset.sector, idx=+t.dataset.idx, field=t.dataset.field;
+    var val = field==="weight" ? Number(t.value) : t.value;
+    DATA[ccy][sector][idx][field]=val;
+    if(field==="bias"){ t.className="bias-select "+val; }
+    scheduleSave();
+    updateSectorChip(ccy,sector);
+    if(field==="actual"||field==="forecast"||field==="bias"){ updateSurpriseCell(ccy,sector,idx); }
+    updateComputed();
+  } else if(t.dataset.role==="ccyfield"){
+    DATA[ccy][t.dataset.field]=t.value;
+    if(t.dataset.field==="nextMove"){ t.className="move-select "+t.value; }
+    if(t.dataset.field==="conviction"){ t.className="conv-select "+t.value.split(" ")[0]; }
+    if(t.dataset.field==="guidance"){ autoGrowGuidance(t); }
+    if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias" || t.dataset.field==="seasonality"){ t.className="bias-select "+t.value; }
+    if(t.dataset.field==="changePct"){ t.setAttribute("style", changePctColor(t.value)); }
+    if(t.dataset.field==="longPct" || t.dataset.field==="shortPct"){
+      var lsColors=longShortColors(DATA[ccy].longPct, DATA[ccy].shortPct);
+      var lEl=document.querySelector('input[data-ccy="'+ccy+'"][data-field="longPct"]');
+      var sEl=document.querySelector('input[data-ccy="'+ccy+'"][data-field="shortPct"]');
+      if(lEl) lEl.setAttribute("style", lsColors.longStyle);
+      if(sEl) sEl.setAttribute("style", lsColors.shortStyle);
+    }
+    scheduleSave();
+    updateComputed();
+  }
+}
+function updateSurpriseCell(ccy,sector,idx){
+  var cell=document.getElementById("surprise-"+ccy+"-"+sector+"-"+idx); if(!cell) return;
+  var ind=DATA[ccy][sector][idx];
+  cell.textContent=surpriseFor(ind.actual,ind.forecast);
+  cell.style.color = ind.bias==="Bullish"?"var(--bullish-strong)":ind.bias==="Bearish"?"var(--bearish-strong)":"var(--text-dim)";
+}
+function updateSectorChip(ccy,sector){
+  var el=document.getElementById("band-"+ccy+"-"+sector); if(!el) return;
+  var f=fundFor(ccy), calc=sector==="growth"?f.g:(sector==="inflation"?f.inf:f.l), band=sectorBand(calc.raw,calc.max);
+  el.className=sectorChipClass(band.label); el.textContent=band.label;
+  var rawEl=document.getElementById("secraw-"+ccy+"-"+sector);
+  if(rawEl) rawEl.textContent=(calc.raw>0?"+":"")+calc.raw+" / "+calc.max;
+}
+
+function smoothPath(pts){
+  if(pts.length<2) return "";
+  var d="M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1)+" ";
+  for(var i=0;i<pts.length-1;i++){
+    var p0=pts[i===0?0:i-1], p1=pts[i], p2=pts[i+1], p3=pts[i+2<pts.length?i+2:i+1];
+    var c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+    var c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+    d += "C"+c1x.toFixed(1)+","+c1y.toFixed(1)+" "+c2x.toFixed(1)+","+c2y.toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1)+" ";
+  }
+  return d;
+}
+function filterDaysByRange(days, range){
+  if(!range || range==="ALL") return days;
+  var lookback = range==="1M" ? 30 : (range==="3M" ? 90 : (range==="1Y" ? 365 : null));
+  if(!lookback) return days;
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate()-lookback);
+  var cutoffKey = cutoff.toISOString().slice(0,10);
+  return days.filter(function(d){ return d>=cutoffKey; });
+}
+function sparkline(pair){
+  var w=110,h=30,pad=3;
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
+  if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:12px;">—</span>';
+  var days=allDays.slice(-30);
+  var vals=days.map(function(dt){ return DAILY[dt][pair]; });
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
+  var range=max-min;
+  var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
+  var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+  var gradId="spark-"+pair.replace(/[^A-Za-z0-9]/g,"");
+  var linePath=smoothPath(pts), baseY=h-pad;
+  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;">'+
+    '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+col+'" stop-opacity="0.3"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
+    '</linearGradient></defs>'+
+    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
+    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+function bigChart(pair, rangeSel){
+  var w=680,h=170,pad=30;
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
+  var days=filterDaysByRange(allDays, rangeSel);
+  if(days.length<2){
+    var msg = allDays.length<2
+      ? "Not enough history yet — click Recalculate on at least two different days to start a trend line."
+      : "No logged data falls inside this window — try a wider range.";
+    return '<div class="building">'+msg+'</div>';
+  }
+  var vals=days.map(function(dt){ return DAILY[dt][pair]; });
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
+  var range=max-min;
+  var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
+  var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+  var colStrong = vals[vals.length-1]>=vals[0] ? "var(--bullish-strong)" : "var(--bearish-strong)";
+  var labels="";
+  for(var i=0;i<days.length;i++){
+    if(days.length>8 && i%Math.ceil(days.length/8)!==0 && i!==days.length-1) continue;
+    var x=pad+(i/(vals.length-1))*(w-2*pad);
+    labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="10" fill="var(--text-faint)" text-anchor="middle" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
+  }
+  var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
+  var linePath=smoothPath(pts);
+  var baseY=h-pad;
+  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;">'+
+    '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
+      '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
+    '</linearGradient></defs>'+
+    '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
+    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
+    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+labels+
+    '<text x="'+pad+'" y="16" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+max.toFixed(0)+'</text>'+
+    '<text x="'+pad+'" y="'+(h-pad-2)+'" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+min.toFixed(0)+'</text>'+
+    '</svg>';
+}
+function pairPassesFilter(bias){
+  if(pairFilter==="All") return true;
+  if(pairFilter==="Extremes") return bias==="Very Bullish"||bias==="Very Bearish";
+  if(pairFilter==="Bullish") return bias==="Bullish";
+  if(pairFilter==="Bearish") return bias==="Bearish";
+  return true;
+}
+function renderPairs(){
+  if(!DATA) return;
+  var scores=allScores(), pairsAll=buildPairs(scores);
+  var pairs=pairsAll.filter(function(p){ return pairPassesFilter(p.bias); });
+  if(pairFilter==="Bearish") pairs=pairs.slice().reverse();
+  var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
+  var rows="";
+  if(!pairs.length){
+    rows='<tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+  }
+  for(var i=0;i<pairs.length;i++){
+    var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
+    rows += '<tr class="rowhover pair-row" data-pair="'+p.pair+'"><td class="mono" style="color:var(--text-faint);">'+(i+1)+'</td>'+
+      '<td class="ccy-name">'+p.pair+'</td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+
+      '<td class="mono">'+fmt(p.score)+'</td>'+
+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+
+      '<td>'+sparkline(p.pair)+'</td></tr>';
+  }
+  var logRows="";
+  for(var j=0;j<Math.min(LOG.length,8);j++){
+    var l=LOG[j], dt=new Date(l.ts);
+    logRows += '<tr><td class="mono">'+dt.toLocaleDateString()+' &middot; '+dt.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</td>'+
+      '<td class="mono">'+l.mostBullish.pair+' '+fmt(l.mostBullish.score)+'</td><td class="mono">'+l.mostBearish.pair+' '+fmt(l.mostBearish.score)+'</td></tr>';
+  }
+  var expandedHtml="";
+  if(expandedPair){
+    var rangeBtns = ["1M","3M","1Y","ALL"].map(function(r){
+      return '<button class="range-btn'+(expandedRange===r?" active":"")+'" data-range="'+r+'">'+r+'</button>';
+    }).join("");
+    expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span>'+
+      '<div style="display:flex;align-items:center;gap:12px;"><div class="range-switch">'+rangeBtns+'</div>'+
+      '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
+      bigChart(expandedPair, expandedRange)+'</div></div>';
+  }
+  var filterBtns = [["All","All"],["Extremes","Extremes only"],["Bullish","Bullish only"],["Bearish","Bearish only"]].map(function(fb){
+    return '<button class="range-btn'+(pairFilter===fb[0]?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
+  }).join("");
+  var html = '<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
+    '<div class="legend-line" style="margin:0;">Pair direction follows standard FX convention: EUR &gt; GBP &gt; AUD &gt; NZD &gt; USD &gt; CAD &gt; JPY as base. Click any row to pop its trend chart up here.</div>'+
+    (unlockedLocally? '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
+      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>':'')+'</div>'+
+    expandedHtml+
+    '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;"><h3 style="margin:0;">Pair Ranking — Most Bullish to Most Bearish</h3>'+
+    '<div class="range-switch">'+filterBtns+'</div></div>'+
+    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Relative</th><th>Trend (30d)</th></tr></thead>'+
+    '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
+    (LOG.length? '<div class="card"><h3>Recalculation Log</h3><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div>':'');
+  document.getElementById("tab-pairs").innerHTML=html;
+  var btn=document.getElementById("recalcBtn");
+  if(btn){ btn.onclick=async function(){
+    var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
+    for(var k=0;k<pr.length;k++){ snap[pr[k].pair]=pr[k].score; }
+    DAILY[todayKey]=snap;
+    var nowTs=new Date().toISOString();
+    var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
+    var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
+      && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
+    if(sameAsTop){
+      // Result hasn't changed since the last log entry — just refresh its timestamp instead of stacking a duplicate row.
+      LOG[0].ts = nowTs;
+    } else {
+      LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
+    }
+    if(LOG.length>50) LOG=LOG.slice(0,50);
+    saveDataNow();
+    renderPairs();
+  }; }
+  var clearBtn=document.getElementById("clearHistBtn");
+  if(clearBtn){ clearBtn.onclick=function(){
+    if(!confirm("Clear all trend history and the recalculation log? This wipes every logged day so the trend chart starts fresh from your next recalculate. This can't be undone.")) return;
+    DAILY={}; LOG=[]; expandedPair=null;
+    saveDataNow();
+    renderPairs();
+  }; }
+  var prows=document.querySelectorAll(".pair-row");
+  for(var q=0;q<prows.length;q++){ prows[q].onclick=function(){ expandedPair = (expandedPair===this.dataset.pair)? null : this.dataset.pair; renderPairs(); }; }
+  var closeX=document.getElementById("closeChart");
+  if(closeX){ closeX.onclick=function(){ expandedPair=null; renderPairs(); }; }
+  var rangeBtnsEl=document.querySelectorAll(".range-btn");
+  for(var rI=0;rI<rangeBtnsEl.length;rI++){ rangeBtnsEl[rI].onclick=function(e){
+    e.stopPropagation();
+    if(this.dataset.filter){ pairFilter=this.dataset.filter; renderPairs(); return; }
+    expandedRange=this.dataset.range; renderPairs();
+  }; }
+}
+
+function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function onCcyFieldInput(e){
+  var t=e.target; if(!unlockedLocally || !t.dataset || t.dataset.role!=="ccyfield") return;
+  DATA[t.dataset.ccy][t.dataset.field]=t.value; scheduleSave(); updateComputed();
+}
+function updateComputed(){
+  if(!DATA) return;
+  var scores=allScores();
+  if(document.getElementById("tab-overview")) fillOverviewRows(scores);
+  for(var i=0;i<CCYS.length;i++){
+    var cotEl=document.getElementById("rawcot-"+CCYS[i]); if(cotEl){ var cs=getCotScore(CCYS[i]); cotEl.textContent=cotInstBand(cs); cotEl.setAttribute("style",instColorStyle(cotInstBand(cs))); }
+  }
+  
+  if(document.getElementById("syncDataStr")){
+    document.getElementById("syncDataStr").value = btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG}));
+  }
+
+  var c=activeDetailCcy, sc=scores[c];
+  var needle=document.getElementById("gaugeNeedle-"+c);
+  if(needle){ var g=gaugeGeom(sc); needle.setAttribute("x2",g.nx); needle.setAttribute("y2",g.ny); }
+  var txt=document.getElementById("gaugeScoreTxt-"+c); if(txt) txt.textContent=fmt(sc);
+  var chip=document.getElementById("gaugeBiasChip-"+c); if(chip){ var lbl=bandLabel(sc); chip.className=chipClass(lbl); chip.textContent=lbl; }
+  var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
+  var ssc=document.getElementById("statSeasCot-"+c); if(ssc){ var scv=seasCotScore(c); ssc.textContent=fmt(scv); ssc.setAttribute("style",numColor(scv)); }
+  var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
+  var alignEl=document.getElementById("statAlign-"+c);
+  if(alignEl){
+    var align2=alignmentFor(c);
+    var flagged2=align2 && align2.pct>=80;
+    var alignColor2=!align2?"color:var(--text-faint);":(align2.pct>=80?(align2.dir==="Bullish"?"color:var(--bullish-strong);":"color:var(--bearish-strong);"):"color:var(--text-dim);");
+    var alignTxt2=!align2?"No clear lean yet":((flagged2?'&#9873; ':'')+align2.pct+"% of the evidence agrees "+align2.dir.toLowerCase()+" ("+alignmentLabel(align2)+")");
+    alignEl.setAttribute("style", alignColor2+"text-align:right;max-width:170px;font-size:12.5px;font-weight:600;");
+    alignEl.innerHTML=alignTxt2;
+  }
+  var y2Now=y2Calc(c);
+  var y2ScoreEl=document.getElementById("stat2YScore-"+c);
+  if(y2ScoreEl){ y2ScoreEl.textContent=y2ScoreFmt(y2Now.score); y2ScoreEl.className="mono "+y2TrendClass(y2Now.score); }
+  var y2TrendEl=document.getElementById("stat2YTrend-"+c);
+  if(y2TrendEl){ y2TrendEl.textContent=y2TrendLabel(y2Now.score); y2TrendEl.className="y2-small "+y2TrendClass(y2Now.score); }
+  var seasEl=document.getElementById("seasTxt-"+c);
+  if(seasEl){ seasEl.textContent=DATA[c].seasonality; seasEl.style.color = DATA[c].seasonality==="Bullish"?"var(--bullish-strong)":DATA[c].seasonality==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
+  
+  var instEl=document.getElementById("instBiasTxt-"+c);
+  if(instEl){ 
+    var cs = getCotScore(c);
+    var ib = cotInstBand(cs); 
+    instEl.textContent=ib + " ("+(cs>0?"+":"")+cs+")"; 
+    instEl.setAttribute("style",instColorStyle(ib)); 
+  }
+  var netEl=document.getElementById("cotNetTxt-"+c);
+  if(netEl){ netEl.textContent=DATA[c].cotNet; netEl.style.color = DATA[c].cotNet==="Bullish"?"var(--bullish-strong)":DATA[c].cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
+  var chgEl=document.getElementById("cotChangeBiasTxt-"+c);
+  if(chgEl){ chgEl.textContent=(DATA[c].cotChangeBias||"Neutral"); chgEl.style.color = (DATA[c].cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(DATA[c].cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
+  
+  if(document.getElementById("pairRows")) renderPairs();
+}
+
+function renderAllStatic(){ renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); }
+window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
+
+async function init(){
+  loadAuthFromStorage();
+  if(AUTH.accessToken){
+    if(AUTH.expiresAt && AUTH.expiresAt - Date.now() < 5*60*1000){
+      await authRefresh();
+    }
+    if(AUTH.accessToken) unlockedLocally=true;
+  }
+
+  var savedTheme="white";
+  try{ savedTheme = localStorage.getItem('twp_theme_pref') || "white"; }catch(e){}
+  applyTheme(savedTheme);
+  var themeBtns=document.querySelectorAll("#themeSwitch .theme-btn");
+  for(var ti=0;ti<themeBtns.length;ti++){ themeBtns[ti].onclick=function(){ applyTheme(this.dataset.theme); }; }
+  var tabBtns=document.querySelectorAll(".tab-btn");
+  for(var i=0;i<tabBtns.length;i++){ tabBtns[i].onclick=function(){ switchTab(this.dataset.tab); }; }
+  
+  var msb = document.getElementById("manualSaveBtn");
+  if(msb) {
+    msb.onclick = function() {
+      saveDataNow();
+      var orig = this.textContent;
+      this.textContent = "Saved!";
+      var btn = this;
+      setTimeout(function(){ btn.textContent = orig; }, 1500);
+    };
+  }
+
+  let loaded = false;
+
+  function migrateLegacyYieldFields(){
+    if(!DATA) return false;
+    var changed=false;
+    for(var i=0;i<CCYS.length;i++){
+      var c=CCYS[i];
+      if(Object.prototype.hasOwnProperty.call(DATA[c],"yield")){ delete DATA[c].yield; changed=true; }
+      if(Object.prototype.hasOwnProperty.call(DATA[c],"prevYield")){ delete DATA[c].prevYield; changed=true; }
+    }
+    return changed;
+  }
+
+  // Supabase is the shared source of truth. Load it first so every browser
+  // starts from the same dashboard state.
+  try {
+    const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at", { useAuth: true });
+    if (rows && rows.length && rows[0].payload) {
+      const parsed = JSON.parse(rows[0].payload);
+      if (parsed && parsed.DATA && Object.keys(parsed.DATA).length) {
+        DATA = parsed.DATA;
+        SETTINGS = parsed.SETTINGS || {passwordHash:null};
+        DAILY = parsed.DAILY || {};
+        LOG = parsed.LOG || [];
+        YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
+        localStorage.setItem('twp_dashboard_state_v4', rows[0].payload);
+        loaded = true;
+      }
+    }
+  } catch(e) {
+    console.error("Supabase load error:", e);
+  }
+
+  // First-time migration: if the shared row is still empty, preserve the
+  // existing local dashboard data from this browser and upload it once.
+  if (!loaded) {
+    if (!loadLocalCache()) DATA = seed();
+    try {
+      await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+        method: "PATCH",
+        useAuth: true,
+        headers: { "Prefer": "return=minimal" },
+        body: JSON.stringify({
+          payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG}),
+          updated_at: new Date().toISOString()
+        })
+      });
+      updateStatus("Cloud initialized", "var(--bullish-strong)");
+    } catch(e) {
+      console.error("Initial cloud migration failed:", e);
+    }
+  }
+
+  // Apply the fundamental model migration to the loaded DATA before rendering.
+  // When cloud auth is unavailable, keep the migrated local/in-memory state rather
+  // than letting the first cloud poll overwrite it with the old saved roster.
+  var fundamentalMigrated = migrateFundamentalModel();
+  if(fundamentalMigrated){
+    try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE})); } catch(e) {}
+    if(AUTH.accessToken){ await saveDataNow(); }
+  }
+
+  if(migrateLegacyYieldFields()){
+    if(AUTH.accessToken){ await saveDataNow(); }
+    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE})); } catch(e) {} }
+  }
+
+  renderLockBox();
+  renderAllStatic();
+
+  updateStatus("Connecting to cloud...", "var(--text-dim)");
+  // Poll for changes so every open dashboard receives the shared state.
+  // This avoids requiring any paid realtime service and works on GitHub Pages.
+  let lastCloudUpdatedAt = null;
+  async function pullCloudState(){
+    try {
+      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=id,payload,updated_at", { useAuth: true });
+      if (!rows || !rows.length || !rows[0].payload) return;
+      const row = rows[0];
+      if (lastCloudUpdatedAt === row.updated_at) return;
+      lastCloudUpdatedAt = row.updated_at;
+      if (isSaving) return;
+      const parsed = JSON.parse(row.payload);
+      if (!parsed || !parsed.DATA) return;
+      DATA = parsed.DATA;
+      SETTINGS = parsed.SETTINGS || {passwordHash:null};
+      DAILY = parsed.DAILY || {};
+      LOG = parsed.LOG || [];
+      YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
+      var pullMigrated = migrateFundamentalModel();
+      var migratedPayload = JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE});
+      localStorage.setItem('twp_dashboard_state_v4', migratedPayload);
+      if(pullMigrated && AUTH.accessToken){
+        try {
+          DATA._updatedAt = new Date().toISOString();
+          await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
+            method:"PATCH", useAuth:true, headers:{"Prefer":"return=minimal"},
+            body:JSON.stringify({payload:migratedPayload, updated_at:DATA._updatedAt})
+          });
+          lastCloudUpdatedAt = null;
+        } catch(e) { console.error("Cloud fundamental migration save failed:", e); }
+      }
+      if (!isTyping) {
+        renderAllStatic();
+        renderLockBox();
+      } else {
+        updateComputed();
+      }
+      updateStatus("Live synced", "var(--text-faint)");
+    } catch(e) {
+      console.error("Cloud sync error:", e);
+    }
+  }
+  pullCloudState();
+  setInterval(pullCloudState, 5000);
+
+}
+
+init();
+</script>
+
+</body>
+</html>
