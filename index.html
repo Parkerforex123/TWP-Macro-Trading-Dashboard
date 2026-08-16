@@ -590,75 +590,6 @@ function updateStatus(msg, color) {
   }
 }
 
-function migrateFundamentalModel(){
-  if(!DATA) return false;
-  var changed=false;
-  var weights={
-    USD:{growth:{"GDP Growth Rate QoQ":7,"ISM Manufacturing PMI":6,"ISM Services PMI":10,"Retail Sales MoM":8},inflation:{"Core PCE YoY":10,"Core Inflation Rate MoM":7,"Core Inflation Rate YoY":8,"Inflation Rate YoY":9},labour:{"Non Farm Payrolls":10,"Unemployment Rate":8,"Average Hr Earnings YoY":9,"JOLTs Job Openings":6}},
-    GBP:{growth:{"GDP Growth Rate":7,"Composite PMI Flash":5,"Services PMI":9,"Retail Sales MoM":6},inflation:{"Services Inflation":9,"Core Inflation Rate YoY":7,"3M Output Price Exp":4,"Inflation Rate YoY":10},labour:{"Unemployment Rate":5,"Claimant Count Change":6,"Average Earnings":10}},
-    EUR:{growth:{"GDP Growth Rate":6,"Services PMI":8,"Composite PMI":8,"Retail Sales m/m":5,"IFO Business Climate":5,"ZEW Economic Sentiment":4},inflation:{"Core Inflation Rate YoY":9,"Inflation Rate YoY":10,"Services Inflation":9,"Inflation Expectations 3Y":5},labour:{"Negotiated Wages":8,"Unemployment Rate":4,"Employment Change":5}},
-    JPY:{growth:{"GDP Growth Rate":6,"Tankan Manufacturers":8,"Industrial Prod MoM":5,"Retail Sales YoY":5},inflation:{"Tokyo Core CPI YoY":9,"CPI Ex-Food & Energy":7,"National Core CPI y/y":10,"Services Inflation":7},labour:{"Unemployment Rate":3,"Jobs/applications ratio":4,"Average Earnings y/y":10}},
-    AUD:{growth:{"GDP Growth Rate":6,"Household Spending YoY":5,"NAB Business Confidence":5,"Manufacturing PMI":4,"Terms of Trade":5},inflation:{"Inflation Rate YoY":9,"Trimmed Mean CPI YoY":10,"RBA Weighted Median CPI YoY":8},labour:{"Employment Change":9,"Unemployment Rate":8,"Wage Price Index YoY":7}},
-    NZD:{growth:{"GDP Growth Rate":6,"ANZ Business Confidence":6,"Retail Sales MoM":4,"Manufacturing PMI":4,"Global Dairy Trade Price":7,"Terms of Trade":5},inflation:{"Inflation Rate YoY":10,"Core Inflation Rate":8,"Business Inflation Exp":6},labour:{"Unemployment Rate":5,"Employment Change":5,"Labor Cost Index q/q":8}},
-    CAD:{growth:{"GDP m/m":6,"Ivey PMI s.a":4,"Capacity Utilization":5,"Retail Sales Ex Autos":5,"Terms of Trade":5},inflation:{"Inflation Rate YoY":8,"CPI Trimmed-Mean YoY":9,"CPI Median YoY":9},labour:{"Employment Change":8,"Unemployment Rate":6,"Average Hr Wages YoY":6}}
-  };
-  // EUR Employment Change belongs to Labour, not Growth. Preserve its existing release data when moving it.
-  if(DATA.EUR){
-    var eurGrowth=Array.isArray(DATA.EUR.growth)?DATA.EUR.growth:[];
-    var eurLabour=Array.isArray(DATA.EUR.labour)?DATA.EUR.labour:[];
-    var movedEmployment=null;
-    for(var ei=eurGrowth.length-1;ei>=0;ei--){
-      if(normalize(eurGrowth[ei].name)==="employment change") {
-        movedEmployment = eurGrowth.splice(ei,1)[0];
-        changed=true;
-        break;
-      }
-    }
-    var labourEmployment=null;
-    for(var ej=0;ej<eurLabour.length;ej++){
-      if(normalize(eurLabour[ej].name)==="employment change") { labourEmployment=eurLabour[ej]; break; }
-    }
-    if(movedEmployment && !labourEmployment){
-      movedEmployment.weight=5;
-      eurLabour.push(movedEmployment);
-      changed=true;
-    } else if(labourEmployment){
-      if(Number(labourEmployment.weight)!==5){ labourEmployment.weight=5; changed=true; }
-    }
-    DATA.EUR.growth=eurGrowth;
-    DATA.EUR.labour=eurLabour;
-  }
-
-  Object.keys(weights).forEach(function(ccy){
-    var d=DATA[ccy]; if(!d) return;
-    ["growth","inflation","labour"].forEach(function(sector){
-      if(!Array.isArray(d[sector])) d[sector]=[];
-      var list=d[sector];
-      // Remove accidental blank indicator rows and the one explicitly retired scored series.
-      for(var i=list.length-1;i>=0;i--){
-        var nm=String(list[i]&&list[i].name||"").trim();
-        if(!nm || (ccy==="USD" && normalize(nm)==="5y inflation expectations")){
-          list.splice(i,1); changed=true;
-        }
-      }
-      var desired=weights[ccy][sector]||{};
-      Object.keys(desired).forEach(function(name){
-        var found=null;
-        for(var i=0;i<list.length;i++){
-          if(normalize(list[i].name)===normalize(name)){ found=list[i]; break; }
-        }
-        if(!found){
-          found={name:name,weight:desired[name],actual:"",forecast:"",bias:"Neutral"};
-          list.push(found); changed=true;
-        } else if(Number(found.weight)!==Number(desired[name])){
-          found.weight=desired[name]; changed=true;
-        }
-      });
-    });
-  });
-  return changed;
-}
-
 function loadLocalCache() {
   try {
     var stored = localStorage.getItem('twp_dashboard_state_v4');
@@ -997,7 +928,7 @@ function y2Calc(ccy){
   // 4) 60D position is a slower structural check (1),
   // 5) change in the 21D distance measures acceleration/deceleration (2).
   // Total possible yield score remains exactly -10 to +10.
-  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -20,-8,8,20 ],3);
+  var c1=sma21==null?null:y2ScoreBand((cur-sma21)*100,[ -15,-3,3,15 ],3);
   var c2=week==null?null:y2ScoreBand(week*100,[ -20,-7,7,20 ],2);
   var c3=month==null?null:y2ScoreBand(month*100,[ -30,-10,10,30 ],2);
   var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -30,-10,10,30 ],1);
@@ -1006,7 +937,7 @@ function y2Calc(ccy){
   if(histVals.length>=22){ var last22=histVals.slice(-22); prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21; }
   var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
   var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
-  var c5=distChange==null?null:y2ScoreBand(distChange,[ -15,-5,5,15 ],2);
+  var c5=distChange==null?null:y2ScoreBand(distChange,[ -12,-3,3,12 ],2);
   var comps=[c1,c2,c3,c4,c5];
   // Normalize to the full -10..+10 scale using only components that are available.
   // A missing component no longer blanks the entire yield score. The component
@@ -1913,14 +1844,12 @@ async function init(){
     }
   }
 
-  // Apply the fundamental model migration to the loaded DATA before rendering.
-  // When cloud auth is unavailable, keep the migrated local/in-memory state rather
-  // than letting the first cloud poll overwrite it with the old saved roster.
-  var fundamentalMigrated = migrateFundamentalModel();
-  if(fundamentalMigrated){
-    try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE})); } catch(e) {}
-    if(AUTH.accessToken){ await saveDataNow(); }
-  }
+  // The one-time fundamental-model migration has already done its job and is
+  // permanently retired. It must never run again — it used to reset any
+  // manually rebalanced indicator weight back to an old fixed list every time
+  // the dashboard polled the cloud, silently undoing real edits. Your current
+  // indicator set and weights, whatever you've set them to, are now the
+  // permanent source of truth and nothing in this file will overwrite them.
 
   if(migrateLegacyYieldFields()){
     if(AUTH.accessToken){ await saveDataNow(); }
@@ -1949,19 +1878,7 @@ async function init(){
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
-      var pullMigrated = migrateFundamentalModel();
-      var migratedPayload = JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE});
-      localStorage.setItem('twp_dashboard_state_v4', migratedPayload);
-      if(pullMigrated && AUTH.accessToken){
-        try {
-          DATA._updatedAt = new Date().toISOString();
-          await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
-            method:"PATCH", useAuth:true, headers:{"Prefer":"return=minimal"},
-            body:JSON.stringify({payload:migratedPayload, updated_at:DATA._updatedAt})
-          });
-          lastCloudUpdatedAt = null;
-        } catch(e) { console.error("Cloud fundamental migration save failed:", e); }
-      }
+      localStorage.setItem('twp_dashboard_state_v4', row.payload);
       if (!isTyping) {
         renderAllStatic();
         renderLockBox();
