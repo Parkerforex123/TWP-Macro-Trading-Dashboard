@@ -85,6 +85,14 @@ body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-be
 .y2-input{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;width:100%;}
 .y2-input:focus{outline:none;border-color:var(--amber);}
 .y2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.conflict-row{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 0;border-top:1px solid var(--border);font-size:13px;}
+.conflict-row:first-of-type{border-top:none;margin-top:8px;}
+.conflict-date{color:var(--text-dim);min-width:90px;}
+.conflict-ccy{font-weight:700;color:var(--amber);min-width:36px;}
+.conflict-vals{flex:1 1 200px;color:var(--text-dim);}
+.conflict-vals b{color:var(--text);}
+.conflict-actions{display:flex;gap:6px;flex:0 0 auto;}
+.conflict-actions .y2-btn{padding:5px 10px;font-size:11.5px;width:auto;}
 .y2-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
 .y2-btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
 .y2-btn:hover{filter:brightness(.97);}
@@ -1056,7 +1064,8 @@ function y2ImportCsvText(text){
       if(oldVal==null || Math.abs(oldVal-r[c])>0.0005){ mismatch.push(c); }
     });
     if(mismatch.length){
-      conflicts.push({date:r.date, currencies:mismatch});
+      var detail=mismatch.map(function(c){ return {ccy:c, stored:y2Num(old[c]), imported:r[c]}; });
+      conflicts.push({date:r.date, currencies:mismatch, detail:detail});
     } else {
       skipped++;
     }
@@ -1074,6 +1083,56 @@ function y2ImportCsvText(text){
     conflicts:conflicts,
     finalCount:finalCount
   };
+}
+var PENDING_YIELD_CONFLICTS=[];
+function y2ResolveConflict(date, ccy, useImported){
+  // Applies an explicit, per-cell decision the user already reviewed and approved.
+  // Scope is strictly limited to this one date+currency cell — nothing else in
+  // the historical record is touched, and this never runs automatically.
+  var idx=(YIELD_ENGINE.history||[]).findIndex(function(r){return r.date===date;});
+  if(idx===-1) return false;
+  if(useImported){
+    var conflict=PENDING_YIELD_CONFLICTS.find(function(c){return c.date===date;});
+    var d=conflict?conflict.detail.find(function(x){return x.ccy===ccy;}):null;
+    if(!d) return false;
+    YIELD_ENGINE.history[idx][ccy]=d.imported;
+  }
+  // Remove this cell from the pending list either way — "keep stored" just dismisses it.
+  PENDING_YIELD_CONFLICTS.forEach(function(c){
+    if(c.date===date){ c.detail=c.detail.filter(function(x){return x.ccy!==ccy;}); c.currencies=c.currencies.filter(function(x){return x!==ccy;}); }
+  });
+  PENDING_YIELD_CONFLICTS=PENDING_YIELD_CONFLICTS.filter(function(c){return c.detail.length>0;});
+  return true;
+}
+function renderYieldConflictPanel(){
+  var host=document.getElementById('yieldConflictPanel');
+  if(!host) return;
+  if(!PENDING_YIELD_CONFLICTS.length){ host.innerHTML=''; return; }
+  var rows='';
+  PENDING_YIELD_CONFLICTS.forEach(function(c){
+    c.detail.forEach(function(d){
+      rows+='<div class="conflict-row">'+
+        '<span class="conflict-date mono">'+c.date+'</span>'+
+        '<span class="conflict-ccy">'+d.ccy.replace("_2Y","")+'</span>'+
+        '<span class="conflict-vals">Stored <b class="mono">'+d.stored+'</b> &nbsp;vs&nbsp; Imported <b class="mono">'+d.imported+'</b></span>'+
+        '<span class="conflict-actions">'+
+          '<button class="y2-btn" data-resolve="keep" data-date="'+c.date+'" data-ccy="'+d.ccy+'">Keep stored</button>'+
+          '<button class="y2-btn primary" data-resolve="use" data-date="'+c.date+'" data-ccy="'+d.ccy+'">Use imported</button>'+
+        '</span></div>';
+    });
+  });
+  host.innerHTML='<div class="card"><h3>Unresolved yield conflicts</h3>'+
+    '<div class="legend-line">These dates already exist in your history with a different value than the file you imported. Nothing has been changed. Review each one and choose which value is correct — only that exact cell will be updated.</div>'+
+    rows+'</div>';
+  host.querySelectorAll('[data-resolve]').forEach(function(btn){
+    btn.onclick=function(){
+      var date=btn.dataset.date, ccy=btn.dataset.ccy, useImported=btn.dataset.resolve==='use';
+      if(y2ResolveConflict(date, ccy, useImported)){
+        saveDataNow(); renderYield2Y(); renderYieldConflictPanel();
+        updateStatus(useImported?('Updated '+ccy.replace("_2Y","")+' '+date+' to imported value'):('Kept stored value for '+ccy.replace("_2Y","")+' '+date), 'var(--bullish-strong)');
+      }
+    };
+  });
 }
 function y2RenderRows(){
   var tb=document.getElementById('y2Rows'); if(!tb) return;
@@ -1110,6 +1169,7 @@ function renderYield2Y(){
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
     '<div class="card"><h3>2Y Yield Score</h3><div class="table-scroll"><table><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>60D Avg</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
+    '<div id="yieldConflictPanel"></div>'+
     '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
     '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
@@ -1138,8 +1198,9 @@ function renderYield2Y(){
         'Final rows: '+report.finalCount+
         (report.newDates.length?'\n\nNew date range: '+report.newDates[0]+' \u2192 '+report.newDates[report.newDates.length-1]:'');
       if(report.conflicts.length){
-        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed:\n';
-        report.conflicts.forEach(function(c){ msg+='  '+c.date+': '+c.currencies.join(', ')+'\n'; });
+        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed.\nScroll down to \u201cUnresolved yield conflicts\u201d to review and resolve each one.';
+        PENDING_YIELD_CONFLICTS=report.conflicts;
+        renderYieldConflictPanel();
       }
       saveDataNow(); renderYield2Y();
       updateStatus(report.conflicts.length?('CSV imported \u2014 '+report.conflicts.length+' conflict(s) flagged'):'CSV imported \u2014 append-only', report.conflicts.length?'var(--amber)':'var(--bullish-strong)');
@@ -1147,6 +1208,7 @@ function renderYield2Y(){
     }catch(e){alert(e.message);}
   }; reader.readAsText(f);};
   y2RenderRows();
+  renderYieldConflictPanel();
   initHistoricalSpreadPanel();
 }
 
