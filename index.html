@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<script>try{var __t=localStorage.getItem('twp_theme_pref');if(__t==="ash"||__t==="black"){document.documentElement.classList.add(__t);}}catch(e){}</script>
+<script>try{var __t=localStorage.getItem('twp_theme_pref');if(__t==="white") __t="ash"; if(__t==="ash"||__t==="black"){document.documentElement.classList.add(__t);}}catch(e){}</script>
 <title>TWP — Fundamentals Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23181b22%27/%3E%3Ctext x=%2732%27 y=%2742%27 text-anchor=%27middle%27 font-family=%27Arial,sans-serif%27 font-size=%2725%27 font-weight=%27700%27 fill=%27white%27%3ETWP%3C/text%3E%3C/svg%3E">
 <style>
@@ -217,6 +217,49 @@ th{font-size:11.5px;}
 
 .pair-bar{height:6px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden;width:120px;}
 .pair-bar i{position:absolute;top:0;bottom:0;border-radius:4px;}
+
+/* Pair Ranking heatmap — intentionally scoped to the Pair Ranking table only.
+   The full row carries the same bias color so the ranking reads as a heatmap. */
+#tab-pairs .trend-cell{display:flex;align-items:center;gap:8px;min-height:30px;}
+#tab-pairs .pair-name-wrap{display:flex;align-items:center;gap:5px;white-space:nowrap;}
+#tab-pairs .pair-trend-marker{display:inline-flex;align-items:center;gap:3px;min-width:43px;}
+#tab-pairs .pair-trend-arrow{font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:800;line-height:1;width:12px;text-align:center;display:inline-block;}
+#tab-pairs .pair-trend-arrow.trend-up{color:var(--bullish-strong);}
+#tab-pairs .pair-trend-arrow.trend-down{color:var(--bearish-strong);}
+#tab-pairs .pair-trend-arrow.trend-flat{color:var(--text-faint);font-size:11px;}
+#tab-pairs .pair-trend-delta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;line-height:1;}
+#tab-pairs .pair-trend-delta.delta-up{color:var(--bullish-strong);}
+#tab-pairs .pair-trend-delta.delta-down{color:var(--bearish-strong);}
+#tab-pairs .pair-trend-delta.delta-flat{color:var(--text-faint);}
+
+/* Cross-theme heatmap tuning: strong enough to read on white, ash and black. */
+#tab-pairs .pair-row.pair-vbull td{background:rgba(47,127,224,.24);color:var(--text);}
+#tab-pairs .pair-row.pair-bull td{background:rgba(47,127,224,.17);color:var(--text);}
+#tab-pairs .pair-row.pair-lean-bull td{background:rgba(47,127,224,.10);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral td{background:rgba(125,132,145,.12);color:var(--text);}
+#tab-pairs .pair-row.pair-lean-bear td{background:rgba(224,69,63,.10);color:var(--text);}
+#tab-pairs .pair-row.pair-bear td{background:rgba(224,69,63,.17);color:var(--text);}
+#tab-pairs .pair-row.pair-vbear td{background:rgba(224,69,63,.24);color:var(--text);}
+
+/* Ash / Black need stronger luminous saturation against their dark panels. */
+body.ash #tab-pairs .pair-row.pair-vbull td, html.ash #tab-pairs .pair-row.pair-vbull td,
+body.black #tab-pairs .pair-row.pair-vbull td, html.black #tab-pairs .pair-row.pair-vbull td{background:rgba(59,167,255,.34);}
+body.ash #tab-pairs .pair-row.pair-bull td, html.ash #tab-pairs .pair-row.pair-bull td,
+body.black #tab-pairs .pair-row.pair-bull td, html.black #tab-pairs .pair-row.pair-bull td{background:rgba(59,167,255,.25);}
+body.ash #tab-pairs .pair-row.pair-lean-bull td, html.ash #tab-pairs .pair-row.pair-lean-bull td,
+body.black #tab-pairs .pair-row.pair-lean-bull td, html.black #tab-pairs .pair-row.pair-lean-bull td{background:rgba(59,167,255,.15);}
+body.ash #tab-pairs .pair-row.pair-neutral td, html.ash #tab-pairs .pair-row.pair-neutral td,
+body.black #tab-pairs .pair-row.pair-neutral td, html.black #tab-pairs .pair-row.pair-neutral td{background:rgba(128,134,145,.18);}
+body.ash #tab-pairs .pair-row.pair-lean-bear td, html.ash #tab-pairs .pair-row.pair-lean-bear td,
+body.black #tab-pairs .pair-row.pair-lean-bear td, html.black #tab-pairs .pair-row.pair-lean-bear td{background:rgba(255,92,114,.15);}
+body.ash #tab-pairs .pair-row.pair-bear td, html.ash #tab-pairs .pair-row.pair-bear td,
+body.black #tab-pairs .pair-row.pair-bear td, html.black #tab-pairs .pair-row.pair-bear td{background:rgba(255,92,114,.25);}
+body.ash #tab-pairs .pair-row.pair-vbear td, html.ash #tab-pairs .pair-row.pair-vbear td,
+body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.pair-vbear td{background:rgba(255,92,114,.34);}
+/* Keep the rank, score and trend readable over the heatmap. */
+#tab-pairs .pair-row td:first-child{color:var(--text-dim);}
+#tab-pairs .pair-row:hover td{filter:brightness(1.08);}
+
 .recalc-btn{background:var(--amber);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;}
 .recalc-btn:hover{filter:brightness(1.08);}
 .building{color:var(--text-faint);font-size:11.5px;font-style:italic;}
@@ -269,7 +312,6 @@ th{font-size:11.5px;}
   <aside class="rail">
     <div class="brand"><div class="brand-mark">TWP</div>
       <div class="theme-switch" id="themeSwitch">
-        <button class="theme-btn" data-theme="white">White</button>
         <button class="theme-btn" data-theme="ash">Ash</button>
         <button class="theme-btn" data-theme="black">Black</button>
       </div>
@@ -1075,7 +1117,7 @@ function renderYield2Y(){
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
     '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
-  var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value);});}
+  var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value); updateComputed();});}
   var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value;};
   var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
   var close=document.getElementById('y2SaveAsClose'); if(close) close.onclick=function(){
@@ -1552,6 +1594,35 @@ function filterDaysByRange(days, range){
   var cutoffKey = cutoff.toISOString().slice(0,10);
   return days.filter(function(d){ return d>=cutoffKey; });
 }
+function pairTrend30d(pair){
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
+  if(!allDays.length) return {dir:"flat",delta:null,label:"No 30-day trend history yet"};
+
+  /* Use the stored history as the path, but use the live pair score as the
+     current endpoint. This means arrows respond immediately when fundamentals,
+     COT, seasonality or 2Y inputs change, even before today's snapshot is logged. */
+  var days=allDays.slice(-30);
+  var first=Number(DAILY[days[0]][pair]);
+  var scores=allScores();
+  var liveScores=scores || {};
+  var live=Number(liveScores[pair.slice(0,3)]||0)-Number(liveScores[pair.slice(3)]||0);
+  if(!Number.isFinite(live)) live=Number(DAILY[days[days.length-1]][pair]);
+  var delta=Math.round(live-first);
+  if(delta>1) return {dir:"up",delta:delta,label:"30-day score rising"};
+  if(delta< -1) return {dir:"down",delta:delta,label:"30-day score falling"};
+  return {dir:"flat",delta:delta,label:"30-day score broadly flat"};
+}
+function pairTrendMarker(pair){
+  var t=pairTrend30d(pair);
+  var symbol=t.dir==="up"?"▲":(t.dir==="down"?"▼":"—");
+  var arrowCls=t.dir==="up"?"pair-trend-arrow trend-up":(t.dir==="down"?"pair-trend-arrow trend-down":"pair-trend-arrow trend-flat");
+  var deltaCls=t.dir==="up"?"delta-up":(t.dir==="down"?"delta-down":"delta-flat");
+  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta+' pts');
+  return '<span class="pair-trend-marker" title="'+esc(t.label)+(t.delta==null?'':(' · score change vs 30D start: '+(t.delta>0?"+":"")+t.delta+' points'))+'">'+
+    '<span class="'+arrowCls+'">'+symbol+'</span>'+
+    (deltaTxt===""?'':'<span class="pair-trend-delta '+deltaCls+'">'+deltaTxt+'</span>')+
+    '</span>';
+}
 function sparkline(pair){
   var w=110,h=30,pad=3;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
@@ -1617,10 +1688,16 @@ function pairPassesFilter(bias){
   if(pairFilter==="Bearish") return bias==="Bearish";
   return true;
 }
+function sortExtremePairs(pairs){
+  var bulls=pairs.filter(function(p){ return p.bias==="Very Bullish"; }).sort(function(a,b){ return b.score-a.score; });
+  var bears=pairs.filter(function(p){ return p.bias==="Very Bearish"; }).sort(function(a,b){ return a.score-b.score; });
+  return bulls.concat(bears);
+}
 function renderPairs(){
   if(!DATA) return;
   var scores=allScores(), pairsAll=buildPairs(scores);
   var pairs=pairsAll.filter(function(p){ return pairPassesFilter(p.bias); });
+  if(pairFilter==="Extremes") pairs=sortExtremePairs(pairs);
   if(pairFilter==="Bearish") pairs=pairs.slice().reverse();
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
@@ -1629,11 +1706,17 @@ function renderPairs(){
   }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
-    rows += '<tr class="rowhover pair-row" data-pair="'+p.pair+'"><td class="mono" style="color:var(--text-faint);">'+(i+1)+'</td>'+
-      '<td class="ccy-name">'+p.pair+'</td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+
+    var heatClass = p.bias==="Very Bullish" ? "pair-vbull" :
+      p.bias==="Bullish" ? "pair-bull" :
+      p.bias==="Neutral Leaning Bullish" ? "pair-lean-bull" :
+      p.bias==="Neutral Leaning Bearish" ? "pair-lean-bear" :
+      p.bias==="Bearish" ? "pair-bear" :
+      p.bias==="Very Bearish" ? "pair-vbear" : "pair-neutral";
+    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+
+      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+
       '<td class="mono">'+fmt(p.score)+'</td>'+
       '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+
-      '<td>'+sparkline(p.pair)+'</td></tr>';
+      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
   }
   var logRows="";
   for(var j=0;j<Math.min(LOG.length,8);j++){
@@ -1772,8 +1855,9 @@ async function init(){
     if(AUTH.accessToken) unlockedLocally=true;
   }
 
-  var savedTheme="white";
-  try{ savedTheme = localStorage.getItem('twp_theme_pref') || "white"; }catch(e){}
+  var savedTheme="ash";
+  try{ savedTheme = localStorage.getItem('twp_theme_pref') || "ash"; }catch(e){}
+  if(savedTheme!=="ash" && savedTheme!=="black") savedTheme="ash";
   applyTheme(savedTheme);
   var themeBtns=document.querySelectorAll("#themeSwitch .theme-btn");
   for(var ti=0;ti<themeBtns.length;ti++){ themeBtns[ti].onclick=function(){ applyTheme(this.dataset.theme); }; }
