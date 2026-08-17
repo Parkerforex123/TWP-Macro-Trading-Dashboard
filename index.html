@@ -178,7 +178,13 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .guidance-box{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:none;margin-top:8px;overflow-y:auto;}
 .field-label{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
 
-.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin-bottom:18px;padding:14px 16px;background:var(--panel2);border-radius:8px;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;margin-bottom:18px;padding:14px 16px;background:var(--panel2);border-radius:8px;flex:1 1 auto;min-width:0;}
+.info-trend-row{display:flex;gap:14px;align-items:stretch;}
+.trend-panel{flex:0 0 190px;background:var(--panel2);border-radius:8px;padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;justify-content:space-between;}
+.trend-panel .k{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
+.trend-panel .trend-score{font-size:20px;font-weight:700;margin-top:4px;}
+.trend-panel .trend-delta{font-size:12.5px;margin-top:2px;}
+.trend-panel svg{margin-top:10px;color:var(--text-dim);}
 .info-item{display:flex;flex-direction:column;gap:4px;}
 .info-item .k{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
 .info-item .v{font-size:13.5px;font-weight:600;}
@@ -228,6 +234,12 @@ th{font-size:11.5px;}
 #tab-pairs .pair-trend-arrow.trend-up{color:var(--bullish-strong);}
 #tab-pairs .pair-trend-arrow.trend-down{color:var(--bearish-strong);}
 #tab-pairs .pair-trend-arrow.trend-flat{color:var(--text-faint);font-size:11px;}
+#tab-overview .trend-up{color:var(--bullish-strong);font-weight:700;}
+#tab-overview .trend-down{color:var(--bearish-strong);font-weight:700;}
+#tab-overview .trend-flat{color:var(--text-faint);font-size:12px;}
+.trend-panel .trend-up{color:var(--bullish-strong);}
+.trend-panel .trend-down{color:var(--bearish-strong);}
+.trend-panel .trend-flat{color:var(--text-faint);}
 #tab-pairs .pair-trend-delta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;line-height:1;}
 #tab-pairs .pair-trend-delta.delta-up{color:var(--bullish-strong);}
 #tab-pairs .pair-trend-delta.delta-down{color:var(--bearish-strong);}
@@ -333,11 +345,11 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
       </div>
     </div>
     <nav class="tabs">
-      <button class="tab-btn active" data-tab="overview">Overview</button>
-      <button class="tab-btn" data-tab="raw">Raw Inputs</button>
+      <button class="tab-btn active" data-tab="overview">Desk Board</button>
+      <button class="tab-btn" data-tab="raw">Confluence Feed</button>
       <button class="tab-btn" data-tab="detail">Currency Detail</button>
       <button class="tab-btn" data-tab="pairs">Pair Ranking</button>
-      <button class="tab-btn" data-tab="yield2y">2Y Yield Score</button>
+      <button class="tab-btn" data-tab="yield2y">Rate Differential Score</button>
     </nav>
     <div class="lock-box" id="lockBox"></div>
   </aside>
@@ -835,6 +847,84 @@ function surpriseFor(actual,forecast){
   return out+suf;
 }
 
+// ===== Economic Surprise Momentum (auto-derived from actual vs forecast, no new data entry) =====
+var MOMENTUM_DECAY = 0.85; // ~4 releases for a print to lose half its weight
+var MOMENTUM_CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD"];
+
+// Rough "typical move" divisors so a GDP beat and a CPI beat land on a comparable scale.
+// Matched by keyword in the indicator name (checked in order), falling back to unit suffix.
+var SURPRISE_DIVISORS = [
+  ["gdp",0.5],["pmi",1.5],["ism",1.5],["confidence",8],["sentiment",3],
+  ["cpi",0.3],["inflation",0.3],["pce",0.3],["ppi",0.5],
+  ["payroll",60],["nfp",60],["employment change",20],
+  ["unemployment rate",0.2],["claimant",15],["jobless",15],
+  ["earnings",0.3],["wage",0.3],["retail sales",0.4]
+];
+function surpriseDivisor(name, suffix){
+  var n=(name||"").toLowerCase();
+  for(var i=0;i<SURPRISE_DIVISORS.length;i++){ if(n.indexOf(SURPRISE_DIVISORS[i][0])!==-1) return SURPRISE_DIVISORS[i][1]; }
+  if(suffix==="%") return 0.4;
+  if(suffix==="k"||suffix==="K") return 30;
+  return 1;
+}
+function initMomentum(){
+  if(!DATA) return;
+  if(!DATA.MOMENTUM){ DATA.MOMENTUM={}; }
+  MOMENTUM_CCYS.forEach(function(ccy){
+    if(!DATA.MOMENTUM[ccy]) DATA.MOMENTUM[ccy]={score:0,history:[]};
+  });
+}
+// Call this whenever an indicator's actual or forecast is saved. If forecast is blank/N-A,
+// this returns early and the score is left untouched -- a missing consensus is never treated as zero.
+function updateMomentum(ccy, sector, idx){
+  initMomentum();
+  var ind = DATA[ccy] && DATA[ccy][sector] && DATA[ccy][sector][idx];
+  if(!ind) return;
+  var a=parseNum(ind.actual), f=parseNum(ind.forecast);
+  if(!a || !f) return; // no forecast published for this print -> skip, don't touch the score
+  var diff = a.num - f.num;
+  var div = surpriseDivisor(ind.name, a.suffix||f.suffix);
+  var standardized = clamp(diff/div, -3, 3);
+  var m = DATA.MOMENTUM[ccy];
+  m.score = clamp(MOMENTUM_DECAY*m.score + (1-MOMENTUM_DECAY)*standardized, -3, 3);
+  m.history.push({date:(new Date()).toISOString().slice(0,10), score:Math.round(m.score*100)/100});
+  if(m.history.length>26) m.history.shift(); // keep ~6 months of weekly-ish prints
+}
+function momentumLabel(score){
+  if(score>=1.5) return "Very Strong";
+  if(score>=0.5) return "Strong";
+  if(score>-0.5) return "Neutral";
+  if(score>-1.5) return "Weak";
+  return "Very Weak";
+}
+function renderMomentumSparkline(history){
+  if(!history || !history.length) return "";
+  var w=110,h=28,pad=2;
+  var vals=history.map(function(h){return h.score;});
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+  if(min===max){ min-=1; max+=1; }
+  var pts=vals.map(function(v,i){
+    var x=pad+(i/(vals.length-1||1))*(w-2*pad);
+    var y=h-pad-((v-min)/(max-min))*(h-2*pad);
+    return x.toFixed(1)+","+y.toFixed(1);
+  }).join(" ");
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="display:block;overflow:visible;">'+
+    '<polyline fill="none" stroke="currentColor" stroke-width="1.5" points="'+pts+'"/></svg>';
+}
+// Drop this anywhere in a currency tile/card template, e.g.: ${renderMomentumTile('USD')}
+function renderMomentumTile(ccy){
+  initMomentum();
+  var m = (DATA.MOMENTUM && DATA.MOMENTUM[ccy]) || {score:0,history:[]};
+  var label = momentumLabel(m.score);
+  var cls = m.score>0.5?"Bullish":(m.score<-0.5?"Bearish":"Neutral");
+  return '<div class="momentum-tile" title="Auto-derived from actual-vs-forecast surprises, decayed over recent releases">'+
+    '<span class="bias-select '+cls+'" style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;">'+
+      (m.score>=0?"+":"")+m.score.toFixed(1)+' &middot; '+label+
+    '</span>'+
+    '<div style="margin-top:4px;color:inherit;opacity:.85;">'+renderMomentumSparkline(m.history)+'</div>'+
+  '</div>';
+}
+
 function applyTheme(name){
   document.body.classList.remove("ash","black");
   document.documentElement.classList.remove("ash","black");
@@ -886,11 +976,11 @@ function renderLockBox(){
 }
 
 var TAB_META={
-  overview:{title:"Overview",sub:"Composite scoreboard, most bullish to most bearish."},
-  raw:{title:"Raw Inputs",sub:"Yield, COT and seasonality per currency."},
+  overview:{title:"Desk Board",sub:"Composite scoreboard, most bullish to most bearish."},
+  raw:{title:"Confluence Feed",sub:"Fundamentals, rate differential, institutional bias and seasonality per currency, unranked."},
   detail:{title:"Currency Detail",sub:"Everything about one currency, in one place."},
   pairs:{title:"Pair Ranking",sub:"All 21 major-USD-universe crosses, most bullish to most bearish."},
-  yield2y:{title:"2Y Yield Score",sub:"Current 2Y closes and historical yield data used to calculate the score."}
+  yield2y:{title:"Rate Differential Score",sub:"Current 2Y closes and historical yield data used to calculate the score."}
 };
 function switchTab(tab){
   activeTab=tab;
@@ -1336,48 +1426,84 @@ function renderOverview(){
     '<div class="divergence on"><b>Divergence watch —</b> '+hikers.join("/")+" leaning HIKE against "+cutters.join("/")+" leaning CUT. Worth treating as this week's live divergence pair on top of the seven majors.</div>" :
     '';
   var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><div class="table-scroll"><table><thead><tr>'+
-    '<th>Symbol</th><th>Bias</th><th>Score</th><th>Alignment</th><th>Economic Growth</th><th>Inflation</th><th>Labour Market</th></tr></thead>'+
+    '<th>Symbol</th><th>Bias</th><th>Score</th><th>Trend</th><th>Alignment</th></tr></thead>'+
     '<tbody id="overviewRows"></tbody></table></div>'+
     '</div></div>';
   document.getElementById("tab-overview").innerHTML=html;
   fillOverviewRows(scores);
+}
+// 30-day trend for a single currency's composite score -- same mechanic as pairTrend30d,
+// just against DATA.MOMENTUM-style daily snapshots stored per-currency in DAILY under the
+// currency's own key (e.g. DAILY[date]["USD"]) if you're logging single-currency composites.
+// Falls back gracefully to "flat/no history" if you haven't been logging that yet.
+function ccyTrend30d(ccy, liveScore){
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][ccy]!==undefined; }).sort();
+  if(!allDays.length) return {dir:"flat",delta:null,label:"No 30-day trend history yet"};
+  var days=allDays.slice(-30);
+  var first=Number(DAILY[days[0]][ccy]);
+  var delta=Math.round(liveScore-first);
+  if(delta>1) return {dir:"up",delta:delta,label:"30-day score rising"};
+  if(delta< -1) return {dir:"down",delta:delta,label:"30-day score falling"};
+  return {dir:"flat",delta:delta,label:"30-day score broadly flat"};
+}
+function ccyTrendMarker(ccy, liveScore){
+  var t=ccyTrend30d(ccy, liveScore);
+  var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
+  var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
+  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta+' pts');
+  return '<span class="'+cls+'" title="'+esc(t.label)+'">'+symbol+' '+deltaTxt+'</span>';
 }
 function fillOverviewRows(scores){
   var tb=document.getElementById("overviewRows"); if(!tb) return;
   var rows=CCYS.slice().sort(function(a,b){ return scores[b]-scores[a]; });
   var out="";
   for(var i=0;i<rows.length;i++){
-    var c=rows[i], sc=scores[c], f=fundFor(c), label=bandLabel(sc), align=alignmentFor(c);
-    var gB=sectorBand(f.g.raw,f.g.max), iB=sectorBand(f.inf.raw,f.inf.max), lB=sectorBand(f.l.raw,f.l.max);
+    var c=rows[i], sc=scores[c], label=bandLabel(sc), align=alignmentFor(c);
     var alignFlagged = align && align.pct>=80;
     var alignCellClass = alignFlagged ? (align.dir==="Bullish"?"cell-vstrong":"cell-vweak") : "";
     var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:13.5px;font-weight:'+(alignFlagged?"700":"600")+';'+(alignFlagged?"":"color:var(--text-dim);")+'">'+(alignFlagged?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
     out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:14px;">'+CCY_NAME[c]+'</span></td>'+
       '<td><span class="'+chipClass(label)+'">'+label+'</span></td>'+
       '<td class="mono">'+fmt(sc)+'</td>'+
-      '<td class="'+alignCellClass+'" style="'+(alignFlagged?"border-radius:6px;":"")+'">'+alignCell+'</td>'+
-      '<td class="'+sectorCellClass(gB.label)+'" style="border-radius:6px;">'+gB.label+'</td>'+
-      '<td class="'+sectorCellClass(iB.label)+'" style="border-radius:6px;">'+iB.label+'</td>'+
-      '<td class="'+sectorCellClass(lB.label)+'" style="border-radius:6px;">'+lB.label+'</td></tr>';
+      '<td class="mono">'+ccyTrendMarker(c,sc)+'</td>'+
+      '<td class="'+alignCellClass+'" style="'+(alignFlagged?"border-radius:6px;":"")+'">'+alignCell+'</td></tr>';
   }
   tb.innerHTML=out;
   var gotos=tb.querySelectorAll("[data-goto]");
   for(var k=0;k<gotos.length;k++){ gotos[k].onclick=function(){ activeDetailCcy=this.dataset.goto; switchTab("detail"); renderDetail(); }; }
 }
 
+// Generic 30-day point-delta for any snapshot key logged via DAILY[date][key] -- reused by
+// Fundamentals and Institutional Bias below the same way ccyTrend30d drives the Desk Board.
+function componentTrend30d(key, liveVal){
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined; }).sort();
+  if(!allDays.length) return {dir:"flat",delta:null};
+  var days=allDays.slice(-30), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first);
+  if(delta>1) return {dir:"up",delta:delta};
+  if(delta< -1) return {dir:"down",delta:delta};
+  return {dir:"flat",delta:delta};
+}
+function componentTrendMarker(key, liveVal){
+  var t=componentTrend30d(key, liveVal);
+  var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
+  var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
+  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta);
+  return '<span class="'+cls+'" style="font-size:11px;margin-left:6px;">'+symbol+' '+deltaTxt+'</span>';
+}
 function renderRaw(){
   if(!DATA) return;
-  var html='<div class="card"><h3>Raw Inputs</h3><div class="table-scroll"><table><thead><tr>'+
-    '<th>Currency</th><th>Fundamentals</th><th>2Y Yield Score</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
+  var html='<div class="card"><h3>Confluence Feed</h3><div class="table-scroll"><table><thead><tr>'+
+    '<th>Currency</th><th>Fundamentals</th><th>Rate Differential Score</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
 
   document.getElementById("tab-raw").innerHTML=html;
   var tb=document.getElementById("rawRows"), out="";
   for(var i=0;i<CCYS.length;i++){
     var c=CCYS[i], d=DATA[c], f=fundFor(c), y2=y2Calc(c), cotScore=getCotScore(c);
+    var fundPct = f.max?(100*f.raw/f.max):0;
     out += '<tr class="rowhover"><td class="ccy-name">'+c+'</td>'+
-      '<td class="mono '+sectorCellClass(sectorBand(f.raw,f.max).label)+'">'+sectorBand(f.raw,f.max).label+'</td>'+
+      '<td class="mono '+sectorCellClass(sectorBand(f.raw,f.max).label)+'">'+sectorBand(f.raw,f.max).label+componentTrendMarker("FUND_"+c,fundPct)+'</td>'+
       '<td class="mono '+y2TrendClass(y2.score)+'">'+y2ScoreFmt(y2.score)+' <span class="y2-small">'+esc(y2TrendLabel(y2.score))+'</span></td>'+
-      '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+cotInstBand(cotScore)+'</td>'+
+      '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+cotInstBand(cotScore)+componentTrendMarker("COT_"+c,cotScore)+'</td>'+
       '<td><select class="bias-select '+d.seasonality+'" data-role="ccyfield" data-ccy="'+c+'" data-field="seasonality" '+(unlockedLocally?"":"disabled")+'>'+
         ["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.seasonality?"selected":"")+'>'+o+'</option>'; }).join("")+
       '</select></td></tr>';
@@ -1486,6 +1612,38 @@ function autoGrowGuidance(el){
     el.style.height=natural+"px";
   }
 }
+// Pulls this currency's own logged composite-score history (same DAILY[date][ccy] key the
+// Desk Board trend arrow reads from) so the Currency Detail page can show the actual line,
+// not just an arrow + delta.
+function ccyHistorySeries(ccy){
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][ccy]!==undefined; }).sort();
+  return allDays.slice(-30).map(function(dt){ return Number(DAILY[dt][ccy]); });
+}
+function renderDetailTrendPanel(ccy, liveScore){
+  var series=ccyHistorySeries(ccy);
+  var t=ccyTrend30d(ccy, liveScore);
+  var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
+  var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
+  var deltaTxt=t.delta==null?"Log a few recalculations to start the trend":((t.delta>0?"+":"")+t.delta+' pts / 30d');
+  var spark="";
+  if(series.length>1){
+    var w=158,h=44,pad=3;
+    var min=Math.min.apply(null,series), max=Math.max.apply(null,series);
+    if(min===max){ min-=1; max+=1; }
+    var pts=series.map(function(v,i){
+      var x=pad+(i/(series.length-1))*(w-2*pad);
+      var y=h-pad-((v-min)/(max-min))*(h-2*pad);
+      return x.toFixed(1)+","+y.toFixed(1);
+    }).join(" ");
+    spark='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'"><polyline fill="none" stroke="currentColor" stroke-width="1.6" points="'+pts+'"/></svg>';
+  } else {
+    spark='<div style="font-size:11.5px;color:var(--text-faint);margin-top:14px;line-height:1.4;">No history logged yet — hit Recalculate on Pair Ranking a few times to start building this line.</div>';
+  }
+  return '<div class="trend-panel"><div><span class="k">Composite trend (30d)</span>'+
+    '<div class="trend-score">'+fmt(liveScore)+'</div>'+
+    '<div class="trend-delta '+cls+'">'+symbol+' '+deltaTxt+'</div></div>'+
+    spark+'</div>';
+}
 function renderDetail(){
   if(!DATA) return;
   var html='<div class="ccy-pills" id="detailPills"></div><div id="detailBody"></div>';
@@ -1538,6 +1696,7 @@ function renderDetailBody(ccy){
       '</div>'+
     '</div>'+
     '<div class="right-col">'+
+      '<div class="info-trend-row">'+
       '<div class="info-grid">'+
         '<div class="info-item"><span class="k">Seasonality trend</span><span class="v" id="seasTxt-'+ccy+'" style="color:'+(d.seasonality==="Bullish"?"var(--bullish-strong)":d.seasonality==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.seasonality+'</span></div>'+
         
@@ -1556,6 +1715,8 @@ function renderDetailBody(ccy){
           '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="shortPct" value="'+esc(d.shortPct)+'" style="'+longShortColors(d.longPct,d.shortPct).shortStyle+'" '+(unlockedLocally?"":"disabled")+'></div></div>'+
         '<div class="info-item"><span class="k">Change %</span>'+
           '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="changePct" value="'+esc(d.changePct)+'" style="'+changePctColor(d.changePct)+'" '+(unlockedLocally?"":"disabled")+'></div>'+
+      '</div>'+
+      renderDetailTrendPanel(ccy, sc)+
       '</div>';
   for(var s=0;s<sectors.length;s++){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
@@ -1569,7 +1730,18 @@ function renderDetailBody(ccy){
   html += '</div></div></div>';
   document.getElementById("detailBody").innerHTML=html;
   wireDetailEvents();
-  autoGrowGuidance(document.querySelector('.guidance-box[data-ccy="'+ccy+'"]'));
+  var gEl=document.querySelector('.guidance-box[data-ccy="'+ccy+'"]');
+  // Measuring immediately after innerHTML= can happen before web fonts / sibling layout
+  // (sparklines, cards) have finished settling, which is exactly the "wrong on first load,
+  // fixes itself after switching tabs" symptom. Wait for fonts to be ready, then double-rAF
+  // to land after the next paint, before measuring.
+  var runGrow=function(){ autoGrowGuidance(gEl); };
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ requestAnimationFrame(function(){ requestAnimationFrame(runGrow); }); });
+  } else {
+    requestAnimationFrame(function(){ requestAnimationFrame(runGrow); });
+  }
+  runGrow(); // also run immediately so it's not blank/collapsed while waiting on fonts
 }
 
 function wireDetailEvents(){
@@ -1603,6 +1775,7 @@ function onDetailInput(e){
     scheduleSave();
     updateSectorChip(ccy,sector);
     if(field==="actual"||field==="forecast"||field==="bias"){ updateSurpriseCell(ccy,sector,idx); }
+    if(field==="actual"||field==="forecast"){ updateMomentum(ccy,sector,idx); }
     updateComputed();
   } else if(t.dataset.role==="ccyfield"){
     DATA[ccy][t.dataset.field]=t.value;
@@ -1813,6 +1986,12 @@ function renderPairs(){
   if(btn){ btn.onclick=async function(){
     var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
     for(var k=0;k<pr.length;k++){ snap[pr[k].pair]=pr[k].score; }
+    for(var ci=0;ci<CCYS.length;ci++){
+      var cc=CCYS[ci], ff=fundFor(cc);
+      snap[cc]=sc[cc];                                   // composite (used by Desk Board trend arrow)
+      snap["FUND_"+cc]=ff.max?(100*ff.raw/ff.max):0;      // fundamentals %, own key so it doesn't collide with pair scores
+      snap["COT_"+cc]=getCotScore(cc);
+    }
     DAILY[todayKey]=snap;
     var nowTs=new Date().toISOString();
     var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
@@ -1973,6 +2152,7 @@ async function init(){
   // existing local dashboard data from this browser and upload it once.
   if (!loaded) {
     if (!loadLocalCache()) DATA = seed();
+    initMomentum();
     try {
       await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
         method: "PATCH",
