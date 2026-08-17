@@ -1115,7 +1115,7 @@ function renderYield2Y(){
     '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
-    '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
+    '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes and the current observation when available.</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value); updateComputed();});}
   var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value;};
@@ -1169,10 +1169,25 @@ function histSpreadLabel(code){
 function histSpreadRows(code){
   var pair=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
   if(!pair) return [];
-  return y2SortedHistory().map(function(r){
+
+  // Build the chart from the stored daily history, but fold in the current
+  // observation when it has a valid date and both current 2Y yields. This
+  // keeps the chart endpoint current while avoiding duplicate dates when the
+  // observation has already been saved as a daily close.
+  var byDate={};
+  y2SortedHistory().forEach(function(r){
     var a=y2Num(r[pair[1]]), b=y2Num(r[pair[2]]);
-    return {date:r.date, spread:(a!=null&&b!=null)?(a-b)*100:null};
-  }).filter(function(x){return x.spread!=null;});
+    if(a!=null && b!=null) byDate[r.date]={date:r.date,spread:(a-b)*100};
+  });
+
+  var currentDate=YIELD_ENGINE.currentDate;
+  var current=YIELD_ENGINE.current||{};
+  var ca=y2Num(current[pair[1]]), cb=y2Num(current[pair[2]]);
+  if(currentDate && ca!=null && cb!=null){
+    byDate[currentDate]={date:currentDate,spread:(ca-cb)*100};
+  }
+
+  return Object.keys(byDate).sort().map(function(d){return byDate[d];});
 }
 function histSpreadFmt(v){
   if(v==null || !Number.isFinite(v)) return "—";
@@ -1229,9 +1244,14 @@ function histSpreadDraw(){
 
   ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
   ctx.textAlign="center";ctx.textBaseline="top";
-  var labelCount=Math.min(8,rows.length);
+  // Keep the first and last date fully visible. Centering the final label
+  // at X(last) lets half of the text fall outside the canvas.
+  var labelCount=Math.min(7,rows.length);
   for(var li=0;li<labelCount;li++){
     var ii=Math.round(li*(rows.length-1)/(labelCount-1));
+    if(li===0) ctx.textAlign="left";
+    else if(li===labelCount-1) ctx.textAlign="right";
+    else ctx.textAlign="center";
     ctx.fillText(rows[ii].date.slice(0,10),X(ii),H-pad.b+10);
   }
 
