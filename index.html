@@ -296,6 +296,21 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
 .hist-range button.active{background:var(--amber);color:#fff;border-color:var(--amber);}
 .hist-spread-chart{height:330px;margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;}
 .hist-spread-chart canvas{width:100%;height:100%;display:block;}
+/* Historical spread chart: give mobile labels their own breathing room. */
+@media(max-width:600px){
+  .hist-spread-head{align-items:flex-start;gap:10px;}
+  .hist-spread-controls{width:100%;justify-content:space-between;gap:6px;}
+  .hist-spread-select{max-width:138px;}
+  .hist-range{flex:0 0 auto;}
+  .hist-range button{padding:7px 9px;}
+  .hist-spread-chart{height:285px;}
+}
+@media(max-width:380px){
+  .hist-spread-controls{align-items:flex-start;}
+  .hist-spread-select{max-width:126px;font-size:12px;padding:7px 8px;}
+  .hist-range button{padding:7px 7px;font-size:12px;}
+  .hist-spread-chart{height:275px;}
+}
 .hist-spread-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--text-faint);font-size:12.5px;}
 .hist-spread-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px;}
 .hist-stat{padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);}
@@ -882,12 +897,13 @@ function switchTab(tab){
   var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
   document.getElementById("pageTitle").textContent=TAB_META[tab].title;
   document.getElementById("pageSub").textContent=TAB_META[tab].sub;
-
-  // The 2Y spread panel can be rendered while its tab is hidden during startup.
-  // In that state the canvas has no real width, so the date labels collapse together.
-  // Redraw only after the Yield Score tab is visible so the canvas uses its actual size.
   if(tab==="yield2y" && typeof histSpreadDraw==="function"){
-    requestAnimationFrame(function(){ histSpreadDraw(); });
+    // The chart canvas is built while its tab is still hidden, so the browser
+    // reports zero width at that point and the chart draws at the wrong size.
+    // Redraw now that the tab is actually visible and has a real width —
+    // requestAnimationFrame (twice) waits for the browser to finish laying
+    // out the now-visible panel before we measure it.
+    requestAnimationFrame(function(){ requestAnimationFrame(histSpreadDraw); });
   }
 }
 
@@ -1122,7 +1138,7 @@ function renderYield2Y(){
     '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
-    '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes and the current observation when available.</div></div>';
+    '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value); updateComputed();});}
   var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value;};
@@ -1176,25 +1192,10 @@ function histSpreadLabel(code){
 function histSpreadRows(code){
   var pair=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
   if(!pair) return [];
-
-  // Build the chart from the stored daily history, but fold in the current
-  // observation when it has a valid date and both current 2Y yields. This
-  // keeps the chart endpoint current while avoiding duplicate dates when the
-  // observation has already been saved as a daily close.
-  var byDate={};
-  y2SortedHistory().forEach(function(r){
+  return y2SortedHistory().map(function(r){
     var a=y2Num(r[pair[1]]), b=y2Num(r[pair[2]]);
-    if(a!=null && b!=null) byDate[r.date]={date:r.date,spread:(a-b)*100};
-  });
-
-  var currentDate=YIELD_ENGINE.currentDate;
-  var current=YIELD_ENGINE.current||{};
-  var ca=y2Num(current[pair[1]]), cb=y2Num(current[pair[2]]);
-  if(currentDate && ca!=null && cb!=null){
-    byDate[currentDate]={date:currentDate,spread:(ca-cb)*100};
-  }
-
-  return Object.keys(byDate).sort().map(function(d){return byDate[d];});
+    return {date:r.date, spread:(a!=null&&b!=null)?(a-b)*100:null};
+  }).filter(function(x){return x.spread!=null;});
 }
 function histSpreadFmt(v){
   if(v==null || !Number.isFinite(v)) return "—";
@@ -1209,7 +1210,7 @@ function histSpreadDraw(){
   var rows=histSpreadRows(code).slice(-HIST_SPREAD_RANGE);
   var ctx=canvas.getContext("2d");
   var rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
-  var W=Math.max(320,rect.width), H=Math.max(240,rect.height);
+  var W=Math.max(280,rect.width), H=Math.max(240,rect.height);
   canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
   if(!rows.length){
@@ -1223,44 +1224,76 @@ function histSpreadDraw(){
   var vals=rows.map(function(x){return x.spread;});
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
   if(min===max){min-=10;max+=10;}
-  var pad={l:64,r:18,t:18,b:38}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+  var compact=W<=600;
+  var veryCompact=W<=380;
+  var pad=compact
+    ? {l:veryCompact?52:56,r:veryCompact?14:18,t:16,b:50}
+    : {l:64,r:20,t:18,b:42};
+  var pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
   var extra=(max-min)*0.08; min-=extra; max+=extra;
   function X(i){return pad.l+(i/(rows.length-1))*pw;}
   function Y(v){return pad.t+(max-v)/(max-min)*ph;}
 
-  ctx.font="11px Inter, sans-serif"; ctx.textBaseline="middle"; ctx.textAlign="right";
-  for(var g=0;g<=4;g++){
-    var gv=min+(max-min)*(g/4), gy=Y(gv);
-    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--border").trim()||"#d7dae0";
-    ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
-    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-dim").trim()||"#565e6d";
-    ctx.fillText(gv.toFixed(0)+" bp",pad.l-8,gy);
+  var styles=getComputedStyle(document.body);
+  var border=styles.getPropertyValue("--border").trim()||"#d7dae0";
+  var textDim=styles.getPropertyValue("--text-dim").trim()||"#565e6d";
+  var textFaint=styles.getPropertyValue("--text-faint").trim()||"#8991a0";
+  var bullish=styles.getPropertyValue("--bullish-strong").trim()||"#1c63c4";
+  var bearish=styles.getPropertyValue("--bearish-strong").trim()||"#c22e28";
+
+  ctx.font=compact?"10px Inter, sans-serif":"11px Inter, sans-serif";
+  ctx.textBaseline="middle";
+  ctx.textAlign="right";
+  var gridCount=compact?3:4;
+  for(var g=0;g<=gridCount;g++){
+    var gv=min+(max-min)*(g/gridCount), gy=Y(gv);
+    ctx.strokeStyle=border; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    ctx.fillStyle=textDim;
+    ctx.fillText(gv.toFixed(0)+" bp",pad.l-7,gy);
   }
   if(min<0 && max>0){
     var zy=Y(0); ctx.save(); ctx.setLineDash([5,5]);
-    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
-    ctx.beginPath();ctx.moveTo(pad.l,zy);ctx.lineTo(W-pad.r,zy);ctx.stroke();ctx.restore();
+    ctx.strokeStyle=textFaint; ctx.beginPath();ctx.moveTo(pad.l,zy);ctx.lineTo(W-pad.r,zy);ctx.stroke();ctx.restore();
   }
-  var lineColor=vals[vals.length-1]>=vals[0]
-    ? (getComputedStyle(document.body).getPropertyValue("--bullish-strong").trim()||"#1c63c4")
-    : (getComputedStyle(document.body).getPropertyValue("--bearish-strong").trim()||"#c22e28");
-  ctx.strokeStyle=lineColor;ctx.lineWidth=2.5;ctx.lineJoin="round";ctx.lineCap="round";
+
+  var lineColor=vals[vals.length-1]>=vals[0]?bullish:bearish;
+  ctx.strokeStyle=lineColor;ctx.lineWidth=compact?2.3:2.5;ctx.lineJoin="round";ctx.lineCap="round";
   ctx.beginPath();
   rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
   ctx.stroke();
 
-  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text-faint").trim()||"#8991a0";
-  ctx.textAlign="center";ctx.textBaseline="top";
-  // Keep the first and last date fully visible. Centering the final label
-  // at X(last) lets half of the text fall outside the canvas.
-  var labelCount=Math.min(7,rows.length);
-  for(var li=0;li<labelCount;li++){
-    var ii=Math.round(li*(rows.length-1)/(labelCount-1));
-    if(li===0) ctx.textAlign="left";
-    else if(li===labelCount-1) ctx.textAlign="right";
-    else ctx.textAlign="center";
-    ctx.fillText(rows[ii].date.slice(0,10),X(ii),H-pad.b+10);
+  /* Date labels are deliberately sparse and use a short human-readable format.
+     The first and last labels are edge-aligned so neither can be clipped. */
+  var labelCount=compact?4:6;
+  labelCount=Math.min(labelCount,rows.length);
+  var labelIndexes=[];
+  if(labelCount===1){ labelIndexes=[0]; }
+  else{
+    for(var li=0;li<labelCount;li++) labelIndexes.push(Math.round(li*(rows.length-1)/(labelCount-1)));
   }
+  function shortDate(iso){
+    var parts=String(iso).slice(0,10).split("-");
+    if(parts.length!==3) return String(iso).slice(0,10);
+    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return Number(parts[2])+" "+(months[Number(parts[1])-1]||parts[1])+" '"+String(parts[0]).slice(2);
+  }
+  ctx.fillStyle=textFaint;ctx.textBaseline="top";
+  ctx.font=compact?"10px IBM Plex Mono, monospace":"10.5px IBM Plex Mono, monospace";
+  for(var di=0;di<labelIndexes.length;di++){
+    var idx=labelIndexes[di], xx=X(idx), label=shortDate(rows[idx].date);
+    if(idx===0) ctx.textAlign="left";
+    else if(idx===rows.length-1) ctx.textAlign="right";
+    else ctx.textAlign="center";
+    ctx.fillText(label,xx,H-pad.b+12);
+    ctx.strokeStyle=border;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(xx,H-pad.b+4);ctx.lineTo(xx,H-pad.b+8);ctx.stroke();
+  }
+
+  /* Always emphasize the latest observation without cluttering the plot. */
+  var lastX=X(rows.length-1), lastY=Y(vals[vals.length-1]);
+  ctx.fillStyle=lineColor;ctx.beginPath();ctx.arc(lastX,lastY,compact?3:3.2,0,Math.PI*2);ctx.fill();
 
   var current=vals[vals.length-1], first=vals[0], high=Math.max.apply(null,vals), low=Math.min.apply(null,vals);
   var change=current-first;
