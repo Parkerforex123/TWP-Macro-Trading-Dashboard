@@ -882,6 +882,13 @@ function switchTab(tab){
   var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
   document.getElementById("pageTitle").textContent=TAB_META[tab].title;
   document.getElementById("pageSub").textContent=TAB_META[tab].sub;
+
+  // The 2Y spread panel can be rendered while its tab is hidden during startup.
+  // In that state the canvas has no real width, so the date labels collapse together.
+  // Redraw only after the Yield Score tab is visible so the canvas uses its actual size.
+  if(tab==="yield2y" && typeof histSpreadDraw==="function"){
+    requestAnimationFrame(function(){ histSpreadDraw(); });
+  }
 }
 
 
