@@ -249,7 +249,9 @@ th{font-size:11.5px;}
 #tab-pairs .pair-row.pair-vbull td{background:rgba(47,127,224,.24);color:var(--text);}
 #tab-pairs .pair-row.pair-bull td{background:rgba(47,127,224,.17);color:var(--text);}
 #tab-pairs .pair-row.pair-lean-bull td{background:rgba(47,127,224,.10);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral td{background:rgba(125,132,145,.12);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-pos td{background:rgba(47,127,224,.055);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-zero td{background:rgba(47,127,224,.025);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-neg td{background:rgba(224,69,63,.055);color:var(--text);}
 #tab-pairs .pair-row.pair-lean-bear td{background:rgba(224,69,63,.10);color:var(--text);}
 #tab-pairs .pair-row.pair-bear td{background:rgba(224,69,63,.17);color:var(--text);}
 #tab-pairs .pair-row.pair-vbear td{background:rgba(224,69,63,.24);color:var(--text);}
@@ -261,8 +263,12 @@ body.ash #tab-pairs .pair-row.pair-bull td, html.ash #tab-pairs .pair-row.pair-b
 body.black #tab-pairs .pair-row.pair-bull td, html.black #tab-pairs .pair-row.pair-bull td{background:rgba(59,167,255,.25);}
 body.ash #tab-pairs .pair-row.pair-lean-bull td, html.ash #tab-pairs .pair-row.pair-lean-bull td,
 body.black #tab-pairs .pair-row.pair-lean-bull td, html.black #tab-pairs .pair-row.pair-lean-bull td{background:rgba(59,167,255,.15);}
-body.ash #tab-pairs .pair-row.pair-neutral td, html.ash #tab-pairs .pair-row.pair-neutral td,
-body.black #tab-pairs .pair-row.pair-neutral td, html.black #tab-pairs .pair-row.pair-neutral td{background:rgba(128,134,145,.18);}
+body.ash #tab-pairs .pair-row.pair-neutral-pos td, html.ash #tab-pairs .pair-row.pair-neutral-pos td,
+body.black #tab-pairs .pair-row.pair-neutral-pos td, html.black #tab-pairs .pair-row.pair-neutral-pos td{background:rgba(59,167,255,.07);}
+body.ash #tab-pairs .pair-row.pair-neutral-zero td, html.ash #tab-pairs .pair-row.pair-neutral-zero td,
+body.black #tab-pairs .pair-row.pair-neutral-zero td, html.black #tab-pairs .pair-row.pair-neutral-zero td{background:rgba(59,167,255,.035);}
+body.ash #tab-pairs .pair-row.pair-neutral-neg td, html.ash #tab-pairs .pair-row.pair-neutral-neg td,
+body.black #tab-pairs .pair-row.pair-neutral-neg td, html.black #tab-pairs .pair-row.pair-neutral-neg td{background:rgba(255,92,114,.07);}
 body.ash #tab-pairs .pair-row.pair-lean-bear td, html.ash #tab-pairs .pair-row.pair-lean-bear td,
 body.black #tab-pairs .pair-row.pair-lean-bear td, html.black #tab-pairs .pair-row.pair-lean-bear td{background:rgba(255,92,114,.15);}
 body.ash #tab-pairs .pair-row.pair-bear td, html.ash #tab-pairs .pair-row.pair-bear td,
@@ -827,6 +833,17 @@ function longShortColors(longV, shortV){
   return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
 }
 function allScores(){ var out={}; for(var i=0;i<CCYS.length;i++){ out[CCYS[i]]=compositeFor(CCYS[i]); } return out; }
+// ===== Canonical pair 2Y yield differential series =====
+// ONE source of truth for both the visible Bond Yield Spread chart and the
+// pair-level yield score. Every pair observation is exactly: BASE 2Y - QUOTE 2Y,
+// converted to basis points.
+function pairSpreadSeries(base, quote){
+  return y2SortedHistory().map(function(r){
+    var a=y2Num(r[base]), b=y2Num(r[quote]);
+    return {date:r.date, spread:(a!=null&&b!=null)?(a-b)*100:null};
+  }).filter(function(x){return x.spread!=null;});
+}
+
 // ===== Pair-level 2Y yield differential score =====
 // FX is traded as a pair, so the yield component used by Pair Ranking is relative:
 // BASE 2Y yield minus QUOTE 2Y yield. We score that differential directly rather
@@ -847,9 +864,11 @@ function pairYieldCalc(base, quote){
     return {pair:base+quote,base:base,quote:quote,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null]};
   }
 
-  // De-duplicate by date and use the live current observation for the selected date.
+  // Use the same canonical pair spread series as the visible chart, then
+  // overlay the live selected-date observation used for scoring.
+  var series=pairSpreadSeries(base,quote);
   var byDate={};
-  hist.forEach(function(r){ byDate[r.date]=(y2Num(r[base])-y2Num(r[quote]))*100; });
+  series.forEach(function(r){ byDate[r.date]=r.spread; });
   if(currentDate) byDate[currentDate]=(curBase-curQuote)*100;
   var dates=Object.keys(byDate).sort();
   var all=dates.map(function(d){return byDate[d];}).filter(function(x){return Number.isFinite(x);});
@@ -860,9 +879,9 @@ function pairYieldCalc(base, quote){
   var sma21=all.length>=21?all.slice(-21).reduce(function(a,b){return a+b;},0)/21:null;
   var avg60=all.length>=60?all.slice(-60).reduce(function(a,b){return a+b;},0)/60:null;
 
-  // Weekly/monthly changes use stored observations before the current observation.
-  // "Monthly" is a 21-trading-day change (current spread minus the close 21 observations back).
-  var histSpread=hist.map(function(r){return (y2Num(r[base])-y2Num(r[quote]))*100;});
+  // Weekly/monthly changes use stored observations before the current observation,
+  // matching the existing yield-engine convention.
+  var histSpread=series.filter(function(r){return !currentDate || r.date<currentDate;}).map(function(r){return r.spread;});
   var prev5=histSpread.length>=5?histSpread[histSpread.length-5]:null;
   var prev21=histSpread.length>=21?histSpread[histSpread.length-21]:null;
   var week=prev5==null?null:current-prev5;
@@ -905,7 +924,7 @@ function buildPairs(scores){
   var pairs=[];
   for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
     var base=CCY_ORDER[i], quote=CCY_ORDER[j], raw=pairCompositeFor(base,quote), sc=Math.round(raw), y=pairYieldCalc(base,quote);
-    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:bandLabel(sc),yieldScore:y.score,yieldSpread:y.current,yieldWeek:y.week,yieldMonth:y.month});
+    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:bandLabel(sc),yieldScore:y.score,yieldSpread:y.current});
   } }
   pairs.sort(function(a,b){ return b.score-a.score; });
   return pairs;
@@ -1487,10 +1506,7 @@ function histSpreadLabel(code){
 function histSpreadRows(code){
   var pair=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
   if(!pair) return [];
-  return y2SortedHistory().map(function(r){
-    var a=y2Num(r[pair[1]]), b=y2Num(r[pair[2]]);
-    return {date:r.date, spread:(a!=null&&b!=null)?(a-b)*100:null};
-  }).filter(function(x){return x.spread!=null;});
+  return pairSpreadSeries(pair[1],pair[2]);
 }
 function histSpreadFmt(v){
   if(v==null || !Number.isFinite(v)) return "—";
@@ -2161,7 +2177,7 @@ function renderPairs(){
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="8" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+    rows='<tr><td colspan="9" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
@@ -2170,7 +2186,8 @@ function renderPairs(){
       p.bias==="Neutral Leaning Bullish" ? "pair-lean-bull" :
       p.bias==="Neutral Leaning Bearish" ? "pair-lean-bear" :
       p.bias==="Bearish" ? "pair-bear" :
-      p.bias==="Very Bearish" ? "pair-vbear" : "pair-neutral";
+      p.bias==="Very Bearish" ? "pair-vbear" :
+      (p.score>0 ? "pair-neutral-pos" : (p.score<0 ? "pair-neutral-neg" : "pair-neutral-zero"));
     rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+      '<td class="mono">'+fmt(p.score)+'</td>'+      '<td class="mono" title="Pair-level 2Y yield differential score">'+(p.yieldScore==null?'—':fmt(p.yieldScore))+'</td>'+      '<td class="mono" title="Current base 2Y minus quote 2Y">'+(p.yieldSpread==null?'—':(p.yieldSpread>0?'+':'')+p.yieldSpread.toFixed(1)+' bp')+'</td>'+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
   }
   var logRows="";
