@@ -827,11 +827,85 @@ function longShortColors(longV, shortV){
   return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
 }
 function allScores(){ var out={}; for(var i=0;i<CCYS.length;i++){ out[CCYS[i]]=compositeFor(CCYS[i]); } return out; }
+// ===== Pair-level 2Y yield differential score =====
+// FX is traded as a pair, so the yield component used by Pair Ranking is relative:
+// BASE 2Y yield minus QUOTE 2Y yield. We score that differential directly rather
+// than subtracting two independent country yield-regime scores.
+function pairYieldCalc(base, quote){
+  var currentDate=YIELD_ENGINE.currentDate||'';
+  var hist=y2SortedHistory().filter(function(r){
+    return y2Num(r[base])!=null && y2Num(r[quote])!=null && (!currentDate || r.date<currentDate);
+  });
+  var curBase=y2Num((YIELD_ENGINE.current||{})[base]);
+  var curQuote=y2Num((YIELD_ENGINE.current||{})[quote]);
+  if(curBase==null || curQuote==null){
+    var latest=hist.length?hist[hist.length-1]:null;
+    if(curBase==null && latest) curBase=y2Num(latest[base]);
+    if(curQuote==null && latest) curQuote=y2Num(latest[quote]);
+  }
+  if(curBase==null || curQuote==null){
+    return {pair:base+quote,base:base,quote:quote,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null]};
+  }
+
+  // De-duplicate by date and use the live current observation for the selected date.
+  var byDate={};
+  hist.forEach(function(r){ byDate[r.date]=(y2Num(r[base])-y2Num(r[quote]))*100; });
+  if(currentDate) byDate[currentDate]=(curBase-curQuote)*100;
+  var dates=Object.keys(byDate).sort();
+  var all=dates.map(function(d){return byDate[d];}).filter(function(x){return Number.isFinite(x);});
+  var current=(curBase-curQuote)*100;
+  if(!currentDate && (!all.length || Math.abs(all[all.length-1]-current)>1e-12)) all.push(current);
+  if(!all.length) return {pair:base+quote,base:base,quote:quote,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null]};
+
+  var sma21=all.length>=21?all.slice(-21).reduce(function(a,b){return a+b;},0)/21:null;
+  var avg60=all.length>=60?all.slice(-60).reduce(function(a,b){return a+b;},0)/60:null;
+
+  // Weekly/monthly changes use stored observations before the current observation,
+  // matching the existing yield-engine convention.
+  var histSpread=hist.map(function(r){return (y2Num(r[base])-y2Num(r[quote]))*100;});
+  var prev5=histSpread.length>=5?histSpread[histSpread.length-5]:null;
+  var prev21=histSpread.length>=21?histSpread[histSpread.length-21]:null;
+  var week=prev5==null?null:current-prev5;
+  var month=prev21==null?null:current-prev21;
+
+  // Same 3/2/2/1/2 weighting and -10..+10 scale as the original yield engine,
+  // but now applied to the pair\'s actual 2Y differential.
+  var c1=sma21==null?null:y2ScoreBand(current-sma21,[-15,-3,3,15],3);
+  var c2=week==null?null:y2ScoreBand(week,[-20,-7,7,20],2);
+  var c3=month==null?null:y2ScoreBand(month,[-30,-10,10,30],2);
+  var c4=avg60==null?null:y2ScoreBand(current-avg60,[-30,-10,10,30],1);
+  var prevSma=null;
+  if(histSpread.length>=22){
+    var last22=histSpread.slice(-22);
+    prevSma=last22.slice(0,21).reduce(function(a,b){return a+b;},0)/21;
+  }
+  var todayDist=sma21==null?null:current-sma21;
+  var prevDist=(prevSma==null||prev21==null)?null:prev21-prevSma;
+  var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
+  var c5=distChange==null?null:y2ScoreBand(distChange,[-12,-3,3,12],2);
+  var comps=[c1,c2,c3,c4,c5], weights=[3,2,2,1,2], availWeight=0, rawSum=0;
+  comps.forEach(function(x,i){if(x!=null){availWeight+=weights[i];rawSum+=x;}});
+  var score=availWeight?Math.round((rawSum/availWeight*10)*10)/10:null;
+  return {pair:base+quote,base:base,quote:quote,current:current,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps};
+}
+
+function pairCompositeFor(base, quote){
+  var db=DATA[base], dq=DATA[quote];
+  var fb=fundFor(base), fq=fundFor(quote);
+  var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
+  var y=pairYieldCalc(base,quote).score;
+  var yieldTerm=(y==null?0:y/10);
+  var cotBase=getCotScore(base)/6, cotQuote=getCotScore(quote)/6;
+  var seasBase=b_seas(db.seasonality), seasQuote=b_seas(dq.seasonality);
+  // Preserve the 70/15/10/5 weighting, but make every pair component relative.
+  return 100*(0.70*(fundBase-fundQuote)+0.15*yieldTerm+0.10*(cotBase-cotQuote)+0.05*(seasBase-seasQuote));
+}
+
 function buildPairs(scores){
   var pairs=[];
   for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
-    var base=CCY_ORDER[i], quote=CCY_ORDER[j], raw=scores[base]-scores[quote], sc=Math.round(raw);
-    pairs.push({pair:base+quote, base:base, quote:quote, score:sc, bias:bandLabel(sc)});
+    var base=CCY_ORDER[i], quote=CCY_ORDER[j], raw=pairCompositeFor(base,quote), sc=Math.round(raw), y=pairYieldCalc(base,quote);
+    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:bandLabel(sc),yieldScore:y.score,yieldSpread:y.current,yieldWeek:y.week,yieldMonth:y.month});
   } }
   pairs.sort(function(a,b){ return b.score-a.score; });
   return pairs;
@@ -1302,7 +1376,7 @@ function renderYield2Y(){
     '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+((rows.length?rows[rows.length-1].date:''))+'" '+(unlockedLocally?'':'disabled')+'></label>'+(y2DateTouchedThisSession?'':'<span class="y2-small" style="color:var(--text-faint);">defaulted to today \u2014 change it if you\'re logging a different day</span>')+'</div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
-    '<div class="card"><h3>Bond Yield Spread</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
+    '<div class="card"><h3>2Y Yield Diagnostics</h3><div class="legend-line">The individual score below remains a diagnostic of each currency\'s own 2Y yield regime. It is <b>not</b> the yield input used by Pair Ranking. Pair Ranking now uses the pair-level 2Y differential score shown in its Yield column.</div><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Own-History Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
     '<div class="card"><h3>Historical Data</h3><div class="legend-line">Latest stored daily close: <span class="mono">'+latest+'</span> · '+rows.length+' historical dates. Import/export the master CSV here. The CSV stores the underlying daily closes used by the dashboard.</div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div><h3 style="margin-bottom:5px;">Historical 2Y Yield Spread</h3><div class="legend-line" style="margin:0;">Historical rate differential calculated directly from the imported daily 2Y yield CSV. The pair universe mirrors Pair Ranking: all 21 pairs built from USD, EUR, GBP, AUD, NZD, CAD and JPY. NOK and SEK are not included.</div></div>'+
     '<div class="hist-spread-controls"><label class="y2-small">Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
@@ -2087,7 +2161,7 @@ function renderPairs(){
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+    rows='<tr><td colspan="7" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
@@ -2097,11 +2171,7 @@ function renderPairs(){
       p.bias==="Neutral Leaning Bearish" ? "pair-lean-bear" :
       p.bias==="Bearish" ? "pair-bear" :
       p.bias==="Very Bearish" ? "pair-vbear" : "pair-neutral";
-    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+
-      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+
-      '<td class="mono">'+fmt(p.score)+'</td>'+
-      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+
-      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
+    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+      '<td class="mono">'+fmt(p.score)+'</td>'+      '<td class="mono" title="Pair-level 2Y yield differential score">'+(p.yieldScore==null?'—':fmt(p.yieldScore))+'</td>'+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
   }
   var logRows="";
   for(var j=0;j<Math.min(LOG.length,8);j++){
@@ -2123,13 +2193,13 @@ function renderPairs(){
     return '<button class="range-btn'+(pairFilter===fb[0]?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
   }).join("");
   var html = '<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
-    '<div class="legend-line" style="margin:0;">Pair direction follows standard FX convention: EUR &gt; GBP &gt; AUD &gt; NZD &gt; USD &gt; CAD &gt; JPY as base. Click any row to pop its trend chart up here.</div>'+
+    '<div class="legend-line" style="margin:0;">Pair direction follows standard FX convention: EUR &gt; GBP &gt; AUD &gt; NZD &gt; USD &gt; CAD &gt; JPY as base. The 15% yield component is now scored from the pair\'s actual 2Y yield differential (base minus quote), including its level, weekly/monthly change, 21D/60D position and acceleration. Click any row to pop its trend chart up here.</div>'+
     (unlockedLocally? '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>':'')+'</div>'+
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;"><h3 style="margin:0;">Pair Ranking — Most Bullish to Most Bearish</h3>'+
     '<div class="range-switch">'+filterBtns+'</div></div>'+
-    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Relative</th><th>Trend (90d)</th></tr></thead>'+
+    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Yield</th><th>Relative</th><th>Trend (90d)</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     (LOG.length? '<div class="card"><h3>Recalculation Log</h3><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div>':'');
   document.getElementById("tab-pairs").innerHTML=html;
