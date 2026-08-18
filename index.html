@@ -645,6 +645,7 @@ function seed(){
 
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and sparklines
+var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All", lockBoxCollapsed=false;
@@ -1221,7 +1222,7 @@ function renderYield2Y(){
       var inputStyle=dir==null?'':(dir>0?'color:var(--bullish-strong);font-weight:700;':(dir<0?'color:var(--bearish-strong);font-weight:700;':''));
       return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';
     }).join('')+
-    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label></div>'+
+    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(y2DateTouchedThisSession?(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label>'+(y2DateTouchedThisSession?'':'<span class="y2-small" style="color:var(--text-faint);">defaulted to today \u2014 change it if you\'re logging a different day</span>')+'</div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
     '<div class="card"><h3>Bond Yield Spread</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
@@ -1233,11 +1234,32 @@ function renderYield2Y(){
     '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value); updateComputed();});}
-  var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value;};
+  var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value; y2DateTouchedThisSession=true;};
   var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
   var close=document.getElementById('y2SaveAsClose'); if(close) close.onclick=function(){
     YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10));
-    var d=YIELD_ENGINE.currentDate, by={}; (YIELD_ENGINE.history||[]).forEach(function(r){by[r.date]=r;}); var row=Object.assign({},by[d]||{},{date:d});
+    var d=YIELD_ENGINE.currentDate, by={}; (YIELD_ENGINE.history||[]).forEach(function(r){by[r.date]=r;});
+    var existing=by[d];
+    if(existing){
+      // A date this dashboard already has real history for is about to be touched again.
+      // Silently overwriting it is exactly how a stale date-picker destroys a real day's
+      // closes -- so this is a hard stop, not a soft warning: show old vs new for every
+      // currency that would actually change, and require an explicit OK before proceeding.
+      var changedLines=[];
+      Y2_CCY_ORDER.forEach(function(c){
+        var newVal=y2Num(YIELD_ENGINE.current[c]);
+        if(newVal!=null && existing[c]!=null && Number(existing[c])!==newVal){
+          changedLines.push(c+': '+existing[c]+' -> '+newVal);
+        }
+      });
+      if(changedLines.length){
+        var msg='This date ('+d+') already has stored closes that differ from what you\'re about to save:\n\n'+
+          changedLines.join('\n')+
+          '\n\nIf your date field is showing the wrong day (the usual cause), press Cancel and fix the date first.\n\nOverwrite anyway?';
+        if(!confirm(msg)) { updateStatus('Save cancelled — nothing was overwritten','var(--amber)'); return; }
+      }
+    }
+    var row=Object.assign({},existing||{},{date:d});
     Y2_CCY_ORDER.forEach(function(c){var n=y2Num(YIELD_ENGINE.current[c]); if(n!=null) row[c]=n;}); by[d]=row; YIELD_ENGINE.history=Object.keys(by).sort().map(function(k){return by[k];});
     saveDataNow(); renderYield2Y(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Daily closes saved','var(--bullish-strong)');
   };
