@@ -860,8 +860,8 @@ function pairYieldCalc(base, quote){
   var sma21=all.length>=21?all.slice(-21).reduce(function(a,b){return a+b;},0)/21:null;
   var avg60=all.length>=60?all.slice(-60).reduce(function(a,b){return a+b;},0)/60:null;
 
-  // Weekly/monthly changes use stored observations before the current observation,
-  // matching the existing yield-engine convention.
+  // Weekly/monthly changes use stored observations before the current observation.
+  // "Monthly" is a 21-trading-day change (current spread minus the close 21 observations back).
   var histSpread=hist.map(function(r){return (y2Num(r[base])-y2Num(r[quote]))*100;});
   var prev5=histSpread.length>=5?histSpread[histSpread.length-5]:null;
   var prev21=histSpread.length>=21?histSpread[histSpread.length-21]:null;
@@ -1062,11 +1062,11 @@ function renderLockBox(){
 }
 
 var TAB_META={
-  overview:{title:"Desk Board",sub:"Composite scoreboard, most bullish to most bearish."},
-  raw:{title:"Confluence Feed",sub:"Fundamentals, rate differential, institutional bias and seasonality per currency, unranked."},
-  detail:{title:"Currency Detail",sub:"Everything about one currency, in one place."},
-  pairs:{title:"Pair Ranking",sub:"All 21 major-USD-universe crosses, most bullish to most bearish."},
-  yield2y:{title:"Bond Yield Spread",sub:"Current 2Y closes and historical yield data used to calculate the score."}
+  overview:{title:"Desk Board",sub:"Currency regime diagnostic — not a pair-trade score. Use Pair Ranking for tradable pair direction."},
+  raw:{title:"Confluence Feed",sub:"Per-currency diagnostics. The 2Y item here is own-history only; pair trades use the pair 2Y differential in Pair Ranking."},
+  detail:{title:"Currency Detail",sub:"Country-level regime view. Its 2Y score is diagnostic; pair yield scoring is calculated from the actual pair spread."},
+  pairs:{title:"Pair Ranking",sub:"The trading board: relative fundamentals, actual 2Y yield differential, COT and seasonality."},
+  yield2y:{title:"Bond Yield Spread",sub:"Underlying 2Y data. Currency scores use own-history diagnostics; Pair Ranking scores the actual pair differential."}
 };
 function switchTab(tab){
   activeTab=tab;
@@ -1629,8 +1629,8 @@ function renderOverview(){
   var divHtml = (hikers.length && cutters.length) ?
     '<div class="divergence on"><b>Divergence watch —</b> '+hikers.join("/")+" leaning HIKE against "+cutters.join("/")+" leaning CUT. Worth treating as this week's live divergence pair on top of the seven majors.</div>" :
     '';
-  var html = divHtml+'<div class="card"><h3>Currency Fundamental Dashboard</h3><div class="table-scroll"><table><thead><tr>'+
-    '<th>Symbol</th><th>Bias</th><th>Score</th><th>Trend</th><th>Alignment</th></tr></thead>'+
+  var html = divHtml+'<div class="card"><h3>Currency Regime Dashboard</h3><div class="legend-line" style="margin:-4px 0 12px 0;">Diagnostic only: this score includes each currency own-history 2Y yield signal. It is not the pair-trading score. Pair Ranking uses relative components and the actual pair 2Y differential for its 15% yield weight.</div><div class="table-scroll"><table><thead><tr>'+
+    '<th>Symbol</th><th>Regime Bias</th><th>Regime Score</th><th>Trend</th><th>Alignment</th></tr></thead>'+
     '<tbody id="overviewRows"></tbody></table></div>'+
     '</div></div>';
   document.getElementById("tab-overview").innerHTML=html;
@@ -1697,7 +1697,7 @@ function componentTrendMarker(key, liveVal){
 function renderRaw(){
   if(!DATA) return;
   var html='<div class="card"><h3>Confluence Feed</h3><div class="table-scroll"><table><thead><tr>'+
-    '<th>Currency</th><th>Fundamentals</th><th>Bond Yield Spread</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
+    '<th>Currency</th><th>Fundamentals</th><th>Own-History 2Y</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
 
   document.getElementById("tab-raw").innerHTML=html;
   var tb=document.getElementById("rawRows"), out="";
@@ -1897,11 +1897,11 @@ function renderDetailBody(ccy){
       gaugeSvg(ccy,sc)+
       '<div class="gauge-num mono" id="gaugeScoreTxt-'+ccy+'">'+fmt(sc)+'</div>'+
       '<div class="stat-block">'+
-        '<div class="stat-row"><span>TWP overall score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
+        '<div class="stat-row"><span>Currency regime score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
         '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:170px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
         '<div class="stat-row"><span>Seasonality + COT score</span><span class="mono" id="statSeasCot-'+ccy+'" style="'+numColor(scCot)+'">'+fmt(scCot)+'</span></div>'+
         '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
-        '<div class="stat-row" style="align-items:flex-start;"><span>Bond Yield Spread</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
+        '<div class="stat-row" style="align-items:flex-start;"><span>Own-history 2Y score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
       '</div>'+
       '<div class="rate-box">'+
         '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Interest rate</span>'+
@@ -2161,7 +2161,7 @@ function renderPairs(){
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="7" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+    rows='<tr><td colspan="8" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
@@ -2171,7 +2171,7 @@ function renderPairs(){
       p.bias==="Neutral Leaning Bearish" ? "pair-lean-bear" :
       p.bias==="Bearish" ? "pair-bear" :
       p.bias==="Very Bearish" ? "pair-vbear" : "pair-neutral";
-    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+      '<td class="mono">'+fmt(p.score)+'</td>'+      '<td class="mono" title="Pair-level 2Y yield differential score">'+(p.yieldScore==null?'—':fmt(p.yieldScore))+'</td>'+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
+    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+      '<td class="mono">'+fmt(p.score)+'</td>'+      '<td class="mono" title="Pair-level 2Y yield differential score">'+(p.yieldScore==null?'—':fmt(p.yieldScore))+'</td>'+      '<td class="mono" title="Current base 2Y minus quote 2Y">'+(p.yieldSpread==null?'—':(p.yieldSpread>0?'+':'')+p.yieldSpread.toFixed(1)+' bp')+'</td>'+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
   }
   var logRows="";
   for(var j=0;j<Math.min(LOG.length,8);j++){
@@ -2199,7 +2199,7 @@ function renderPairs(){
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;"><h3 style="margin:0;">Pair Ranking — Most Bullish to Most Bearish</h3>'+
     '<div class="range-switch">'+filterBtns+'</div></div>'+
-    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Yield</th><th>Relative</th><th>Trend (90d)</th></tr></thead>'+
+    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Yield Score</th><th>2Y Spread</th><th>Relative</th><th>Trend (90d)</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     (LOG.length? '<div class="card"><h3>Recalculation Log</h3><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div>':'');
   document.getElementById("tab-pairs").innerHTML=html;
