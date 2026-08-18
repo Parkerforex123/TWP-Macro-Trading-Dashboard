@@ -649,7 +649,7 @@ var y2DateTouchedThisSession = false; // true once the user actually changes the
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All", lockBoxCollapsed=false;
-var isSaving=false, isTyping=false;
+var isSaving=false, isSaveQueued=false, isTyping=false;
 var expandedRange="1M";
 
 function hashStr(s){ var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h|=0; } return (h>>>0).toString(16); }
@@ -679,7 +679,11 @@ function loadLocalCache() {
 }
 
 async function saveDataNow(){
-  if(isSaving || !DATA) return;
+  if(!DATA) return;
+  // Never drop a save just because another cloud write is in flight.
+  // The old guard could silently discard an import/save, after which the 5s
+  // cloud poll could restore the older history.
+  if(isSaving){ isSaveQueued=true; return; }
   if(!AUTH.accessToken){
     updateStatus("Sign in to save changes", "var(--amber)");
     return;
@@ -716,6 +720,12 @@ async function saveDataNow(){
     }
   } finally {
     isSaving = false;
+    // A save request that arrived during the previous write must be sent now
+    // using the latest in-memory state. This makes imports and edits lossless.
+    if(isSaveQueued){
+      isSaveQueued=false;
+      saveDataNow();
+    }
   }
 }
 
@@ -1028,11 +1038,46 @@ function y2DateKey(v){
   var d=new Date(v+"T00:00:00");
   return isNaN(d.getTime())?null:d.toISOString().slice(0,10);
 }
+function y2TodayKey(){ return new Date().toISOString().slice(0,10); }
 function y2SortedHistory(){
-  return (YIELD_ENGINE.history||[]).slice().filter(function(r){return r && r.date;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+  // Canonical daily-close history: exactly one row per date and never a future/open-session row.
+  // Any accidental entry for today or a future date is excluded from the live/exported history.
+  var byDate={};
+  var today=y2TodayKey();
+  (YIELD_ENGINE.history||[]).forEach(function(r){
+    if(!r || !r.date) return;
+    var d=y2DateKey(r.date)||String(r.date);
+    if(d>=today) return;
+    byDate[d]=Object.assign({},r,{date:d});
+  });
+  return Object.keys(byDate).sort().map(function(d){return byDate[d];});
+}
+function y2RemoveUnfinishedToday(){
+  var today=y2TodayKey(), by={}, removed=false;
+  (YIELD_ENGINE.history||[]).forEach(function(r){
+    if(!r || !r.date) return;
+    if(r.date>=today){ removed=true; return; }
+    by[r.date]=Object.assign({},by[r.date]||{},r,{date:r.date});
+  });
+  if(removed) YIELD_ENGINE.history=Object.keys(by).sort().map(function(d){return by[d];});
+  if(removed) y2SetCurrentFromLatestSaved();
+  return removed;
+}
+function y2SetCurrentFromLatestSaved(){
+  var rows=y2SortedHistory();
+  if(!rows.length){ YIELD_ENGINE.currentDate=''; YIELD_ENGINE.current={}; return; }
+  var latest=rows[rows.length-1];
+  YIELD_ENGINE.currentDate=latest.date;
+  YIELD_ENGINE.current={};
+  Y2_CCY_ORDER.forEach(function(c){ YIELD_ENGINE.current[c]=y2Num(latest[c]); });
 }
 function y2PrevClose(ccy){
-  var hist=y2SortedHistory().filter(function(r){return y2Num(r[ccy])!=null && r.date!==YIELD_ENGINE.currentDate;});
+  // The previous close is the immediately preceding stored trading-day close,
+  // never today's temporary input and never a weekend placeholder.
+  var currentDate=YIELD_ENGINE.currentDate||'';
+  var hist=y2SortedHistory().filter(function(r){
+    return y2Num(r[ccy])!=null && (!currentDate || r.date<currentDate);
+  });
   if(!hist.length) return null;
   return y2Num(hist[hist.length-1][ccy]);
 }
@@ -1129,61 +1174,93 @@ function y2ExportCsv(){
   a.href=URL.createObjectURL(blob); a.download='TWP_2Y_Yield_Master.csv'; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},500);
 }
 function y2ImportCsvText(text){
-  // Append-only importer: existing dates are never overwritten. A date already
-  // present in history is either skipped (values match) or flagged as a
-  // conflict (values differ) and left untouched. Only genuinely new dates are
-  // appended. This enforces the TWP CSV Update Protocol at the import layer,
-  // not just as a written instruction to an AI.
+  // Master CSV import protocol:
+  // - The imported file is authoritative for every date it contains.
+  // - Existing dates are updated, not duplicated.
+  // - Dates that are older than the import file and not present in it are preserved.
+  // - Duplicate dates inside the imported file collapse to one row.
+  // - The newest imported date becomes the live current observation so arrows,
+  //   SMA inputs and score calculations immediately use the imported close.
   var lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(function(x){return x.trim();});
   if(!lines.length) throw new Error('CSV is empty.');
   var header=y2SplitCsvLine(lines[0]).map(function(x){return x.trim().replace(/^"|"$/g,'');});
   var idx={}; header.forEach(function(h,i){idx[h]=i;});
   if(idx.Date==null) throw new Error('CSV must contain a Date column.');
-  var rows=[];
+
+  var importedByDate={};
   for(var i=1;i<lines.length;i++){
-    var parts=y2SplitCsvLine(lines[i]); parts=parts.slice(0,header.length).map(function(x){return x.replace(/^"|"$/g,'').replace(/""/g,'"').trim();});
-    var date=y2DateKey(parts[idx.Date]); if(!date) continue;
-    var r={date:date}; Y2_CCY_ORDER.forEach(function(c){var k=c+'_2Y'; var raw=parts[idx[k]]; var n=y2Num(raw); if(n!=null) r[c]=n;}); rows.push(r);
+    var parts=y2SplitCsvLine(lines[i]);
+    parts=parts.slice(0,header.length).map(function(x){return x.replace(/^"|"$/g,'').replace(/""/g,'"').trim();});
+    var date=y2DateKey(parts[idx.Date]);
+    if(!date) continue;
+    var r={date:date};
+    Y2_CCY_ORDER.forEach(function(c){
+      var k=c+'_2Y';
+      if(idx[k]==null) return;
+      var n=y2Num(parts[idx[k]]);
+      if(n!=null) r[c]=n;
+    });
+    importedByDate[date]=r;
   }
 
-  var existing={}; (YIELD_ENGINE.history||[]).forEach(function(r){existing[r.date]=r;});
-  var originalCount=Object.keys(existing).length;
-  var toAdd={}, skipped=0, conflicts=[], newDates=[];
+  var importedDates=Object.keys(importedByDate).sort();
+  if(!importedDates.length) throw new Error('CSV contains no valid dated rows.');
 
-  rows.forEach(function(r){
-    var old=existing[r.date];
+  var existingByDate={};
+  (YIELD_ENGINE.history||[]).forEach(function(r){
+    if(r && r.date) existingByDate[y2DateKey(r.date)||r.date]=Object.assign({},r);
+  });
+  var originalCount=Object.keys(existingByDate).length;
+  var added=0, updated=0, unchanged=0;
+
+  importedDates.forEach(function(date){
+    var incoming=importedByDate[date];
+    var old=existingByDate[date];
     if(!old){
-      toAdd[r.date]=r; newDates.push(r.date);
+      existingByDate[date]=incoming;
+      added++;
       return;
     }
-    // Date already exists in history — never overwrite. Check whether every
-    // currency value supplied in this row matches what's already stored.
-    var mismatch=[];
+    var changed=false;
+    var merged=Object.assign({},old,{date:date});
     Y2_CCY_ORDER.forEach(function(c){
-      if(r[c]==null) return; // currency not present in this row, nothing to compare
-      var oldVal=y2Num(old[c]);
-      if(oldVal==null || Math.abs(oldVal-r[c])>0.0005){ mismatch.push(c); }
+      if(incoming[c]!=null){
+        if(old[c]==null || Math.abs(Number(old[c])-Number(incoming[c]))>0.0000001) changed=true;
+        merged[c]=incoming[c];
+      }
     });
-    if(mismatch.length){
-      conflicts.push({date:r.date, currencies:mismatch});
-    } else {
-      skipped++;
-    }
+    existingByDate[date]=merged;
+    if(changed) updated++; else unchanged++;
   });
 
-  var merged=Object.assign({}, existing, toAdd);
-  YIELD_ENGINE.history=Object.keys(merged).sort().map(function(k){return merged[k];});
-  var finalCount=Object.keys(merged).length;
+  YIELD_ENGINE.history=Object.keys(existingByDate).sort().map(function(k){return existingByDate[k];});
+
+  // The imported file is the current master history. Promote its newest row to
+  // current state so the day-over-day arrows compare the new close with the prior one.
+  var latestDate=importedDates[importedDates.length-1];
+  var latestRow=existingByDate[latestDate];
+  YIELD_ENGINE.currentDate=latestDate;
+  YIELD_ENGINE.current={};
+  Y2_CCY_ORDER.forEach(function(c){
+    if(latestRow[c]!=null) YIELD_ENGINE.current[c]=latestRow[c];
+  });
+  // The latest imported close is the latest SAVED close. The date picker must
+  // therefore remain on that stored trading date (e.g. Aug 17), never today's
+  // unfinished candle (e.g. Aug 18). The user changes the date to Aug 18 only
+  // when tomorrow morning's close is ready to be saved.
+  y2DateTouchedThisSession=true;
 
   return {
     originalCount:originalCount,
-    newAdded:newDates.length,
-    newDates:newDates.sort(),
-    skippedExisting:skipped,
-    conflicts:conflicts,
-    finalCount:finalCount
+    newAdded:added,
+    updatedExisting:updated,
+    unchangedExisting:unchanged,
+    finalCount:YIELD_ENGINE.history.length,
+    importedDates:importedDates,
+    latestDate:latestDate
   };
 }
+
 function y2RenderRows(){
   var tb=document.getElementById('y2Rows'); if(!tb) return;
   var base=Y2_CCY_ORDER.map(y2Calc);
@@ -1222,7 +1299,7 @@ function renderYield2Y(){
       var inputStyle=dir==null?'':(dir>0?'color:var(--bullish-strong);font-weight:700;':(dir<0?'color:var(--bearish-strong);font-weight:700;':''));
       return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';
     }).join('')+
-    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(y2DateTouchedThisSession?(YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10))+'" '+(unlockedLocally?'':'disabled')+'></label>'+(y2DateTouchedThisSession?'':'<span class="y2-small" style="color:var(--text-faint);">defaulted to today \u2014 change it if you\'re logging a different day</span>')+'</div>'+
+    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+((rows.length?rows[rows.length-1].date:''))+'" '+(unlockedLocally?'':'disabled')+'></label>'+(y2DateTouchedThisSession?'':'<span class="y2-small" style="color:var(--text-faint);">defaulted to today \u2014 change it if you\'re logging a different day</span>')+'</div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
     '<div class="card"><h3>Bond Yield Spread</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
@@ -1234,17 +1311,43 @@ function renderYield2Y(){
     '<div class="hist-spread-note">Positive means the base currency has the higher 2Y yield; negative means the quote currency has the higher 2Y yield. The chart uses stored historical closes only.</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value); updateComputed();});}
-  var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){YIELD_ENGINE.currentDate=this.value; y2DateTouchedThisSession=true;};
-  var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
+  var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){
+    var d=this.value;
+    if(!d) return;
+    var today=y2TodayKey();
+    if(d>=today){
+      var rowsNow=y2SortedHistory();
+      this.value=rowsNow.length?rowsNow[rowsNow.length-1].date:'';
+      y2DateTouchedThisSession=false;
+      updateStatus('Today has not closed — daily close cannot be saved yet','var(--amber)');
+      return;
+    }
+    YIELD_ENGINE.currentDate=d;
+    y2DateTouchedThisSession=true;
+    var stored=y2SortedHistory().find(function(r){return r.date===d;});
+    if(stored){
+      Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=y2Num(stored[c]);});
+    } else {
+      Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=null;});
+    }
+    updateComputed();
+    renderYield2Y();
+  };
+  var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
   var close=document.getElementById('y2SaveAsClose'); if(close) close.onclick=function(){
-    YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||new Date().toISOString().slice(0,10));
-    var d=YIELD_ENGINE.currentDate, by={}; (YIELD_ENGINE.history||[]).forEach(function(r){by[r.date]=r;});
+    var d=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.currentDate||'').trim();
+    var today=y2TodayKey();
+    if(!d){ updateStatus('Choose a completed close date first','var(--amber)'); return; }
+    if(d>=today){ updateStatus('Daily close blocked — '+today+' is still an open session','var(--amber)'); alert('No daily close can be saved for '+today+'. Save that close tomorrow morning, after the trading day has finished.'); return; }
+    YIELD_ENGINE.currentDate=d;
+
+    // Normalize the entire stored history by date before writing anything. This
+    // makes repeated clicks idempotent: one date can only ever have one row.
+    var by={}; y2SortedHistory().forEach(function(r){by[r.date]=Object.assign({},r);});
     var existing=by[d];
     if(existing){
-      // A date this dashboard already has real history for is about to be touched again.
-      // Silently overwriting it is exactly how a stale date-picker destroys a real day's
-      // closes -- so this is a hard stop, not a soft warning: show old vs new for every
-      // currency that would actually change, and require an explicit OK before proceeding.
+      // Saving the same date again updates that one date only. It never appends a
+      // second copy. A confirmation is shown only when values would change.
       var changedLines=[];
       Y2_CCY_ORDER.forEach(function(c){
         var newVal=y2Num(YIELD_ENGINE.current[c]);
@@ -1253,33 +1356,37 @@ function renderYield2Y(){
         }
       });
       if(changedLines.length){
-        var msg='This date ('+d+') already has stored closes that differ from what you\'re about to save:\n\n'+
-          changedLines.join('\n')+
-          '\n\nIf your date field is showing the wrong day (the usual cause), press Cancel and fix the date first.\n\nOverwrite anyway?';
-        if(!confirm(msg)) { updateStatus('Save cancelled — nothing was overwritten','var(--amber)'); return; }
+        var msg='This close date ('+d+') already exists.\n\n'+changedLines.join('\n')+'\n\nReplace the existing close for this date?';
+        if(!confirm(msg)) { updateStatus('Save cancelled — existing close kept','var(--amber)'); return; }
       }
     }
+
     var row=Object.assign({},existing||{},{date:d});
-    Y2_CCY_ORDER.forEach(function(c){var n=y2Num(YIELD_ENGINE.current[c]); if(n!=null) row[c]=n;}); by[d]=row; YIELD_ENGINE.history=Object.keys(by).sort().map(function(k){return by[k];});
-    saveDataNow(); renderYield2Y(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Daily closes saved','var(--bullish-strong)');
+    Y2_CCY_ORDER.forEach(function(c){var n=y2Num(YIELD_ENGINE.current[c]); if(n!=null) row[c]=n;});
+    by[d]=row;
+    YIELD_ENGINE.history=Object.keys(by).sort().map(function(k){return by[k];});
+
+    // The just-saved daily close is now the latest permanent observation.
+    YIELD_ENGINE.currentDate=d;
+    YIELD_ENGINE.current={};
+    Y2_CCY_ORDER.forEach(function(c){if(row[c]!=null) YIELD_ENGINE.current[c]=row[c];});
+
+    saveDataNow(); renderYield2Y(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Daily close saved — '+d+'','var(--bullish-strong)');
   };
   var ex=document.getElementById('y2Export'); if(ex) ex.onclick=y2ExportCsv;
   var demo=document.getElementById('y2Demo'); if(demo) demo.onclick=function(){if(!confirm('Load synthetic demo data? This replaces the current 2Y history in the dashboard.')) return; y2LoadDemo(); saveDataNow(); renderYield2Y(); updateStatus('Synthetic demo loaded','var(--amber)');};
   var imp=document.getElementById('y2Import'); if(imp) imp.onchange=function(){var f=this.files&&this.files[0]; if(!f) return; var reader=new FileReader(); reader.onload=function(){
     try{
       var report=y2ImportCsvText(reader.result);
-      var msg='Existing rows: '+report.originalCount+'\n'+
-        'New rows added: '+report.newAdded+'\n'+
-        'Existing dates skipped (match): '+report.skippedExisting+'\n'+
-        'Conflicts (NOT saved): '+report.conflicts.length+'\n'+
-        'Final rows: '+report.finalCount+
-        (report.newDates.length?'\n\nNew date range: '+report.newDates[0]+' \u2192 '+report.newDates[report.newDates.length-1]:'');
-      if(report.conflicts.length){
-        msg+='\n\nCONFLICTS \u2014 existing value differs from imported value. Existing data was NOT changed:\n';
-        report.conflicts.forEach(function(c){ msg+='  '+c.date+': '+c.currencies.join(', ')+'\n'; });
-      }
-      saveDataNow(); renderYield2Y();
-      updateStatus(report.conflicts.length?('CSV imported \u2014 '+report.conflicts.length+' conflict(s) flagged'):'CSV imported \u2014 append-only', report.conflicts.length?'var(--amber)':'var(--bullish-strong)');
+      var msg='Previous rows: '+report.originalCount+'\n'+
+        'New dates added: '+report.newAdded+'\n'+
+        'Existing dates updated: '+report.updatedExisting+'\n'+
+        'Existing dates unchanged: '+report.unchangedExisting+'\n'+
+        'Final rows: '+report.finalCount+'\n'+
+        'Latest saved daily close: '+report.latestDate;
+      saveDataNow();
+      renderYield2Y();
+      updateStatus('CSV imported \u2014 master history updated','var(--bullish-strong)');
       alert(msg);
     }catch(e){alert(e.message);}
   }; reader.readAsText(f);};
@@ -2225,6 +2332,10 @@ async function init(){
     else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE})); } catch(e) {} }
   }
 
+  var removedUnfinishedToday=y2RemoveUnfinishedToday();
+  y2SetCurrentFromLatestSaved();
+  if(removedUnfinishedToday && AUTH.accessToken){ await saveDataNow(); }
+
   renderLockBox();
   renderAllStatic();
 
@@ -2238,8 +2349,10 @@ async function init(){
       if (!rows || !rows.length || !rows[0].payload) return;
       const row = rows[0];
       if (lastCloudUpdatedAt === row.updated_at) return;
+      // Do not acknowledge a cloud version while a local save is still in flight.
+      // Otherwise the poll can consume the stale cloud payload and mark it as handled.
+      if (isSaving || isSaveQueued) return;
       lastCloudUpdatedAt = row.updated_at;
-      if (isSaving) return;
       const parsed = JSON.parse(row.payload);
       if (!parsed || !parsed.DATA) return;
       DATA = parsed.DATA;
@@ -2247,14 +2360,19 @@ async function init(){
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
-      localStorage.setItem('twp_dashboard_state_v4', row.payload);
+      var removedFuture = y2RemoveUnfinishedToday();
+      y2SetCurrentFromLatestSaved();
+      if(removedFuture && AUTH.accessToken){
+        try { await saveDataNow(); } catch(e) { console.error("Future-close cleanup save failed:", e); }
+      }
+      localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE}));
       if (!isTyping) {
         renderAllStatic();
         renderLockBox();
       } else {
         updateComputed();
       }
-      updateStatus("Live synced", "var(--text-faint)");
+      updateStatus(removedFuture ? "Future daily closes removed — latest close restored" : "Live synced", removedFuture ? "var(--amber)" : "var(--text-faint)");
     } catch(e) {
       console.error("Cloud sync error:", e);
     }
