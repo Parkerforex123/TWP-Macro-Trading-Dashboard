@@ -3066,6 +3066,7 @@ function renderPairs(){
   if(pairFilters.indexOf("Extremes")!==-1) pairs=sortExtremePairs(pairs);
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
+  var mobileRows="";
   if(!pairs.length){
     rows='<tr><td colspan="9" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
