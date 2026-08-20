@@ -7,28 +7,28 @@
 <title>TWP — Fundamentals Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23181b22%27/%3E%3Ctext x=%2732%27 y=%2742%27 text-anchor=%27middle%27 font-family=%27Arial,sans-serif%27 font-size=%2725%27 font-weight=%27700%27 fill=%27white%27%3ETWP%3C/text%3E%3C/svg%3E">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
 
 :root{
   --bg:#eef0f3; --panel:#ffffff; --panel2:#f4f5f7; --panel3:#e9ebef; --border:#d7dae0;
   --text:#181b22; --text-dim:#565e6d; --text-faint:#8991a0;
-  --bullish:#2f7fe0; --bullish-strong:#1c63c4; --bearish:#e0453f; --bearish-strong:#c22e28;
-  --bullish-lean:#9db8db; --bearish-lean:#dcaaa7;
-  --neutral:#8b93a3; --amber:#a5690f; --radius:10px;
+  --bullish:#2dbb78; --bullish-strong:#35d08a; --bearish:#d9535f; --bearish-strong:#ff6b76;
+  --bullish-lean:#78b995; --bearish-lean:#b87980;
+  --neutral:#89919d; --amber:#c69a3a; --radius:8px;
 }
 body.ash, html.ash{
-  --bg:#0a0c11; --panel:#12151d; --panel2:#171b26; --panel3:#1d2230; --border:#252b3a;
+  --bg:#151817; --panel:#1c211f; --panel2:#232925; --panel3:#2a302c; --border:#343c37;
   --text:#e9ebf1; --text-dim:#8b93a8; --text-faint:#5c6478;
-  --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
-  --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
-  --neutral:#6b7280; --amber:#e0a83e;
+  --bullish:#2dbb78; --bullish-strong:#45d792; --bearish:#d9535f; --bearish-strong:#ff6b76;
+  --bullish-lean:#5d8d73; --bearish-lean:#8f5b62;
+  --neutral:#6f7772; --amber:#c85b16;
 }
 body.black, html.black{
-  --bg:#0f0b08; --panel:#17110b; --panel2:#201811; --panel3:#291f16; --border:#3a2c1c;
-  --text:#f0e6d2; --text-dim:#a79a85; --text-faint:#6e6353;
-  --bullish:#3ba7ff; --bullish-strong:#63c2ff; --bearish:#ff5c72; --bearish-strong:#ff8494;
-  --bullish-lean:#5d7fa3; --bearish-lean:#a35f68;
-  --neutral:#777777; --amber:#e0a83e;
+  --bg:#080a08; --panel:#10130f; --panel2:#151815; --panel3:#1b1f19; --border:#2b322a;
+  --text:#eef2ee; --text-dim:#aeb7b0; --text-faint:#707a74;
+  --bullish:#2dbb78; --bullish-strong:#45d792; --bearish:#d9535f; --bearish-strong:#ff6b76;
+  --bullish-lean:#5d8d73; --bearish-lean:#8f5b62;
+  --neutral:#6f7772; --amber:#c85b16;
 }
 body.ash, body.black, html.ash, html.black{ --dark:1; }
 *{box-sizing:border-box;}
@@ -40,28 +40,28 @@ body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-be
 .mono{font-family:'IBM Plex Mono',monospace;font-weight:600;}
 
 .shell{display:flex;min-height:100vh;}
-.rail{width:230px;flex:0 0 230px;background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:20px 14px;gap:20px;position:sticky;top:0;height:100vh;}
+.rail{width:210px;flex:0 0 210px;background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:16px 12px;gap:14px;position:sticky;top:0;height:100vh;}
 .brand{padding:2px 6px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.brand-mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:.5px;}
-.theme-switch{display:flex;gap:4px;}
-.theme-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:5px 8px;cursor:pointer;font-size:11.5px;font-weight:600;}
+.brand-mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:.4px;color:var(--bullish-strong);}
+.theme-switch{display:flex;gap:3px;}
+.theme-btn{background:#000;border:1px solid #000;color:#fff;border-radius:5px;padding:5px 8px;cursor:pointer;font-size:11.5px;font-weight:700;}
 .theme-btn:hover{color:var(--text);}
-.theme-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+.theme-btn.active{background:#000;color:#fff;border-color:#000;}
 .tabs{display:flex;flex-direction:column;gap:4px;}
 .tab-btn{text-align:left;background:transparent;border:none;color:var(--text-dim);font-family:'Inter',sans-serif;
-  font-size:14.5px;font-weight:500;padding:10px 12px;border-radius:8px;cursor:pointer;border-left:3px solid transparent;}
+  font-size:13px;font-weight:600;padding:8px 10px;border-radius:8px;cursor:pointer;border-left:3px solid transparent;}
 .tab-btn:hover{background:var(--panel2);color:var(--text);}
 .tab-btn.active{background:var(--panel3);color:var(--text);border-left:3px solid var(--amber);font-weight:700;}
-.lock-box{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-dim);transition:padding .15s,border-color .15s;}
+.lock-box{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim);transition:padding .15s,border-color .15s;}
 .lock-box.collapsed{padding-top:0;border-top-color:transparent;}
 .lock-box.collapsed .lock-state{justify-content:flex-end;margin-bottom:0;}
 .lock-box.collapsed .lock-state-label{display:none;}
-.lock-box.collapsed .lock-eye{width:18px;height:18px;font-size:14px;}
+.lock-box.collapsed .lock-eye{width:18px;height:18px;font-size:12px;}
 .lock-state{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px;font-weight:700;}
 .lock-state-label{display:flex;align-items:center;gap:6px;}
 .lock-state.unlocked{color:var(--amber);}
-.lock-box button.lock-eye{background:transparent;border:none;color:var(--text-dim);width:18px;height:18px;border-radius:0;padding:0;margin:0;cursor:pointer;font-size:14px;line-height:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.lock-box button.lock-eye{background:transparent;border:none;color:var(--text-dim);width:18px;height:18px;border-radius:0;padding:0;margin:0;cursor:pointer;font-size:12px;line-height:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
 .lock-eye:hover{color:var(--text);}
 .lock-box.collapsed .lock-fields{display:none;}
 .lock-box input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
@@ -69,91 +69,91 @@ body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-be
   -webkit-appearance:none;appearance:none;-webkit-text-fill-color:var(--text);}
 .lock-box input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--panel2) inset;-webkit-text-fill-color:var(--text);caret-color:var(--text);}
 .lock-box button{width:100%;background:var(--panel3);border:1px solid var(--border);color:var(--text);
-  padding:7px 8px;border-radius:6px;font-size:12.5px;cursor:pointer;font-weight:700;}
+  padding:7px 8px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:700;}
 .lock-box button:hover{border-color:var(--amber);}
-.lock-box .hint{font-size:13px;color:var(--text-faint);margin-top:6px;line-height:1.4;}
+.lock-box .hint{font-size:11.5px;color:var(--text-faint);margin-top:6px;line-height:1.4;}
 .lock-box .change-link{font-size:11.5px;color:var(--text-faint);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
 
-.content{flex:1;padding:26px 32px 60px;max-width:1260px;}
-.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
-.page-title{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:700;margin:0;}
-.page-sub{color:var(--text-dim);font-size:13.5px;margin-top:4px;} .page-sub:empty{display:none;}
+.content{flex:1;padding:18px 22px 40px;max-width:1500px;}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin:0;}
+.page-sub{color:var(--text-dim);font-size:11.5px;margin-top:3px;} .page-sub:empty{display:none;}
 .updated{font-size:11.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
 .tab-panel{display:none;} .tab-panel.active{display:block;}
-.y2-grid{display:grid;grid-template-columns:1.1fr 1.9fr;gap:16px;}
-.y2-input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.y2-grid{display:grid;grid-template-columns:1.1fr 1.9fr;gap:10px;}
+.y2-input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
 .y2-input{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;width:100%;}
 .y2-input:focus{outline:none;border-color:var(--amber);}
 .y2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-.y2-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
+.y2-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;}
 .y2-btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
 .y2-btn:hover{filter:brightness(.97);}
 .y2-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:9px;}
 .y2-score{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;}
 .y2-positive{color:var(--bullish-strong) !important;} .y2-negative{color:var(--bearish-strong) !important;} .y2-neutral{color:var(--text-dim) !important;}
 .y2-partial{color:var(--amber);font-size:10.5px;font-weight:700;margin-top:3px;white-space:nowrap;}
-.y2-comp{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;text-align:center;}
+.y2-comp{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11.5px;text-align:center;}
 .y2-comp.pos{color:var(--bullish-strong);} .y2-comp.neg{color:var(--bearish-strong);} .y2-comp.neu{color:var(--text-dim);} .y2-comp.miss{color:var(--text-faint);}
 .y2-score-table{min-width:1180px;}
 .y2-component-note{font-size:11.5px;color:var(--text-faint);line-height:1.55;margin-top:10px;}
 .y2-component-note b{color:var(--text-dim);}
 .y2-spread{font-family:'IBM Plex Mono',monospace;font-weight:700;}
-.y2-track{height:7px;background:var(--panel3);border-radius:20px;position:relative;min-width:130px;overflow:hidden;}
+.y2-track{height:7px;background:var(--panel3);border-radius:4px;position:relative;min-width:130px;overflow:hidden;}
 .y2-track i{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);left:50%;}
 .y2-track b{position:absolute;top:0;bottom:0;background:var(--bullish);opacity:.8;}
 .y2-track b.neg{background:var(--bearish);}
-.y2-small{font-size:13px;color:var(--text-faint);}.y2-direction{font-size:12px;font-weight:700;}
-.y2-chg-arrow{font-size:14px;font-weight:900;margin-right:1px;display:inline-block;vertical-align:middle;}
+.y2-small{font-size:11.5px;color:var(--text-faint);}.y2-direction{font-size:12px;font-weight:700;}
+.y2-chg-arrow{font-size:12px;font-weight:900;margin-right:1px;display:inline-block;vertical-align:middle;}
 .y2-chg-arrow.up{color:var(--bullish-strong);} .y2-chg-arrow.down{color:var(--bearish-strong);} .y2-chg-arrow.flat{color:var(--text-faint);font-size:8px;}
 @media(max-width:1000px){.y2-grid{grid-template-columns:1fr;}.y2-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:600px){.y2-input-grid{grid-template-columns:1fr;}}
 
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
-.card h3{font-family:'Space Grotesk',sans-serif;font-size:13.5px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:0 0 14px;font-weight:700;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+.card h3{font-family:'Space Grotesk',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:0 0 14px;font-weight:700;}
 
-.divergence{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:13.5px;line-height:1.5;border:1px solid var(--border);}
+.divergence{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.5;border:1px solid var(--border);}
 .divergence.on{background:rgba(165,105,15,.08);border-color:rgba(165,105,15,.4);}
 .divergence.off{color:var(--text-dim);}
 .divergence b{color:var(--amber);}
 
-table{width:100%;border-collapse:collapse;font-size:15.5px;}
-th{text-align:left;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
-td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;white-space:nowrap;font-family:'Space Grotesk',sans-serif;font-size:12.5px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;border-bottom:1px solid var(--border);font-weight:700;background:var(--panel2);}
+td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;}
 tr:last-child td{border-bottom:none;}
 tr.rowhover:hover td{filter:brightness(.98);}
 body.ash tr.rowhover:hover td, body.black tr.rowhover:hover td{filter:brightness(1.25);}
 .ccy-name{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.5px;}
 .legend-line{font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.5;}
 
-.chip{display:inline-block;padding:4px 13px;border-radius:20px;font-size:12.5px;font-weight:700;letter-spacing:.3px;}
-.chip-bull{background:rgba(47,127,224,.14);color:var(--bullish-strong);}
+.chip{display:inline-block;padding:5px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.3px;}
+.chip-bull{background:rgba(53,185,106,.14);color:var(--bullish-strong);}
 .chip-bull.strong{background:var(--bullish);color:#fff;}
-.chip-bull.lean{background:rgba(47,127,224,.06);color:var(--text-dim);border:1px solid rgba(47,127,224,.3);}
-.chip-bear{background:rgba(224,69,63,.13);color:var(--bearish-strong);}
+.chip-bull.lean{background:rgba(53,185,106,.10);color:var(--text-dim);border:1px solid rgba(70,170,95,.32);}
+.chip-bear{background:rgba(217,87,87,.13);color:var(--bearish-strong);}
 .chip-bear.strong{background:var(--bearish);color:#fff;}
-.chip-bear.lean{background:rgba(224,69,63,.06);color:var(--text-dim);border:1px solid rgba(224,69,63,.3);}
+.chip-bear.lean{background:rgba(217,87,87,.10);color:var(--text-dim);border:1px solid rgba(224,69,63,.3);}
 .chip-neu{background:rgba(139,147,163,.18);color:var(--text-dim);}
-body.ash .chip-bull.strong, body.black .chip-bull.strong{background:rgba(59,167,255,.25);color:var(--bullish-strong);box-shadow:0 0 0 1px rgba(59,167,255,.4) inset;}
-body.ash .chip-bear.strong, body.black .chip-bear.strong{background:rgba(255,92,114,.25);color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(255,92,114,.4) inset;}
-body.ash .chip-bull.lean, body.black .chip-bull.lean{background:rgba(59,167,255,.08);color:var(--text-dim);border-color:rgba(59,167,255,.3);}
-body.ash .chip-bear.lean, body.black .chip-bear.lean{background:rgba(255,92,114,.08);color:var(--text-dim);border-color:rgba(255,92,114,.3);}
+body.ash .chip-bull.strong, body.black .chip-bull.strong{background:rgba(45,187,120,.22);color:var(--bullish-strong);box-shadow:0 0 0 1px rgba(53,185,106,.4) inset;}
+body.ash .chip-bear.strong, body.black .chip-bear.strong{background:rgba(217,83,95,.22);color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(217,87,87,.4) inset;}
+body.ash .chip-bull.lean, body.black .chip-bull.lean{background:rgba(53,185,106,.08);color:var(--text-dim);border-color:rgba(53,185,106,.3);}
+body.ash .chip-bear.lean, body.black .chip-bear.lean{background:rgba(217,87,87,.08);color:var(--text-dim);border-color:rgba(217,87,87,.3);}
 
 .cell-vstrong{background:var(--bullish);color:#fff;font-weight:700;}
 .cell-strong{background:rgba(47,127,224,.28);color:var(--bullish-strong);font-weight:600;}
 .cell-neutral{background:transparent;color:var(--text-dim);}
 body.ash .cell-neutral, body.black .cell-neutral{background:rgba(255,255,255,.022);}
-.cell-weak{background:rgba(224,69,63,.24);color:var(--bearish-strong);font-weight:600;}
+.cell-weak{background:rgba(217,83,95,.28);color:var(--bearish-strong);font-weight:600;}
 .cell-vweak{background:var(--bearish);color:#fff;font-weight:700;}
 body.ash .cell-vstrong, body.black .cell-vstrong{color:#06131f;}
 body.ash .cell-vweak, body.black .cell-vweak{color:#2a060a;}
 
-.raw-input{width:72px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;}
+.raw-input{width:72px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
 select.raw-input{width:104px;}
 input:disabled, textarea:disabled{background:transparent;border-color:transparent;opacity:1;cursor:default;padding-left:0;-webkit-text-fill-color:inherit;}
 select:disabled{background:transparent;border-color:transparent;color:var(--text);opacity:1;cursor:default;-webkit-appearance:none;appearance:none;}
 
 .ccy-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.ccy-pill{background:var(--panel);border:1px solid var(--border);color:var(--text-dim);padding:9px 18px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;letter-spacing:.5px;}
+.ccy-pill{background:var(--panel);border:1px solid var(--border);color:var(--text-dim);padding:9px 18px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:.5px;}
 .ccy-pill:hover{color:var(--text);}
 .ccy-pill.active{background:var(--panel3);color:var(--text);border-color:var(--amber);}
 
@@ -164,36 +164,48 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .gauge-svg{width:100%;height:auto;display:block;}
 .gauge-num{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;text-align:center;margin-top:-50px;}
 .stat-block{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text-dim);}
-.stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;padding:3px 10px;border-radius:6px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-dim);}
+.stat-chip{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:16px;padding:3px 10px;border-radius:6px;}
 .rate-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
 .rate-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
 .move-select.HIKE{color:var(--bullish-strong);background:rgba(47,127,224,.12);border-color:var(--bullish);}
-.move-select.CUT{color:var(--bearish-strong);background:rgba(224,69,63,.10);border-color:var(--bearish);}
+.move-select.CUT{color:var(--bearish-strong);background:rgba(217,83,95,.12);border-color:var(--bearish);}
 .move-select.HOLD{color:var(--text-dim);}
 .conv-select.High{color:var(--amber);font-weight:700;}
 .conv-select.Medium{color:var(--text-dim);}
 .conv-select.Low{color:var(--text-faint);}
-.guidance-box{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:none;margin-top:8px;overflow-y:auto;}
-.field-label{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
+.guidance-box{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--amber);color:var(--amber);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:none;margin-top:8px;overflow-y:auto;}
+.field-label{font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
 
-.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;margin-bottom:18px;padding:14px 16px;background:var(--panel2);border-radius:8px;flex:1 1 auto;min-width:0;}
-.info-trend-row{display:flex;gap:14px;align-items:stretch;}
-.trend-panel{flex:0 0 216px;background:var(--panel2);border-radius:8px;padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;justify-content:space-between;}
-.trend-panel .k{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
+.info-grid{display:grid;grid-template-columns:repeat(4,minmax(135px,1fr));gap:6px 10px;margin-bottom:8px;padding:8px 10px;background:var(--panel2);border-radius:8px;flex:1 1 auto;min-width:0;}
+.info-trend-row{display:flex;gap:8px;align-items:stretch;}
+.trend-panel{flex:1 1 0;min-width:360px;background:var(--panel2);border-radius:8px;padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;justify-content:space-between;}
+.trend-panel .k{font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
 .trend-panel .trend-score{font-size:20px;font-weight:700;margin-top:4px;}
-.trend-panel .trend-delta{font-size:12.5px;margin-top:2px;}
+.trend-panel .trend-delta{font-size:11px;margin-top:2px;}
 .trend-panel svg{margin-top:10px;color:var(--text-dim);}
 .info-item{display:flex;flex-direction:column;gap:4px;}
-.info-item .k{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
-.info-item .v{font-size:13.5px;font-weight:600;}
-.info-item input{width:70px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
-.info-item select{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:12.5px;}
+.info-item .k{font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
+.info-item .v{font-size:12px;font-weight:600;}
+.info-item input{width:70px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.info-item select{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:11px;}
+.weight-col{display:none;}
+body.editing .weight-col{display:table-cell;}
+.pair-flags{display:inline-flex;align-items:center;margin-right:8px;vertical-align:middle;}
+.pair-flags .flag-a,.pair-flags .flag-b{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:var(--panel3);border:1.5px solid var(--panel);overflow:hidden;}
+.pair-flags .flag-b{margin-left:-8px;}
+.pair-flags img{width:100%;height:100%;object-fit:cover;display:block;}
+.pair-table td,.pair-table th{font-size:13.5px!important;}
+.pair-table td,.pair-table th{padding-top:4px!important;padding-bottom:4px!important;padding-left:6px!important;padding-right:6px!important;}
+.pair-table .mono,.pair-table .ccy-name,.pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-size:13.5px!important;font-weight:800!important;}
+.pair-table .trend-cell{min-height:26px!important;}
+.pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-family:'Space Grotesk',sans-serif!important;text-transform:uppercase!important;letter-spacing:.3px;}
+.pair-table th:nth-child(9),.pair-table td:nth-child(9){text-align:center!important;}
 
-.sector-block{margin-bottom:20px;}
-.sector-title{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.sector-title span.label{font-family:'Space Grotesk',sans-serif;font-size:13.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:700;}
+.sector-block{margin-bottom:10px;}
+.sector-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.sector-title span.label{font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:700;}
 .sector-block table{table-layout:fixed;}
 .sector-block table th,.sector-block table td{vertical-align:middle;}
 .sector-block table th:nth-child(1),.sector-block table td:nth-child(1){width:38%;text-align:left;}
@@ -203,34 +215,57 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .sector-block table th:nth-child(5),.sector-block table td:nth-child(5){width:11%;text-align:center;}
 .sector-block table th:nth-child(6),.sector-block table td:nth-child(6){width:12%;text-align:center;}
 .sector-block table th:nth-child(7),.sector-block table td:nth-child(7){width:6%;text-align:center;}
-.ind-link{display:block;color:var(--text);text-decoration:none;font-size:15.5px;font-weight:500;border-bottom:1px dotted var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ind-link{display:inline-block;color:var(--text);text-decoration:none;font-size:15px;font-weight:600;border-bottom:1px dotted var(--text-faint);white-space:nowrap;max-width:100%;}
 .ind-link:hover{color:var(--amber);border-color:var(--amber);}
-.ind-name{width:100%;background:transparent;border:none;color:var(--text);font-size:15.5px;font-weight:500;padding:7px 6px;font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ind-num{width:78px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;text-align:center;}
-.ind-txt{width:104px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;text-align:center;}
-.surprise{font-family:'IBM Plex Mono',monospace;font-size:15.5px;font-weight:700;white-space:nowrap;text-align:center;}
-th{font-size:11.5px;}
-.sector-block table thead th{background:var(--panel2);font-size:14px;}
-.bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;font-size:13.5px;font-weight:700;min-width:96px;}
+.ind-name{width:100%;background:transparent;border:none;color:var(--text);font-size:15px;font-weight:600;padding:5px 4px;font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ind-num{width:76px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:5px 6px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:800;text-align:center;}
+.ind-txt{width:102px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:5px 6px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:800;text-align:center;}
+.surprise{font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:800;white-space:nowrap;text-align:center;}
+th{font-size:12px;}
+.sector-block table thead th{background:var(--panel2);font-size:12.5px;}
+.bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:13.5px;font-weight:800;min-width:98px;}
 .bias-select.Bullish{color:var(--bullish-strong);} .bias-select.Bearish{color:var(--bearish-strong);} .bias-select.Neutral{color:var(--text-dim);}
-.bias-chip-text{font-weight:700;font-size:12.5px;}
+.bias-chip-text{font-weight:800;font-size:13px;}
 .bias-chip-text.Bullish{color:var(--bullish-strong);} .bias-chip-text.Bearish{color:var(--bearish-strong);} .bias-chip-text.Neutral{color:var(--text-dim);}
-.static-chip{display:inline-block;padding:6px 10px;border-radius:6px;background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12.5px;border:1px solid var(--border);}
+.static-chip{display:inline-block;padding:6px 10px;border-radius:6px;background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11px;border:1px solid var(--border);}
 .rm-btn{background:transparent;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;padding:2px 6px;display:inline-flex;align-items:center;justify-content:center;}
 .rm-btn:hover{color:var(--bearish);}
-.add-btn{background:var(--panel2);border:1px dashed var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:6px;}
+.add-btn{background:var(--panel2);border:1px dashed var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;margin-top:6px;}
 .add-btn:hover{color:var(--text);border-color:var(--amber);}
-.te-note{font-size:13px;color:var(--text-faint);margin-bottom:14px;}
+.te-note{font-size:11.5px;color:var(--text-faint);margin-bottom:14px;}
 
+
+.recalc-details{background:var(--panel);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;overflow:hidden;}
+.recalc-details summary{cursor:pointer;list-style:none;padding:9px 12px;font-size:12px;font-weight:700;color:var(--text-dim);background:var(--panel2);}
+.recalc-details summary::-webkit-details-marker{display:none;}
+.recalc-log-body{padding:8px 12px;}
 .pair-bar{height:6px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden;width:120px;}
 .pair-bar i{position:absolute;top:0;bottom:0;border-radius:4px;}
 
 /* Pair Ranking heatmap — intentionally scoped to the Pair Ranking table only.
    The full row carries the same bias color so the ranking reads as a heatmap. */
-#tab-pairs .trend-cell{display:flex;align-items:center;gap:8px;min-height:30px;}
+
+#tab-pairs table{table-layout:fixed;}
+#tab-pairs th,#tab-pairs td{vertical-align:middle;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:8%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:19%;}
+#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:13%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:13%;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:7%;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:11%;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:7%;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:6%;}
+#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:5%;}
+#tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){width:7%;}
+#tab-pairs .yield-bias-chip{display:inline-flex;align-items:center;justify-content:center;min-width:84px;border-radius:5px;padding:5px 8px;white-space:nowrap;}
+#tab-pairs .trend-cell{display:flex;align-items:center;gap:8px;min-height:34px;white-space:nowrap;}
+#tab-pairs .trend-cell .trend-spark{width:92px;flex:0 0 92px;display:flex;align-items:center;}
+#tab-pairs .trend-cell .pair-trend-marker{min-width:58px;justify-content:flex-start;}
+#tab-pairs .trend-cell svg{display:block;width:92px;height:26px;}
 #tab-pairs .pair-name-wrap{display:flex;align-items:center;gap:5px;white-space:nowrap;}
 #tab-pairs .pair-trend-marker{display:inline-flex;align-items:center;gap:3px;min-width:43px;}
-#tab-pairs .pair-trend-arrow{font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:800;line-height:1;width:12px;text-align:center;display:inline-block;}
+#tab-pairs .pair-trend-arrow{font-family:'Inter',system-ui,sans-serif;font-size:11.5px;font-weight:800;line-height:1;width:12px;text-align:center;display:inline-block;}
 #tab-pairs .pair-trend-arrow.trend-up{color:var(--bullish-strong);}
 #tab-pairs .pair-trend-arrow.trend-down{color:var(--bearish-strong);}
 #tab-pairs .pair-trend-arrow.trend-flat{color:var(--text-faint);font-size:11px;}
@@ -246,35 +281,17 @@ th{font-size:11.5px;}
 #tab-pairs .pair-trend-delta.delta-flat{color:var(--text-faint);}
 
 /* Cross-theme heatmap tuning: strong enough to read on white, ash and black. */
-#tab-pairs .pair-row.pair-vbull td{background:rgba(47,127,224,.24);color:var(--text);}
-#tab-pairs .pair-row.pair-bull td{background:rgba(47,127,224,.17);color:var(--text);}
-#tab-pairs .pair-row.pair-lean-bull td{background:rgba(47,127,224,.10);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-pos td{background:rgba(47,127,224,.055);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-zero td{background:rgba(47,127,224,.025);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-neg td{background:rgba(224,69,63,.055);color:var(--text);}
-#tab-pairs .pair-row.pair-lean-bear td{background:rgba(224,69,63,.10);color:var(--text);}
-#tab-pairs .pair-row.pair-bear td{background:rgba(224,69,63,.17);color:var(--text);}
-#tab-pairs .pair-row.pair-vbear td{background:rgba(224,69,63,.24);color:var(--text);}
+#tab-pairs .pair-row.pair-vbull td{background:rgba(45,187,120,.28);color:var(--text);}
+#tab-pairs .pair-row.pair-bull td{background:rgba(45,187,120,.20);color:var(--text);}
+#tab-pairs .pair-row.pair-lean-bull td{background:rgba(45,187,120,.12);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-pos td{background:rgba(45,187,120,.05);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-zero td{background:rgba(45,187,120,.022);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-neg td{background:rgba(217,83,95,.05);color:var(--text);}
+#tab-pairs .pair-row.pair-lean-bear td{background:rgba(217,83,95,.12);color:var(--text);}
+#tab-pairs .pair-row.pair-bear td{background:rgba(217,83,95,.20);color:var(--text);}
+#tab-pairs .pair-row.pair-vbear td{background:rgba(217,83,95,.28);color:var(--text);}
 
-/* Ash / Black need stronger luminous saturation against their dark panels. */
-body.ash #tab-pairs .pair-row.pair-vbull td, html.ash #tab-pairs .pair-row.pair-vbull td,
-body.black #tab-pairs .pair-row.pair-vbull td, html.black #tab-pairs .pair-row.pair-vbull td{background:rgba(59,167,255,.34);}
-body.ash #tab-pairs .pair-row.pair-bull td, html.ash #tab-pairs .pair-row.pair-bull td,
-body.black #tab-pairs .pair-row.pair-bull td, html.black #tab-pairs .pair-row.pair-bull td{background:rgba(59,167,255,.25);}
-body.ash #tab-pairs .pair-row.pair-lean-bull td, html.ash #tab-pairs .pair-row.pair-lean-bull td,
-body.black #tab-pairs .pair-row.pair-lean-bull td, html.black #tab-pairs .pair-row.pair-lean-bull td{background:rgba(59,167,255,.15);}
-body.ash #tab-pairs .pair-row.pair-neutral-pos td, html.ash #tab-pairs .pair-row.pair-neutral-pos td,
-body.black #tab-pairs .pair-row.pair-neutral-pos td, html.black #tab-pairs .pair-row.pair-neutral-pos td{background:rgba(59,167,255,.07);}
-body.ash #tab-pairs .pair-row.pair-neutral-zero td, html.ash #tab-pairs .pair-row.pair-neutral-zero td,
-body.black #tab-pairs .pair-row.pair-neutral-zero td, html.black #tab-pairs .pair-row.pair-neutral-zero td{background:rgba(59,167,255,.035);}
-body.ash #tab-pairs .pair-row.pair-neutral-neg td, html.ash #tab-pairs .pair-row.pair-neutral-neg td,
-body.black #tab-pairs .pair-row.pair-neutral-neg td, html.black #tab-pairs .pair-row.pair-neutral-neg td{background:rgba(255,92,114,.07);}
-body.ash #tab-pairs .pair-row.pair-lean-bear td, html.ash #tab-pairs .pair-row.pair-lean-bear td,
-body.black #tab-pairs .pair-row.pair-lean-bear td, html.black #tab-pairs .pair-row.pair-lean-bear td{background:rgba(255,92,114,.15);}
-body.ash #tab-pairs .pair-row.pair-bear td, html.ash #tab-pairs .pair-row.pair-bear td,
-body.black #tab-pairs .pair-row.pair-bear td, html.black #tab-pairs .pair-row.pair-bear td{background:rgba(255,92,114,.25);}
-body.ash #tab-pairs .pair-row.pair-vbear td, html.ash #tab-pairs .pair-row.pair-vbear td,
-body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.pair-vbear td{background:rgba(255,92,114,.34);}
+#tab-pairs .pair-row.pair-vbull td,#tab-pairs .pair-row.pair-bull td,#tab-pairs .pair-row.pair-lean-bull td,#tab-pairs .pair-row.pair-neutral-pos td,#tab-pairs .pair-row.pair-neutral-zero td,#tab-pairs .pair-row.pair-neutral-neg td,#tab-pairs .pair-row.pair-lean-bear td,#tab-pairs .pair-row.pair-bear td,#tab-pairs .pair-row.pair-vbear td{background:transparent;color:var(--text);}
 /* Keep the rank, score and trend readable over the heatmap. */
 #tab-pairs .pair-row td:first-child{color:var(--text-dim);}
 #tab-pairs .pair-row:hover td{filter:brightness(1.08);}
@@ -283,13 +300,30 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
 .recalc-btn:hover{filter:brightness(1.08);}
 .building{color:var(--text-faint);font-size:11.5px;font-style:italic;}
 .pair-row{cursor:pointer;}
+
+.recalc-details{background:var(--panel);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;overflow:hidden;}
+.recalc-details summary{cursor:pointer;list-style:none;padding:8px 12px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:700;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+.recalc-details summary::-webkit-details-marker{display:none;}
+.recalc-details summary::before{content:'▸';color:var(--amber);font-size:11px;}
+.recalc-details[open] summary::before{content:'▾';}
+.recalc-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);}
+.recalc-log-body{padding:6px 10px 10px;border-top:1px solid var(--border);}
+#tab-pairs .pair-trend-marker{display:inline-flex;align-items:center;gap:5px;min-width:58px;justify-content:flex-start;}
+#tab-pairs .pair-trend-delta{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:800;}
+#tab-pairs .yield-bias-chip{display:inline-block;padding:5px 9px;border:1px solid currentColor;border-radius:4px;font-size:14px;font-weight:800;line-height:1;background:transparent;}
+#tab-pairs .yield-bull{color:var(--bullish-strong);background:rgba(53,185,106,.10);}
+#tab-pairs .yield-bear{color:var(--bearish-strong);background:rgba(217,87,87,.10);}
+#tab-pairs .yield-vbull{color:#fff;background:var(--bullish);}
+#tab-pairs .yield-vbear{color:#fff;background:var(--bearish);}
+#tab-pairs .yield-neutral{color:var(--text-dim);background:var(--panel2);}
+#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
 .bigchart{margin-top:6px;padding:16px;background:var(--panel2);border-radius:8px;}
 .bigchart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px;color:var(--text-dim);}
 .bigchart-head b{color:var(--text);font-family:'Space Grotesk',sans-serif;}
 .close-x{cursor:pointer;color:var(--text-faint);font-size:16px;}
 .close-x:hover{color:var(--text);}
 .range-switch{display:flex;gap:4px;}
-.range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .range-btn:hover{color:var(--text);}
 .range-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
 
@@ -311,7 +345,7 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
 .hist-spread-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .hist-spread-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
 .hist-range{display:flex;gap:4px;}
-.hist-range button{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:7px 10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.hist-range button{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:7px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .hist-range button.active{background:var(--amber);color:#fff;border-color:var(--amber);}
 .hist-spread-chart{height:330px;margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;}
 .hist-spread-chart canvas{width:100%;height:100%;display:block;}
@@ -330,7 +364,7 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
   .hist-range button{padding:7px 7px;font-size:12px;}
   .hist-spread-chart{height:275px;}
 }
-.hist-spread-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--text-faint);font-size:12.5px;}
+.hist-spread-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--text-faint);font-size:11px;}
 .hist-spread-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px;}
 .hist-stat{padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);}
 .hist-stat .k{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.7px;}
@@ -339,7 +373,505 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
 @media(max-width:900px){.hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:600px){.hist-spread-stats{grid-template-columns:1fr;}.hist-spread-chart{height:280px;}}
 
+
+/* V12 compression: squeeze containers/gaps, preserve existing typography sizes. */
+.card{padding:12px 14px;margin-bottom:10px;border-radius:8px;}
+.content{padding:18px 20px 36px;max-width:1320px;}
+.page-head{margin-bottom:10px;}
+.detail-grid{gap:14px;}
+.ccy-pills{gap:4px;margin-bottom:10px;}
+.ccy-pill{padding:7px 14px;}
+.info-grid{gap:7px 10px;margin-bottom:10px;padding:10px 12px;}
+.info-trend-row{gap:10px;}
+.trend-panel{flex-basis:250px;padding:11px 13px;margin-bottom:10px;}
+.sector-block{margin-bottom:12px;}
+.sector-title{margin-bottom:5px;}
+.sector-block table td,.sector-block table th{padding-top:6px;padding-bottom:6px;}
+.y2-grid{gap:10px;}
+.y2-input-grid{gap:7px;}
+.y2-actions{gap:6px;margin-top:8px;}
+.hist-spread-card{margin-top:10px;}
+.pair-bar{height:5px;}
+#tab-pairs .pair-row td{padding-top:6px;padding-bottom:6px;}
+#tab-pairs .pair-row td{background:transparent !important;}
+#tab-pairs .pair-row:hover td{background:var(--panel2) !important;}
+#tab-pairs .yield-bias-chip{display:inline-block;min-width:54px;text-align:center;padding:3px 6px;border-radius:5px;font-size:12px;font-weight:700;}
+#tab-pairs .yield-vbull{background:rgba(45,187,120,.16);color:var(--bullish-strong);}
+#tab-pairs .yield-bull{background:rgba(45,187,120,.09);color:var(--bullish-strong);}
+#tab-pairs .yield-neutral{background:rgba(255,255,255,.035);color:var(--text-dim);}
+#tab-pairs .yield-bear{background:rgba(217,83,95,.09);color:var(--bearish-strong);}
+#tab-pairs .yield-vbear{background:rgba(217,83,95,.16);color:var(--bearish-strong);}
+#tab-pairs .pair-factor{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+#tab-pairs .table-scroll table{min-width:1080px;}
+
+#tab-detail .cot-net-item{grid-column:1;}
+#tab-detail .cot-change-item{grid-column:1;}
+@media(max-width:1000px){#tab-detail .cot-net-item,#tab-detail .cot-change-item{grid-column:auto;}}
+
+
+/* V13 visual tightening */
+body.ash .brand, body.black .brand, html.ash .brand, html.black .brand{border-color:#c85b16;}
+body.ash .tab-btn.active, body.black .tab-btn.active{border-left-color:#c85b16;background:#171b16;}
+body.ash .ccy-pill.active, body.black .ccy-pill.active{border-color:#c85b16;background:#171b16;}
+body.ash .guidance-box, body.black .guidance-box{background:#10130f;}
+body.ash .sector-block table td, body.black .sector-block table td{padding-top:5px;padding-bottom:5px;}
+body.ash .sector-title, body.black .sector-title{margin-bottom:4px;}
 </style>
+
+<style id="v10-tight-density">
+/* V10: tighter information density without tiny typography */
+:root{--radius:7px;}
+.rail{width:210px;flex-basis:210px;padding:13px 10px;gap:10px;}
+.brand{padding:1px 5px 8px;}
+.brand-mark{font-size:17px;}
+.tabs{gap:2px;}
+.tab-btn{font-size:12.5px;padding:7px 9px;}
+.theme-btn{font-size:10.5px;padding:4px 7px;}
+.content{padding:14px 18px 28px;max-width:1520px;}
+.page-head{margin-bottom:10px;gap:6px;}
+.page-title{font-size:18px;}
+.page-sub{font-size:11px;margin-top:2px;}
+.y2-grid{gap:8px;}
+.y2-input-grid{gap:6px;}
+.y2-input{padding:7px 8px;font-size:13px;}
+.y2-actions{gap:6px;margin-top:8px;}
+.y2-btn{padding:6px 9px;font-size:11.5px;}
+.y2-note{font-size:10.5px;line-height:1.35;margin-top:6px;}
+.y2-score{font-size:15px;}
+.y2-comp{font-size:11px;}
+.y2-component-note{font-size:10.5px;line-height:1.35;margin-top:7px;}
+.y2-small{font-size:11px;}
+.y2-score-table{min-width:1040px;}
+.card{padding:10px 12px;margin-bottom:8px;}
+.card h3{font-size:11.5px;margin-bottom:8px;}
+table{font-size:13px;}
+th{font-size:10.5px;padding:6px 8px;}
+td{padding:6px 8px;}
+.legend-line{font-size:10.5px;margin-top:6px;line-height:1.35;}
+.ccy-name{font-size:13px;}
+.chip{font-size:10.5px;padding:3px 9px;}
+.raw-input{font-size:11.5px;padding:6px 7px;}
+.ccy-pills{gap:4px;margin-bottom:9px;}
+.ccy-pill{padding:7px 13px;font-size:11.5px;}
+.detail-grid{gap:12px;}
+.left-col .ccy-big{font-size:24px;}
+.left-col .ccy-full{font-size:12px;}
+.gauge-num{font-size:28px;margin-top:-44px;}
+.stat-block{gap:5px;margin-top:7px;}
+.stat-row{font-size:10.5px;}
+.stat-chip{font-size:14px;padding:2px 8px;}
+.info-grid{gap:7px 10px;margin-bottom:9px;padding:10px 11px;}
+.info-trend-row{gap:8px;}
+.trend-panel{flex-basis:190px;padding:10px 11px;margin-bottom:9px;}
+.trend-panel .k,.info-item .k{font-size:10.5px;}
+.trend-panel .trend-score{font-size:18px;}
+.info-item .v{font-size:11.5px;}
+.rate-box{margin-top:8px;padding-top:8px;}
+.rate-line{margin-bottom:5px;}
+.guidance-box{min-height:78px;padding:8px 10px;font-size:12.5px;line-height:1.35;}
+.field-label{font-size:10.5px;margin-top:8px;margin-bottom:3px;}
+.sector-block{margin-bottom:12px;}
+.sector-title{gap:7px;margin-bottom:5px;}
+.sector-title span.label{font-size:11.5px;}
+.sector-block table th,.sector-block table td{padding:5px 6px;}
+.ind-link,.ind-name{font-size:12.5px;}
+.ind-name{padding:5px 5px;}
+.ind-num,.ind-txt{font-size:12px;padding:5px 6px;}
+.surprise{font-size:12px;}
+.bias-select{font-size:11.5px;padding:5px 6px;min-width:82px;}
+.hist-spread-chart{height:270px;}
+.hist-stat .v{font-size:14px;}
+@media(max-width:1100px){.content{padding:12px 14px 24px}.rail{width:198px;flex-basis:198px;}}
+@media(max-width:820px){.rail{width:100%;flex-basis:auto;padding:10px;gap:7px}.content{padding:11px 12px 22px}}
+</style>
+
+
+<style id="v11-fonts-background-tight">
+/* V11: restore readable typography; compress surrounding geometry instead of shrinking text. */
+.content{padding:14px 18px 28px;max-width:1500px;}
+.rail{width:210px;flex-basis:210px;padding:14px 10px;gap:12px;}
+.brand{padding:2px 5px 9px;}
+.tabs{gap:2px;}
+.tab-btn{font-size:13.5px;padding:8px 10px;}
+.page-head{margin-bottom:10px;}
+.page-title{font-size:21px;}
+.page-sub{font-size:12px;margin-top:2px;}
+.card{padding:10px 12px;margin-bottom:8px;}
+.card h3{font-size:12.5px;margin-bottom:9px;}
+
+/* Keep readable table/indicator typography. */
+table{font-size:14px;}
+th{font-size:11px;padding:6px 8px;}
+td{padding:6px 8px;}
+.ind-link{font-size:14px;}
+.ind-name{font-size:14px;padding:5px 5px;}
+.ind-num{font-size:14px;padding:5px 6px;}
+.ind-txt{font-size:14px;padding:5px 6px;}
+.surprise{font-size:14px;}
+.sector-block table thead th{font-size:11px;}
+.bias-select{font-size:12px;padding:5px 6px;}
+.ccy-name{font-size:14px;}
+
+/* Current 2Y: tighter boxes, readable labels/numbers. */
+.y2-input-grid{gap:6px;}
+.y2-input{padding:7px 8px;font-size:13px;}
+.y2-btn{padding:6px 9px;font-size:12.5px;}
+.y2-small{font-size:12.5px;}
+.y2-note{font-size:11px;margin-top:6px;}
+.y2-score{font-size:16px;}
+.y2-comp{font-size:12.5px;}
+.y2-component-note{font-size:11px;margin-top:7px;}
+.hist-spread-chart{height:270px;}
+.hist-spread-stats{gap:6px;margin-top:8px;}
+.hist-stat{padding:8px 9px;}
+.hist-stat .k{font-size:10px;}
+.hist-stat .v{font-size:15px;}
+
+/* Currency detail: retain readable figures while reducing box volume. */
+.detail-grid{grid-template-columns:270px 1fr;gap:14px;}
+.left-col .ccy-big{font-size:26px;}
+.left-col .ccy-full{font-size:13.5px;}
+.gauge-num{font-size:30px;margin-top:-46px;}
+.stat-row{font-size:11.5px;}
+.stat-chip{font-size:14px;padding:2px 8px;}
+.rate-box{margin-top:10px;padding-top:10px;}
+.rate-line{margin-bottom:6px;}
+.rate-line input,.rate-line select{font-size:11.5px;padding:5px 6px;}
+.guidance-box{min-height:90px;padding:8px 10px;font-size:14px;margin-top:6px;}
+.field-label{font-size:11px;margin-top:9px;margin-bottom:3px;}
+.info-grid{gap:7px 10px;margin-bottom:10px;padding:9px 10px;}
+.trend-panel{flex-basis:190px;padding:9px 11px;margin-bottom:10px;}
+.trend-panel .k{font-size:10.5px;}
+.trend-panel .trend-score{font-size:19px;}
+.trend-panel .trend-delta{font-size:11px;}
+.info-item .k{font-size:10.5px;}
+.info-item .v{font-size:12.5px;}
+.info-item input,.info-item select{font-size:11.5px;padding:4px 6px;}
+
+/* Compact spacing elsewhere. */
+.ccy-pills{gap:4px;margin-bottom:10px;}
+.ccy-pill{padding:7px 14px;font-size:12.5px;}
+.legend-line{font-size:10.5px;margin-top:6px;}
+.chip{font-size:11.5px;padding:3px 10px;}
+.raw-input{font-size:12px;padding:5px 6px;}
+.add-btn{padding:5px 9px;font-size:11.5px;margin-top:4px;}
+.divergence{padding:9px 12px;margin-bottom:8px;font-size:11.5px;}
+.info-trend-row{gap:8px;}
+
+/* Reduce unused vertical space in 2Y layout. */
+.y2-grid{gap:8px;}
+.y2-actions{gap:6px;margin-top:8px;}
+.y2-grid .card{margin-bottom:8px;}
+
+@media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
+</style>
+
+<style>#tab-pairs .pair-row td{background:transparent !important;}</style>
+
+<style id="v19-scanner-compact">
+/* V19: dense scanner treatment — preserve readable typography, compress only geometry. */
+body.black, html.black{
+  --bg:#090a09; --panel:#10110f; --panel2:#151614; --panel3:#1b1c19; --border:#292a27;
+  --text:#eef1ee; --text-dim:#a5aba6; --text-faint:#6f756f;
+  --bullish:#28c978; --bullish-strong:#42df91; --bearish:#e4515d; --bearish-strong:#ff717b;
+  --bullish-lean:#69a884; --bearish-lean:#a0646a; --neutral:#747b76; --amber:#b94e12;
+}
+body.ash, html.ash{
+  --bg:#0d0f0e; --panel:#141615; --panel2:#191b1a; --panel3:#202220; --border:#2b2e2c;
+  --text:#eef1ee; --text-dim:#a0a7a1; --text-faint:#6d746e;
+  --bullish:#28c978; --bullish-strong:#42df91; --bearish:#e4515d; --bearish-strong:#ff717b;
+  --bullish-lean:#69a884; --bearish-lean:#a0646a; --neutral:#747b76; --amber:#b94e12;
+}
+.content{padding:12px 16px 24px;max-width:1540px;}
+.card{padding:8px 10px;margin-bottom:6px;border-radius:7px;}
+.card h3{margin-bottom:7px;font-size:12px;}
+.page-head{margin-bottom:7px;}
+.table-scroll table{min-width:0!important;}
+table{font-size:14.5px;}
+th{font-size:11.5px;padding:5px 7px;}
+td{padding:4px 7px;}
+.ccy-name{font-size:14.5px;}
+/* Pair Ranking — text-first, no pill/box UI for contributor states. */
+#tab-pairs .pair-row td{padding-top:5px;padding-bottom:5px;background:transparent!important;}
+#tab-pairs .pair-row:hover td{background:var(--panel2)!important;}
+#tab-pairs .chip{background:transparent!important;border:none!important;padding:0!important;border-radius:0!important;font-size:14px;font-weight:800;}
+#tab-pairs .chip-bull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull{color:var(--bullish-strong);}
+#tab-pairs .chip-bear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear{color:var(--bearish-strong);}
+#tab-pairs .chip-neu,#tab-pairs .yield-neutral{color:var(--text-dim);}
+#tab-pairs .yield-bias-chip{min-width:0!important;padding:0!important;border:none!important;border-radius:0!important;background:transparent!important;font-size:14px;font-weight:800;display:inline!important;}
+#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
+#tab-pairs .trend-cell{gap:6px;min-height:31px;}
+#tab-pairs .trend-cell .trend-spark{width:104px;flex:0 0 104px;}
+#tab-pairs .trend-cell svg{width:104px;height:25px;}
+#tab-pairs .pair-trend-marker{min-width:50px!important;gap:4px;}
+#tab-pairs .pair-trend-delta{font-size:13px;font-weight:800;}
+#tab-pairs .pair-trend-arrow{font-size:12px;}
+#tab-pairs .pair-row td:nth-child(2){font-weight:800;font-family:'IBM Plex Mono',monospace;}
+#tab-pairs .pair-row td:nth-child(2) .mono{color:var(--amber)!important;}
+#tab-pairs .range-btn{background:rgba(185,78,18,.10);border:1px solid rgba(185,78,18,.55);color:#e07a3f;padding:5px 9px;font-size:11.5px;border-radius:4px;}
+#tab-pairs .range-btn.active{background:rgba(185,78,18,.18);border-color:#b94e12;color:#f08b50;}
+#tab-pairs table{table-layout:fixed;min-width:1080px!important;}
+#tab-pairs th,#tab-pairs td{vertical-align:middle;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:12%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:20%;}
+#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:12%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:12%;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:7%;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:12%;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:9%;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:9%;}
+/* tighter non-pair sections */
+.sector-block{margin-bottom:7px;}
+.sector-title{margin-bottom:3px;}
+.sector-block table th,.sector-block table td{padding-top:4px;padding-bottom:4px;}
+.ind-link,.ind-name{font-size:15px;}
+.ind-num,.ind-txt,.surprise{font-size:13.5px;}
+.bias-select,.bias-chip-text{font-size:13.5px;font-weight:800;}
+.y2-grid{gap:7px;}
+.y2-input-grid{gap:5px;}
+.y2-actions{gap:5px;margin-top:6px;}
+.info-grid{gap:5px 8px;padding:8px 9px;margin-bottom:7px;}
+.trend-panel{padding:9px 10px;margin-bottom:7px;}
+.recalc-details{margin-top:6px;margin-bottom:7px;}
+.recalc-details summary{padding:7px 10px;font-size:12px;}
+</style>
+<style id="v19-pair-widths">
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:13%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:20%;}
+#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:12%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:12%;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:7%;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:12%;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:9%;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:9%;}
+</style><style id="v19-filter-counts">
+#tab-pairs .pair-counts{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
+#tab-pairs .range-switch{gap:4px;flex-wrap:wrap;}
+#tab-pairs .range-btn{padding:4px 8px;}
+</style>
+<style id="v21-scanner-polish">
+/* V21: tighter scanner presentation, readable typography, deep charcoal/orange accent. */
+:root{--scanner-orange:#c85b16;}
+body.ash,html.ash,body.black,html.black{--amber:var(--scanner-orange);}
+#tab-pairs .pair-row td{padding-left:6px;padding-right:6px;padding-top:5px;padding-bottom:5px;}
+#tab-pairs th,#tab-pairs td{vertical-align:middle;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:12%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:16%;}
+#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:10%;text-align:left;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:12%;text-align:left;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:10%;text-align:left;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:12%;text-align:left;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:8%;text-align:left;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:13%;text-align:left;}
+/* Seasonality (and its neighbor) get a wrap safety net so the header text can
+   never bleed past the table edge again, no matter how tight the viewport gets. */
+#tab-pairs th:nth-child(8),#tab-pairs th:nth-child(9){white-space:normal;line-height:1.15;}
+#tab-pairs thead th:nth-child(2){color:var(--scanner-orange);}
+#tab-pairs .pair-score{font-size:15px;font-weight:800;}
+#tab-pairs .score-bull{color:var(--bullish-strong);}
+#tab-pairs .score-bear{color:var(--bearish-strong);}
+#tab-pairs .score-lean-bull{color:#7fc99f;}
+#tab-pairs .score-lean-bear{color:#d98a90;}
+#tab-pairs .score-neutral{color:var(--text-dim);}
+#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
+#tab-pairs .yield-bias-text{background:transparent!important;border:none!important;padding:0!important;min-width:0!important;}
+#tab-pairs .yield-bull{color:var(--bullish-strong);} #tab-pairs .yield-bear{color:var(--bearish-strong);}
+#tab-pairs .yield-vbull{color:var(--bullish-strong);} #tab-pairs .yield-vbear{color:var(--bearish-strong);} #tab-pairs .yield-neutral{color:var(--text-dim);}
+#tab-pairs .pair-selection-label{font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
+#tab-pairs .range-btn{border-color:rgba(200,91,22,.32);background:rgba(0,0,0,.18);color:var(--text-dim);}
+#tab-pairs .range-btn.active{border-color:var(--scanner-orange);background:rgba(200,91,22,.16);color:#e5a15f;}
+#tab-pairs .range-switch{gap:3px;}
+#tab-pairs .trend-cell{gap:10px;align-items:center;}
+#tab-pairs .trend-spark svg{width:96px;height:24px;}
+#tab-pairs .pair-trend-delta{font-size:12.5px;font-weight:800;}
+#tab-pairs .pair-factor + .pair-factor{margin-left:0;}
+body.black .card,body.ash .card{box-shadow:none;}
+@media(max-width:1100px){#tab-pairs .table-scroll table{min-width:1180px;}}
+</style>
+
+<style id="v22-overview-strength">
+#tab-overview .strength-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#tab-overview .strength-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+#tab-overview .strength-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--border);}
+#tab-overview .strength-stat{padding:10px 12px;border-right:1px solid var(--border);}
+#tab-overview .strength-stat:last-child{border-right:none;}
+#tab-overview .strength-k{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-faint);}
+#tab-overview .strength-v{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:800;margin-top:3px;}
+#tab-overview .strength-list-head,#tab-overview .strength-row{display:grid;grid-template-columns:28px 76px 1fr 44px 86px;align-items:center;gap:8px;}
+#tab-overview .strength-list-head{padding:7px 10px;border-bottom:1px solid var(--border);font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.65px;font-weight:700;}
+#tab-overview .strength-row{padding:6px 10px;border-bottom:1px solid var(--border);min-height:34px;}
+#tab-overview .strength-row:last-child{border-bottom:none;}
+#tab-overview .strength-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);text-align:right;}
+#tab-overview .strength-ccy{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
+#tab-overview .strength-bar{height:7px;background:#0b0d0b;position:relative;overflow:hidden;border-radius:2px;}
+#tab-overview .strength-bar i{position:absolute;top:0;bottom:0;border-radius:1px;}
+#tab-overview .strength-score{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:800;text-align:right;}
+#tab-overview .strength-bias{font-size:10.5px;font-weight:700;text-align:right;white-space:nowrap;}
+#tab-overview .strength-spark{display:flex;align-items:center;}
+#tab-overview .strength-spark svg{width:72px;height:22px;display:block;}
+#tab-overview .strength-spark .trend-up{color:var(--bullish-strong);font-size:10px;margin-left:4px;}
+#tab-overview .strength-spark .trend-down{color:var(--bearish-strong);font-size:10px;margin-left:4px;}
+#tab-overview .strength-spark .trend-flat{color:var(--text-faint);font-size:10px;margin-left:4px;}
+#tab-overview .strength-pos{color:var(--bullish-strong);} #tab-overview .strength-neg{color:var(--bearish-strong);} #tab-overview .strength-neu{color:var(--text-dim);}
+@media(max-width:980px){#tab-overview .strength-wrap{grid-template-columns:1fr;} }
+</style>
+
+<style id="v22-surprise-index-polish">
+#tab-overview .strength-score,#tab-overview .strength-bias{font-weight:800;}
+#tab-overview .strength-lean-pos{color:var(--bullish-lean)!important;}
+#tab-overview .strength-lean-neg{color:var(--bearish-lean)!important;}
+#tab-overview .strength-pos{color:var(--bullish-strong)!important;}
+#tab-overview .strength-neg{color:var(--bearish-strong)!important;}
+#tab-overview .strength-neu{color:var(--text-dim)!important;}
+#tab-detail .ind-link,#tab-detail .ind-name{font-size:15.5px;font-weight:700;}
+#tab-detail .ind-num,#tab-detail .ind-txt{font-size:15px;font-weight:800;background:transparent;border-color:transparent;padding-left:2px;padding-right:2px;}
+#tab-detail .surprise{font-size:15px;font-weight:800;}
+#tab-detail .bias-select{font-size:14.5px;font-weight:800;background:transparent;border-color:transparent;padding-left:2px;padding-right:2px;}
+#tab-detail .bias-chip-text{font-size:14.5px;font-weight:800;}
+#tab-detail .static-chip{background:transparent;border-color:transparent;font-size:13px;}
+#tab-raw .surprise-wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:10px;}
+#tab-raw .surprise-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+#tab-raw .surprise-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--border);}
+#tab-raw .surprise-stat{padding:10px 12px;border-right:1px solid var(--border);}
+#tab-raw .surprise-stat:last-child{border-right:none;}
+#tab-raw .surprise-k{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-faint);}
+#tab-raw .surprise-v{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:800;margin-top:3px;}
+#tab-raw .surprise-note{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10.5px;color:var(--text-faint);line-height:1.35;}
+#tab-raw .surprise-list-head,#tab-raw .surprise-row{display:grid;grid-template-columns:28px 70px minmax(140px,1fr) 64px 125px 150px;align-items:center;}
+#tab-raw .surprise-list-head{padding:7px 10px;background:var(--panel2);color:var(--text-faint);font-family:'Space Grotesk',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.7px;}
+#tab-raw .surprise-row{padding:7px 10px;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer;}
+#tab-raw .surprise-row:last-child{border-bottom:none;}
+#tab-raw .surprise-row:hover{background:var(--panel2);}
+#tab-raw .surprise-rank{color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+#tab-raw .surprise-ccy{font-family:'Space Grotesk',sans-serif;font-weight:800;}
+#tab-raw .surprise-bar{height:7px;background:var(--panel3);position:relative;border-radius:3px;overflow:hidden;}
+#tab-raw .surprise-bar i{position:absolute;top:0;bottom:0;border-radius:3px;}
+#tab-raw .surprise-bar .surprise-pos{background:var(--bullish-strong);}
+#tab-raw .surprise-bar .surprise-neg{background:var(--bearish-strong);}
+#tab-raw .surprise-score{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:800;}
+#tab-raw .surprise-bias{font-weight:800;}
+#tab-raw .surprise-count{color:var(--text-dim);font-size:11px;white-space:nowrap;}
+#tab-raw .surprise-pos{color:var(--bullish-strong)!important;}
+#tab-raw .surprise-neg{color:var(--bearish-strong)!important;}
+#tab-raw .surprise-neu{color:var(--text-dim)!important;}
+#tab-raw .surprise-card-title{padding:10px 12px;border-bottom:1px solid var(--border);font-family:'Space Grotesk',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:800;}
+#tab-raw .surprise-release{padding:8px 12px;border-bottom:1px solid var(--border);}
+#tab-raw .surprise-release:last-child{border-bottom:none;}
+#tab-raw .surprise-release-head{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+#tab-raw .surprise-release-ccy{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:13px;}
+#tab-raw .surprise-release-cat{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.7px;}
+#tab-raw .surprise-release-name{font-size:12.5px;font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#tab-raw .surprise-release-meta{display:flex;gap:12px;margin-top:4px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:10.5px;}
+#tab-raw .surprise-release-meta b{color:var(--text);}
+@media(max-width:1100px){#tab-raw .surprise-wrap{grid-template-columns:1fr;}}
+@media(max-width:760px){
+#tab-raw .surprise-list-head{display:none;}
+#tab-raw .surprise-row{grid-template-columns:24px 62px 1fr 56px;gap:6px;}
+#tab-raw .surprise-count{grid-column:3/5;}
+}
+</style>
+
+
+<style id="v23-live-confluence">
+#tab-raw .surprise-list-head,#tab-raw .surprise-row{grid-template-columns:28px 72px 1fr 64px 92px 168px 110px !important;}
+#tab-raw .surprise-row select{font-size:12px;font-weight:800;padding:4px 6px;min-width:100px;}
+#tab-raw .surprise-seasonality{display:flex;align-items:center;justify-content:flex-start;}
+</style>
+
+<style id="v24-fixes">
+/* V24: fast local refresh + readable trading-board typography */
+#tab-overview .strength-list-head,
+#tab-overview .strength-row{
+  grid-template-columns:30px 100px 1fr 58px 122px;
+  gap:10px;
+}
+#tab-overview .strength-list-head{font-size:11px;padding:8px 12px;}
+#tab-overview .strength-row{padding:8px 12px;min-height:40px;}
+#tab-overview .strength-ccy{font-size:15.5px;gap:8px;}
+#tab-overview .strength-score{font-size:17px;}
+#tab-overview .strength-bias{font-size:12.5px;}
+#tab-overview .strength-k{font-size:10.5px;}
+#tab-overview .strength-v{font-size:19px;}
+.ccy-flag{width:20px;height:15px;object-fit:cover;display:inline-block;vertical-align:-2px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.08);}
+#tab-overview .strength-ccy .ccy-flag{margin-right:1px;}
+#tab-pairs .pair-score{font-size:16px;font-weight:900!important;}
+/* Pair Score is classified from the numeric score itself: positive/negative outside
+   the neutral band, with muted colors for the two leaning zones. */
+#tab-pairs .pair-score.score-bull{color:var(--bullish-strong)!important;}
+#tab-pairs .pair-score.score-lean-bull{color:var(--bullish-lean)!important;}
+#tab-pairs .pair-score.score-bear{color:var(--bearish-strong)!important;}
+#tab-pairs .pair-score.score-lean-bear{color:var(--bearish-lean)!important;}
+#tab-pairs .pair-score.score-neutral{color:var(--text-dim)!important;}
+/* Leaning labels stack vertically so the scanner reads: Leaning / Bullish (or Bearish).
+   Both lines use the muted "lean" color so the whole label reads lighter than a full Bullish/Bearish entry. */
+#tab-pairs .pair-bias-stack{display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;line-height:1.02;white-space:nowrap;}
+#tab-pairs .pair-bias-stack .lean-word{font-size:10.5px;font-weight:700;letter-spacing:.1px;}
+#tab-pairs .pair-bias-stack strong{font-size:14px;font-weight:900;line-height:1;}
+#tab-pairs .pair-bias-lean-bull .lean-word{color:var(--bullish-lean)!important;}
+#tab-pairs .pair-bias-lean-bull strong{color:var(--bullish-lean)!important;}
+#tab-pairs .pair-bias-lean-bear .lean-word{color:var(--bearish-lean)!important;}
+#tab-pairs .pair-bias-lean-bear strong{color:var(--bearish-lean)!important;}
+#tab-pairs .pair-bias-single{display:inline-block;font-size:14px;font-weight:900;line-height:1.05;white-space:nowrap;}
+#tab-pairs .pair-bias-single.bull{color:var(--bullish-strong)!important;}
+#tab-pairs .pair-bias-single.bear{color:var(--bearish-strong)!important;}
+#tab-pairs .pair-bias-single.neutral{color:var(--text-dim)!important;}
+#tab-pairs .pair-factor,
+#tab-pairs .chip,
+#tab-pairs .yield-bias-chip{
+  background:transparent!important;
+  border:none!important;
+  box-shadow:none!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+#tab-pairs .chip{font-size:14px;font-weight:800;}
+#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
+#tab-detail .seasonality-avg-input,.seasonality-avg-input{width:78px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
+.seasonality-avg-input:focus{outline:none;border-color:var(--amber);}
+.seasonality-derived{font-weight:800;font-size:11.5px;}
+.seasonality-derived.Bullish{color:var(--bullish-strong);}
+.seasonality-derived.Bearish{color:var(--bearish-strong);}
+.seasonality-derived.Neutral{color:var(--text-dim);}
+.seasonality-month{display:block;color:var(--text-faint);font-size:10px;margin-top:3px;}
+.surprise-seasonality{display:flex;align-items:center;gap:7px;}
+#tab-detail .seasonality-select{min-width:92px;}
+#tab-detail .seasonality-select,
+#tab-detail .cot-change-item select,
+#tab-detail .cot-net-item select{
+  cursor:pointer;
+}
+
+/* Mobile — the table previously forced a 1180px minimum width no matter the
+   screen, guaranteeing a horizontal swipe on every phone. Drop that floor,
+   hide the sparkline graphic (keep the arrow+delta), and let every column's
+   text wrap onto two lines instead of forcing extra column width, so all
+   9 columns including Seasonality sit inside the screen with no swipe. */
+@media(max-width:700px){
+  #tab-pairs .table-scroll{overflow-x:hidden;}
+  #tab-pairs .table-scroll table{min-width:0!important;width:100%;table-layout:fixed;}
+  #tab-pairs th,#tab-pairs td{padding:5px 3px!important;}
+  #tab-pairs th{font-size:8.5px!important;white-space:normal!important;line-height:1.15;letter-spacing:0!important;}
+  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .ccy-name,#tab-pairs .pair-table .pair-bias-single,
+  #tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,
+  #tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:9.5px!important;}
+  #tab-pairs .pair-bias-single,#tab-pairs .pair-factor,#tab-pairs .chip{white-space:normal!important;line-height:1.15;word-break:break-word;}
+  #tab-pairs .trend-cell .trend-spark,#tab-pairs .trend-cell svg{display:none!important;}
+  #tab-pairs .trend-cell{gap:0;min-height:auto;white-space:normal;}
+  #tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:11%;}
+  #tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:9%;}
+  #tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:9%;}
+  #tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:13%;}
+  #tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:13%;}
+  #tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:13%;}
+  #tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:11%;}
+  #tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
+  #tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:10%;}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -352,7 +884,7 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
     </div>
     <nav class="tabs">
       <button class="tab-btn active" data-tab="overview">Macro Regime</button>
-      <button class="tab-btn" data-tab="raw">Confluence Feed</button>
+      <button class="tab-btn" data-tab="raw">Surprise Index</button>
       <button class="tab-btn" data-tab="detail">Currency Detail</button>
       <button class="tab-btn" data-tab="pairs">Pair Ranking</button>
       <button class="tab-btn" data-tab="yield2y">Bond Yield Spread</button>
@@ -364,7 +896,7 @@ body.black #tab-pairs .pair-row.pair-vbear td, html.black #tab-pairs .pair-row.p
       <div><p class="page-title" id="pageTitle">Macro Regime</p><p class="page-sub" id="pageSub"></p></div>
       <div style="display:flex; align-items:center; gap: 12px;">
         <span class="updated" id="updatedTag" style="transition: color 0.3s; font-family:'IBM Plex Mono',monospace; font-size: 11.5px; color: var(--text-faint);">Ready</span>
-        <button id="manualSaveBtn" style="background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;">Force Save</button>
+        <button id="manualSaveBtn" style="background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;">Force Save</button>
       </div>
     </div>
     <section class="tab-panel active" id="tab-overview"></section>
@@ -477,10 +1009,10 @@ setInterval(function(){
 
 "use strict";
 
-var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD"];
-var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","JPY"];
-var CCY_NAME = {USD:"US Dollar",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar"};
-var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada"};
+var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD","CHF"];
+var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","JPY","CHF"];
+var CCY_NAME = {USD:"US Dollar",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc"};
+var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada",CHF:"switzerland"};
 var TE_EXACT = {
   "gdp growth rate qoq":"gdp-growth","gdp growth rate":"gdp-growth","gdp m m":"gdp-growth",
   "ism manufacturing pmi":"manufacturing-pmi","manufacturing pmi":"manufacturing-pmi","ism services pmi":"non-manufacturing-pmi",
@@ -538,7 +1070,16 @@ var TE_OVERRIDE = {
   "CAD|cpi trimmed mean yoy":"https://tradingeconomics.com/canada/cpi-trimmed-mean",
   "CAD|cpi median yoy":"https://tradingeconomics.com/canada/cpi-median",
   "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/wage-growth",
-  "CAD|terms of trade":"https://tradingeconomics.com/canada/terms-of-trade"
+  "CAD|terms of trade":"https://tradingeconomics.com/canada/terms-of-trade",
+  "CHF|gdp growth rate qoq":"https://tradingeconomics.com/switzerland/gdp-growth",
+  "CHF|industrial production yoy":"https://tradingeconomics.com/switzerland/industrial-production",
+  "CHF|manufacturing pmi":"https://tradingeconomics.com/switzerland/manufacturing-pmi",
+  "CHF|retail sales yoy":"https://tradingeconomics.com/switzerland/retail-sales-annual",
+  "CHF|ppi yoy":"https://tradingeconomics.com/switzerland/producer-prices-change",
+  "CHF|employment non farm payrolls":"https://tradingeconomics.com/switzerland/non-farm-payrolls",
+  "CHF|employment change":"https://tradingeconomics.com/switzerland/employment-change",
+  "CHF|unemployment rate adj":"https://tradingeconomics.com/switzerland/unemployment-rate",
+  "CHF|cpi yoy":"https://tradingeconomics.com/switzerland/inflation-cpi"
 };
 
 function normalize(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
@@ -551,110 +1092,123 @@ function teLink(ccy, name){
 
 function seed(){
   return {
-    USD:{seasonality:"Neutral",cotNet:"Bullish",cotChangeBias:"Bullish",longPct:"",shortPct:"",changePct:"",
+    USD:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bullish",cotChangeBias:"Bullish",longPct:"",shortPct:"",changePct:"",
       interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"Fed held rates at 3.50-3.75%. Prioritizing inflation control over a solid growth backdrop.",
-      growth:[{name:"GDP Growth Rate QoQ",weight:7,actual:"1.50%",forecast:"2.0%",bias:"Bearish"},
-        {name:"ISM Manufacturing PMI",weight:6,actual:"55.6",forecast:"53.9",bias:"Bullish"},
-        {name:"ISM Services PMI",weight:10,actual:"54.0",forecast:"54.2",bias:"Bearish"},
-        {name:"Retail Sales MoM",weight:8,actual:"0.50%",forecast:"0.50%",bias:"Neutral"}],
+      growth:[{name:"GDP Growth Rate QoQ",weight:6,actual:"1.50%",forecast:"2.0%",bias:"Bearish"},
+        {name:"ISM Manufacturing PMI",weight:5,actual:"55.6",forecast:"53.9",bias:"Bullish"},
+        {name:"ISM Services PMI",weight:8,actual:"54.0",forecast:"54.2",bias:"Bearish"},
+        {name:"Retail Sales MoM",weight:7,actual:"0.50%",forecast:"0.50%",bias:"Neutral"}],
       inflation:[{name:"Core PCE YoY",weight:10,actual:"3.3%",forecast:"3.3%",bias:"Neutral"},
         {name:"5y Inflation Expectations",weight:10,actual:"3.3%",forecast:"3.3%",bias:"Neutral"},
-        {name:"Core Inflation Rate MoM",weight:7,actual:"0%",forecast:"0.20%",bias:"Bearish"},
-        {name:"Core Inflation Rate YoY",weight:8,actual:"2.6%",forecast:"2.9%",bias:"Bearish"}],
-      labour:[{name:"Non Farm Payrolls",weight:8,actual:"57k",forecast:"110k",bias:"Bearish"},
-        {name:"Unemployment Rate",weight:6,actual:"4.2%",forecast:"4.3%",bias:"Bullish"},
-        {name:"Average Hr Earnings YoY",weight:10,actual:"3.5%",forecast:"3.5%",bias:"Neutral"}]},
-    GBP:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+        {name:"Core Inflation Rate MoM",weight:8,actual:"0%",forecast:"0.20%",bias:"Bearish"},
+        {name:"Core Inflation Rate YoY",weight:9,actual:"2.6%",forecast:"2.9%",bias:"Bearish"}],
+      labour:[{name:"Non Farm Payrolls",weight:10,actual:"57k",forecast:"110k",bias:"Bearish"},
+        {name:"Unemployment Rate",weight:9,actual:"4.2%",forecast:"4.3%",bias:"Bullish"},
+        {name:"Average Hr Earnings YoY",weight:9,actual:"3.5%",forecast:"3.5%",bias:"Neutral"}]},
+    GBP:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOE held at 3.75%. More members are leaning hawkish as their focus shifts to inflation.",
-      growth:[{name:"GDP Growth Rate",weight:10,actual:"0.60%",forecast:"0.60%",bias:"Neutral"},
+      growth:[{name:"GDP Growth Rate",weight:5,actual:"0.60%",forecast:"0.60%",bias:"Neutral"},
         {name:"Composite PMI Flash",weight:6,actual:"52.1",forecast:"49.7",bias:"Bullish"},
-        {name:"Services PMI",weight:9,actual:"51.8",forecast:"49.4",bias:"Bullish"},
-        {name:"Retail Sales MoM",weight:8,actual:"1.0%",forecast:"-0.3%",bias:"Bullish"}],
+        {name:"Services PMI",weight:8,actual:"51.8",forecast:"49.4",bias:"Bullish"},
+        {name:"Retail Sales MoM",weight:6,actual:"1.0%",forecast:"-0.3%",bias:"Bullish"}],
       inflation:[{name:"Services Inflation",weight:10,actual:"3.6%",forecast:"-",bias:"Bearish"},
-        {name:"Core Inflation Rate YoY",weight:7,actual:"2.6%",forecast:"2.5%",bias:"Bullish"},
-        {name:"3M Output Price Exp",weight:8,actual:"3.9%",forecast:"2.7%",bias:"Bearish"},
+        {name:"Core Inflation Rate YoY",weight:8,actual:"2.6%",forecast:"2.5%",bias:"Bullish"},
+        {name:"3M Output Price Exp",weight:3,actual:"3.9%",forecast:"2.7%",bias:"Bearish"},
         {name:"Inflation Rate YoY",weight:8,actual:"2.6%",forecast:"2.7%",bias:"Bearish"}],
-      labour:[{name:"Unemployment Rate",weight:8,actual:"4.9%",forecast:"4.9%",bias:"Neutral"},
-        {name:"Claimant Count Change",weight:7,actual:"6.7k",forecast:"29.4k",bias:"Bullish"},
+      labour:[{name:"Unemployment Rate",weight:6,actual:"4.9%",forecast:"4.9%",bias:"Neutral"},
+        {name:"Claimant Count Change",weight:5,actual:"6.7k",forecast:"29.4k",bias:"Bullish"},
         {name:"Average Earnings",weight:10,actual:"4.3%",forecast:"4.5%",bias:"Bearish"}]},
-    EUR:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+    EUR:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.4%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"ECB hiked rates by 0.25%. Their focus still remains on inflation.",
-      growth:[{name:"GDP Growth Rate",weight:8,actual:"0.40%",forecast:"0.20%",bias:"Bullish"},
-        {name:"Services PMI",weight:10,actual:"51.6",forecast:"49.8",bias:"Bullish"},
-        {name:"Composite PMI",weight:9,actual:"51.9",forecast:"50.3",bias:"Bullish"},
-        {name:"Retail Sales m/m",weight:6,actual:"0.20%",forecast:"0.20%",bias:"Neutral"}],
+      growth:[{name:"GDP Growth Rate",weight:5,actual:"0.40%",forecast:"0.20%",bias:"Bullish"},
+        {name:"Services PMI",weight:7,actual:"51.6",forecast:"49.8",bias:"Bullish"},
+        {name:"Composite PMI",weight:7,actual:"51.9",forecast:"50.3",bias:"Bullish"},
+        {name:"Retail Sales m/m",weight:5,actual:"0.20%",forecast:"0.20%",bias:"Neutral"}],
       inflation:[{name:"Core Inflation Rate YoY",weight:10,actual:"2.5%",forecast:"2.4%",bias:"Bullish"},
-        {name:"Inflation Rate YoY",weight:9,actual:"2.9%",forecast:"2.9%",bias:"Neutral"},
-        {name:"Services Inflation",weight:8,actual:"3.2%",forecast:"-",bias:"Bearish"},
-        {name:"Inflation Expectations 3Y",weight:7,actual:"2.9%",forecast:"-",bias:"Neutral"}],
-      labour:[{name:"Unemployment Rate",weight:7,actual:"6.3%",forecast:"6.2%",bias:"Bearish"},
+        {name:"Inflation Rate YoY",weight:8,actual:"2.9%",forecast:"2.9%",bias:"Neutral"},
+        {name:"Services Inflation",weight:10,actual:"3.2%",forecast:"-",bias:"Bearish"},
+        {name:"Inflation Expectations 3Y",weight:6,actual:"2.9%",forecast:"-",bias:"Neutral"}],
+      labour:[{name:"Unemployment Rate",weight:5,actual:"6.3%",forecast:"6.2%",bias:"Bearish"},
         {name:"Negotiated Wages",weight:10,actual:"2.46%",forecast:"-",bias:"Bearish"}]},
-    JPY:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+    JPY:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"1.0%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOJ hiked rates to 1.0%, and cites more hikes coming.",
-      growth:[{name:"GDP Growth Rate",weight:8,actual:"0.50%",forecast:"0.40%",bias:"Bullish"},
-        {name:"Tankan Manufacturers",weight:10,actual:"22",forecast:"16",bias:"Bullish"},
-        {name:"Industrial Prod MoM",weight:7,actual:"1.3%",forecast:"0.70%",bias:"Bullish"},
-        {name:"Retail Sales YoY",weight:6,actual:"0.5%",forecast:"3.1%",bias:"Bearish"}],
+      growth:[{name:"GDP Growth Rate",weight:5,actual:"0.50%",forecast:"0.40%",bias:"Bullish"},
+        {name:"Tankan Manufacturers",weight:8,actual:"22",forecast:"16",bias:"Bullish"},
+        {name:"Industrial Prod MoM",weight:5,actual:"1.3%",forecast:"0.70%",bias:"Bullish"},
+        {name:"Retail Sales YoY",weight:4,actual:"0.5%",forecast:"3.1%",bias:"Bearish"}],
       inflation:[{name:"Tokyo Core CPI YoY",weight:9,actual:"1.9%",forecast:"1.7%",bias:"Bullish"},
-        {name:"CPI Ex-Food & Energy",weight:10,actual:"1.7%",forecast:"-",bias:"Bearish"},
-        {name:"National Core CPI y/y",weight:8,actual:"1.6%",forecast:"1.6%",bias:"Neutral"},
-        {name:"Services Inflation",weight:7,actual:"1.0%",forecast:"-",bias:"Neutral"}],
-      labour:[{name:"Unemployment Rate",weight:6,actual:"2.5%",forecast:"2.5%",bias:"Neutral"},
-        {name:"Jobs/applications ratio",weight:8,actual:"1.18",forecast:"1.17",bias:"Bullish"},
+        {name:"CPI Ex-Food & Energy",weight:8,actual:"1.7%",forecast:"-",bias:"Bearish"},
+        {name:"National Core CPI y/y",weight:10,actual:"1.6%",forecast:"1.6%",bias:"Neutral"},
+        {name:"Services Inflation",weight:6,actual:"1.0%",forecast:"-",bias:"Neutral"}],
+      labour:[{name:"Unemployment Rate",weight:4,actual:"2.5%",forecast:"2.5%",bias:"Neutral"},
+        {name:"Jobs/applications ratio",weight:4,actual:"1.18",forecast:"1.17",bias:"Bullish"},
         {name:"Average Earnings y/y",weight:10,actual:"3.2%",forecast:"3.4%",bias:"Bullish"}]},
-    AUD:{seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+    AUD:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"4.35%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"RBA held at 4.35%. Would hike again if inflation rises further.",
-      growth:[{name:"GDP Growth Rate",weight:9,actual:"0.30%",forecast:"0.50%",bias:"Bearish"},
-        {name:"Household Spending YoY",weight:7,actual:"5.5%",forecast:"-",bias:"Bullish"},
-        {name:"NAB Business Confidence",weight:10,actual:"-5",forecast:"-",bias:"Bullish"},
-        {name:"Manufacturing PMI",weight:6,actual:"52.0",forecast:"51.7",bias:"Bullish"}],
-      inflation:[{name:"Inflation Rate YoY",weight:7,actual:"3.8%",forecast:"4.0%",bias:"Bearish"},
+      growth:[{name:"GDP Growth Rate",weight:6,actual:"0.30%",forecast:"0.50%",bias:"Bearish"},
+        {name:"Household Spending YoY",weight:5,actual:"5.5%",forecast:"-",bias:"Bullish"},
+        {name:"NAB Business Confidence",weight:4,actual:"-5",forecast:"-",bias:"Bullish"},
+        {name:"Manufacturing PMI",weight:4,actual:"52.0",forecast:"51.7",bias:"Bullish"}],
+      inflation:[{name:"Inflation Rate YoY",weight:8,actual:"3.8%",forecast:"4.0%",bias:"Bearish"},
         {name:"Trimmed Mean CPI YoY",weight:10,actual:"3.6%",forecast:"3.7%",bias:"Bearish"},
         {name:"RBA Weighted Median CPI YoY",weight:9,actual:"3.7%",forecast:"-",bias:"Bullish"}],
-      labour:[{name:"Employment Change",weight:10,actual:"76.3k",forecast:"16.4k",bias:"Bullish"},
-        {name:"Unemployment Rate",weight:9,actual:"4.4%",forecast:"4.4%",bias:"Neutral"},
-        {name:"Wage Price Index YoY",weight:8,actual:"3.3%",forecast:"3.3%",bias:"Neutral"}]},
-    NZD:{seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+      labour:[{name:"Employment Change",weight:9,actual:"76.3k",forecast:"16.4k",bias:"Bullish"},
+        {name:"Unemployment Rate",weight:8,actual:"4.4%",forecast:"4.4%",bias:"Neutral"},
+        {name:"Wage Price Index YoY",weight:9,actual:"3.3%",forecast:"3.3%",bias:"Neutral"}]},
+    NZD:{seasonalityAvg:"",seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.50%",nextMove:"HIKE",conviction:"High conviction",
       guidance:"The RBNZ just raised its official interest rate by 25 basis points to 2.50%.",
-      growth:[{name:"GDP Growth Rate",weight:9,actual:"0.80%",forecast:"0.80%",bias:"Neutral"},
-        {name:"ANZ Business Confidence",weight:10,actual:"56.1",forecast:"-",bias:"Bullish"},
-        {name:"Retail Sales MoM",weight:6,actual:"0.90%",forecast:"0.50%",bias:"Bullish"},
-        {name:"Manufacturing PMI",weight:7,actual:"59.7",forecast:"-",bias:"Bullish"},
-        {name:"Global Dairy Trade Price",weight:7,actual:"1.5%",forecast:"-",bias:"Bullish"}],
-      inflation:[{name:"Inflation Rate YoY",weight:8,actual:"4.1%",forecast:"4.0%",bias:"Bullish"},
+      growth:[{name:"GDP Growth Rate",weight:5,actual:"0.80%",forecast:"0.80%",bias:"Neutral"},
+        {name:"ANZ Business Confidence",weight:4,actual:"56.1",forecast:"-",bias:"Bullish"},
+        {name:"Retail Sales MoM",weight:5,actual:"0.90%",forecast:"0.50%",bias:"Bullish"},
+        {name:"Manufacturing PMI",weight:4,actual:"59.7",forecast:"-",bias:"Bullish"},
+        {name:"Global Dairy Trade Price",weight:4,actual:"1.5%",forecast:"-",bias:"Bullish"}],
+      inflation:[{name:"Inflation Rate YoY",weight:9,actual:"4.1%",forecast:"4.0%",bias:"Bullish"},
         {name:"Core Inflation Rate",weight:9,actual:"3.2%",forecast:"-",bias:"Neutral"},
-        {name:"Business Inflation Exp",weight:7,actual:"2.53%",forecast:"-",bias:"Bullish"}],
-      labour:[{name:"Unemployment Rate",weight:9,actual:"5.3%",forecast:"5.4%",bias:"Bullish"},
-        {name:"Employment Change",weight:8,actual:"0.2%",forecast:"0.3%",bias:"Bearish"},
+        {name:"Business Inflation Exp",weight:5,actual:"2.53%",forecast:"-",bias:"Bullish"}],
+      labour:[{name:"Unemployment Rate",weight:7,actual:"5.3%",forecast:"5.4%",bias:"Bullish"},
+        {name:"Employment Change",weight:6,actual:"0.2%",forecast:"0.3%",bias:"Bearish"},
         {name:"Labor Cost Index q/q",weight:10,actual:"0.5%",forecast:"0.4%",bias:"Bullish"}]},
-    CAD:{seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
+    CAD:{seasonalityAvg:"",seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.25%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOC held at 2.25% as expected. No clear direction on policy yet, still data dependent.",
-      growth:[{name:"GDP m/m",weight:10,actual:"0.30%",forecast:"0.20%",bias:"Bullish"},
-        {name:"Ivey PMI s.a",weight:7,actual:"56.2",forecast:"59.1",bias:"Bearish"},
-        {name:"Capacity Utilization",weight:6,actual:"82.5%",forecast:"-",bias:"Bullish"},
-        {name:"Retail Sales Ex Autos",weight:8,actual:"1.2%",forecast:"1.4%",bias:"Bearish"}],
-      inflation:[{name:"Inflation Rate YoY",weight:7,actual:"2.8%",forecast:"2.9%",bias:"Bearish"},
+      growth:[{name:"GDP m/m",weight:7,actual:"0.30%",forecast:"0.20%",bias:"Bullish"},
+        {name:"Ivey PMI s.a",weight:4,actual:"56.2",forecast:"59.1",bias:"Bearish"},
+        {name:"Capacity Utilization",weight:4,actual:"82.5%",forecast:"-",bias:"Bullish"},
+        {name:"Retail Sales Ex Autos",weight:6,actual:"1.2%",forecast:"1.4%",bias:"Bearish"}],
+      inflation:[{name:"Inflation Rate YoY",weight:8,actual:"2.8%",forecast:"2.9%",bias:"Bearish"},
         {name:"CPI Trimmed-Mean YoY",weight:10,actual:"1.8%",forecast:"2.0%",bias:"Bearish"},
         {name:"CPI Median YoY",weight:10,actual:"1.9%",forecast:"2.1%",bias:"Bearish"}],
-      labour:[{name:"Employment Change",weight:10,actual:"18.2k",forecast:"10k",bias:"Bullish"},
-        {name:"Unemployment Rate",weight:9,actual:"6.5%",forecast:"6.6%",bias:"Bullish"},
-        {name:"Average Hr Wages YoY",weight:7,actual:"3.7%",forecast:"-",bias:"Bullish"}]}
+      labour:[{name:"Employment Change",weight:9,actual:"18.2k",forecast:"10k",bias:"Bullish"},
+        {name:"Unemployment Rate",weight:7,actual:"6.5%",forecast:"6.6%",bias:"Bullish"},
+        {name:"Average Hr Wages YoY",weight:8,actual:"3.7%",forecast:"-",bias:"Bullish"}]},
+    CHF:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Neutral",cotChangeBias:"Neutral",longPct:"",shortPct:"",changePct:"",
+      interestRate:"0%",nextMove:"HOLD",conviction:"Medium conviction",
+      guidance:"SNB policy rate is 0%. The SNB has indicated increased willingness to intervene against a rapid and excessive CHF appreciation.",
+      growth:[{name:"GDP Growth Rate QoQ",weight:7,actual:"1.5%",forecast:"0.5%",bias:"Bullish"},
+        {name:"Industrial Production YoY",weight:4,actual:"5.5%",forecast:"-4.7%",bias:"Bullish"},
+        {name:"Manufacturing PMI",weight:3,actual:"53.2",forecast:"55",bias:"Bearish"},
+        {name:"Retail Sales YoY",weight:3,actual:"1.5%",forecast:"3.2%",bias:"Bearish"}],
+      inflation:[{name:"CPI YoY",weight:8,actual:"0.4%",forecast:"0.4%",bias:"Neutral"},
+        {name:"PPI YoY",weight:3,actual:"-2.1%",forecast:"-1.6%",bias:"Bearish"}],
+      labour:[{name:"Employment (Non-Farm Payrolls)",weight:7,actual:"5.537k",forecast:"5.4k",bias:"Bullish"},
+        {name:"Unemployment Rate (Adj)",weight:5,actual:"3%",forecast:"2.9%",bias:"Bearish"}]}
   };
 }
+
+var CHF_YIELD_HISTORY = [{"date":"2026-05-01","CHF":0.158},{"date":"2026-05-04","CHF":0.174},{"date":"2026-05-05","CHF":0.146},{"date":"2026-05-06","CHF":0.094},{"date":"2026-05-07","CHF":0.088},{"date":"2026-05-08","CHF":0.085},{"date":"2026-05-11","CHF":0.108},{"date":"2026-05-12","CHF":0.149},{"date":"2026-05-13","CHF":0.138},{"date":"2026-05-14","CHF":0.174},{"date":"2026-05-15","CHF":0.211},{"date":"2026-05-18","CHF":0.228},{"date":"2026-05-19","CHF":0.248},{"date":"2026-05-20","CHF":0.198},{"date":"2026-05-21","CHF":0.226},{"date":"2026-05-22","CHF":0.199},{"date":"2026-05-26","CHF":0.154},{"date":"2026-05-27","CHF":0.113},{"date":"2026-05-28","CHF":0.078},{"date":"2026-05-29","CHF":0.064},{"date":"2026-06-01","CHF":0.098},{"date":"2026-06-02","CHF":0.091},{"date":"2026-06-03","CHF":0.131},{"date":"2026-06-04","CHF":0.111},{"date":"2026-06-05","CHF":0.144},{"date":"2026-06-08","CHF":0.142},{"date":"2026-06-09","CHF":0.134},{"date":"2026-06-10","CHF":0.134},{"date":"2026-06-11","CHF":0.149},{"date":"2026-06-12","CHF":0.071},{"date":"2026-06-15","CHF":0.048},{"date":"2026-06-16","CHF":0.043},{"date":"2026-06-17","CHF":0.048},{"date":"2026-06-18","CHF":0.035},{"date":"2026-06-22","CHF":0.03},{"date":"2026-06-23","CHF":0.018},{"date":"2026-06-24","CHF":0.013},{"date":"2026-06-25","CHF":0.004},{"date":"2026-06-26","CHF":0.012},{"date":"2026-06-29","CHF":0.034},{"date":"2026-06-30","CHF":0.04},{"date":"2026-07-01","CHF":0.038},{"date":"2026-07-02","CHF":0.038},{"date":"2026-07-06","CHF":0.034},{"date":"2026-07-07","CHF":0.047},{"date":"2026-07-08","CHF":0.077},{"date":"2026-07-09","CHF":0.073},{"date":"2026-07-10","CHF":0.083},{"date":"2026-07-13","CHF":0.11},{"date":"2026-07-14","CHF":0.116},{"date":"2026-07-15","CHF":0.113},{"date":"2026-07-16","CHF":0.131},{"date":"2026-07-17","CHF":0.136},{"date":"2026-07-20","CHF":0.157},{"date":"2026-07-21","CHF":0.152},{"date":"2026-07-22","CHF":0.168},{"date":"2026-07-23","CHF":0.23},{"date":"2026-07-24","CHF":0.198},{"date":"2026-07-27","CHF":0.132},{"date":"2026-07-28","CHF":0.087},{"date":"2026-07-29","CHF":0.132},{"date":"2026-07-30","CHF":0.118},{"date":"2026-07-31","CHF":0.135},{"date":"2026-08-03","CHF":0.101},{"date":"2026-08-04","CHF":0.078},{"date":"2026-08-05","CHF":0.073},{"date":"2026-08-06","CHF":0.065},{"date":"2026-08-07","CHF":0.076},{"date":"2026-08-10","CHF":0.115},{"date":"2026-08-11","CHF":0.109},{"date":"2026-08-12","CHF":0.097},{"date":"2026-08-13","CHF":0.077},{"date":"2026-08-14","CHF":0.087},{"date":"2026-08-17","CHF":0.086},{"date":"2026-08-18","CHF":0.101},{"date":"2026-08-19","CHF":0.097}];
 
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and sparklines
 var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
-var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY"];
-var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilter="All", lockBoxCollapsed=false;
+var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], lockBoxCollapsed=false;
 var isSaving=false, isSaveQueued=false, isTyping=false;
 var expandedRange="1M";
 
@@ -737,7 +1291,7 @@ async function saveDataNow(){
 
 function scheduleSave(){
   if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveDataNow, 700);
+  saveTimer = setTimeout(saveDataNow, 300);
 }
 
 function getCotScore(ccy){
@@ -748,15 +1302,43 @@ function getCotScore(ccy){
 }
 
 function biasVal(b){ return b==="Bullish"?1:(b==="Bearish"?-1:0); }
-function b_seas(s){ return s==="Bullish"?1:(s==="Bearish"?-1:0); }
+function seasonalityAvgNum(d){
+  if(!d) return null;
+  var n=Number(String(d.seasonalityAvg==null?"":d.seasonalityAvg).replace(/%/g,"").replace(/,/g,"").trim());
+  return Number.isFinite(n) && String(d.seasonalityAvg).trim()!=="" ? n : null;
+}
+function seasonalitySign(d){
+  var n=seasonalityAvgNum(d);
+  if(n!=null) return n>0?1:(n<0?-1:0);
+  return d && d.seasonality==="Bullish"?1:(d && d.seasonality==="Bearish"?-1:0);
+}
+function seasonalityLabel(d){
+  var n=seasonalityAvgNum(d);
+  if(n!=null) return n>0?"Bullish":(n<0?"Bearish":"Neutral");
+  return d && d.seasonality?d.seasonality:"Neutral";
+}
+function seasonalityValue(d){
+  var n=seasonalityAvgNum(d);
+  return n!=null ? n : seasonalitySign(d);
+}
+function seasonalityPairText(base,quote){
+  var a=seasonalityAvgNum(DATA[base]), b=seasonalityAvgNum(DATA[quote]);
+  var diff=(a!=null && b!=null)?(a-b):null;
+  if(diff!=null){
+    var dir=diff>0?"Bullish":(diff<0?"Bearish":"Neutral");
+    return dir+" "+(diff>0?"+":"")+diff.toFixed(2)+"%";
+  }
+  return simpleRelBias(seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]));
+}
+function b_seas(s){ return s && typeof s==="object" ? seasonalitySign(s) : (s==="Bullish"?1:(s==="Bearish"?-1:0)); }
 function sectorCalc(list){ var raw=0,max=0; for(var i=0;i<list.length;i++){ var w=Number(list[i].weight)||0; raw+=w*biasVal(list[i].bias); max+=w; } return {raw:raw,max:max}; }
 function fundFor(ccy){ var d=DATA[ccy]; var g=sectorCalc(d.growth), inf=sectorCalc(d.inflation), l=sectorCalc(d.labour);
   return {raw:g.raw+inf.raw+l.raw, max:g.max+inf.max+l.max, g:g, inf:inf, l:l}; }
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
-  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=b_seas(d.seasonality);
+  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=seasonalitySign(d);
   return 100*(0.70*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.05*seasTerm); }
-function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + b_seas(d.seasonality); }
+function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
   var totalW=0, agreeW=0;
@@ -772,7 +1354,7 @@ function alignmentFor(ccy){
   if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 10);
   vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 10);
   vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 10);
-  vote(b_seas(d.seasonality), 10);
+  vote(seasonalitySign(d), 10);
   if(dirSign===0 || totalW===0) return null;
   return {pct:Math.round(agreeW/totalW*100), dir:dirSign>0?"Bullish":"Bearish"};
 }
@@ -786,18 +1368,47 @@ function bandLabel(s){
   s=Math.round(s);
   if(s>=40) return "Very Bullish";
   if(s>=21) return "Bullish";
-  if(s>=15) return "Neutral Leaning Bullish";
+  if(s>=15) return "Leaning Bullish";
   if(s>=-14) return "Neutral";
-  if(s>=-20) return "Neutral Leaning Bearish";
+  if(s>=-20) return "Leaning Bearish";
   if(s>=-39) return "Bearish";
   return "Very Bearish";
 }
 function chipClass(label){
   if(label==="Very Bullish") return "chip chip-bull strong"; if(label==="Bullish") return "chip chip-bull";
-  if(label==="Neutral Leaning Bullish") return "chip chip-bull lean";
+  if(label==="Leaning Bullish") return "chip chip-bull lean";
   if(label==="Very Bearish") return "chip chip-bear strong"; if(label==="Bearish") return "chip chip-bear";
-  if(label==="Neutral Leaning Bearish") return "chip chip-bear lean";
+  if(label==="Leaning Bearish") return "chip chip-bear lean";
   return "chip chip-neu"; }
+function regimeColorClass(label){
+  if(label==="Leaning Bullish") return "strength-lean-pos";
+  if(label==="Leaning Bearish") return "strength-lean-neg";
+  if(label==="Very Bullish"||label==="Bullish") return "strength-pos";
+  if(label==="Very Bearish"||label==="Bearish") return "strength-neg";
+  return "strength-neu";
+}
+function pairScoreClass(score){
+  var s=Math.round(Number(score)||0);
+  if(s>=21) return "score-bull";
+  if(s>=15) return "score-lean-bull";
+  if(s<=-21) return "score-bear";
+  if(s<=-15) return "score-lean-bear";
+  return "score-neutral";
+}
+var CCY_FLAG_ISO = {USD:"us",GBP:"gb",EUR:"eu",JPY:"jp",AUD:"au",NZD:"nz",CAD:"ca",CHF:"ch"};
+function flagPair(base,quote){
+  var a=CCY_FLAG_ISO[base], q=CCY_FLAG_ISO[quote];
+  var imgA = a ? '<img src="https://flagcdn.com/w40/'+a+'.png" alt="'+base+'">' : '';
+  var imgB = q ? '<img src="https://flagcdn.com/w40/'+q+'.png" alt="'+quote+'">' : '';
+  return '<span class="pair-flags"><span class="flag-a">'+imgA+'</span><span class="flag-b">'+imgB+'</span></span>';
+}
+function pairBiasMarkup(label){
+  if(label==="Leaning Bullish") return '<span class="pair-bias-stack pair-bias-lean-bull"><span class="lean-word">Leaning</span><strong>Bullish</strong></span>';
+  if(label==="Leaning Bearish") return '<span class="pair-bias-stack pair-bias-lean-bear"><span class="lean-word">Leaning</span><strong>Bearish</strong></span>';
+  if(label==="Very Bullish" || label==="Bullish") return '<span class="pair-bias-single bull">'+label+'</span>';
+  if(label==="Very Bearish" || label==="Bearish") return '<span class="pair-bias-single bear">'+label+'</span>';
+  return '<span class="pair-bias-single neutral">'+label+'</span>';
+}
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
   if(a<20) label="Neutral"; else if(a<50) label=pct>0?"Strong":"Weak"; else label=pct>0?"Very Strong":"Very Weak"; return {pct:pct,label:label}; }
 function sectorChipClass(label){
@@ -915,7 +1526,7 @@ function pairCompositeFor(base, quote){
   var y=pairYieldCalc(base,quote).score;
   var yieldTerm=(y==null?0:y/10);
   var cotBase=getCotScore(base)/6, cotQuote=getCotScore(quote)/6;
-  var seasBase=b_seas(db.seasonality), seasQuote=b_seas(dq.seasonality);
+  var seasBase=seasonalitySign(db), seasQuote=seasonalitySign(dq);
   // Preserve the 70/15/10/5 weighting, but make every pair component relative.
   return 100*(0.70*(fundBase-fundQuote)+0.15*yieldTerm+0.10*(cotBase-cotQuote)+0.05*(seasBase-seasQuote));
 }
@@ -954,7 +1565,7 @@ function surpriseFor(actual,forecast){
 
 // ===== Economic Surprise Momentum (auto-derived from actual vs forecast, no new data entry) =====
 var MOMENTUM_DECAY = 0.85; // ~4 releases for a print to lose half its weight
-var MOMENTUM_CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD"];
+var MOMENTUM_CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD","CHF"];
 
 // Rough "typical move" divisors so a GDP beat and a CPI beat land on a comparable scale.
 // Matched by keyword in the indicator name (checked in order), falling back to unit suffix.
@@ -1082,7 +1693,7 @@ function renderLockBox(){
 
 var TAB_META={
   overview:{title:"Macro Regime",sub:""},
-  raw:{title:"Confluence Feed",sub:""},
+  raw:{title:"Surprise Index",sub:""},
   detail:{title:"Currency Detail",sub:""},
   pairs:{title:"Pair Ranking",sub:""},
   yield2y:{title:"Bond Yield Spread",sub:""}
@@ -1093,6 +1704,11 @@ function switchTab(tab){
   var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
   document.getElementById("pageTitle").textContent=TAB_META[tab].title;
   document.getElementById("pageSub").textContent=TAB_META[tab].sub;
+  if(tab==="overview"){ renderOverview(); }
+  else if(tab==="raw"){ renderRaw(); }
+  else if(tab==="detail"){ renderDetail(); }
+  else if(tab==="pairs"){ renderPairs(); }
+  else if(tab==="yield2y"){ renderYield2Y(); }
   if(tab==="yield2y" && typeof histSpreadDraw==="function"){
     // The chart canvas is built while its tab is still hidden, so the browser
     // reports zero width at that point and the chart draws at the wrong size.
@@ -1158,11 +1774,26 @@ function y2RemoveUnfinishedToday(){
 }
 function y2SetCurrentFromLatestSaved(){
   var rows=y2SortedHistory();
-  if(!rows.length){ YIELD_ENGINE.currentDate=''; YIELD_ENGINE.current={}; return; }
+  var selected=YIELD_ENGINE.inputDate||'';
+  if(selected){
+    YIELD_ENGINE.currentDate=selected;
+    var picked=rows.find(function(r){return r.date===selected;});
+    if(picked){
+      YIELD_ENGINE.current={};
+      Y2_CCY_ORDER.forEach(function(c){ if(picked[c]!=null) YIELD_ENGINE.current[c]=y2Num(picked[c]); });
+    }
+    return;
+  }
+  if(!rows.length){
+    YIELD_ENGINE.currentDate=YIELD_ENGINE.currentDate||'';
+    YIELD_ENGINE.current=YIELD_ENGINE.current||{};
+    return;
+  }
   var latest=rows[rows.length-1];
   YIELD_ENGINE.currentDate=latest.date;
+  YIELD_ENGINE.inputDate=latest.date;
   YIELD_ENGINE.current={};
-  Y2_CCY_ORDER.forEach(function(c){ YIELD_ENGINE.current[c]=y2Num(latest[c]); });
+  Y2_CCY_ORDER.forEach(function(c){if(latest[c]!=null) YIELD_ENGINE.current[c]=y2Num(latest[c]);});
 }
 function y2PrevClose(ccy){
   // The previous close is the immediately preceding stored trading-day close,
@@ -1392,7 +2023,7 @@ function renderYield2Y(){
       var inputStyle=dir==null?'':(dir>0?'color:var(--bullish-strong);font-weight:700;':(dir<0?'color:var(--bearish-strong);font-weight:700;':''));
       return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';
     }).join('')+
-    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+((rows.length?rows[rows.length-1].date:''))+'" '+(unlockedLocally?'':'disabled')+'></label>'+'</div>'+
+    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.inputDate || YIELD_ENGINE.currentDate || (rows.length?rows[rows.length-1].date:''))+'" '+(unlockedLocally?'':'disabled')+'></label>'+'</div>'+
     (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update current values</button><button class="y2-btn" id="y2SaveAsClose">Save current values as daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
     (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
     '<div class="card"><h3>2Y Yield Diagnostics</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>Current</th><th>21D SMA</th><th>2Y Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
@@ -1403,56 +2034,61 @@ function renderYield2Y(){
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
     '</div>';
   document.getElementById('tab-yield2y').innerHTML=html;
-  var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value); updateComputed();});}
+  var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){
+    YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value);
+    scheduleSave();
+    updateComputed();
+  });}
   var dateEl=document.getElementById('y2CurrentDate'); if(dateEl) dateEl.onchange=function(){
     var d=this.value;
     if(!d) return;
     var today=y2TodayKey();
-    if(d>=today){
-      var rowsNow=y2SortedHistory();
-      this.value=rowsNow.length?rowsNow[rowsNow.length-1].date:'';
-      y2DateTouchedThisSession=false;
-      updateStatus('Today has not closed — daily close cannot be saved yet','var(--amber)');
+    if(d>today){
+      this.value=YIELD_ENGINE.inputDate||YIELD_ENGINE.currentDate||today;
+      updateStatus('Future observation dates are not allowed','var(--amber)');
       return;
     }
+    YIELD_ENGINE.inputDate=d;
     YIELD_ENGINE.currentDate=d;
     y2DateTouchedThisSession=true;
     var stored=y2SortedHistory().find(function(r){return r.date===d;});
     if(stored){
-      Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=y2Num(stored[c]);});
+      YIELD_ENGINE.current={};
+      Y2_CCY_ORDER.forEach(function(c){if(stored[c]!=null) YIELD_ENGINE.current[c]=y2Num(stored[c]);});
     } else {
       Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=null;});
     }
+    // Preserve the selected date and fields across local/cloud saves and redraws.
+    scheduleSave();
     updateComputed();
     renderYield2Y();
   };
-  var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){YIELD_ENGINE.currentDate=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10)); scheduleSave(); y2RenderRows(); if(activeTab==='detail') renderDetailBody(activeDetailCcy); if(activeTab==='overview') renderOverview(); updateStatus('Current 2Y values updated','var(--bullish-strong)');};
+  var save=document.getElementById('y2SaveCurrent'); if(save) save.onclick=function(){
+    YIELD_ENGINE.inputDate=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.inputDate||YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10));
+    YIELD_ENGINE.currentDate=YIELD_ENGINE.inputDate;
+    scheduleSave();
+    y2RenderRows();
+    if(activeTab==='detail') renderDetailBody(activeDetailCcy);
+    if(activeTab==='overview') renderOverview();
+    updateStatus('Current 2Y values saved — '+YIELD_ENGINE.currentDate,'var(--bullish-strong)');
+  };
   var close=document.getElementById('y2SaveAsClose'); if(close) close.onclick=function(){
-    var d=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.currentDate||'').trim();
+    var d=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.inputDate||YIELD_ENGINE.currentDate||'').trim();
     var today=y2TodayKey();
-    if(!d){ updateStatus('Choose a completed close date first','var(--amber)'); return; }
-    if(d>=today){ updateStatus('Daily close blocked — '+today+' is still an open session','var(--amber)'); alert('No daily close can be saved for '+today+'. Save that close tomorrow morning, after the trading day has finished.'); return; }
+    if(!d){ updateStatus('Choose an observation date first','var(--amber)'); return; }
+    if(d>today){ updateStatus('Future observation dates are not allowed','var(--amber)'); return; }
+    if(d===today){ updateStatus('Today is still an open session — save it tomorrow as a daily close','var(--amber)'); return; }
+    YIELD_ENGINE.inputDate=d;
     YIELD_ENGINE.currentDate=d;
 
-    // Normalize the entire stored history by date before writing anything. This
+    // Normalize the entire stored history by date before writing anything. The selected
+    // completed date is upserted: new dates are added, existing dates are updated in place.
     // makes repeated clicks idempotent: one date can only ever have one row.
     var by={}; y2SortedHistory().forEach(function(r){by[r.date]=Object.assign({},r);});
     var existing=by[d];
-    if(existing){
-      // Saving the same date again updates that one date only. It never appends a
-      // second copy. A confirmation is shown only when values would change.
-      var changedLines=[];
-      Y2_CCY_ORDER.forEach(function(c){
-        var newVal=y2Num(YIELD_ENGINE.current[c]);
-        if(newVal!=null && existing[c]!=null && Number(existing[c])!==newVal){
-          changedLines.push(c+': '+existing[c]+' -> '+newVal);
-        }
-      });
-      if(changedLines.length){
-        var msg='This close date ('+d+') already exists.\n\n'+changedLines.join('\n')+'\n\nReplace the existing close for this date?';
-        if(!confirm(msg)) { updateStatus('Save cancelled — existing close kept','var(--amber)'); return; }
-      }
-    }
+    // If the selected date already exists, update that same row without changing the date
+    // or asking the user to replace a different observation. This is the intended daily-close
+    // workflow for missed/late inputs.
 
     var row=Object.assign({},existing||{},{date:d});
     Y2_CCY_ORDER.forEach(function(c){var n=y2Num(YIELD_ENGINE.current[c]); if(n!=null) row[c]=n;});
@@ -1487,15 +2123,12 @@ function renderYield2Y(){
   initHistoricalSpreadPanel();
 }
 
-var HIST_SPREAD_PAIRS = [
-  ["AUDUSD","AUD","USD"],["NZDUSD","NZD","USD"],["AUDCAD","AUD","CAD"],
-  ["GBPUSD","GBP","USD"],["NZDCAD","NZD","CAD"],["EURUSD","EUR","USD"],
-  ["GBPCAD","GBP","CAD"],["EURCAD","EUR","CAD"],["AUDNZD","AUD","NZD"],
-  ["EURGBP","EUR","GBP"],["GBPNZD","GBP","NZD"],["USDCAD","USD","CAD"],
-  ["GBPAUD","GBP","AUD"],["EURNZD","EUR","NZD"],["EURAUD","EUR","AUD"],
-  ["AUDJPY","AUD","JPY"],["NZDJPY","NZD","JPY"],["GBPJPY","GBP","JPY"],
-  ["EURJPY","EUR","JPY"],["CADJPY","CAD","JPY"],["USDJPY","USD","JPY"]
-];
+var HIST_SPREAD_PAIRS = [];
+for(var hpi=0;hpi<CCY_ORDER.length;hpi++){
+  for(var hpj=hpi+1;hpj<CCY_ORDER.length;hpj++){
+    HIST_SPREAD_PAIRS.push([CCY_ORDER[hpi]+CCY_ORDER[hpj],CCY_ORDER[hpi],CCY_ORDER[hpj]]);
+  }
+}
 var HIST_SPREAD_RANGE = 63;
 var HIST_SPREAD_ACTIVE = "EURUSD";
 
@@ -1637,21 +2270,60 @@ function initHistoricalSpreadPanel(){
   setTimeout(histSpreadDraw,0);
 }
 
+function flagImg(ccy){
+  var codes={USD:"us",EUR:"eu",GBP:"gb",AUD:"au",NZD:"nz",CAD:"ca",JPY:"jp",CHF:"ch"};
+  var code=codes[ccy];
+  if(!code) return "";
+  return '<img class="ccy-flag" src="https://flagcdn.com/20x15/'+code+'.png" alt="'+ccy+' flag" loading="eager">';
+}
 function renderOverview(){
   if(!DATA) return;
   var scores=allScores();
-  var hikers=CCYS.filter(function(c){ return DATA[c].nextMove==="HIKE"; });
-  var cutters=CCYS.filter(function(c){ return DATA[c].nextMove==="CUT"; });
-  var divHtml = (hikers.length && cutters.length) ?
-    '<div class="divergence on"><b>Divergence watch —</b> '+hikers.join("/")+" leaning HIKE against "+cutters.join("/")+" leaning CUT. Worth treating as this week's live divergence pair on top of the seven majors.</div>" :
-    '';
-  var html = divHtml+'<div class="card"><h3>Currency Regime Dashboard</h3><div class="table-scroll"><table><thead><tr>'+
-    '<th>Symbol</th><th>Regime Bias</th><th>Regime Score</th><th>Trend</th><th>Alignment</th></tr></thead>'+
-    '<tbody id="overviewRows"></tbody></table></div>'+
-    '</div></div>';
-  document.getElementById("tab-overview").innerHTML=html;
-  fillOverviewRows(scores);
+  var rows=CCYS.slice().sort(function(a,b){return scores[b]-scores[a];});
+  var strongest=rows[0], weakest=rows[rows.length-1];
+  var spread=Math.round(scores[strongest]-scores[weakest]);
+  var flags={USD:flagImg("USD"),EUR:flagImg("EUR"),GBP:flagImg("GBP"),AUD:flagImg("AUD"),NZD:flagImg("NZD"),CAD:flagImg("CAD"),JPY:flagImg("JPY"),CHF:flagImg("CHF")};
+  var list=rows.map(function(c,i){
+    var sc=Math.round(scores[c]), label=bandLabel(sc), t=ccyTrend30d(c,sc);
+    var barPct=Math.min(100,Math.abs(sc));
+    var color=sc>0?'var(--bullish-strong)':(sc<0?'var(--bearish-strong)':'var(--text-faint)');
+    var side=sc>=0?'50%':(50-barPct/2)+'%';
+    return '<div class="strength-row" data-goto="'+c+'">'+
+      '<div class="strength-rank">'+(i+1)+'</div>'+
+      '<div class="strength-ccy">'+(flags[c]||'')+' '+c+'</div>'+
+      '<div class="strength-bar"><i style="left:'+side+';width:'+(barPct/2)+'%;background:'+color+';"></i></div>'+
+      '<div class="strength-score '+regimeColorClass(label)+'">'+fmt(sc)+'</div>'+
+      '<div class="strength-bias '+regimeColorClass(label)+'">'+label+'</div>'+
+      '</div>';
+  }).join('');
+  var rightList=rows.map(function(c,i){
+    var sc=Math.round(scores[c]), t=ccyTrend30d(c,sc);
+    var delta=t.delta==null?'—':((t.delta>0?'+':'')+t.delta);
+    var trendColor=t.dir==='up'?'var(--bullish-strong)':t.dir==='down'?'var(--bearish-strong)':'var(--text-faint)';
+    var w=Math.min(100,Math.abs(sc));
+    var bg=sc>0?'var(--bullish-strong)':sc<0?'var(--bearish-strong)':'var(--text-faint)';
+    return '<div class="strength-row" data-goto="'+c+'">'+
+      '<div class="strength-rank">'+(i+1)+'</div>'+
+      '<div class="strength-ccy">'+(flags[c]||'')+' '+c+'</div>'+
+      '<div class="strength-spark" style="color:'+trendColor+';">'+sparkline(c)+'<span>'+delta+'</span></div>'+
+      '<div class="strength-score '+regimeColorClass(labelFromScore(sc))+'">'+fmt(sc)+'</div>'+
+      '<div class="strength-bias '+regimeColorClass(labelFromScore(sc))+'">'+labelFromScore(sc)+'</div>'+
+      '</div>';
+  }).join('');
+  var html='<div class="strength-wrap">'+
+    '<div class="strength-card"><div class="strength-summary">'+
+      '<div class="strength-stat"><div class="strength-k">Assets</div><div class="strength-v">'+CCYS.length+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Strongest</div><div class="strength-v strength-pos">'+strongest+' '+Math.round(scores[strongest])+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Weakest</div><div class="strength-v strength-neg">'+weakest+' '+Math.round(scores[weakest])+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Spread</div><div class="strength-v">'+spread+' pts</div></div>'+
+    '</div><div class="strength-list-head"><div>#</div><div>Asset</div><div>Bias Strength</div><div>Score</div><div>Bias</div></div>'+list+'</div>'+
+    '<div class="strength-card"><div class="strength-list-head"><div>#</div><div>Asset</div><div>Trend</div><div>Score</div><div>Bias</div></div>'+rightList+'</div>'+
+    '</div>';
+  document.getElementById('tab-overview').innerHTML=html;
+  var gotos=document.querySelectorAll('#tab-overview [data-goto]');
+  for(var i=0;i<gotos.length;i++){gotos[i].onclick=function(){activeDetailCcy=this.dataset.goto;switchTab('detail');renderDetail();};}
 }
+function labelFromScore(s){return bandLabel(s);}
 // 30-day trend for a single currency's composite score -- same mechanic as pairTrend30d,
 // just against DATA.MOMENTUM-style daily snapshots stored per-currency in DAILY under the
 // currency's own key (e.g. DAILY[date]["USD"]) if you're logging single-currency composites.
@@ -1670,7 +2342,7 @@ function ccyTrendMarker(ccy, liveScore){
   var t=ccyTrend30d(ccy, liveScore);
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
   var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
-  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta+' pts');
+  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta);
   return '<span class="'+cls+'" title="'+esc(t.label)+'">'+symbol+' '+deltaTxt+'</span>';
 }
 function fillOverviewRows(scores){
@@ -1681,8 +2353,8 @@ function fillOverviewRows(scores){
     var c=rows[i], sc=scores[c], label=bandLabel(sc), align=alignmentFor(c);
     var alignFlagged = align && align.pct>=80;
     var alignCellClass = alignFlagged ? (align.dir==="Bullish"?"cell-vstrong":"cell-vweak") : "";
-    var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:13.5px;font-weight:'+(alignFlagged?"700":"600")+';'+(alignFlagged?"":"color:var(--text-dim);")+'">'+(alignFlagged?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
-    out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:14px;">'+CCY_NAME[c]+'</span></td>'+
+    var alignCell = !align ? '<span style="color:var(--text-faint);">—</span>' : '<span class="mono" style="font-size:12px;font-weight:'+(alignFlagged?"700":"600")+';'+(alignFlagged?"":"color:var(--text-dim);")+'">'+(alignFlagged?'\u2691 ':'')+align.pct+'% '+align.dir+'</span>';
+    out += '<tr class="rowhover"><td class="ccy-name" style="cursor:pointer;" data-goto="'+c+'">'+c+' <span style="color:var(--text-dim);font-weight:400;font-size:12px;">'+CCY_NAME[c]+'</span></td>'+
       '<td><span class="'+chipClass(label)+'">'+label+'</span></td>'+
       '<td class="mono">'+fmt(sc)+'</td>'+
       '<td class="mono">'+ccyTrendMarker(c,sc)+'</td>'+
@@ -1710,46 +2382,118 @@ function componentTrendMarker(key, liveVal){
   var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta);
   return '<span class="'+cls+'" style="font-size:11px;margin-left:6px;">'+symbol+' '+deltaTxt+'</span>';
 }
-function renderRaw(){
-  if(!DATA) return;
-  var html='<div class="card"><h3>Confluence Feed</h3><div class="table-scroll"><table><thead><tr>'+
-    '<th>Currency</th><th>Fundamentals</th><th>2Y Regime</th><th>Institutional Bias</th><th>Seasonality</th></tr></thead><tbody id="rawRows"></tbody></table></div></div>';
 
-  document.getElementById("tab-raw").innerHTML=html;
-  var tb=document.getElementById("rawRows"), out="";
-  for(var i=0;i<CCYS.length;i++){
-    var c=CCYS[i], d=DATA[c], f=fundFor(c), y2=y2Calc(c), cotScore=getCotScore(c);
-    var fundPct = f.max?(100*f.raw/f.max):0;
-    out += '<tr class="rowhover"><td class="ccy-name">'+c+'</td>'+
-      '<td class="mono '+sectorCellClass(sectorBand(f.raw,f.max).label)+'">'+sectorBand(f.raw,f.max).label+componentTrendMarker("FUND_"+c,fundPct)+'</td>'+
-      '<td class="mono '+y2TrendClass(y2.score)+'">'+y2ScoreFmt(y2.score)+' <span class="y2-small">'+esc(y2TrendLabel(y2.score))+'</span></td>'+
-      '<td class="mono" id="rawcot-'+c+'" style="'+numColor(cotScore)+'">'+cotInstBand(cotScore)+componentTrendMarker("COT_"+c,cotScore)+'</td>'+
-      '<td><select class="bias-select '+d.seasonality+'" data-role="ccyfield" data-ccy="'+c+'" data-field="seasonality" '+(unlockedLocally?"":"disabled")+'>'+
-        ["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.seasonality?"selected":"")+'>'+o+'</option>'; }).join("")+
-      '</select></td></tr>';
-  }
-  tb.innerHTML=out;
-  var body=document.getElementById("tab-raw");
-  body.addEventListener("input", onCcyFieldInput); body.addEventListener("change", onCcyFieldInput);
-
-  var impBtn = document.getElementById("importSyncBtn");
-  if(impBtn){
-    impBtn.onclick = function(){
-      try {
-        var str = document.getElementById("syncDataStr").value.trim();
-        var parsed = JSON.parse(atob(str));
-        if(parsed && parsed.DATA) {
-          DATA = parsed.DATA; SETTINGS = parsed.SETTINGS || {passwordHash:null}; DAILY = parsed.DAILY || {}; LOG = parsed.LOG || [];
-          saveDataNow(); renderAllStatic();
-          alert("Data imported successfully! The dashboard is now synced to the copied state.");
-        }
-      } catch(e) {
-        alert("Invalid data code. Please ensure you pasted the entire block exactly as copied.");
-      }
-    };
-  }
+function parseSurpriseNumber(v){
+  if(v==null || v==="") return null;
+  var str=String(v).trim().replace(/,/g,"");
+  if(!str || str==="—" || str==="–" || str.toLowerCase()==="n/a") return null;
+  var mult=1;
+  if(/k$/i.test(str)){mult=1000;str=str.slice(0,-1);}
+  else if(/m$/i.test(str)){mult=1000000;str=str.slice(0,-1);}
+  str=str.replace(/%/g,"");
+  var n=parseFloat(str);
+  return Number.isFinite(n)?n*mult:null;
 }
-
+function surpriseRatio(actual,forecast){
+  var a=parseSurpriseNumber(actual), f=parseSurpriseNumber(forecast);
+  if(a==null||f==null)return null;
+  var denom=Math.max(Math.abs(a),Math.abs(f),1);
+  return Math.max(-100,Math.min(100,((a-f)/denom)*100));
+}
+function surpriseDataForCurrency(ccy){
+  var d=DATA[ccy],rows=[],cats=["growth","inflation","labour"];
+  if(!d)return {avg:0,strongBeats:0,strongMisses:0,total:0,rows:[]};
+  for(var ci=0;ci<cats.length;ci++){
+    var cat=cats[ci],list=Array.isArray(d[cat])?d[cat]:[];
+    for(var i=0;i<list.length;i++){
+      var r=list[i],sr=surpriseRatio(r.actual,r.forecast),estimated=false;
+      if(sr==null){
+        // No consensus forecast to compare against (e.g. Services Inflation, Negotiated
+        // Wages, Terms of Trade). Rather than drop the release from the Surprise Index
+        // entirely, fall back to the manually-set Bullish/Bearish bias as a moderate
+        // stand-in signal — same logic the user already applies by eye (actual vs. the
+        // last print) when picking that bias in the first place. Kept deliberately mild
+        // (10, not 15+) so it reads as "Beating/Missing" rather than "Strongly" — a
+        // manual call is a real signal but a softer one than a measured numeric beat.
+        if(r.bias==="Bullish") sr=10;
+        else if(r.bias==="Bearish") sr=-10;
+        else continue; // Neutral with no forecast genuinely carries no signal either way
+        estimated=true;
+      }
+      rows.push({ccy:ccy,category:cat,name:r.name||"Release",actual:r.actual,forecast:r.forecast,ratio:sr,estimated:estimated});
+    }
+  }
+  var total=rows.length,sum=rows.reduce(function(a,r){return a+r.ratio;},0);
+  var strongBeats=rows.filter(function(r){return r.ratio>=5;}).length;
+  var strongMisses=rows.filter(function(r){return r.ratio<=-5;}).length;
+  rows.sort(function(a,b){return Math.abs(b.ratio)-Math.abs(a.ratio);});
+  return {avg:total?sum/total:0,strongBeats:strongBeats,strongMisses:strongMisses,total:total,rows:rows};
+}
+function surpriseLabel(score){
+  if(score>=15)return "Strongly Beating";
+  if(score>=5)return "Beating";
+  if(score<=-15)return "Strongly Missing";
+  if(score<=-5)return "Missing";
+  return "Mixed / Near Forecast";
+}
+function surpriseClass(label){
+  return (label==="Strongly Beating"||label==="Beating")?"surprise-pos":
+         (label==="Strongly Missing"||label==="Missing")?"surprise-neg":"surprise-neu";
+}
+function renderRaw(){
+  if(!DATA)return;
+  var stats=CCYS.map(function(c){return {ccy:c,data:surpriseDataForCurrency(c)};});
+  stats.sort(function(a,b){return b.data.avg-a.data.avg;});
+  var strongBeats=stats.reduce(function(a,x){return a+x.data.strongBeats;},0);
+  var strongMisses=stats.reduce(function(a,x){return a+x.data.strongMisses;},0);
+  var best=stats[0],worst=stats[stats.length-1];
+  var flags={USD:"🇺🇸",EUR:"🇪🇺",GBP:"🇬🇧",AUD:"🇦🇺",NZD:"🇳🇿",CAD:"🇨🇦",JPY:"🇯🇵",CHF:"🇨🇭"};
+  var left=stats.map(function(x,i){
+    var sc=Math.round(x.data.avg*10)/10,label=surpriseLabel(sc),cls=surpriseClass(label);
+    var width=Math.min(100,Math.abs(sc)*2.5),leftPos=sc>=0?"50%":(50-width/2)+"%";
+    return '<div class="surprise-row" data-goto="'+x.ccy+'">'+
+      '<div class="surprise-rank">'+(i+1)+'</div>'+
+      '<div class="surprise-ccy">'+(flags[x.ccy]||"")+' '+x.ccy+'</div>'+
+      '<div class="surprise-bar"><i class="'+cls+'" style="left:'+leftPos+';width:'+(width/2)+'%;"></i></div>'+
+      '<div class="surprise-score '+cls+'">'+(sc>0?"+":"")+sc.toFixed(1)+'</div>'+
+      '<div class="surprise-bias '+cls+'">'+label+'</div>'+
+      '<div class="surprise-count">'+x.data.strongBeats+' strong beat · '+x.data.strongMisses+' strong miss</div>'+
+      '<div class="surprise-seasonality">'+
+        '<input class="seasonality-avg-input" data-role="ccyfield" data-ccy="'+x.ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(DATA[x.ccy].seasonalityAvg||"")+'" '+(unlockedLocally?"":"disabled")+'>'+
+        '<span class="seasonality-derived '+seasonalityLabel(DATA[x.ccy])+'" data-season-label="'+x.ccy+'">'+seasonalityLabel(DATA[x.ccy])+'</span>'+
+      '</div></div>';
+  }).join("");
+  var top=[];
+  stats.forEach(function(x){x.data.rows.slice(0,4).forEach(function(r){top.push(r);});});
+  top.sort(function(a,b){return Math.abs(b.ratio)-Math.abs(a.ratio);}); top=top.slice(0,12);
+  var right=top.map(function(r){
+    var cls=r.ratio>=2?"surprise-pos":r.ratio<=-2?"surprise-neg":"surprise-neu",sign=r.ratio>0?"+":"";
+    var meta = r.estimated
+      ? '<div class="surprise-release-meta"><span>Actual <b>'+esc(r.actual)+'</b></span><span style="color:var(--text-faint);">No forecast — from bias</span><span class="'+cls+'">'+sign+r.ratio.toFixed(1)+'%</span></div>'
+      : '<div class="surprise-release-meta"><span>Actual <b>'+esc(r.actual)+'</b></span><span>Fcst <b>'+esc(r.forecast)+'</b></span><span class="'+cls+'">'+sign+r.ratio.toFixed(1)+'%</span></div>';
+    return '<div class="surprise-release">'+
+      '<div class="surprise-release-head"><span class="surprise-release-ccy">'+(flags[r.ccy]||"")+' '+r.ccy+'</span><span class="surprise-release-cat">'+r.category+'</span></div>'+
+      '<div class="surprise-release-name">'+esc(r.name)+'</div>'+
+      meta+'</div>';
+  }).join("");
+  var html='<div class="surprise-wrap">'+
+    '<div class="surprise-card"><div class="surprise-summary">'+
+      '<div class="surprise-stat"><div class="surprise-k">Strong beats</div><div class="surprise-v surprise-pos">'+strongBeats+'</div></div>'+
+      '<div class="surprise-stat"><div class="surprise-k">Strong misses</div><div class="surprise-v surprise-neg">'+strongMisses+'</div></div>'+
+      '<div class="surprise-stat"><div class="surprise-k">Best surprise</div><div class="surprise-v surprise-pos">'+best.ccy+' '+(best.data.avg>0?"+":"")+best.data.avg.toFixed(1)+'</div></div>'+
+      '<div class="surprise-stat"><div class="surprise-k">Worst surprise</div><div class="surprise-v surprise-neg">'+worst.ccy+' '+(worst.data.avg>0?"+":"")+worst.data.avg.toFixed(1)+'</div></div>'+
+    '</div><div class="surprise-note">Forecast Surprise Monitor — display-only. It does not alter the 70/15/10/5 trading score.</div>'+
+    '<div class="surprise-list-head"><div>#</div><div>Currency</div><div>Surprise Strength</div><div>Index</div><div>State</div><div>Releases</div><div>Seasonality</div></div>'+
+    '<div class="surprise-list">'+left+'</div></div>'+
+    '<div class="surprise-card"><div class="surprise-card-title">Largest Forecast Surprises</div><div class="surprise-release-list">'+right+'</div></div></div>';
+  document.getElementById("tab-raw").innerHTML=html;
+  var gotos=document.querySelectorAll("#tab-raw [data-goto]");
+  for(var i=0;i<gotos.length;i++)gotos[i].onclick=function(){activeDetailCcy=this.dataset.goto;switchTab("detail");renderDetail();};
+  var seasonEls=document.querySelectorAll("#tab-raw [data-role=\"ccyfield\"][data-field=\"seasonalityAvg\"]");
+  for(var si=0;si<seasonEls.length;si++){
+    seasonEls[si].addEventListener("input",onCcyFieldInput);
+    seasonEls[si].addEventListener("change",onCcyFieldInput);
+  }}
 function gaugeGeom(score){
   var cx=120, cy=104, r=80, s=clamp(score,-100,100), angle=180-((s+100)/200)*180, rad=angle*Math.PI/180;
   return {cx:cx,cy:cy,r:r,nx:cx+(r-16)*Math.cos(rad),ny:cy-(r-16)*Math.sin(rad)};
@@ -1803,7 +2547,7 @@ function indicatorRows(ccy, sector, list){
       '<td>'+(unlockedLocally?
         '<input class="ind-name" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="name" value="'+esc(ind.name)+'">'
         : '<a class="ind-link" href="'+link+'" target="_blank" rel="noopener">'+esc(ind.name)+'</a>')+'</td>'+
-      '<td><input class="ind-num" type="number" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="weight" value="'+ind.weight+'" '+(unlockedLocally?"":"disabled")+'></td>'+
+      '<td class="weight-col"><input class="ind-num" type="number" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="weight" value="'+ind.weight+'" '+(unlockedLocally?"":"disabled")+'></td>'+
       '<td><input class="ind-txt" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="actual" value="'+esc(ind.actual)+'" '+(unlockedLocally?"":"disabled")+'></td>'+
       '<td><input class="ind-txt" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="forecast" value="'+esc(ind.forecast)+'" '+(unlockedLocally?"":"disabled")+'></td>'+
       '<td class="surprise" id="surprise-'+ccy+'-'+sector+'-'+i+'" style="color:'+(ind.bias==="Bullish"?"var(--bullish-strong)":ind.bias==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+surpriseFor(ind.actual,ind.forecast)+'</td>'+
@@ -1914,20 +2658,20 @@ function renderDetailBody(ccy){
       '<div class="gauge-num mono" id="gaugeScoreTxt-'+ccy+'">'+fmt(sc)+'</div>'+
       '<div class="stat-block">'+
         '<div class="stat-row"><span>Currency regime score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
-        '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:170px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
+        '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:190px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
         '<div class="stat-row"><span>Seasonality + COT score</span><span class="mono" id="statSeasCot-'+ccy+'" style="'+numColor(scCot)+'">'+fmt(scCot)+'</span></div>'+
         '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
         '<div class="stat-row" style="align-items:flex-start;"><span>Own-history 2Y score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
       '</div>'+
       '<div class="rate-box">'+
-        '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Interest rate</span>'+
+        '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Interest rate</span>'+
           '<input type="text" data-role="ccyfield" data-ccy="'+ccy+'" data-field="interestRate" value="'+esc(d.interestRate)+'" style="width:64px;" '+(unlockedLocally?"":"disabled")+'></div>'+
-        '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Next move</span>'+
+        '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Next move</span>'+
           (unlockedLocally?
             '<select class="move-select '+d.nextMove+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="nextMove">'+
             ["HIKE","HOLD","CUT"].map(function(o){ return '<option '+(o===d.nextMove?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
             : '<span class="move-select '+d.nextMove+' static-chip">'+d.nextMove+'</span>')+'</div>'+
-        '<div class="rate-line"><span style="font-size:12.5px;color:var(--text-dim);">Conviction</span>'+
+        '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Conviction</span>'+
           (unlockedLocally?
             '<select class="conv-select '+d.conviction.split(" ")[0]+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="conviction">'+
             ["High conviction","Medium conviction","Low conviction"].map(function(o){ return '<option '+(o===d.conviction?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
@@ -1939,17 +2683,23 @@ function renderDetailBody(ccy){
     '<div class="right-col">'+
       '<div class="info-trend-row">'+
       '<div class="info-grid">'+
-        '<div class="info-item"><span class="k">Seasonality trend</span><span class="v" id="seasTxt-'+ccy+'" style="color:'+(d.seasonality==="Bullish"?"var(--bullish-strong)":d.seasonality==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.seasonality+'</span></div>'+
+        '<div class="info-item"><span class="k">Seasonality Avg (current month)</span>'+
+          '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">'+
+            '<input class="seasonality-avg-input" id="seasAvg-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(d.seasonalityAvg||"")+'" '+(unlockedLocally?"":"disabled")+'>'+
+            '<span class="seasonality-derived '+seasonalityLabel(d)+'" id="seasTxt-'+ccy+'">'+seasonalityLabel(d)+'</span>'+
+          '</div>'+
+          '<span class="seasonality-month" id="seasMonth-'+ccy+'">'+new Date().toLocaleString("en-US",{month:"short"})+' average</span>'+
+        '</div>'+
         
         '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+' ('+(cotScore>0?"+":"")+cotScore+')</span></div>'+
         
-        '<div class="info-item"><span class="k">COT net positioning</span>'+(unlockedLocally?
-          '<select class="'+ (d.cotNet==="Bullish"?"bias-select Bullish":d.cotNet==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotNetSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotNet">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.cotNet?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
-          : '<span class="v" id="cotNetTxt-'+ccy+'" style="color:'+(d.cotNet==="Bullish"?"var(--bullish-strong)":d.cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.cotNet+'</span>')+'</div>'+
-          
-        '<div class="info-item"><span class="k">Latest Buys &amp; Sells</span>'+(unlockedLocally?
+        '<div class="info-item cot-change-item"><span class="k">Latest Buys &amp; Sells</span>'+(unlockedLocally?
           '<select class="'+ ((d.cotChangeBias||"Neutral")==="Bullish"?"bias-select Bullish":(d.cotChangeBias||"Neutral")==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotChangeBiasSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotChangeBias">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===(d.cotChangeBias||"Neutral")?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
           : '<span class="v" id="cotChangeBiasTxt-'+ccy+'" style="color:'+((d.cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(d.cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+(d.cotChangeBias||"Neutral")+'</span>')+'</div>'+
+          
+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span>'+(unlockedLocally?
+          '<select class="'+ (d.cotNet==="Bullish"?"bias-select Bullish":d.cotNet==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotNetSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotNet">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.cotNet?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+          : '<span class="v" id="cotNetTxt-'+ccy+'" style="color:'+(d.cotNet==="Bullish"?"var(--bullish-strong)":d.cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.cotNet+'</span>')+'</div>'+
           
         '<div class="info-item"><span class="k">Long % / Short %</span><div>'+
           '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="longPct" value="'+esc(d.longPct)+'" style="'+longShortColors(d.longPct,d.shortPct).longStyle+'" '+(unlockedLocally?"":"disabled")+'> / '+
@@ -1964,7 +2714,7 @@ function renderDetailBody(ccy){
     html += '<div class="sector-block"><div class="sector-title"><span class="label">'+lab+'</span>'+
       '<span class="'+sectorChipClass(band.label)+'" id="band-'+ccy+'-'+key+'">'+band.label+'</span>'+
       '<span class="mono" style="color:var(--text-faint);font-size:15px;" id="secraw-'+ccy+'-'+key+'">'+(calc.raw>0?"+":"")+calc.raw+' / '+calc.max+'</span></div>'+
-      '<table><thead><tr><th>Indicator</th><th>Weight</th><th>Actual</th><th>Forecast</th><th>Surprise</th><th>Bias</th><th></th></tr></thead>'+
+      '<table><thead><tr><th>Indicator</th><th class="weight-col">Weight</th><th>Actual</th><th>Forecast</th><th>Surprise</th><th>Bias</th><th></th></tr></thead>'+
       '<tbody>'+indicatorRows(ccy,key,d[key])+'</tbody></table>'+
       (unlockedLocally? '<button class="add-btn" data-action="add" data-ccy="'+ccy+'" data-sector="'+key+'">+ add indicator</button>':'')+'</div>';
   }
@@ -2023,7 +2773,17 @@ function onDetailInput(e){
     if(t.dataset.field==="nextMove"){ t.className="move-select "+t.value; }
     if(t.dataset.field==="conviction"){ t.className="conv-select "+t.value.split(" ")[0]; }
     if(t.dataset.field==="guidance"){ autoGrowGuidance(t); }
-    if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias" || t.dataset.field==="seasonality"){ t.className="bias-select "+t.value; }
+    if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias"){
+    t.className="bias-select "+t.value;
+  }
+  if(t.dataset.field==="seasonalityAvg"){
+    var d=DATA[ccy], n=seasonalityAvgNum(DATA[ccy]), lab=seasonalityLabel(DATA[ccy]);
+    var labelEl=document.querySelector('[data-season-label="'+c+'"]');
+    if(labelEl){ labelEl.textContent=lab; labelEl.className="seasonality-derived "+lab; }
+    var detailEl=document.getElementById("seasTxt-"+c);
+    if(detailEl){ detailEl.textContent=lab; detailEl.className="seasonality-derived "+lab; }
+    d.seasonality=lab;
+  }
     if(t.dataset.field==="changePct"){ t.setAttribute("style", changePctColor(t.value)); }
     if(t.dataset.field==="longPct" || t.dataset.field==="shortPct"){
       var lsColors=longShortColors(DATA[ccy].longPct, DATA[ccy].shortPct);
@@ -2087,12 +2847,27 @@ function pairTrend30d(pair){
   if(delta< -1) return {dir:"down",delta:delta,label:"Score falling over the trend window"};
   return {dir:"flat",delta:delta,label:"Score broadly flat over the trend window"};
 }
+function pillarBias(score){
+  var s=Math.round(Number(score)||0);
+  if(s>=40) return 'Very Bullish';
+  if(s>=15) return 'Bullish';
+  if(s<=-40) return 'Very Bearish';
+  if(s<=-15) return 'Bearish';
+  return 'Neutral';
+}
+function simpleRelBias(v){
+  var n=Number(v)||0;
+  return n>0?'Bullish':n<0?'Bearish':'Neutral';
+}
+function pillarBiasClass(label){
+  return label==='Very Bullish'?'yield-vbull':label==='Bullish'?'yield-bull':label==='Very Bearish'?'yield-vbear':label==='Bearish'?'yield-bear':'yield-neutral';
+}
 function pairTrendMarker(pair){
   var t=pairTrend30d(pair);
   var symbol=t.dir==="up"?"▲":(t.dir==="down"?"▼":"—");
   var arrowCls=t.dir==="up"?"pair-trend-arrow trend-up":(t.dir==="down"?"pair-trend-arrow trend-down":"pair-trend-arrow trend-flat");
   var deltaCls=t.dir==="up"?"delta-up":(t.dir==="down"?"delta-down":"delta-flat");
-  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta+' pts');
+  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta);
   return '<span class="pair-trend-marker" title="'+esc(t.label)+(t.delta==null?'':(' · score change vs 30D start: '+(t.delta>0?"+":"")+t.delta+' points'))+'">'+
     '<span class="'+arrowCls+'">'+symbol+'</span>'+
     (deltaTxt===""?'':'<span class="pair-trend-delta '+deltaCls+'">'+deltaTxt+'</span>')+
@@ -2151,17 +2926,15 @@ function bigChart(pair, rangeSel){
     '</linearGradient></defs>'+
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
-    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+labels+
+    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+labels+
     '<text x="'+pad+'" y="16" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+max.toFixed(0)+'</text>'+
     '<text x="'+pad+'" y="'+(h-pad-2)+'" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+min.toFixed(0)+'</text>'+
     '</svg>';
 }
 function pairPassesFilter(bias){
-  if(pairFilter==="All") return true;
-  if(pairFilter==="Extremes") return bias==="Very Bullish"||bias==="Very Bearish";
-  if(pairFilter==="Bullish") return bias==="Bullish";
-  if(pairFilter==="Bearish") return bias==="Bearish";
-  return true;
+  if(pairFilters.indexOf("All")!==-1) return true;
+  if(pairFilters.indexOf("Extremes")!==-1 && (bias==="Very Bullish"||bias==="Very Bearish")) return true;
+  return pairFilters.indexOf(bias)!==-1;
 }
 function sortExtremePairs(pairs){
   var bulls=pairs.filter(function(p){ return p.bias==="Very Bullish"; }).sort(function(a,b){ return b.score-a.score; });
@@ -2172,8 +2945,7 @@ function renderPairs(){
   if(!DATA) return;
   var scores=allScores(), pairsAll=buildPairs(scores);
   var pairs=pairsAll.filter(function(p){ return pairPassesFilter(p.bias); });
-  if(pairFilter==="Extremes") pairs=sortExtremePairs(pairs);
-  if(pairFilter==="Bearish") pairs=pairs.slice().reverse();
+  if(pairFilters.indexOf("Extremes")!==-1) pairs=sortExtremePairs(pairs);
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
@@ -2183,12 +2955,32 @@ function renderPairs(){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
     var heatClass = p.bias==="Very Bullish" ? "pair-vbull" :
       p.bias==="Bullish" ? "pair-bull" :
-      p.bias==="Neutral Leaning Bullish" ? "pair-lean-bull" :
-      p.bias==="Neutral Leaning Bearish" ? "pair-lean-bear" :
+      p.bias==="Leaning Bullish" ? "pair-lean-bull" :
+      p.bias==="Leaning Bearish" ? "pair-lean-bear" :
       p.bias==="Bearish" ? "pair-bear" :
       p.bias==="Very Bearish" ? "pair-vbear" :
       (p.score>0 ? "pair-neutral-pos" : (p.score<0 ? "pair-neutral-neg" : "pair-neutral-zero"));
-    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'"><td class="mono">'+(i+1)+'</td>'+      '<td class="ccy-name"><span class="pair-name-wrap">'+pairTrendMarker(p.pair)+p.pair+'</span></td><td><span class="'+chipClass(p.bias)+'">'+p.bias+'</span></td>'+      '<td class="mono">'+fmt(p.score)+'</td>'+      '<td class="mono" title="Pair-level 2Y yield differential score">'+(p.yieldScore==null?'—':fmt(p.yieldScore))+'</td>'+      '<td class="mono" title="Current base 2Y minus quote 2Y">'+(p.yieldSpread==null?'—':(p.yieldSpread>0?'+':'')+p.yieldSpread.toFixed(1)+' bp')+'</td>'+      '<td><div class="pair-bar"><i style="left:'+barLeft+';width:'+pct+'%;background:'+barColor+';"></i></div></td>'+      '<td><div class="trend-cell">'+sparkline(p.pair)+'</div></td></tr>';
+    var pt=pairTrend30d(p.pair);
+    var yb = p.yieldScore==null ? 'Neutral' : (p.yieldScore>=7?'Very Bullish':p.yieldScore>=3?'Bullish':p.yieldScore<=-7?'Very Bearish':p.yieldScore<=-3?'Bearish':'Neutral');
+    var ybc = yb==='Very Bullish'?'yield-vbull':yb==='Bullish'?'yield-bull':yb==='Very Bearish'?'yield-vbear':yb==='Bearish'?'yield-bear':'yield-neutral';
+    var fb = fundFor(p.base), fq = fundFor(p.quote);
+    var fundRel = (fb.max?(100*fb.raw/fb.max):0) - (fq.max?(100*fq.raw/fq.max):0);
+    var fundBias=pillarBias(fundRel), fundBiasClass=pillarBiasClass(fundBias);
+    var cb=getCotScore(p.base), cq=getCotScore(p.quote), cotRel=cb-cq;
+    var cotWoWBase=DATA[p.base].cotChangeBias||'Neutral', cotWoWQuote=DATA[p.quote].cotChangeBias||'Neutral';
+    var cotWoWRel=biasVal(cotWoWBase)-biasVal(cotWoWQuote);
+    var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
+    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
+      '<td class="ccy-name"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
+      '<td class="mono pair-score '+pairScoreClass(p.score)+'">'+fmt(p.score)+'</td>'+
+      '<td><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span>'+pairTrendMarker(p.pair)+'</div></td>'+
+      '<td>'+pairBiasMarkup(p.bias)+'</td>'+
+      '<td><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
+      '<td><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
+      '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotRel))+'">'+simpleRelBias(cotRel)+'</span></td>'+
+      '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</span></td>'+
+      '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(seasRel))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
+      '</tr>';
   }
   var logRows="";
   for(var j=0;j<Math.min(LOG.length,8);j++){
@@ -2206,19 +2998,21 @@ function renderPairs(){
       '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
       bigChart(expandedPair, expandedRange)+'</div></div>';
   }
-  var filterBtns = [["All","All"],["Extremes","Extremes only"],["Bullish","Bullish only"],["Bearish","Bearish only"]].map(function(fb){
-    return '<button class="range-btn'+(pairFilter===fb[0]?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
+  var filterBtns = [["All","All"],["Extremes","Extremes"],["Very Bullish","Very Bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very Bearish"]].map(function(fb){
+    var active=pairFilters.indexOf(fb[0])!==-1;
+    return '<button class="range-btn'+(active?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
   }).join("");
+  var selectionLabel = pairFilters.indexOf("All")!==-1 ? "All pairs" : (pairFilters.length?pairFilters.join(" + "):"All pairs");
   var html = '<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
     ''+
     (unlockedLocally? '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>':'')+'</div>'+
     expandedHtml+
-    '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;"><h3 style="margin:0;">Pair Ranking</h3>'+
-    '<div class="range-switch">'+filterBtns+'</div></div>'+
-    '<div class="table-scroll"><table><thead><tr><th>#</th><th>Pair</th><th>Bias</th><th>Score</th><th>Yield Score</th><th>2Y Spread</th><th>Relative</th><th>Trend (90d)</th></tr></thead>'+
+    '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;"><div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Positioning</th><th>Δ WoW</th><th>Seasonality</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
-    (LOG.length? '<div class="card"><h3>Recalculation Log</h3><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div>':'');
+    (LOG.length? '<details class="recalc-details"><summary>Recalculation Log <span class="recalc-count">'+LOG.length+'</span></summary><div class="recalc-log-body"><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div></details>':'');
   document.getElementById("tab-pairs").innerHTML=html;
   var btn=document.getElementById("recalcBtn");
   if(btn){ btn.onclick=async function(){
@@ -2259,7 +3053,17 @@ function renderPairs(){
   var rangeBtnsEl=document.querySelectorAll(".range-btn");
   for(var rI=0;rI<rangeBtnsEl.length;rI++){ rangeBtnsEl[rI].onclick=function(e){
     e.stopPropagation();
-    if(this.dataset.filter){ pairFilter=this.dataset.filter; renderPairs(); return; }
+    if(this.dataset.filter){
+      var f=this.dataset.filter;
+      if(f==="All"){ pairFilters=["All"]; }
+      else {
+        if(pairFilters.indexOf("All")!==-1) pairFilters=[];
+        var ix=pairFilters.indexOf(f);
+        if(ix>=0) pairFilters.splice(ix,1); else pairFilters.push(f);
+        if(!pairFilters.length) pairFilters=["All"];
+      }
+      renderPairs(); return;
+    }
     expandedRange=this.dataset.range; renderPairs();
   }; }
 }
@@ -2267,11 +3071,34 @@ function renderPairs(){
 function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function onCcyFieldInput(e){
   var t=e.target; if(!unlockedLocally || !t.dataset || t.dataset.role!=="ccyfield") return;
-  DATA[t.dataset.ccy][t.dataset.field]=t.value; scheduleSave(); updateComputed();
+  var c=t.dataset.ccy, field=t.dataset.field;
+  if(!DATA[c]) return;
+  DATA[c][field]=t.value;
+  if(field==="nextMove"){ t.className="move-select "+t.value; }
+  if(field==="conviction"){ t.className="conv-select "+t.value.split(" ")[0]; }
+  if(field==="guidance" && typeof autoGrowGuidance==="function"){ autoGrowGuidance(t); }
+  if(field==="cotNet" || field==="cotChangeBias"){ t.className="bias-select "+t.value; }
+  if(field==="seasonalityAvg"){
+    DATA[c].seasonality=seasonalityLabel(DATA[c]);
+    var rawLabel=document.querySelector('[data-season-label="'+c+'"]');
+    if(rawLabel){ rawLabel.textContent=DATA[c].seasonality; rawLabel.className="seasonality-derived "+DATA[c].seasonality; }
+  }
+  if(field==="changePct"){ t.setAttribute("style", changePctColor(t.value)); }
+  if(field==="longPct" || field==="shortPct"){
+    var ls=longShortColors(DATA[c].longPct,DATA[c].shortPct);
+    var lEl=document.querySelector('input[data-ccy="'+c+'"][data-field="longPct"]');
+    var sEl=document.querySelector('input[data-ccy="'+c+'"][data-field="shortPct"]');
+    if(lEl) lEl.setAttribute("style",ls.longStyle);
+    if(sEl) sEl.setAttribute("style",ls.shortStyle);
+  }
+  scheduleSave();
+  updateComputed();
 }
 function updateComputed(){
   if(!DATA) return;
   var scores=allScores();
+  /* Keep the two headline trading boards synchronized even while hidden.
+     Pair Ranking must not wait for its tab to be open before reflecting an edit. */
   if(document.getElementById("tab-overview")) fillOverviewRows(scores);
   for(var i=0;i<CCYS.length;i++){
     var cotEl=document.getElementById("rawcot-"+CCYS[i]); if(cotEl){ var cs=getCotScore(CCYS[i]); cotEl.textContent=cotInstBand(cs); cotEl.setAttribute("style",instColorStyle(cotInstBand(cs))); }
@@ -2295,7 +3122,7 @@ function updateComputed(){
     var flagged2=align2 && align2.pct>=80;
     var alignColor2=!align2?"color:var(--text-faint);":(align2.pct>=80?(align2.dir==="Bullish"?"color:var(--bullish-strong);":"color:var(--bearish-strong);"):"color:var(--text-dim);");
     var alignTxt2=!align2?"No clear lean yet":((flagged2?'&#9873; ':'')+align2.pct+"% of the evidence agrees "+align2.dir.toLowerCase()+" ("+alignmentLabel(align2)+")");
-    alignEl.setAttribute("style", alignColor2+"text-align:right;max-width:170px;font-size:12.5px;font-weight:600;");
+    alignEl.setAttribute("style", alignColor2+"text-align:right;max-width:190px;font-size:12.5px;font-weight:600;");
     alignEl.innerHTML=alignTxt2;
   }
   var y2Now=y2Calc(c);
@@ -2304,7 +3131,13 @@ function updateComputed(){
   var y2TrendEl=document.getElementById("stat2YTrend-"+c);
   if(y2TrendEl){ y2TrendEl.textContent=y2TrendLabel(y2Now.score); y2TrendEl.className="y2-small "+y2TrendClass(y2Now.score); }
   var seasEl=document.getElementById("seasTxt-"+c);
-  if(seasEl){ seasEl.textContent=DATA[c].seasonality; seasEl.style.color = DATA[c].seasonality==="Bullish"?"var(--bullish-strong)":DATA[c].seasonality==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
+  if(seasEl){
+    var lab=seasonalityLabel(DATA[c]);
+    seasEl.textContent=lab;
+    seasEl.className="seasonality-derived "+lab;
+  }
+  var seasAvgEl=document.getElementById("seasAvg-"+c);
+  if(seasAvgEl) seasAvgEl.value=DATA[c].seasonalityAvg||"";
   
   var instEl=document.getElementById("instBiasTxt-"+c);
   if(instEl){ 
@@ -2318,10 +3151,10 @@ function updateComputed(){
   var chgEl=document.getElementById("cotChangeBiasTxt-"+c);
   if(chgEl){ chgEl.textContent=(DATA[c].cotChangeBias||"Neutral"); chgEl.style.color = (DATA[c].cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(DATA[c].cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
   
-  if(document.getElementById("pairRows")) renderPairs();
+  if(document.getElementById("tab-pairs")) renderPairs();
 }
 
-function renderAllStatic(){ renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); }
+function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); }
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 
 async function init(){
@@ -2407,6 +3240,45 @@ async function init(){
     }
   }
 
+  function cloneObj(x){ return JSON.parse(JSON.stringify(x)); }
+  function ensureCHFUniverse(){
+    if(!DATA) return false;
+    var changed=false;
+    var seedState=seed();
+    if(!DATA.CHF){ DATA.CHF=cloneObj(seedState.CHF); changed=true; }
+    else {
+      // Do not overwrite existing user edits. Only repair missing CHF fields/arrays.
+      ["growth","inflation","labour"].forEach(function(k){
+        if(!Array.isArray(DATA.CHF[k]) || !DATA.CHF[k].length){ DATA.CHF[k]=cloneObj(seedState.CHF[k]); changed=true; }
+      });
+      ["seasonality","cotNet","cotChangeBias","longPct","shortPct","changePct","interestRate","nextMove","conviction","guidance"].forEach(function(k){
+        if(DATA.CHF[k]===undefined || DATA.CHF[k]===null){ DATA.CHF[k]=seedState.CHF[k]; changed=true; }
+      });
+    }
+    if(!YIELD_ENGINE) YIELD_ENGINE={history:[],current:{}};
+    if(!Array.isArray(YIELD_ENGINE.history)) YIELD_ENGINE.history=[];
+    var by={};
+    YIELD_ENGINE.history.forEach(function(r){ if(r && r.date){ by[r.date]=Object.assign({},r); } });
+    CHF_YIELD_HISTORY.forEach(function(r){
+      var row=by[r.date]||{date:r.date};
+      if(row.CHF!==r.CHF){ row.CHF=r.CHF; changed=true; }
+      by[r.date]=row;
+    });
+    YIELD_ENGINE.history=Object.keys(by).sort().map(function(d){return by[d];});
+    var latest=YIELD_ENGINE.history.length?YIELD_ENGINE.history[YIELD_ENGINE.history.length-1]:null;
+    if(latest){
+      if(!YIELD_ENGINE.current) YIELD_ENGINE.current={};
+      if(YIELD_ENGINE.current.CHF==null && latest.CHF!=null){ YIELD_ENGINE.current.CHF=latest.CHF; changed=true; }
+      if(!YIELD_ENGINE.currentDate) { YIELD_ENGINE.currentDate=latest.date; YIELD_ENGINE.inputDate=latest.date; changed=true; }
+    }
+    if(!DATA.CHF._chfVersion) { DATA.CHF._chfVersion="2026-08-20"; changed=true; }
+    return changed;
+  }
+
+  var chfMigrated = ensureCHFUniverse();
+  initMomentum();
+  if(chfMigrated && AUTH.accessToken){ await saveDataNow(); }
+
   // The one-time fundamental-model migration has already done its job and is
   // permanently retired. It must never run again — it used to reset any
   // manually rebalanced indicator weight back to an old fixed list every time
@@ -2446,7 +3318,9 @@ async function init(){
       SETTINGS = parsed.SETTINGS || {passwordHash:null};
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
+      var preservedInputDate = (YIELD_ENGINE && YIELD_ENGINE.inputDate) ? YIELD_ENGINE.inputDate : '';
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
+      if(preservedInputDate) YIELD_ENGINE.inputDate=preservedInputDate;
       var removedFuture = y2RemoveUnfinishedToday();
       y2SetCurrentFromLatestSaved();
       if(removedFuture && AUTH.accessToken){
@@ -2465,7 +3339,7 @@ async function init(){
     }
   }
   pullCloudState();
-  setInterval(pullCloudState, 5000);
+  setInterval(pullCloudState, 3000);
 
 }
 
