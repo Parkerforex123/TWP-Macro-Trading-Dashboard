@@ -178,9 +178,9 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .guidance-box{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--amber);color:var(--amber);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:none;margin-top:8px;overflow-y:auto;}
 .field-label{font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:4px;}
 
-.info-grid{display:grid;grid-template-columns:repeat(4,minmax(135px,1fr));gap:6px 10px;margin-bottom:8px;padding:8px 10px;background:var(--panel2);border-radius:8px;flex:1 1 auto;min-width:0;}
-.info-trend-row{display:flex;gap:8px;align-items:stretch;}
-.trend-panel{flex:1 1 0;min-width:360px;background:var(--panel2);border-radius:8px;padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;justify-content:space-between;}
+.info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 10px;margin-bottom:8px;padding:8px 10px;background:var(--panel2);border-radius:8px;flex:1 1 auto;min-width:0;}
+.info-trend-row{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;}
+.trend-panel{flex:1 1 320px;min-width:0;background:var(--panel2);border-radius:8px;padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;justify-content:space-between;}
 .trend-panel .k{font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
 .trend-panel .trend-score{font-size:20px;font-weight:700;margin-top:4px;}
 .trend-panel .trend-delta{font-size:11px;margin-top:2px;}
@@ -767,11 +767,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-raw .surprise-release-meta{display:flex;gap:12px;margin-top:4px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:10.5px;}
 #tab-raw .surprise-release-meta b{color:var(--text);}
 @media(max-width:1100px){#tab-raw .surprise-wrap{grid-template-columns:1fr;}}
-@media(max-width:760px){
-#tab-raw .surprise-list-head{display:none;}
-#tab-raw .surprise-row{grid-template-columns:24px 62px 1fr 56px;gap:6px;}
-#tab-raw .surprise-count{grid-column:3/5;}
-}
 </style>
 
 
@@ -849,36 +844,65 @@ body.black .card,body.ash .card{box-shadow:none;}
   cursor:pointer;
 }
 
-/* Mobile — the table previously forced a 1180px minimum width no matter the
-   screen, guaranteeing a horizontal swipe on every phone. Drop that floor,
-   hide the sparkline graphic (keep the arrow+delta), and let every column's
-   text wrap onto two lines instead of forcing extra column width, so all
-   9 columns including Seasonality sit inside the screen with no swipe. */
+/* Mobile — previously this forced every column into a fixed-width, no-scroll
+   table with 8.5px text, which is what made the whole board feel crushed.
+   Let the table scroll horizontally at a comfortable width instead, same
+   pattern already used successfully elsewhere (Y2 diagnostics, hist spread). */
 @media(max-width:700px){
-  #tab-pairs .table-scroll{overflow-x:hidden;}
-  #tab-pairs .table-scroll table{min-width:0!important;width:100%;table-layout:fixed;}
-  #tab-pairs th,#tab-pairs td{padding:5px 3px!important;}
-  #tab-pairs th{font-size:8.5px!important;white-space:normal!important;line-height:1.15;letter-spacing:0!important;}
-  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .ccy-name,#tab-pairs .pair-table .pair-bias-single,
-  #tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,
-  #tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:9.5px!important;}
-  #tab-pairs .pair-bias-single,#tab-pairs .pair-factor,#tab-pairs .chip{white-space:normal!important;line-height:1.15;word-break:break-word;}
+  #tab-pairs .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #tab-pairs .table-scroll table{min-width:920px!important;width:auto;table-layout:auto;}
+  #tab-pairs th,#tab-pairs td{padding:7px 8px!important;}
+  #tab-pairs th{font-size:10.5px!important;white-space:nowrap;letter-spacing:0!important;}
   #tab-pairs .trend-cell .trend-spark,#tab-pairs .trend-cell svg{display:none!important;}
-  #tab-pairs .trend-cell{gap:0;min-height:auto;white-space:normal;}
-  #tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:11%;}
-  #tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:9%;}
-  #tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:9%;}
-  #tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:13%;}
-  #tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:13%;}
-  #tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:13%;}
-  #tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:11%;}
-  #tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
-  #tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:10%;}
+  #tab-pairs .trend-cell{gap:0;min-height:auto;white-space:nowrap;}
+}
+</style>
+
+<style id="v25-mobile-fixes">
+/* V25: the Surprise Index table has 7 real data columns per row (rank, currency,
+   strength bar, index, state, releases, seasonality) — squeezing that into a
+   narrow phone screen is what clipped "Bullish"/"Bearish" before. Scroll it
+   horizontally at its natural width instead, same fix as the Pairs table. */
+#tab-raw .surprise-card{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+@media(max-width:760px){
+  #tab-raw .surprise-list-head,#tab-raw .surprise-row{min-width:640px;}
+}
+/* Macro Regime (Overview) list — the fixed pixel columns left almost nothing
+   for the currency name on narrow phones. Tighten them instead of letting
+   the row overflow its card. */
+@media(max-width:480px){
+  #tab-overview .strength-list-head,
+  #tab-overview .strength-row{grid-template-columns:22px 58px 1fr 40px 66px;gap:6px;}
+  #tab-overview .strength-list-head{font-size:9px;padding:7px 8px;}
+  #tab-overview .strength-row{padding:7px 8px;}
+  #tab-overview .strength-ccy{font-size:13px;gap:5px;}
+  #tab-overview .strength-score{font-size:14px;}
+  #tab-overview .strength-bias{font-size:10.5px;}
+}
+/* Top stat strips (Assets/Strongest/Weakest/Spread and Strong Beats/Misses/etc)
+   get cramped as 4 columns on a narrow phone — drop to 2x2. */
+@media(max-width:520px){
+  #tab-overview .strength-summary,
+  #tab-raw .surprise-summary{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #tab-overview .strength-stat,
+  #tab-raw .surprise-stat{border-bottom:1px solid var(--border);}
+  #tab-overview .strength-stat:nth-child(2n),
+  #tab-raw .surprise-stat:nth-child(2n){border-right:none;}
+}
+/* Currency detail page: let the seasonality/institutional-bias grid and the
+   composite-trend panel stack instead of forcing a cramped side-by-side row. */
+@media(max-width:700px){
+  .info-trend-row{flex-direction:column;}
+  .info-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:420px){
+  .info-grid{grid-template-columns:1fr;}
 }
 </style>
 
 </head>
 <body>
+
 <div class="shell">
   <aside class="rail">
     <div class="brand"><div class="brand-mark">TWP</div>
@@ -1015,7 +1039,7 @@ setInterval(function(){
 "use strict";
 
 var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD","CHF"];
-var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","JPY","CHF"];
+var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","CHF","JPY"];
 var CCY_NAME = {USD:"US Dollar",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc"};
 var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada",CHF:"switzerland"};
 var TE_EXACT = {
