@@ -925,27 +925,14 @@ body.black .card,body.ash .card{box-shadow:none;}
   .ind-num,.ind-txt,.surprise{font-size:13px;}
   .bias-select{font-size:12.5px;min-width:88px;}
 
-  /* Pair Ranking mobile: use a purpose-built card scanner instead of squeezing 9 table columns. */
-  #tab-pairs .pair-desktop-view{display:none!important;}
-  #tab-pairs .pair-mobile-view{display:flex;flex-direction:column;gap:7px;width:100%;}
-  #tab-pairs .mobile-pair-card{display:block;width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:9px 10px;cursor:pointer;}
-  #tab-pairs .mobile-pair-card:hover{background:var(--panel3);}
-  #tab-pairs .mobile-pair-head{display:grid;grid-template-columns:1fr auto;grid-template-areas:"name score" "bias bias";align-items:center;gap:4px 8px;}
-  #tab-pairs .mobile-pair-name{grid-area:name;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;letter-spacing:.25px;white-space:nowrap;}
-  #tab-pairs .mobile-pair-score{grid-area:score;font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:900;text-align:right;}
-  #tab-pairs .mobile-pair-bias{grid-area:bias;display:flex;justify-content:flex-start;align-items:center;min-height:18px;}
-  #tab-pairs .mobile-pair-bias .pair-bias-stack .lean-word{font-size:10px;}
-  #tab-pairs .mobile-pair-bias .pair-bias-stack strong{font-size:13px;}
-  #tab-pairs .mobile-pair-bias .pair-bias-single{font-size:13px;}
-  #tab-pairs .mobile-pair-trend{margin:5px 0 6px;padding-top:5px;border-top:1px solid var(--border);display:flex;justify-content:flex-start;}
-  #tab-pairs .mobile-pair-trend .trend-spark{display:none;}
-  #tab-pairs .mobile-pair-trend .pair-trend-marker{min-width:0!important;gap:5px;font-size:11.5px;}
-  #tab-pairs .mobile-pair-trend .pair-trend-arrow{font-size:12px;}
-  #tab-pairs .mobile-pair-trend .pair-trend-delta{font-size:11.5px;}
-  #tab-pairs .mobile-pair-factors{display:grid;grid-template-columns:1fr 1fr;gap:5px 7px;}
-  #tab-pairs .mobile-factor{min-width:0;padding:6px 7px;border:1px solid var(--border);border-radius:6px;background:var(--panel);display:flex;flex-direction:column;gap:2px;}
-  #tab-pairs .mobile-factor span{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;line-height:1.1;}
-  #tab-pairs .mobile-factor strong{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;line-height:1.15;white-space:normal;word-break:break-word;}
+  /* Pair Ranking is a wide scanner by design: allow clean horizontal scrolling on phones. */
+  #tab-pairs .card{overflow:hidden;}
+  #tab-pairs .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #tab-pairs table{min-width:1040px!important;table-layout:fixed;}
+  #tab-pairs th,#tab-pairs td{white-space:nowrap;}
+  #tab-pairs .pair-table td,#tab-pairs .pair-table th{font-size:13px!important;}
+  #tab-pairs .trend-cell .trend-spark{width:86px;flex-basis:86px;}
+  #tab-pairs .trend-cell svg{width:86px;height:23px;}
 
   /* Macro Regime / Surprise Index */
   #tab-overview .strength-wrap{display:block;}
@@ -982,11 +969,6 @@ body.black .card,body.ash .card{box-shadow:none;}
   .guidance-box{font-size:13px;min-height:135px;}
   .y2-input-grid{grid-template-columns:1fr 1fr;}
   .hist-spread-stats{grid-template-columns:1fr 1fr;}
-  #tab-pairs .mobile-pair-card{padding:8px 9px;}
-  #tab-pairs .mobile-pair-factors{gap:4px 5px;}
-  #tab-pairs .mobile-factor{padding:5px 6px;}
-  #tab-pairs .mobile-factor span{font-size:9px;}
-  #tab-pairs .mobile-factor strong{font-size:11.5px;}
 }
 </style>
 </head>
@@ -2657,7 +2639,6 @@ function y2TrendClass(score){
 
 function indicatorRows(ccy, sector, list){
   var rows="";
-  var mobileRows="";
   for(var i=0;i<list.length;i++){
     var ind=list[i];
     var link = teLink(ccy,ind.name);
@@ -3066,7 +3047,6 @@ function renderPairs(){
   if(pairFilters.indexOf("Extremes")!==-1) pairs=sortExtremePairs(pairs);
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
-  var mobileRows="";
   if(!pairs.length){
     rows='<tr><td colspan="9" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
@@ -3100,21 +3080,6 @@ function renderPairs(){
       '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</span></td>'+
       '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(seasRel))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
       '</tr>';
-    mobileRows += '<div class="mobile-pair-card pair-row" data-pair="'+p.pair+'">'+
-      '<div class="mobile-pair-head">'+
-        '<div class="mobile-pair-name">'+flagPair(p.base,p.quote)+p.pair+'</div>'+
-        '<div class="mobile-pair-score '+pairScoreClass(p.score)+'">'+fmt(p.score)+'</div>'+
-        '<div class="mobile-pair-bias">'+pairBiasMarkup(p.bias)+'</div>'+
-      '</div>'+
-      '<div class="mobile-pair-trend">'+pairTrendMarker(p.pair)+'</div>'+
-      '<div class="mobile-pair-factors">'+
-        '<div class="mobile-factor"><span>Fundamentals</span><strong class="'+fundBiasClass+'">'+fundBias+'</strong></div>'+
-        '<div class="mobile-factor"><span>Yield Bias</span><strong class="'+ybc+'">'+yb+'</strong></div>'+
-        '<div class="mobile-factor"><span>Net Positioning</span><strong class="'+pillarBiasClass(simpleRelBias(cotRel))+'">'+simpleRelBias(cotRel)+'</strong></div>'+
-        '<div class="mobile-factor"><span>Δ WoW</span><strong class="'+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</strong></div>'+
-        '<div class="mobile-factor"><span>Seasonality</span><strong class="'+pillarBiasClass(simpleRelBias(seasRel))+'">'+seasonalityPairText(p.base,p.quote)+'</strong></div>'+
-      '</div>'+
-    '</div>';
   }
   var logRows="";
   for(var j=0;j<Math.min(LOG.length,8);j++){
@@ -3144,9 +3109,8 @@ function renderPairs(){
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;"><div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="pair-desktop-view"><div class="table-scroll"><table class="pair-table"><thead><tr><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Positioning</th><th>Δ WoW</th><th>Seasonality</th></tr></thead>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Positioning</th><th>Δ WoW</th><th>Seasonality</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
-    '<div class="pair-mobile-view">'+mobileRows+'</div></div>'+
     (LOG.length? '<details class="recalc-details"><summary>Recalculation Log <span class="recalc-count">'+LOG.length+'</span></summary><div class="recalc-log-body"><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div></details>':'');
   document.getElementById("tab-pairs").innerHTML=html;
   var btn=document.getElementById("recalcBtn");
