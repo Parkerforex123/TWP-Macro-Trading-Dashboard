@@ -872,6 +872,105 @@ body.black .card,body.ash .card{box-shadow:none;}
 }
 </style>
 
+
+<style id="mobile-surface-v25">
+/* Mobile surface: preserve the desktop information architecture, but reflow rather than crush it. */
+@media (max-width: 700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden;}
+  .shell{display:block;min-width:0;width:100%;}
+  .rail{position:relative;top:auto;width:100%;height:auto;min-height:0;flex:none;padding:9px 10px 8px;gap:8px;border-right:none;border-bottom:1px solid var(--border);}
+  .brand{padding:2px 4px 8px;}
+  .brand-mark{font-size:18px;}
+  .theme-switch{gap:3px;}
+  .tabs{display:flex;flex-direction:row;gap:4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:1px 0 2px;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{flex:0 0 auto;white-space:nowrap;font-size:12px;padding:8px 10px;border-left:0;border-bottom:3px solid transparent;border-radius:6px;}
+  .tab-btn.active{border-left:0;border-bottom:3px solid var(--amber);}
+  .lock-box{margin-top:2px;padding-top:8px;min-height:0;}
+  .lock-box.collapsed{padding-top:0;}
+  .content{width:100%;max-width:none;padding:10px 9px 24px;min-width:0;}
+  .page-head{align-items:flex-start;margin-bottom:8px;gap:6px;}
+  .page-title{font-size:18px;line-height:1.2;}
+  .page-head>div:last-child{width:100%;justify-content:space-between;}
+  .updated{font-size:10.5px;}
+  #manualSaveBtn{padding:6px 9px!important;font-size:10.5px!important;}
+
+  /* Currency Detail */
+  .detail-grid{display:block;}
+  .left-col,.right-col{width:100%;min-width:0;}
+  .left-col{margin-bottom:10px;}
+  .info-trend-row{display:block;}
+  .info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:9px;margin-bottom:8px;}
+  .trend-panel{min-width:0;width:100%;margin-bottom:8px;padding:10px;}
+  .trend-panel svg{max-width:100%;height:auto;}
+  .gauge-num{font-size:27px;margin-top:-43px;}
+  .stat-row{font-size:11.5px;gap:8px;}
+  .stat-row>span:last-child{max-width:58%;text-align:right;}
+  .rate-line{gap:8px;}
+  .guidance-box{font-size:13.5px;min-height:120px;}
+  .seasonality-avg-input{width:72px!important;}
+
+  /* Economic tables: scroll horizontally instead of squeezing text into unreadable columns. */
+  .sector-block{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
+  .sector-block table{min-width:880px!important;table-layout:fixed;}
+  .sector-block table th,.sector-block table td{white-space:nowrap;}
+  .sector-block table th:nth-child(1),.sector-block table td:nth-child(1){width:34%;}
+  .sector-block table th:nth-child(2),.sector-block table td:nth-child(2){width:9%;}
+  .sector-block table th:nth-child(3),.sector-block table td:nth-child(3){width:13%;}
+  .sector-block table th:nth-child(4),.sector-block table td:nth-child(4){width:13%;}
+  .sector-block table th:nth-child(5),.sector-block table td:nth-child(5){width:12%;}
+  .sector-block table th:nth-child(6),.sector-block table td:nth-child(6){width:12%;}
+  .sector-block table th:nth-child(7),.sector-block table td:nth-child(7){width:7%;}
+  .ind-link,.ind-name{font-size:14px;}
+  .ind-num,.ind-txt,.surprise{font-size:13px;}
+  .bias-select{font-size:12.5px;min-width:88px;}
+
+  /* Pair Ranking is a wide scanner by design: allow clean horizontal scrolling on phones. */
+  #tab-pairs .card{overflow:hidden;}
+  #tab-pairs .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #tab-pairs table{min-width:1040px!important;table-layout:fixed;}
+  #tab-pairs th,#tab-pairs td{white-space:nowrap;}
+  #tab-pairs .pair-table td,#tab-pairs .pair-table th{font-size:13px!important;}
+  #tab-pairs .trend-cell .trend-spark{width:86px;flex-basis:86px;}
+  #tab-pairs .trend-cell svg{width:86px;height:23px;}
+
+  /* Macro Regime / Surprise Index */
+  #tab-overview .strength-wrap{display:block;}
+  #tab-overview .strength-card{margin-bottom:8px;overflow-x:auto;}
+  #tab-overview .strength-card>div{min-width:620px;}
+  #tab-raw .surprise-card{overflow-x:auto;}
+  #tab-raw .surprise-card>div{min-width:720px;}
+
+  /* 2Y Yield */
+  .y2-grid{display:block;}
+  .y2-grid>.card{margin-bottom:8px;}
+  .y2-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  .y2-actions{display:flex;flex-wrap:wrap;gap:5px;}
+  .y2-btn{font-size:11px;padding:6px 8px;}
+  .y2-score-table{min-width:1040px!important;}
+  .hist-spread-head{align-items:flex-start;}
+  .hist-spread-controls{width:100%;justify-content:space-between;}
+  .hist-spread-chart{height:270px;}
+  .hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+
+  /* Prevent long labels/URLs/inputs from expanding the viewport. */
+  input,select,textarea,button{max-width:100%;}
+  .ccy-pills{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;padding-bottom:2px;}
+  .ccy-pills::-webkit-scrollbar{display:none;}
+  .ccy-pill{flex:0 0 auto;}
+}
+
+@media (max-width: 420px){
+  .content{padding-left:7px;padding-right:7px;}
+  .info-grid{grid-template-columns:1fr;}
+  .left-col .ccy-big{font-size:23px;}
+  .gauge-num{font-size:25px;}
+  .stat-row{font-size:11px;}
+  .guidance-box{font-size:13px;min-height:135px;}
+  .y2-input-grid{grid-template-columns:1fr 1fr;}
+  .hist-spread-stats{grid-template-columns:1fr 1fr;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
