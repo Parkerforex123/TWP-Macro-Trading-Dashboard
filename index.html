@@ -855,26 +855,32 @@ body.black .card,body.ash .card{box-shadow:none;}
    text wrap onto two lines instead of forcing extra column width, so all
    9 columns including Seasonality sit inside the screen with no swipe. */
 @media(max-width:700px){
-  #tab-pairs .table-scroll{overflow-x:hidden;}
-  #tab-pairs .table-scroll table{min-width:0!important;width:100%;table-layout:fixed;}
-  #tab-pairs th,#tab-pairs td{padding:5px 3px!important;}
-  #tab-pairs th{font-size:8.5px!important;white-space:normal!important;line-height:1.15;letter-spacing:0!important;}
-  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .ccy-name,#tab-pairs .pair-table .pair-bias-single,
+  #tab-pairs .table-scroll{overflow-x:visible;}
+  #tab-pairs .table-scroll table.pair-table{min-width:0!important;width:100%;table-layout:auto;border-collapse:separate;border-spacing:0 10px;}
+  #tab-pairs .pair-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+  #tab-pairs .pair-table tbody{display:block;}
+  #tab-pairs .pair-table tr{display:flex;flex-wrap:wrap;background:var(--panel2,var(--panel3));border:1px solid var(--border);border-radius:10px;padding:10px 12px 6px;margin-bottom:0;}
+  #tab-pairs .pair-table td{display:flex;align-items:center;padding:6px 0!important;border:none!important;box-sizing:border-box;white-space:normal!important;word-break:break-word;}
+  #tab-pairs .pair-table td.ccy-name{order:1;width:58%;font-size:15px!important;font-weight:800;padding-bottom:10px!important;}
+  #tab-pairs .pair-table td.pair-score{order:2;width:42%;justify-content:flex-end;font-size:16px!important;font-weight:800;padding-bottom:10px!important;}
+  #tab-pairs .pair-table td[data-label="Trend"]{order:3;width:100%;border-top:1px solid var(--border)!important;padding-top:10px!important;}
+  #tab-pairs .pair-table td[data-label="Bias"]{order:4;width:100%;}
+  #tab-pairs .pair-table td[data-label="Fundamentals"]{order:5;width:50%;}
+  #tab-pairs .pair-table td[data-label="Yield Bias"]{order:6;width:50%;}
+  #tab-pairs .pair-table td[data-label="Net Positioning"]{order:7;width:50%;}
+  #tab-pairs .pair-table td[data-label="Δ WoW"]{order:8;width:50%;}
+  #tab-pairs .pair-table td[data-label="Seasonality"]{order:9;width:100%;}
+  #tab-pairs .pair-table td[data-label]:not(.ccy-name):not(.pair-score)::before{
+    content:attr(data-label);flex-shrink:0;margin-right:7px;
+    font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);font-weight:700;
+  }
+  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .pair-bias-single,
   #tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,
-  #tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:9.5px!important;}
-  #tab-pairs .pair-bias-single,#tab-pairs .pair-factor,#tab-pairs .chip{white-space:normal!important;line-height:1.15;word-break:break-word;}
-  #tab-pairs .trend-cell .trend-spark,#tab-pairs .trend-cell svg{display:none!important;}
-  #tab-pairs .trend-cell{gap:0;min-height:auto;white-space:normal;}
-  #tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:11%;}
-  #tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:9%;}
-  #tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:9%;}
-  #tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:13%;}
-  #tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:13%;}
-  #tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:13%;}
-  #tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:11%;}
-  #tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
-  #tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:10%;}
+  #tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:11.5px!important;}
+  #tab-pairs .trend-cell .trend-spark,#tab-pairs .trend-cell svg{display:inline-flex!important;}
+  #tab-pairs .trend-cell{gap:8px;min-height:auto;white-space:normal;width:100%;}
 }
+
 </style>
 
 </head>
@@ -1015,7 +1021,7 @@ setInterval(function(){
 "use strict";
 
 var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD","CHF"];
-var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","JPY","CHF"];
+var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","CHF","JPY"];
 var CCY_NAME = {USD:"US Dollar",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc"};
 var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada",CHF:"switzerland"};
 var TE_EXACT = {
@@ -2979,15 +2985,15 @@ function renderPairs(){
     var cotWoWRel=biasVal(cotWoWBase)-biasVal(cotWoWQuote);
     var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
     rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
-      '<td class="ccy-name"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
-      '<td class="mono pair-score '+pairScoreClass(p.score)+'">'+fmt(p.score)+'</td>'+
-      '<td><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span>'+pairTrendMarker(p.pair)+'</div></td>'+
-      '<td>'+pairBiasMarkup(p.bias)+'</td>'+
-      '<td><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
-      '<td><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
-      '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotRel))+'">'+simpleRelBias(cotRel)+'</span></td>'+
-      '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</span></td>'+
-      '<td><span class="pair-factor '+pillarBiasClass(simpleRelBias(seasRel))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
+      '<td class="ccy-name" data-label="Pair"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
+      '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
+      '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span>'+pairTrendMarker(p.pair)+'</div></td>'+
+      '<td data-label="Bias">'+pairBiasMarkup(p.bias)+'</td>'+
+      '<td data-label="Fundamentals"><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
+      '<td data-label="Yield Bias"><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
+      '<td data-label="Net Positioning"><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotRel))+'">'+simpleRelBias(cotRel)+'</span></td>'+
+      '<td data-label="&Delta; WoW"><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</span></td>'+
+      '<td data-label="Seasonality"><span class="pair-factor '+pillarBiasClass(simpleRelBias(seasRel))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
       '</tr>';
   }
   var logRows="";
