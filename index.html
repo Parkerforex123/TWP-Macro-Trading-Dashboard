@@ -2726,8 +2726,7 @@ function renderDetailBody(ccy){
   for(var s=0;s<sectors.length;s++){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
     html += '<div class="sector-block"><div class="sector-title"><span class="label">'+lab+'</span>'+
-      '<span class="'+sectorChipClass(band.label)+'" id="band-'+ccy+'-'+key+'">'+band.label+'</span>'+
-      '<span class="mono" style="color:var(--text-faint);font-size:15px;" id="secraw-'+ccy+'-'+key+'">'+(calc.raw>0?"+":"")+calc.raw+' / '+calc.max+'</span></div>'+
+      '<span class="'+sectorChipClass(band.label)+'" id="band-'+ccy+'-'+key+'">'+band.label+'</span></div>'+
       '<table><thead><tr><th>Indicator</th><th class="weight-col">Weight</th><th>Actual</th><th>Forecast</th><th>Surprise</th><th>Bias</th><th></th></tr></thead>'+
       '<tbody>'+indicatorRows(ccy,key,d[key])+'</tbody></table>'+
       (unlockedLocally? '<button class="add-btn" data-action="add" data-ccy="'+ccy+'" data-sector="'+key+'">+ add indicator</button>':'')+'</div>';
@@ -2820,8 +2819,6 @@ function updateSectorChip(ccy,sector){
   var el=document.getElementById("band-"+ccy+"-"+sector); if(!el) return;
   var f=fundFor(ccy), calc=sector==="growth"?f.g:(sector==="inflation"?f.inf:f.l), band=sectorBand(calc.raw,calc.max);
   el.className=sectorChipClass(band.label); el.textContent=band.label;
-  var rawEl=document.getElementById("secraw-"+ccy+"-"+sector);
-  if(rawEl) rawEl.textContent=(calc.raw>0?"+":"")+calc.raw+" / "+calc.max;
 }
 
 function smoothPath(pts){
