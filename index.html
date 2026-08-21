@@ -279,6 +279,12 @@ th{font-size:12px;}
 #tab-pairs .pair-trend-delta.delta-up{color:var(--bullish-strong);}
 #tab-pairs .pair-trend-delta.delta-down{color:var(--bearish-strong);}
 #tab-pairs .pair-trend-delta.delta-flat{color:var(--text-faint);}
+.pair-score-tooltip{position:fixed;z-index:10000;display:none;pointer-events:none;min-width:118px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.28);font-family:'Inter',system-ui,sans-serif;font-size:11px;line-height:1.35;color:var(--text);white-space:nowrap;}
+.pair-score-tooltip .tt-date{color:var(--text-faint);font-family:'IBM Plex Mono',monospace;font-size:10px;}
+.pair-score-tooltip .tt-score{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:800;margin-top:2px;}
+.pair-score-tooltip .tt-regime{font-weight:700;margin-top:2px;}
+.pair-trend-hit{cursor:crosshair;}
+
 
 /* Cross-theme heatmap tuning: strong enough to read on white, ash and black. */
 #tab-pairs .pair-row.pair-vbull td{background:rgba(45,187,120,.28);color:var(--text);}
@@ -689,7 +695,7 @@ body.ash,html.ash,body.black,html.black{--amber:var(--scanner-orange);}
 #tab-pairs .pair-trend-delta{font-size:12.5px;font-weight:800;}
 #tab-pairs .pair-factor + .pair-factor{margin-left:0;}
 body.black .card,body.ash .card{box-shadow:none;}
-@media(max-width:1100px){#tab-pairs .table-scroll table{min-width:1180px;}}
+
 </style>
 
 <style id="v22-overview-strength">
@@ -883,6 +889,114 @@ body.black .card,body.ash .card{box-shadow:none;}
 
 </style>
 
+
+<style id="v23-mobile-responsive">
+/* Mobile-first cleanup: keep the desktop scanner intact, but turn dense areas into stacked cards. */
+@media(max-width:700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden;}
+  .shell{display:block;min-height:100vh;}
+  .rail{width:100%;height:auto;min-height:0;position:relative;display:block;padding:8px 10px;border-right:none;border-bottom:1px solid var(--border);}
+  .brand{padding:2px 2px 8px;margin-bottom:7px;}
+  .brand-mark{font-size:18px;}
+  .theme-switch{gap:3px;}
+  .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;}
+  .tab-btn{font-size:11.5px;padding:8px 7px;white-space:normal;text-align:center;border-left:none!important;border-radius:6px;background:var(--panel2);}
+  .tab-btn.active{border-bottom:2px solid var(--amber);background:var(--panel3);}
+  .lock-box{margin-top:8px;padding-top:8px;}
+  .content{width:100%;max-width:none;padding:10px 10px 24px;}
+  .page-head{align-items:flex-start;gap:8px;margin-bottom:8px;}
+  .page-title{font-size:19px;line-height:1.1;}
+  .page-sub{font-size:10.5px;line-height:1.3;}
+  .page-head>div:last-child{display:flex!important;align-items:center;gap:6px!important;flex-wrap:wrap;justify-content:flex-end;}
+  #manualSaveBtn{font-size:10.5px!important;padding:5px 8px!important;}
+  .updated{font-size:10px!important;}
+  .card{padding:9px 10px;margin-bottom:7px;}
+  .card h3{font-size:11.5px;margin-bottom:7px;}
+
+  /* Pair ranking: one clean card per pair. */
+  #tab-pairs .table-scroll{overflow:visible;}
+  #tab-pairs .table-scroll table.pair-table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:separate!important;border-spacing:0 8px!important;}
+  #tab-pairs .pair-table thead{display:none!important;}
+  #tab-pairs .pair-table tbody{display:block!important;width:100%;}
+  #tab-pairs .pair-table tr{display:grid!important;grid-template-columns:1fr 1fr;grid-template-areas:
+    "pair score"
+    "trend trend"
+    "bias bias"
+    "fund yield"
+    "cot wow"
+    "season season";
+    width:100%;margin:0 0 8px;padding:10px 10px 8px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);}
+  #tab-pairs .pair-table td{width:auto!important;display:flex!important;min-width:0;align-items:center;padding:5px 0!important;border:0!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere;}
+  #tab-pairs .pair-table td.ccy-name{grid-area:pair;order:initial;font-size:15px!important;padding-bottom:7px!important;}
+  #tab-pairs .pair-table td.pair-score{grid-area:score;order:initial;justify-content:flex-end;font-size:17px!important;padding-bottom:7px!important;}
+  #tab-pairs .pair-table td[data-label="Trend"]{grid-area:trend;order:initial;border-top:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important;padding:8px 0!important;}
+  #tab-pairs .pair-table td[data-label="Bias"]{grid-area:bias;order:initial;padding-top:7px!important;}
+  #tab-pairs .pair-table td[data-label="Fundamentals"]{grid-area:fund;order:initial;padding-right:8px!important;}
+  #tab-pairs .pair-table td[data-label="Yield Bias"]{grid-area:yield;order:initial;padding-left:8px!important;}
+  #tab-pairs .pair-table td[data-label="Net Positioning"]{grid-area:cot;order:initial;padding-right:8px!important;}
+  #tab-pairs .pair-table td[data-label="Δ WoW"]{grid-area:wow;order:initial;padding-left:8px!important;}
+  #tab-pairs .pair-table td[data-label="Seasonality"]{grid-area:season;order:initial;padding-top:7px!important;}
+  #tab-pairs .pair-table td[data-label]:not(.ccy-name):not(.pair-score)::before{content:attr(data-label);display:block;min-width:0;flex:0 0 auto;margin-right:6px;font-size:8.5px;line-height:1.1;letter-spacing:.04em;color:var(--text-faint);font-weight:700;text-transform:uppercase;}
+  #tab-pairs .pair-table td[data-label="Bias"]::before{min-width:36px;}
+  #tab-pairs .pair-table td[data-label="Trend"]::before{min-width:36px;}
+  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .pair-bias-single,#tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,#tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:11.5px!important;line-height:1.2;}
+  #tab-pairs .trend-cell{width:100%!important;gap:8px;min-height:32px;overflow:hidden;}
+  #tab-pairs .trend-cell .trend-spark{width:min(210px,58vw)!important;flex:1 1 auto!important;min-width:0;}
+  #tab-pairs .trend-cell svg{width:100%!important;height:28px!important;display:block!important;}
+  #tab-pairs .pair-trend-marker{min-width:48px!important;flex:0 0 auto;}
+  #tab-pairs .pair-trend-delta{font-size:11.5px!important;}
+  #tab-pairs .pair-selection-label{white-space:normal;line-height:1.2;}
+  #tab-pairs .range-switch{gap:3px;flex-wrap:wrap;}
+  #tab-pairs .range-btn{font-size:10.5px;padding:4px 7px;}
+
+  /* Overview cards/tables stay readable rather than shrinking into collisions. */
+  #tab-overview .strength-wrap{grid-template-columns:1fr;}
+  #tab-overview .strength-summary{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #tab-overview .strength-stat{padding:8px 9px;}
+  #tab-overview .strength-list-head{display:none;}
+  #tab-overview .strength-row{grid-template-columns:22px 58px 1fr 40px;gap:6px;padding:6px 8px;}
+  #tab-overview .strength-bias{grid-column:4;}
+  #tab-overview .strength-spark{grid-column:3;}
+
+  /* Currency-detail grids collapse cleanly. */
+  #tab-detail .detail-grid{grid-template-columns:1fr;gap:10px;}
+  #tab-detail .info-trend-row{display:flex;flex-direction:column;gap:7px;}
+  #tab-detail .trend-panel{min-width:0;width:100%;}
+  #tab-detail .info-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #tab-detail .sector-block{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #tab-detail .sector-block table{min-width:760px;}
+
+  /* Historical 2Y chart: controls wrap; stats stack; chart remains usable. */
+  .hist-spread-head{display:block;}
+  .hist-spread-controls{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px;margin-top:6px;}
+  .hist-spread-select{width:100%;max-width:none;}
+  .hist-range{justify-content:flex-end;flex-wrap:wrap;}
+  .hist-range button{padding:6px 7px;font-size:10.5px;}
+  .hist-spread-chart{height:275px;}
+  .hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  .hist-stat{min-width:0;padding:8px;}
+  .hist-stat .v{font-size:13px;overflow-wrap:anywhere;}
+}
+
+@media(max-width:420px){
+  .tabs{grid-template-columns:1fr 1fr;}
+  .tab-btn{font-size:10.5px;padding:7px 5px;}
+  .page-head{display:block;}
+  .page-head>div:last-child{margin-top:6px;justify-content:space-between;}
+  #tab-pairs .pair-table tr{grid-template-columns:1fr 1fr;padding-left:8px;padding-right:8px;}
+  #tab-pairs .trend-cell .trend-spark{width:min(185px,54vw)!important;}
+  #tab-pairs .pair-table td[data-label="Fundamentals"],#tab-pairs .pair-table td[data-label="Yield Bias"],#tab-pairs .pair-table td[data-label="Net Positioning"],#tab-pairs .pair-table td[data-label="Δ WoW"]{min-width:0;}
+  #tab-overview .strength-summary{grid-template-columns:1fr 1fr;}
+  #tab-detail .info-grid{grid-template-columns:1fr 1fr;}
+  .hist-spread-controls{grid-template-columns:1fr;}
+  .hist-range{justify-content:flex-start;}
+}
+
+@media(min-width:701px) and (max-width:1100px){
+  #tab-pairs .table-scroll{overflow-x:auto;}
+  #tab-pairs .table-scroll table{min-width:900px;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -2624,9 +2738,14 @@ function renderDetailTrendPanel(ccy, liveScore){
     var baseline=h-pad;
     var areaPts=linePts+" "+xy[xy.length-1][0].toFixed(1)+","+baseline+" "+xy[0][0].toFixed(1)+","+baseline;
     var fillVar = t.dir==="up"?"var(--bullish-strong)":(t.dir==="down"?"var(--bearish-strong)":"var(--text-faint)");
-    spark='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'">'+
+    var hitPts=series.map(function(s,i){
+      var p=xy[i];
+      var label=formatShortDate(s.date)+" · Score "+fmt(s.val)+" · "+bandLabel(s.val);
+      return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="7" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+    }).join("");
+    spark='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="overflow:visible;">'+
       '<polygon points="'+areaPts+'" fill="'+fillVar+'" fill-opacity="0.16" stroke="none"/>'+
-      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="1.7" points="'+linePts+'"/></svg>';
+      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="1.7" points="'+linePts+'"/>'+hitPts+'</svg>';
     var midIdx=Math.floor((series.length-1)/2);
     dateLabels='<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-faint);margin-top:2px;width:'+w+'px;">'+
       '<span>'+formatShortDate(series[0].date)+'</span>'+
@@ -2897,13 +3016,137 @@ function sparkline(pair){
   var gradId="spark-"+pair.replace(/[^A-Za-z0-9]/g,"");
   var linePath=smoothPath(pts), baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
-  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;">'+
+  var hitPts=days.map(function(dt,i){
+    var v=Number(vals[i]);
+    var label=String(dt)+" · Score "+fmt(v)+" · "+bandLabel(v);
+    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+  }).join("");
+  return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
       '<stop offset="0%" stop-color="'+col+'" stop-opacity="0.3"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
     '</linearGradient></defs>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
-    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><rect class="pair-trend-hover-band" x="'+(pts[0][0]-4).toFixed(1)+'" y="0" width="8" height="'+h+'" rx="2" fill="var(--amber)" opacity="0.09"/><line class="pair-trend-hover-line" x1="'+pts[0][0].toFixed(1)+'" y1="2" x2="'+pts[0][0].toFixed(1)+'" y2="'+(h-2)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 2" opacity="0.85"/><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="2.8" fill="var(--panel)" stroke="'+col+'" stroke-width="1.3"/></g>'+
+    hitPts+
+    '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-trend-hit"/></svg>';
 }
+var pairScoreTooltip=null;
+function ensurePairScoreTooltip(){
+  if(pairScoreTooltip) return pairScoreTooltip;
+  pairScoreTooltip=document.createElement('div');
+  pairScoreTooltip.className='pair-score-tooltip';
+  document.body.appendChild(pairScoreTooltip);
+  return pairScoreTooltip;
+}
+function hidePairScoreTooltip(){
+  if(pairScoreTooltip) pairScoreTooltip.style.display='none';
+}
+function showPairScoreTooltip(svg, idx, clientX, clientY){
+  var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
+  var pair=svg.getAttribute('data-pair')||'';
+  var day=days[idx];
+  if(!day || !DAILY[day] || DAILY[day][pair]===undefined) return;
+  var score=Number(DAILY[day][pair]);
+  var tt=ensurePairScoreTooltip();
+  var regime=bandLabel(score);
+  tt.innerHTML='<div class="tt-date">'+esc(day)+' · '+esc(pair)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(regime)+'</div>';
+  tt.style.display='block';
+  var rect=tt.getBoundingClientRect();
+  var x=Math.min(clientX+12, window.innerWidth-rect.width-8);
+  var y=Math.min(clientY+12, window.innerHeight-rect.height-8);
+  tt.style.left=Math.max(8,x)+'px';
+  tt.style.top=Math.max(8,y)+'px';
+}
+function updatePairTrendCrosshair(svg, idx){
+  var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
+  if(!days.length) return;
+  idx=Math.max(0,Math.min(days.length-1,idx));
+  var ptsLine=svg.querySelector('.pair-trend-hover-line');
+  var band=svg.querySelector('.pair-trend-hover-band');
+  var dot=svg.querySelector('.pair-trend-hover-dot');
+  var cross=svg.querySelector('.pair-trend-crosshair');
+  if(!ptsLine||!band||!dot||!cross) return;
+  var r=svg.getBoundingClientRect();
+  var vb=svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal : {width:svg.clientWidth,height:svg.clientHeight};
+  var vbW=vb.width||110;
+  var pad=svg.classList.contains('pair-big-trend')?30:3;
+  var x=pad+(idx/(days.length-1))*(vbW-2*pad);
+  // Use the actual point's rendered screen position so the guide follows the plotted curve precisely.
+  var circles=svg.querySelectorAll('circle');
+  var target=null;
+  for(var i=0;i<circles.length;i++){
+    if(circles[i].classList.contains('pair-trend-hover-dot')) continue;
+    target=circles[i];
+  }
+  // Main hit circles are ordered by day; use the indexed circle when available.
+  var hit=svg.querySelectorAll('circle:not(.pair-trend-hover-dot)');
+  if(hit[idx]){
+    x=parseFloat(hit[idx].getAttribute('cx'))||x;
+    var y=parseFloat(hit[idx].getAttribute('cy'))||0;
+    ptsLine.setAttribute('x1',x.toFixed(1)); ptsLine.setAttribute('x2',x.toFixed(1));
+    dot.setAttribute('cx',x.toFixed(1)); dot.setAttribute('cy',y.toFixed(1));
+  } else {
+    ptsLine.setAttribute('x1',x.toFixed(1)); ptsLine.setAttribute('x2',x.toFixed(1));
+    dot.setAttribute('cx',x.toFixed(1));
+  }
+  var bandWidth=svg.classList.contains('pair-big-trend')?18:8;
+  band.setAttribute('x',(x-bandWidth/2).toFixed(1));
+  cross.setAttribute('opacity','1');
+}
+function hidePairTrendCrosshair(svg){
+  var cross=svg.querySelector('.pair-trend-crosshair');
+  if(cross) cross.setAttribute('opacity','0');
+}
+function bindPairTrendHover(){
+  var svgs=document.querySelectorAll('#tab-pairs .pair-trend-spark');
+  for(var i=0;i<svgs.length;i++){
+    var svg=svgs[i];
+    if(svg.__pairHoverBound) continue;
+    svg.__pairHoverBound=true;
+    var move=function(ev){
+      var el=ev.currentTarget;
+      var days=(el.getAttribute('data-days')||'').split(',').filter(Boolean);
+      if(days.length<2) return;
+      var r=el.getBoundingClientRect();
+      var x=ev.clientX-r.left;
+      var ratio=Math.max(0,Math.min(1,x/r.width));
+      var idx=Math.round(ratio*(days.length-1));
+      updatePairTrendCrosshair(el,idx);
+      showPairScoreTooltip(el,idx,ev.clientX,ev.clientY);
+    };
+    var end=function(ev){ hidePairScoreTooltip(); hidePairTrendCrosshair(ev.currentTarget); };
+    svg.addEventListener('pointermove',move);
+    svg.addEventListener('pointerenter',move);
+    svg.addEventListener('pointerleave',end);
+    svg.addEventListener('pointerdown',move);
+  }
+}
+function bindBigPairTrendHover(){
+  var svgs=document.querySelectorAll('#tab-pairs .pair-big-trend');
+  for(var i=0;i<svgs.length;i++){
+    var svg=svgs[i];
+    if(svg.__pairBigHoverBound) continue;
+    svg.__pairBigHoverBound=true;
+    var move=function(ev){
+      var el=ev.currentTarget;
+      var days=(el.getAttribute('data-days')||'').split(',').filter(Boolean);
+      if(days.length<2) return;
+      var r=el.getBoundingClientRect();
+      var x=ev.clientX-r.left;
+      var ratio=Math.max(0,Math.min(1,x/r.width));
+      var idx=Math.round(ratio*(days.length-1));
+      updatePairTrendCrosshair(el,idx);
+      showPairScoreTooltip(el,idx,ev.clientX,ev.clientY);
+    };
+    var end=function(ev){ hidePairScoreTooltip(); hidePairTrendCrosshair(ev.currentTarget); };
+    svg.addEventListener('pointermove',move);
+    svg.addEventListener('pointerenter',move);
+    svg.addEventListener('pointerleave',end);
+    svg.addEventListener('pointerdown',move);
+  }
+}
+
 function bigChart(pair, rangeSel){
   var w=680,h=170,pad=30;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
@@ -2921,25 +3164,36 @@ function bigChart(pair, rangeSel){
   var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
   var colStrong = vals[vals.length-1]>=vals[0] ? "var(--bullish-strong)" : "var(--bearish-strong)";
   var labels="";
-  for(var i=0;i<days.length;i++){
-    if(days.length>8 && i%Math.ceil(days.length/8)!==0 && i!==days.length-1) continue;
-    var x=pad+(i/(vals.length-1))*(w-2*pad);
-    labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="10" fill="var(--text-faint)" text-anchor="middle" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
+  var mobileView = (typeof window !== "undefined" && window.innerWidth <= 700);
+  var labelTarget = mobileView ? 4 : 8;
+  var labelCount = Math.min(days.length, labelTarget);
+  var labelIdx = [];
+  if(labelCount===1){ labelIdx=[0]; }
+  else { for(var li=0;li<labelCount;li++) labelIdx.push(Math.round(li*(days.length-1)/(labelCount-1))); }
+  for(var lj=0;lj<labelIdx.length;lj++){
+    var i=labelIdx[lj], x=pad+(i/(vals.length-1))*(w-2*pad);
+    var anchor = i===0 ? "start" : (i===days.length-1 ? "end" : "middle");
+    labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
   var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
   var linePath=smoothPath(pts);
   var baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
-  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;">'+
+  var hitPts=days.map(function(dt,i){
+    var v=Number(vals[i]);
+    var label=String(dt)+' · Score '+fmt(v)+' · '+bandLabel(v);
+    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="9" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+  }).join('');
+  return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
       '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
       '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
     '</linearGradient></defs>'+
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
-    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
-    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+labels+
-    '<text x="'+pad+'" y="16" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+max.toFixed(0)+'</text>'+
-    '<text x="'+pad+'" y="'+(h-pad-2)+'" font-size="11" fill="var(--text-dim)" font-family="IBM Plex Mono, monospace">'+min.toFixed(0)+'</text>'+
+    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none" pointer-events="none"/>'+
+    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><rect class="pair-trend-hover-band" x="'+(pts[0][0]-9).toFixed(1)+'" y="'+(pad-2)+'" width="18" height="'+(h-pad+2)+'" rx="3" fill="var(--amber)" opacity="0.08"/><line class="pair-trend-hover-line" x1="'+pts[0][0].toFixed(1)+'" y1="'+pad+'" x2="'+pts[0][0].toFixed(1)+'" y2="'+baseY+'" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.9"/><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="1.8"/></g>'+labels+hitPts+
+    '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-big-trend-hit pair-trend-hit"/>'+
     '</svg>';
 }
 function pairPassesFilter(bias){
@@ -3025,6 +3279,8 @@ function renderPairs(){
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     (LOG.length? '<details class="recalc-details"><summary>Recalculation Log <span class="recalc-count">'+LOG.length+'</span></summary><div class="recalc-log-body"><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div></details>':'');
   document.getElementById("tab-pairs").innerHTML=html;
+  bindPairTrendHover();
+  bindBigPairTrendHover();
   var btn=document.getElementById("recalcBtn");
   if(btn){ btn.onclick=async function(){
     var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
