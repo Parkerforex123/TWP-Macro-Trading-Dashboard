@@ -1684,21 +1684,16 @@ function pairYieldCalc(base, quote){
   if(!currentDate && (!all.length || Math.abs(all[all.length-1]-current)>1e-12)) all.push(current);
   if(!all.length) return {pair:base+quote,base:base,quote:quote,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null]};
 
-  // 21D SMA / 60D avg are true calendar-day windows now (same fix as the currency-level
-  // engine), with the same minimum-data floor (10 pts / 25 pts) so a sparse window
-  // doesn't quietly produce a shaky average.
-  var smaWindowStart=refDateP?y2AddDays(refDateP,-20):null;
-  var avgWindowStart=refDateP?y2AddDays(refDateP,-59):null;
-  function pairValsInWindow(startDate,endDate){
-    if(!endDate) return [];
-    return combinedRows.filter(function(r){
-      return (!startDate||r.date>=startDate) && r.date<=endDate && Number.isFinite(r.spread);
-    }).map(function(r){return r.spread;});
-  }
-  var smaVals=pairValsInWindow(smaWindowStart,refDateP);
-  var avgVals=pairValsInWindow(avgWindowStart,refDateP);
-  var sma21=smaVals.length>=10?smaVals.reduce(function(a,b){return a+b;},0)/smaVals.length:null;
-  var avg60=avgVals.length>=25?avgVals.reduce(function(a,b){return a+b;},0)/avgVals.length:null;
+  // 21D SMA / 60D avg are the last 21 / 60 saved observations (trading-day count, not
+  // a calendar-day span). This matches how TradingView's SMA works and what "21D SMA"
+  // means to a trader for a market that doesn't trade weekends — a calendar-day span
+  // always contains fewer trading days than its number, which was silently shrinking
+  // the window. Requires a full 21 / 60 saved points; short of that, no reading yet.
+  var upToRefP=combinedRows.filter(function(r){return r.date<=refDateP && Number.isFinite(r.spread);});
+  var smaVals=upToRefP.slice(-21).map(function(r){return r.spread;});
+  var avgVals=upToRefP.slice(-60).map(function(r){return r.spread;});
+  var sma21=smaVals.length>=21?smaVals.reduce(function(a,b){return a+b;},0)/smaVals.length:null;
+  var avg60=avgVals.length>=60?avgVals.reduce(function(a,b){return a+b;},0)/avgVals.length:null;
 
   // Weekly/monthly changes use stored observations before the current observation,
   // matching the existing yield-engine convention. Lookback is date-anchored (see
@@ -1719,11 +1714,10 @@ function pairYieldCalc(base, quote){
   var c4=avg60==null?null:y2ScoreBand(current-avg60,[-30,-10,10,30],1);
   var prevSma=null;
   if(monthTargetP){
-    var smaWindowStartAtMonthAgo=y2AddDays(monthTargetP,-20);
     var valsAsOfMonthAgo=histSpreadRows.filter(function(r){
-      return r.date>=smaWindowStartAtMonthAgo && r.date<=monthTargetP && Number.isFinite(r.spread);
-    }).map(function(r){return r.spread;});
-    if(valsAsOfMonthAgo.length>=10){
+      return r.date<=monthTargetP && Number.isFinite(r.spread);
+    }).map(function(r){return r.spread;}).slice(-21);
+    if(valsAsOfMonthAgo.length>=21){
       prevSma=valsAsOfMonthAgo.reduce(function(a,b){return a+b;},0)/valsAsOfMonthAgo.length;
     }
   }
@@ -2052,20 +2046,20 @@ function y2SpreadOnOrBefore(sortedRows, targetDate){
   }
   return null;
 }
-// 21-period SMA "as of" a given calendar date: same calendar-window + minimum-data-floor
-// definition as the live 21D SMA, just anchored at an earlier reference date. Keeps the
-// acceleration component consistent with what the main SMA actually means.
+// 21-period SMA "as of" a given calendar date: last N saved points on-or-before that
+// date (trading-day count, matching the live SMA definition). Keeps the acceleration
+// component consistent with what the main SMA actually means.
 function y2SmaAsOfDate(sortedRows, ccy, targetDate, windowDays, minPoints){
   if(!targetDate) return null;
   minPoints=minPoints==null?windowDays:minPoints;
-  var windowStart=y2AddDays(targetDate,-(windowDays-1));
   var vals=[];
   for(var i=0;i<sortedRows.length;i++){
-    if(sortedRows[i].date>=windowStart && sortedRows[i].date<=targetDate){
+    if(sortedRows[i].date<=targetDate){
       var v=y2Num(sortedRows[i][ccy]);
       if(v!=null) vals.push(v);
     }
   }
+  vals=vals.slice(-windowDays);
   if(vals.length<minPoints) return null;
   return vals.reduce(function(a,b){return a+b;},0)/vals.length;
 }
@@ -2101,25 +2095,17 @@ function y2Calc(ccy){
   }
 
   var all=combined.map(function(r){return y2Num(r[ccy]);}).filter(function(x){return x!=null;});
-  // 21D SMA / 60D avg are now true calendar-day windows (last 21 / 60 calendar days,
-  // inclusive), not "last 21 / 60 saved points regardless of how many real days that
-  // spans." A minimum point-count floor still applies so a window with only a couple
-  // of saved closes in it (e.g. after a long gap) doesn't masquerade as a full average:
-  // the 21D window needs at least 10 saved closes in it, the 60D window at least 25 —
-  // both roughly two-thirds of what daily updating would normally produce in that span.
+  // 21D SMA / 60D avg are the last 21 / 60 saved observations (trading-day count, not
+  // a calendar-day span). This matches how TradingView's SMA works and what "21D SMA"
+  // means to a trader for a market that doesn't trade weekends — a calendar-day span
+  // always contains fewer trading days than its number, which was silently shrinking
+  // the window. Requires a full 21 / 60 saved points; short of that, no reading yet.
   var refDate=currentDate||(hist.length?hist[hist.length-1].date:"");
-  var smaWindowStart=refDate?y2AddDays(refDate,-20):null;
-  var avgWindowStart=refDate?y2AddDays(refDate,-59):null;
-  function y2ValsInWindow(startDate,endDate){
-    if(!endDate) return [];
-    return combined.filter(function(r){
-      return (!startDate||r.date>=startDate) && r.date<=endDate && y2Num(r[ccy])!=null;
-    }).map(function(r){return y2Num(r[ccy]);});
-  }
-  var smaVals=y2ValsInWindow(smaWindowStart,refDate);
-  var avgVals=y2ValsInWindow(avgWindowStart,refDate);
-  var sma21=smaVals.length>=10?smaVals.reduce(function(a,b){return a+b;},0)/smaVals.length:null;
-  var avg60=avgVals.length>=25?avgVals.reduce(function(a,b){return a+b;},0)/avgVals.length:null;
+  var upToRef=combined.filter(function(r){return r.date<=refDate && y2Num(r[ccy])!=null;});
+  var smaVals=upToRef.slice(-21).map(function(r){return y2Num(r[ccy]);});
+  var avgVals=upToRef.slice(-60).map(function(r){return y2Num(r[ccy]);});
+  var sma21=smaVals.length>=21?smaVals.reduce(function(a,b){return a+b;},0)/smaVals.length:null;
+  var avg60=avgVals.length>=60?avgVals.reduce(function(a,b){return a+b;},0)/avgVals.length:null;
 
   // Weekly/monthly changes deliberately use the stored historical observations
   // that precede the current observation, so the current close is never counted twice.
@@ -2144,7 +2130,7 @@ function y2Calc(ccy){
   var c3=month==null?null:y2ScoreBand(month*100,[ -30,-10,10,30 ],2);
   var c4=avg60==null?null:y2ScoreBand((cur-avg60)*100,[ -30,-10,10,30 ],1);
   var todayDist=sma21==null?null:(cur-sma21)*100;
-  var prevSma=y2SmaAsOfDate(hist,ccy,monthTarget,21,10);
+  var prevSma=y2SmaAsOfDate(hist,ccy,monthTarget,21,21);
   var prevDist=(prevSma==null||prev21==null)?null:(prev21-prevSma)*100;
   var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
   var c5=distChange==null?null:y2ScoreBand(distChange,[ -12,-3,3,12 ],2);
