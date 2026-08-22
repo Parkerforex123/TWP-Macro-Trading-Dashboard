@@ -799,7 +799,7 @@ body.black .card,body.ash .card{box-shadow:none;}
     "rank ccy score"
     "bar bar bar"
     "bias bias count"
-    "seas seas seas";
+    "yield yield yield";
   column-gap:8px;row-gap:5px;
   padding:10px 10px 9px;
 }
@@ -809,19 +809,21 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-raw .surprise-bar{grid-area:bar;margin:2px 0;}
 #tab-raw .surprise-bias{grid-area:bias;font-size:12px;}
 #tab-raw .surprise-count{grid-area:count;grid-column:auto;justify-self:end;text-align:right;white-space:normal;font-size:10px;}
-#tab-raw .surprise-seasonality{grid-area:seas;justify-content:space-between!important;width:100%;}
+#tab-raw .surprise-yield-context{font-size:11px;font-weight:800;white-space:nowrap;}
+#tab-raw .surprise-yield-context.surprise-pos{color:var(--bullish-strong);}
+#tab-raw .surprise-yield-context.surprise-neg{color:var(--bearish-strong);}
+#tab-raw .surprise-yield-context.surprise-neu{color:var(--text-dim);}
+#tab-raw .surprise-yield-context{grid-area:yield;justify-content:flex-start;width:100%;}
 }
 </style>
 
 
 <style id="v23-live-confluence">
 @media(min-width:761px){
-#tab-raw .surprise-list-head,#tab-raw .surprise-row{grid-template-columns:28px 72px 1fr 64px 92px 158px 140px !important;}
-#tab-raw .surprise-seasonality{display:flex;align-items:center;justify-content:flex-start;}
+#tab-raw .surprise-list-head,#tab-raw .surprise-row{grid-template-columns:28px 72px 1fr 64px 92px 158px 140px 118px !important;}
+#tab-raw .surprise-yield-context{display:flex;align-items:center;justify-content:flex-start;}
 }
 #tab-raw .surprise-row select{font-size:12px;font-weight:800;padding:4px 6px;min-width:100px;}
-#tab-raw .surprise-seasonality .seasonality-avg-input{width:58px;}
-#tab-raw .surprise-seasonality .seasonality-derived{white-space:nowrap;}
 </style>
 
 <style id="v24-fixes">
@@ -882,7 +884,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 .ls-pair{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
 .ls-tag{font-size:9.5px;font-weight:800;letter-spacing:.4px;color:var(--text-faint);background:var(--panel3);border:1px solid var(--border);border-radius:4px;padding:2px 4px;line-height:1;}
 .ls-sep{color:var(--text-faint);}
-.surprise-seasonality{display:flex;align-items:center;gap:7px;}
 #tab-detail .seasonality-select{min-width:92px;}
 #tab-detail .seasonality-select,
 #tab-detail .cot-change-item select,
@@ -2597,31 +2598,25 @@ function surpriseRatio(actual,forecast){
 function surpriseDataForCurrency(ccy){
   var d=DATA[ccy],rows=[],cats=["growth","inflation","labour"];
   if(!d)return {avg:0,strongBeats:0,strongMisses:0,total:0,rows:[]};
+  var weightedSum=0,weightTotal=0;
   for(var ci=0;ci<cats.length;ci++){
     var cat=cats[ci],list=Array.isArray(d[cat])?d[cat]:[];
     for(var i=0;i<list.length;i++){
       var r=list[i],sr=surpriseRatio(r.actual,r.forecast),estimated=false;
       if(sr==null){
-        // No consensus forecast to compare against (e.g. Services Inflation, Negotiated
-        // Wages, Terms of Trade). Rather than drop the release from the Surprise Index
-        // entirely, fall back to the manually-set Bullish/Bearish bias as a moderate
-        // stand-in signal — same logic the user already applies by eye (actual vs. the
-        // last print) when picking that bias in the first place. Kept deliberately mild
-        // (10, not 15+) so it reads as "Beating/Missing" rather than "Strongly" — a
-        // manual call is a real signal but a softer one than a measured numeric beat.
-        if(r.bias==="Bullish") sr=10;
-        else if(r.bias==="Bearish") sr=-10;
-        else continue; // Neutral with no forecast genuinely carries no signal either way
+        if(r.bias==="Bullish") sr=10; else if(r.bias==="Bearish") sr=-10; else continue;
         estimated=true;
       }
-      rows.push({ccy:ccy,category:cat,name:r.name||"Release",actual:r.actual,forecast:r.forecast,ratio:sr,estimated:estimated});
+      var w=Number(r.weight); if(!Number.isFinite(w)||w<=0) w=1;
+      rows.push({ccy:ccy,category:cat,name:r.name||"Release",actual:r.actual,forecast:r.forecast,ratio:sr,weight:w,estimated:estimated});
+      weightedSum += sr*w; weightTotal += w;
     }
   }
-  var total=rows.length,sum=rows.reduce(function(a,r){return a+r.ratio;},0);
-  var strongBeats=rows.filter(function(r){return r.ratio>=5;}).length;
-  var strongMisses=rows.filter(function(r){return r.ratio<=-5;}).length;
-  rows.sort(function(a,b){return Math.abs(b.ratio)-Math.abs(a.ratio);});
-  return {avg:total?sum/total:0,strongBeats:strongBeats,strongMisses:strongMisses,total:total,rows:rows};
+  var avg=weightTotal?weightedSum/weightTotal:0;
+  var strongBeats=rows.filter(function(r){return r.ratio>=15;}).length;
+  var strongMisses=rows.filter(function(r){return r.ratio<=-15;}).length;
+  rows.sort(function(a,b){return Math.abs(b.ratio*b.weight)-Math.abs(a.ratio*a.weight);});
+  return {avg:avg,strongBeats:strongBeats,strongMisses:strongMisses,total:rows.length,rows:rows};
 }
 function surpriseLabel(score){
   if(score>=15)return "Strongly Beating";
@@ -2702,6 +2697,9 @@ function renderRaw(){
   var flags={USD:"🇺🇸",EUR:"🇪🇺",GBP:"🇬🇧",AUD:"🇦🇺",NZD:"🇳🇿",CAD:"🇨🇦",JPY:"🇯🇵",CHF:"🇨🇭"};
   var left=stats.map(function(x,i){
     var sc=Math.round(x.data.avg*10)/10,label=surpriseLabel(sc),cls=surpriseClass(label);
+    var y2=y2Calc(x.ccy).score;
+    var y2Label=y2==null?"No yield read":(sc>0 && y2>=2?"2Y supports surprise":sc<0 && y2<=-2?"2Y supports surprise":sc>0 && y2<=-2?"2Y diverges":sc<0 && y2>=2?"2Y diverges":"2Y neutral");
+    var combinedClass=(sc!==0 && y2!=null && ((sc>0&&y2>0)||(sc<0&&y2<0)))?"surprise-pos":(sc!==0 && y2!=null && ((sc>0&&y2<0)||(sc<0&&y2>0)))?"surprise-neg":"surprise-neu";
     var width=Math.min(100,Math.abs(sc)*2.5),leftPos=sc>=0?"50%":(50-width/2)+"%";
     return '<div class="surprise-row'+(expandedSurpriseCcy===x.ccy?' active':'')+'" data-goto="'+x.ccy+'" title="Click to see this currency\'s surprise index history">'+
       '<div class="surprise-rank">'+(i+1)+'</div>'+
@@ -2710,9 +2708,8 @@ function renderRaw(){
       '<div class="surprise-score '+cls+'">'+(sc>0?"+":"")+sc.toFixed(1)+surpriseTrendMarker(x.ccy,sc)+'</div>'+
       '<div class="surprise-bias '+cls+'">'+label+'</div>'+
       '<div class="surprise-count">'+x.data.strongBeats+' strong beat · '+x.data.strongMisses+' strong miss</div>'+
-      '<div class="surprise-seasonality">'+
-        ''+
-      '</div></div>';
+      '<div class="surprise-yield-context '+combinedClass+'" title="Diagnostic only: compares Surprise Index direction with the currency\'s own-history 2Y yield score">'+y2Label+(y2==null?"":" "+(y2>0?"+":"")+y2.toFixed(1))+'</div>'+
+      '</div>';
   }).join("");
   var top=[];
   stats.forEach(function(x){x.data.rows.slice(0,4).forEach(function(r){top.push(r);});});
@@ -2743,7 +2740,7 @@ function renderRaw(){
       '<div class="surprise-stat"><div class="surprise-k">Strong misses</div><div class="surprise-v surprise-neg">'+strongMisses+'</div></div>'+
       '<div class="surprise-stat"><div class="surprise-k">Best surprise</div><div class="surprise-v surprise-pos">'+best.ccy+' '+(best.data.avg>0?"+":"")+best.data.avg.toFixed(1)+'</div></div>'+
       '<div class="surprise-stat"><div class="surprise-k">Worst surprise</div><div class="surprise-v surprise-neg">'+worst.ccy+' '+(worst.data.avg>0?"+":"")+worst.data.avg.toFixed(1)+'</div></div>'+
-    '</div><div class="surprise-note">Forecast Surprise Monitor — display-only. It does not alter the 70/15/10/5 trading score.</div>'+
+    '</div><div class="surprise-note">Weighted Forecast Surprise Monitor — growth, inflation and labour only. 2Y context is diagnostic and does not change the core 70/15/10/5 model. Each release is weighted by its existing indicator weight; it does not alter the 70/15/10/5 trading score.</div>'+
     '<div class="surprise-list-head"><div>#</div><div>Currency</div><div>Surprise Strength</div><div>Index</div><div>State</div><div>Releases</div></div>'+
     '<div class="surprise-list">'+left+'</div></div>'+
     '<div class="surprise-card"><div class="surprise-card-title">Largest Forecast Surprises</div><div class="surprise-release-list">'+right+'</div></div></div>';
