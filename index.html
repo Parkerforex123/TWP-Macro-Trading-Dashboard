@@ -201,7 +201,14 @@ body.editing .weight-col{display:table-cell;}
 .pair-table .mono,.pair-table .ccy-name,.pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-size:13.5px!important;font-weight:800!important;}
 .pair-table .trend-cell{min-height:26px!important;}
 .pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-family:'Space Grotesk',sans-serif!important;text-transform:uppercase!important;letter-spacing:.3px;}
-.pair-table th:nth-child(9),.pair-table td:nth-child(9){text-align:center!important;}
+.pair-table th:nth-child(10),.pair-table td:nth-child(10){text-align:center!important;}
+/* 1D Δ column -- its own cell, sized to match the Score column font so it
+   never reads as a second, smaller number crammed onto the pair name line. */
+.pair-table .day-delta{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
+.pair-table .day-delta-up{color:var(--bullish-strong)!important;}
+.pair-table .day-delta-down{color:var(--bearish-strong)!important;}
+.pair-table .day-delta-flat{color:var(--text-faint)!important;}
+#tab-pairs .day-delta-cell{text-align:center;}
 
 .sector-block{margin-bottom:10px;}
 .sector-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
@@ -247,17 +254,16 @@ th{font-size:12px;}
 
 #tab-pairs table{table-layout:fixed;}
 #tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:8%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:19%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:13%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:13%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:7%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:11%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:7%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:6%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:5%;}
-#tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){width:7%;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
+#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:12%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
+#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;}
 #tab-pairs .yield-bias-chip{display:inline-flex;align-items:center;justify-content:center;min-width:84px;border-radius:5px;padding:5px 8px;white-space:nowrap;}
 #tab-pairs .trend-cell{display:flex;align-items:center;gap:8px;min-height:34px;white-space:nowrap;}
 #tab-pairs .trend-cell .trend-spark{width:92px;flex:0 0 92px;display:flex;align-items:center;}
@@ -332,6 +338,11 @@ th{font-size:12px;}
 .range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .range-btn:hover{color:var(--text);}
 .range-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+.srange-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.srange-btn:hover{color:var(--text);}
+.srange-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+.surprise-row{cursor:pointer;}
+.surprise-row.active{background:var(--panel2);}
 
 ::-webkit-scrollbar{width:10px;height:10px;}
 ::-webkit-scrollbar-thumb{background:var(--panel3);border-radius:6px;}
@@ -612,21 +623,22 @@ td{padding:4px 7px;}
 #tab-pairs .pair-trend-marker{min-width:50px!important;gap:4px;}
 #tab-pairs .pair-trend-delta{font-size:13px;font-weight:800;}
 #tab-pairs .pair-trend-arrow{font-size:12px;}
-#tab-pairs .pair-row td:nth-child(2){font-weight:800;font-family:'IBM Plex Mono',monospace;}
-#tab-pairs .pair-row td:nth-child(2) .mono{color:var(--amber)!important;}
+#tab-pairs .pair-row td:nth-child(3){font-weight:800;font-family:'IBM Plex Mono',monospace;}
+#tab-pairs .pair-row td:nth-child(3) .mono{color:var(--amber)!important;}
 #tab-pairs .range-btn{background:rgba(185,78,18,.10);border:1px solid rgba(185,78,18,.55);color:#e07a3f;padding:5px 9px;font-size:11.5px;border-radius:4px;}
 #tab-pairs .range-btn.active{background:rgba(185,78,18,.18);border-color:#b94e12;color:#f08b50;}
 #tab-pairs table{table-layout:fixed;min-width:1080px!important;}
 #tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:12%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:20%;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
 #tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:12%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:12%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:7%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:12%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:9%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:9%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
+#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;}
 /* tighter non-pair sections */
 .sector-block{margin-bottom:7px;}
 .sector-title{margin-bottom:3px;}
@@ -643,15 +655,16 @@ td{padding:4px 7px;}
 .recalc-details summary{padding:7px 10px;font-size:12px;}
 </style>
 <style id="v19-pair-widths">
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:13%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:20%;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
 #tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:12%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:12%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:7%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:12%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:9%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:9%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
+#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;}
 </style><style id="v19-filter-counts">
 #tab-pairs .pair-counts{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
 #tab-pairs .range-switch{gap:4px;flex-wrap:wrap;}
@@ -663,19 +676,20 @@ td{padding:4px 7px;}
 body.ash,html.ash,body.black,html.black{--amber:var(--scanner-orange);}
 #tab-pairs .pair-row td{padding-left:6px;padding-right:6px;padding-top:5px;padding-bottom:5px;}
 #tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:12%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:7%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:16%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:10%;text-align:left;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:12%;text-align:left;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:10%;text-align:left;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:12%;text-align:left;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:8%;text-align:left;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:13%;text-align:left;}
+#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;text-align:center;}
+#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
+#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
+#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:12%;}
+#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;text-align:left;}
+#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;text-align:left;}
+#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;text-align:left;}
+#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;text-align:left;}
+#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;text-align:left;}
+#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;text-align:left;}
 /* Seasonality (and its neighbor) get a wrap safety net so the header text can
    never bleed past the table edge again, no matter how tight the viewport gets. */
-#tab-pairs th:nth-child(8),#tab-pairs th:nth-child(9){white-space:normal;line-height:1.15;}
-#tab-pairs thead th:nth-child(2){color:var(--scanner-orange);}
+#tab-pairs th:nth-child(9),#tab-pairs th:nth-child(10){white-space:normal;line-height:1.15;}
+#tab-pairs thead th:nth-child(3){color:var(--scanner-orange);}
 #tab-pairs .pair-score{font-size:15px;font-weight:800;}
 #tab-pairs .score-bull{color:var(--bullish-strong);}
 #tab-pairs .score-bear{color:var(--bearish-strong);}
@@ -919,6 +933,7 @@ body.black .card,body.ash .card{box-shadow:none;}
   #tab-pairs .pair-table thead{display:none!important;}
   #tab-pairs .pair-table tbody{display:block!important;width:100%;}
   #tab-pairs .pair-table tr{display:grid!important;grid-template-columns:1fr 1fr;grid-template-areas:
+    "delta delta"
     "pair score"
     "trend trend"
     "bias bias"
@@ -927,6 +942,7 @@ body.black .card,body.ash .card{box-shadow:none;}
     "season season";
     width:100%;margin:0 0 8px;padding:10px 10px 8px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);}
   #tab-pairs .pair-table td{width:auto!important;display:flex!important;min-width:0;align-items:center;padding:5px 0!important;border:0!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere;}
+  #tab-pairs .pair-table td.day-delta-cell{grid-area:delta;order:initial;justify-content:flex-start;padding-bottom:4px!important;text-align:left!important;}
   #tab-pairs .pair-table td.ccy-name{grid-area:pair;order:initial;font-size:15px!important;padding-bottom:7px!important;}
   #tab-pairs .pair-table td.pair-score{grid-area:score;order:initial;justify-content:flex-end;font-size:17px!important;padding-bottom:7px!important;}
   #tab-pairs .pair-table td[data-label="Trend"]{grid-area:trend;order:initial;border-top:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important;padding:8px 0!important;}
@@ -1333,7 +1349,7 @@ var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and 
 var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
-var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], lockBoxCollapsed=false;
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], lockBoxCollapsed=false, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
 var isSaving=false, isSaveQueued=false, isTyping=false;
 var expandedRange="1M";
 
@@ -2565,6 +2581,64 @@ function surpriseClass(label){
   return (label==="Strongly Beating"||label==="Beating")?"surprise-pos":
          (label==="Strongly Missing"||label==="Missing")?"surprise-neg":"surprise-neu";
 }
+// Surprise Index history: there is no separate store for this -- it rides on the exact same
+// DAILY[date][key] snapshot log the Pair Ranking "Recalculate & log today" button already
+// writes to (see the recalcBtn handler). We just give each currency's surprise score its own
+// namespaced key ("SURPRISE_"+ccy) so it doesn't collide with that currency's composite score,
+// which already owns DAILY[date][ccy]. Nothing here saves on its own -- the recalc button is
+// still the one save action for the whole dashboard, exactly like every other trend on TWP.
+function surpriseTrendMarker(ccy, liveAvg){
+  return componentTrendMarker("SURPRISE_"+ccy, liveAvg);
+}
+function surpriseBigChart(ccy, rangeSel){
+  var key="SURPRISE_"+ccy;
+  var w=680,h=170,pad=30;
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined; }).sort();
+  var days=filterDaysByRange(allDays, rangeSel);
+  if(days.length<2){
+    var msg = allDays.length<2
+      ? "Not enough history yet. Click \"Recalculate & log today\" on the Pair Ranking page on at least two different days to start this line -- that's the one button that saves everything on TWP, including this."
+      : "No logged data falls inside this window -- try a wider range.";
+    return '<div class="building">'+msg+'</div>';
+  }
+  var vals=days.map(function(dt){ return Number(DAILY[dt][key]); });
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
+  var range=max-min;
+  var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
+  var colStrong = vals[vals.length-1]>=vals[0] ? "var(--bullish-strong)" : "var(--bearish-strong)";
+  var labels="";
+  var mobileView = (typeof window !== "undefined" && window.innerWidth <= 700);
+  var labelTarget = mobileView ? 4 : 8;
+  var labelCount = Math.min(days.length, labelTarget);
+  var labelIdx = [];
+  if(labelCount===1){ labelIdx=[0]; }
+  else { for(var li=0;li<labelCount;li++) labelIdx.push(Math.round(li*(days.length-1)/(labelCount-1))); }
+  for(var lj=0;lj<labelIdx.length;lj++){
+    var i=labelIdx[lj], x=pad+(i/(vals.length-1))*(w-2*pad);
+    var anchor = i===0 ? "start" : (i===days.length-1 ? "end" : "middle");
+    labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
+  }
+  var gradId="surpArea-"+ccy;
+  var linePath=smoothPath(pts);
+  var baseY=h-pad;
+  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  var hitPts=days.map(function(dt,i){
+    var v=vals[i];
+    var lbl=surpriseLabel(Math.round(v*10)/10);
+    var label=String(dt)+' \u00b7 Index '+(v>0?"+":"")+v.toFixed(1)+' \u00b7 '+lbl;
+    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="9" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+  }).join('');
+  return '<svg class="surprise-big-trend" data-ccy="'+esc(ccy)+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;">'+
+    '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
+      '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
+    '</linearGradient></defs>'+
+    '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
+    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none" pointer-events="none"/>'+
+    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    labels+hitPts+
+    '</svg>';
+}
 function renderRaw(){
   if(!DATA)return;
   var stats=CCYS.map(function(c){return {ccy:c,data:surpriseDataForCurrency(c)};});
@@ -2576,11 +2650,11 @@ function renderRaw(){
   var left=stats.map(function(x,i){
     var sc=Math.round(x.data.avg*10)/10,label=surpriseLabel(sc),cls=surpriseClass(label);
     var width=Math.min(100,Math.abs(sc)*2.5),leftPos=sc>=0?"50%":(50-width/2)+"%";
-    return '<div class="surprise-row" data-goto="'+x.ccy+'">'+
+    return '<div class="surprise-row'+(expandedSurpriseCcy===x.ccy?' active':'')+'" data-goto="'+x.ccy+'" title="Click to see this currency\'s surprise index history">'+
       '<div class="surprise-rank">'+(i+1)+'</div>'+
       '<div class="surprise-ccy">'+(flags[x.ccy]||"")+' '+x.ccy+'</div>'+
       '<div class="surprise-bar"><i class="'+cls+'" style="left:'+leftPos+';width:'+(width/2)+'%;"></i></div>'+
-      '<div class="surprise-score '+cls+'">'+(sc>0?"+":"")+sc.toFixed(1)+'</div>'+
+      '<div class="surprise-score '+cls+'">'+(sc>0?"+":"")+sc.toFixed(1)+surpriseTrendMarker(x.ccy,sc)+'</div>'+
       '<div class="surprise-bias '+cls+'">'+label+'</div>'+
       '<div class="surprise-count">'+x.data.strongBeats+' strong beat · '+x.data.strongMisses+' strong miss</div>'+
       '<div class="surprise-seasonality">'+
@@ -2601,7 +2675,17 @@ function renderRaw(){
       '<div class="surprise-release-name">'+esc(r.name)+'</div>'+
       meta+'</div>';
   }).join("");
-  var html='<div class="surprise-wrap">'+
+  var expandedHtml="";
+  if(expandedSurpriseCcy){
+    var srangeBtnsHtml = ["1M","3M","1Y","ALL"].map(function(r){
+      return '<button class="srange-btn'+(expandedSurpriseRange===r?" active":"")+'" data-srange="'+r+'">'+r+'</button>';
+    }).join("");
+    expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Surprise Index Trend \u2014 <b>'+(flags[expandedSurpriseCcy]||"")+' '+expandedSurpriseCcy+'</b></span>'+
+      '<div style="display:flex;align-items:center;gap:12px;"><div class="range-switch">'+srangeBtnsHtml+'</div>'+
+      '<span class="close-x" id="closeSurpriseChart">&times; close</span></div></div>'+
+      surpriseBigChart(expandedSurpriseCcy, expandedSurpriseRange)+'</div></div>';
+  }
+  var html=expandedHtml+'<div class="surprise-wrap">'+
     '<div class="surprise-card"><div class="surprise-summary">'+
       '<div class="surprise-stat"><div class="surprise-k">Strong beats</div><div class="surprise-v surprise-pos">'+strongBeats+'</div></div>'+
       '<div class="surprise-stat"><div class="surprise-k">Strong misses</div><div class="surprise-v surprise-neg">'+strongMisses+'</div></div>'+
@@ -2613,12 +2697,24 @@ function renderRaw(){
     '<div class="surprise-card"><div class="surprise-card-title">Largest Forecast Surprises</div><div class="surprise-release-list">'+right+'</div></div></div>';
   document.getElementById("tab-raw").innerHTML=html;
   var gotos=document.querySelectorAll("#tab-raw [data-goto]");
-  for(var i=0;i<gotos.length;i++)gotos[i].onclick=function(){activeDetailCcy=this.dataset.goto;switchTab("detail");renderDetail();};
+  for(var i=0;i<gotos.length;i++)gotos[i].onclick=function(){
+    var c=this.dataset.goto;
+    expandedSurpriseCcy = (expandedSurpriseCcy===c) ? null : c;
+    renderRaw();
+  };
   var seasonEls=document.querySelectorAll("#tab-raw [data-role=\"ccyfield\"][data-field=\"seasonalityAvg\"]");
   for(var si=0;si<seasonEls.length;si++){
     seasonEls[si].addEventListener("input",onCcyFieldInput);
     seasonEls[si].addEventListener("change",onCcyFieldInput);
-  }}
+    // Editing seasonality sits inside the clickable row -- don't let that click also
+    // toggle the chart open/closed.
+    seasonEls[si].addEventListener("click",function(e){ e.stopPropagation(); });
+  }
+  var closeSurpriseX=document.getElementById("closeSurpriseChart");
+  if(closeSurpriseX){ closeSurpriseX.onclick=function(e){ e.stopPropagation(); expandedSurpriseCcy=null; renderRaw(); }; }
+  var srangeBtns=document.querySelectorAll("#tab-raw .srange-btn");
+  for(var sr=0;sr<srangeBtns.length;sr++){ srangeBtns[sr].onclick=function(e){ e.stopPropagation(); expandedSurpriseRange=this.dataset.srange; renderRaw(); }; }
+}
 function gaugeGeom(score){
   var cx=120, cy=104, r=80, s=clamp(score,-100,100), angle=180-((s+100)/200)*180, rad=angle*Math.PI/180;
   return {cx:cx,cy:cy,r:r,nx:cx+(r-16)*Math.cos(rad),ny:cy-(r-16)*Math.sin(rad)};
@@ -2959,6 +3055,34 @@ function filterDaysByRange(days, range){
   var cutoffKey = cutoff.toISOString().slice(0,10);
   return days.filter(function(d){ return d>=cutoffKey; });
 }
+// Quick "since your last log" pulse, sitting right next to the pair name -- different from the
+// Trend column (which looks back up to 90 days) and from Delta WoW (which is COT positioning,
+// not score). This compares live score to the single most recent logged day before today, so if
+// you recalculate daily it reads as a same-day-to-yesterday move.
+function lastLoggedDelta(key, liveVal){
+  var todayKey=new Date().toISOString().slice(0,10);
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined && dt!==todayKey; }).sort();
+  if(!allDays.length) return {dir:"flat",delta:null,day:null};
+  var prevDay=allDays[allDays.length-1];
+  var delta=Math.round(liveVal-Number(DAILY[prevDay][key]));
+  if(delta>0) return {dir:"up",delta:delta,day:prevDay};
+  if(delta<0) return {dir:"down",delta:delta,day:prevDay};
+  return {dir:"flat",delta:delta,day:prevDay};
+}
+// Standalone "1D Δ" column -- its own cell to the left of the pair flags,
+// sized to match the Score column so it never reads as clutter mixed into
+// the pair name line. Shows "0" (not a dash) when nothing moved since the
+// last log, and a plain dash only when there's no prior logged day yet.
+function dailyChangeCell(key, liveVal){
+  var t=lastLoggedDelta(key, liveVal);
+  if(t.delta==null){
+    return '<span class="mono day-delta day-delta-flat" title="No prior logged day to compare yet">&mdash;</span>';
+  }
+  var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
+  var cls=t.dir==="up"?"day-delta-up":(t.dir==="down"?"day-delta-down":"day-delta-flat");
+  var deltaTxt=(t.delta>0?"+":"")+t.delta;
+  return '<span class="mono day-delta '+cls+'" title="Change vs your last logged recalculation ('+t.day+')">'+symbol+' '+deltaTxt+'</span>';
+}
 function pairTrend30d(pair){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null,label:"No trend history yet"};
@@ -3214,7 +3338,7 @@ function renderPairs(){
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="9" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+    rows='<tr><td colspan="10" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
@@ -3236,9 +3360,10 @@ function renderPairs(){
     var cotWoWRel=biasVal(cotWoWBase)-biasVal(cotWoWQuote);
     var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
     rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
+      '<td class="day-delta-cell" data-label="1D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td class="ccy-name" data-label="Pair"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
       '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
-      '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span>'+pairTrendMarker(p.pair)+'</div></td>'+
+      '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span></div></td>'+
       '<td data-label="Bias">'+pairBiasMarkup(p.bias)+'</td>'+
       '<td data-label="Fundamentals"><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
       '<td data-label="Yield Bias"><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
@@ -3275,7 +3400,7 @@ function renderPairs(){
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;"><div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Positioning</th><th>Δ WoW</th><th>Seasonality</th></tr></thead>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>1D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Positioning</th><th>Δ WoW</th><th>Seasonality</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     (LOG.length? '<details class="recalc-details"><summary>Recalculation Log <span class="recalc-count">'+LOG.length+'</span></summary><div class="recalc-log-body"><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div></details>':'');
   document.getElementById("tab-pairs").innerHTML=html;
@@ -3290,6 +3415,7 @@ function renderPairs(){
       snap[cc]=sc[cc];                                   // composite (used by Desk Board trend arrow)
       snap["FUND_"+cc]=ff.max?(100*ff.raw/ff.max):0;      // fundamentals %, own key so it doesn't collide with pair scores
       snap["COT_"+cc]=getCotScore(cc);
+      snap["SURPRISE_"+cc]=Math.round(surpriseDataForCurrency(cc).avg*10)/10; // Surprise Index snapshot, own key too
     }
     DAILY[todayKey]=snap;
     var nowTs=new Date().toISOString();
