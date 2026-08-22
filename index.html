@@ -2699,7 +2699,7 @@ function renderRaw(){
     var sc=Math.round(x.data.avg*10)/10,label=surpriseLabel(sc),cls=surpriseClass(label);
     var y2=y2Calc(x.ccy).score;
     var y2Label=y2==null?"No yield read":(sc>0 && y2>=2?"2Y supports surprise":sc<0 && y2<=-2?"2Y supports surprise":sc>0 && y2<=-2?"2Y diverges":sc<0 && y2>=2?"2Y diverges":"2Y neutral");
-    var combinedClass=(sc!==0 && y2!=null && ((sc>0&&y2>0)||(sc<0&&y2<0)))?"surprise-pos":(sc!==0 && y2!=null && ((sc>0&&y2<0)||(sc<0&&y2>0)))?"surprise-neg":"surprise-neu";
+    var combinedClass=(sc!==0 && y2!=null && ((sc>0&&y2>=2)||(sc<0&&y2<=-2)))?"surprise-pos":(sc!==0 && y2!=null && ((sc>0&&y2<=-2)||(sc<0&&y2>=2)))?"surprise-neg":"surprise-neu";
     var width=Math.min(100,Math.abs(sc)*2.5),leftPos=sc>=0?"50%":(50-width/2)+"%";
     return '<div class="surprise-row'+(expandedSurpriseCcy===x.ccy?' active':'')+'" data-goto="'+x.ccy+'" title="Click to see this currency\'s surprise index history">'+
       '<div class="surprise-rank">'+(i+1)+'</div>'+
