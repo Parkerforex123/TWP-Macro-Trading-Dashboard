@@ -789,16 +789,37 @@ body.black .card,body.ash .card{box-shadow:none;}
 @media(max-width:1100px){#tab-raw .surprise-wrap{grid-template-columns:1fr;}}
 @media(max-width:760px){
 #tab-raw .surprise-list-head{display:none;}
-#tab-raw .surprise-row{grid-template-columns:24px 62px 1fr 56px;gap:6px;}
-#tab-raw .surprise-count{grid-column:3/5;}
+/* Rebuilt as an explicit named grid instead of relying on 7 items auto-wrapping
+   across a 4-column track -- that's what was causing the count/seasonality
+   text to land on top of each other on phones. */
+#tab-raw .surprise-row{
+  display:grid!important;
+  grid-template-columns:22px 1fr auto;
+  grid-template-areas:
+    "rank ccy score"
+    "bar bar bar"
+    "bias bias count"
+    "seas seas seas";
+  column-gap:8px;row-gap:5px;
+  padding:10px 10px 9px;
+}
+#tab-raw .surprise-rank{grid-area:rank;}
+#tab-raw .surprise-ccy{grid-area:ccy;white-space:normal;overflow-wrap:anywhere;}
+#tab-raw .surprise-score{grid-area:score;justify-self:end;white-space:nowrap;}
+#tab-raw .surprise-bar{grid-area:bar;margin:2px 0;}
+#tab-raw .surprise-bias{grid-area:bias;font-size:12px;}
+#tab-raw .surprise-count{grid-area:count;grid-column:auto;justify-self:end;text-align:right;white-space:normal;font-size:10px;}
+#tab-raw .surprise-seasonality{grid-area:seas;justify-content:space-between!important;width:100%;}
 }
 </style>
 
 
 <style id="v23-live-confluence">
+@media(min-width:761px){
 #tab-raw .surprise-list-head,#tab-raw .surprise-row{grid-template-columns:28px 72px 1fr 64px 92px 158px 140px !important;}
-#tab-raw .surprise-row select{font-size:12px;font-weight:800;padding:4px 6px;min-width:100px;}
 #tab-raw .surprise-seasonality{display:flex;align-items:center;justify-content:flex-start;}
+}
+#tab-raw .surprise-row select{font-size:12px;font-weight:800;padding:4px 6px;min-width:100px;}
 #tab-raw .surprise-seasonality .seasonality-avg-input{width:58px;}
 #tab-raw .surprise-seasonality .seasonality-derived{white-space:nowrap;}
 </style>
@@ -979,8 +1000,40 @@ body.black .card,body.ash .card{box-shadow:none;}
   #tab-detail .info-trend-row{display:flex;flex-direction:column;gap:7px;}
   #tab-detail .trend-panel{min-width:0;width:100%;}
   #tab-detail .info-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-  #tab-detail .sector-block{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  #tab-detail .sector-block table{min-width:760px;}
+  /* Indicator tables (GDP, PMI, CPI etc): the old design forced a 760px-wide
+     table inside a phone-width card, so the Bias column was always off-screen
+     and reading it meant pinch-zooming. Rebuilt as a stacked card per row --
+     no horizontal scroll needed, and Actual/Forecast/Surprise/Bias each get
+     a small label so they're still identifiable at a glance. */
+  #tab-detail .sector-block{overflow-x:visible!important;}
+  #tab-detail .sector-block table{min-width:0!important;width:100%;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0 8px!important;}
+  #tab-detail .sector-block thead{display:none!important;}
+  #tab-detail .sector-block tbody{display:block;width:100%;}
+  #tab-detail .sector-block tbody tr{display:grid!important;grid-template-columns:1fr 1fr;grid-template-areas:
+    "name name"
+    "actual forecast"
+    "surprise bias";
+    column-gap:10px;row-gap:5px;width:100%;padding:9px 10px 8px;margin:0;border:1px solid var(--border);border-radius:8px;background:var(--panel2);}
+  #tab-detail .sector-block tbody tr td{display:block!important;width:auto!important;padding:0!important;border:none!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;}
+  #tab-detail .sector-block tbody tr td:nth-child(1){grid-area:name;padding-bottom:2px!important;}
+  #tab-detail .sector-block tbody tr td:nth-child(2){display:none!important;}
+  #tab-detail .sector-block tbody tr td:nth-child(3){grid-area:actual;}
+  #tab-detail .sector-block tbody tr td:nth-child(4){grid-area:forecast;}
+  #tab-detail .sector-block tbody tr td:nth-child(5){grid-area:surprise;}
+  #tab-detail .sector-block tbody tr td:nth-child(6){grid-area:bias;}
+  #tab-detail .sector-block tbody tr td:nth-child(7){display:none!important;}
+  #tab-detail .sector-block tbody tr td:nth-child(3)::before,
+  #tab-detail .sector-block tbody tr td:nth-child(4)::before,
+  #tab-detail .sector-block tbody tr td:nth-child(5)::before,
+  #tab-detail .sector-block tbody tr td:nth-child(6)::before{
+    display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);font-weight:700;margin-bottom:2px;
+  }
+  #tab-detail .sector-block tbody tr td:nth-child(3)::before{content:"Actual";}
+  #tab-detail .sector-block tbody tr td:nth-child(4)::before{content:"Forecast";}
+  #tab-detail .sector-block tbody tr td:nth-child(5)::before{content:"Surprise";}
+  #tab-detail .sector-block tbody tr td:nth-child(6)::before{content:"Bias";}
+  #tab-detail .ind-link,#tab-detail .ind-name{white-space:normal!important;font-size:14.5px!important;overflow:visible!important;text-overflow:clip!important;}
+  #tab-detail .ind-txt,#tab-detail .bias-chip-text,#tab-detail .surprise{font-size:14px!important;width:100%!important;}
 
   /* Historical 2Y chart: controls wrap; stats stack; chart remains usable. */
   .hist-spread-head{display:block;}
