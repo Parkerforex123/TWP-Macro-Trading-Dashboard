@@ -327,7 +327,7 @@ th{font-size:12px;}
 #tab-pairs .yield-bear{color:var(--bearish-strong);background:rgba(217,87,87,.10);}
 #tab-pairs .yield-vbull{color:#fff;background:var(--bullish);}
 #tab-pairs .yield-vbear{color:#fff;background:var(--bearish);}
-#tab-pairs .yield-neutral{color:var(--text-dim);background:var(--panel2);}
+#tab-pairs .yield-neutral{color:var(--text-dim);background:transparent;}
 #tab-pairs .pair-factor{font-size:14px;font-weight:800;}
 .bigchart{margin-top:6px;padding:16px;background:var(--panel2);border-radius:8px;}
 .bigchart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px;color:var(--text-dim);}
@@ -1502,14 +1502,31 @@ function seasonalityAvgNum(d){
   var n=Number(String(d.seasonalityAvg==null?"":d.seasonalityAvg).replace(/%/g,"").replace(/,/g,"").trim());
   return Number.isFinite(n) && String(d.seasonalityAvg).trim()!=="" ? n : null;
 }
+// Seasonality is treated as a relative-strength factor, not a binary sign.
+// < +/-0.50% is neutral noise; 0.50-0.99% is directional; +/-1.00% is strong.
+function seasonalityBandScoreFromValue(n){
+  if(n==null || !Number.isFinite(n)) return 0;
+  var a=Math.abs(n);
+  if(a<0.50) return 0;
+  if(a<1.00) return n>0?0.5:-0.5;
+  return n>0?1:-1;
+}
+function seasonalityBandLabelFromValue(n){
+  if(n==null || !Number.isFinite(n) || Math.abs(n)<0.50) return "Neutral";
+  if(n>=1.00) return "Very Bullish";
+  if(n>=0.50) return "Bullish";
+  if(n<=-1.00) return "Very Bearish";
+  return "Bearish";
+}
 function seasonalitySign(d){
   var n=seasonalityAvgNum(d);
-  if(n!=null) return n>0?1:(n<0?-1:0);
-  return d && d.seasonality==="Bullish"?1:(d && d.seasonality==="Bearish"?-1:0);
+  if(n!=null) return seasonalityBandScoreFromValue(n);
+  var label=d && d.seasonality;
+  return label==="Very Bullish"?1:(label==="Bullish"?0.5:(label==="Very Bearish"?-1:(label==="Bearish"?-0.5:0)));
 }
 function seasonalityLabel(d){
   var n=seasonalityAvgNum(d);
-  if(n!=null) return n>0?"Bullish":(n<0?"Bearish":"Neutral");
+  if(n!=null) return seasonalityBandLabelFromValue(n);
   return d && d.seasonality?d.seasonality:"Neutral";
 }
 function seasonalityValue(d){
@@ -1519,13 +1536,11 @@ function seasonalityValue(d){
 function seasonalityPairText(base,quote){
   var a=seasonalityAvgNum(DATA[base]), b=seasonalityAvgNum(DATA[quote]);
   var diff=(a!=null && b!=null)?(a-b):null;
-  if(diff!=null){
-    var dir=diff>0?"Bullish":(diff<0?"Bearish":"Neutral");
-    return dir+" "+(diff>0?"+":"")+diff.toFixed(2)+"%";
-  }
-  return simpleRelBias(seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]));
+  if(diff!=null) return seasonalityBandLabelFromValue(diff);
+  var rel=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
+  return seasonalityBandLabelFromValue(rel);
 }
-function b_seas(s){ return s && typeof s==="object" ? seasonalitySign(s) : (s==="Bullish"?1:(s==="Bearish"?-1:0)); }
+function b_seas(s){ return s && typeof s==="object" ? seasonalitySign(s) : seasonalityBandScoreFromValue(Number(s)); }
 function sectorCalc(list){ var raw=0,max=0; for(var i=0;i<list.length;i++){ var w=Number(list[i].weight)||0; raw+=w*biasVal(list[i].bias); max+=w; } return {raw:raw,max:max}; }
 function fundFor(ccy){ var d=DATA[ccy]; var g=sectorCalc(d.growth), inf=sectorCalc(d.inflation), l=sectorCalc(d.labour);
   return {raw:g.raw+inf.raw+l.raw, max:g.max+inf.max+l.max, g:g, inf:inf, l:l}; }
@@ -3492,7 +3507,7 @@ function renderPairs(){
       '<td data-label="Yield Bias"><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
       '<td data-label="Net Positioning"><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotRel))+'">'+simpleRelBias(cotRel)+'</span></td>'+
       '<td data-label="&Delta; WoW"><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</span></td>'+
-      '<td data-label="Seasonality"><span class="pair-factor '+pillarBiasClass(simpleRelBias(seasRel))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
+      '<td data-label="Seasonality"><span class="pair-factor '+pillarBiasClass(seasonalityPairText(p.base,p.quote))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
       '</tr>';
   }
   var logRows="";
