@@ -210,6 +210,18 @@ body.editing .weight-col{display:table-cell;}
 .pair-table .day-delta-flat{color:var(--text-faint)!important;}
 #tab-pairs .day-delta-cell{text-align:center;}
 
+.pair-search-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex:0 0 auto;}
+.pair-search-wrap>div{display:flex;align-items:center;background:var(--panel2);border:1.5px solid var(--amber);border-radius:7px;padding:0 10px;transition:border-color .15s,box-shadow .15s;min-width:198px;}
+.pair-search-wrap>div:focus-within{border-color:var(--amber);box-shadow:0 0 0 2px rgba(198,154,58,.22);}
+.pair-search-icon{color:var(--text-faint);font-size:12px;margin-right:5px;line-height:1;flex:0 0 auto;}
+.pair-search{background:transparent;border:none;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 0;width:100%;min-width:0;}
+.pair-search::placeholder{color:var(--text-faint);letter-spacing:-.1px;}
+.pair-search:focus{outline:none;}
+.pair-search::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;}
+.pair-search-clear{display:none;background:transparent;border:none;color:var(--text-faint);font-size:16px;line-height:1;cursor:pointer;padding:4px 0 4px 8px;}
+.pair-search-clear:hover{color:var(--amber);}
+.pair-search-count{font-size:11px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+
 .sector-block{margin-bottom:10px;}
 .sector-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
 .sector-title span.label{font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:700;}
@@ -1403,7 +1415,7 @@ var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and 
 var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
-var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], lockBoxCollapsed=false, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=false, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
 var isSaving=false, isSaveQueued=false, isTyping=false;
 var expandedRange="1M";
 
@@ -3473,10 +3485,23 @@ function renderPairs(){
   var scores=allScores(), pairsAll=buildPairs(scores);
   var pairs=pairsAll.filter(function(p){ return pairPassesFilter(p.bias); });
   if(pairFilters.indexOf("Extremes")!==-1) pairs=sortExtremePairs(pairs);
+  var normalizedSearch=(pairSearchTerm||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
+  if(normalizedSearch){
+    pairs=pairs.filter(function(p){
+      var pairNorm=String(p.pair||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
+      var baseNorm=String(p.base||"").toUpperCase();
+      var quoteNorm=String(p.quote||"").toUpperCase();
+      return pairNorm.indexOf(normalizedSearch)!==-1 ||
+             baseNorm.indexOf(normalizedSearch)!==-1 ||
+             quoteNorm.indexOf(normalizedSearch)!==-1;
+    });
+  }
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="10" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+    rows='<tr><td colspan="10" style="text-align:center;color:var(--text-faint);padding:18px 0;">'+
+      (pairSearchTerm ? 'No pairs match &quot;'+esc(pairSearchTerm)+'&quot; with the current filter.' : 'No pairs match this filter right now.')+
+      '</td></tr>';
   }
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
@@ -3537,13 +3562,72 @@ function renderPairs(){
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>':'')+'</div>'+
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
-    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;"><div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
+      '<div class="pair-search-wrap"><div style="position:relative;flex:1;min-width:0;"><span class="pair-search-icon">⌕</span><input id="pairSearchInput" class="pair-search" type="search" autocomplete="off" spellcheck="false" value="'+esc(pairSearchTerm)+'" placeholder="Search pair e.g. GBPUSD" aria-label="Search pair"><button id="pairSearchClear" class="pair-search-clear" type="button" aria-label="Clear pair search">&times;</button></div><span id="pairSearchCount" class="pair-search-count"></span></div>'+
+      '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
     '<div class="table-scroll"><table class="pair-table"><thead><tr><th>1D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Positioning</th><th>Δ WoW</th><th>Seasonality</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     (LOG.length? '<details class="recalc-details"><summary>Recalculation Log <span class="recalc-count">'+LOG.length+'</span></summary><div class="recalc-log-body"><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div></details>':'');
   document.getElementById("tab-pairs").innerHTML=html;
   bindPairTrendHover();
   bindBigPairTrendHover();
+
+  var searchInput=document.getElementById("pairSearchInput");
+  var searchClear=document.getElementById("pairSearchClear");
+  var searchCount=document.getElementById("pairSearchCount");
+  function applyPairSearch(){
+    if(!searchInput) return;
+    pairSearchTerm=searchInput.value;
+    var term=(pairSearchTerm||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
+    var visible=0, total=0;
+    var rowsEl=document.querySelectorAll("#pairRows .pair-row");
+    for(var si=0;si<rowsEl.length;si++){
+      total++;
+      var rowPair=String(rowsEl[si].dataset.pair||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
+      var show=!term || rowPair.indexOf(term)!==-1;
+      rowsEl[si].style.display=show ? "" : "none";
+      if(show) visible++;
+    }
+    if(searchClear) searchClear.style.display=pairSearchTerm ? "inline-block" : "none";
+    if(searchCount) searchCount.textContent=pairSearchTerm ? (visible+" / "+total) : "";
+    var emptySearch=document.getElementById("pairSearchEmpty");
+    if(term && visible===0){
+      if(!emptySearch){
+        var tbody=document.getElementById("pairRows");
+        if(tbody){
+          emptySearch=document.createElement("tr");
+          emptySearch.id="pairSearchEmpty";
+          emptySearch.innerHTML='<td colspan="10" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pair matches "'+
+            String(pairSearchTerm).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")+
+            '" with the current filter.</td>';
+          tbody.appendChild(emptySearch);
+        }
+      } else {
+        emptySearch.style.display="";
+      }
+    } else if(emptySearch){
+      emptySearch.remove();
+    }
+  }
+  if(searchInput){
+    searchInput.addEventListener("input", applyPairSearch);
+    searchInput.addEventListener("keydown", function(e){
+      if(e.key==="Escape"){
+        searchInput.value="";
+        applyPairSearch();
+      }
+    });
+    applyPairSearch();
+  }
+  if(searchClear){
+    searchClear.onclick=function(){
+      if(!searchInput) return;
+      searchInput.value="";
+      searchInput.focus();
+      applyPairSearch();
+    };
+  }
+
   var btn=document.getElementById("recalcBtn");
   if(btn){ btn.onclick=async function(){
     var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
