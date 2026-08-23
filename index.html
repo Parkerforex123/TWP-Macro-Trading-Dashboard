@@ -2799,8 +2799,8 @@ function renderRaw(){
   var left=stats.map(function(x,i){
     var sc=Math.round(x.data.avg*10)/10,label=surpriseLabel(sc),cls=surpriseClass(label);
     var y2=y2Calc(x.ccy).score;
-    var y2Label=y2==null?"No yield read":(sc>0 && y2>=2?"2Y supports surprise":sc<0 && y2<=-2?"2Y supports surprise":sc>0 && y2<=-2?"2Y diverges":sc<0 && y2>=2?"2Y diverges":"2Y neutral");
-    var combinedClass=(sc!==0 && y2!=null && ((sc>0&&y2>=2)||(sc<0&&y2<=-2)))?"surprise-pos":(sc!==0 && y2!=null && ((sc>0&&y2<=-2)||(sc<0&&y2>=2)))?"surprise-neg":"surprise-neu";
+    var y2Label=y2==null?"No yield read":(sc>0 && y2>=2?"2Y confirms beat":sc<0 && y2<=-2?"2Y confirms miss":sc>0 && y2<=-2?"2Y diverges (yield bearish)":sc<0 && y2>=2?"2Y diverges (yield bullish)":"2Y neutral");
+    var combinedClass=y2==null?"surprise-neu":(y2>=2?"surprise-pos":(y2<=-2?"surprise-neg":"surprise-neu"));
     var width=Math.min(100,Math.abs(sc)*2.5),leftPos=sc>=0?"50%":(50-width/2)+"%";
     return '<div class="surprise-row'+(expandedSurpriseCcy===x.ccy?' active':'')+'" data-goto="'+x.ccy+'" title="Click to see this currency\'s surprise index history">'+
       '<div class="surprise-rank">'+(i+1)+'</div>'+
@@ -2841,7 +2841,7 @@ function renderRaw(){
       '<div class="surprise-stat"><div class="surprise-k">Strong misses</div><div class="surprise-v surprise-neg">'+strongMisses+'</div></div>'+
       '<div class="surprise-stat"><div class="surprise-k">Best surprise</div><div class="surprise-v surprise-pos">'+best.ccy+' '+(best.data.avg>0?"+":"")+best.data.avg.toFixed(1)+'</div></div>'+
       '<div class="surprise-stat"><div class="surprise-k">Worst surprise</div><div class="surprise-v surprise-neg">'+worst.ccy+' '+(worst.data.avg>0?"+":"")+worst.data.avg.toFixed(1)+'</div></div>'+
-    '</div><div class="surprise-note">Weighted Forecast Surprise Monitor — growth, inflation and labour only. 2Y context is diagnostic and does not change the core 70/15/10/5 model. Each release is weighted by its existing indicator weight; it does not alter the 70/15/10/5 trading score.</div>'+
+    '</div><div class="surprise-note">Weighted Forecast Surprise Monitor — growth, inflation and labour only. 2Y context is diagnostic and does not change the core 70/15/10/5 model. Each release is weighted by its existing indicator weight; it does not alter the 70/15/10/5 trading score.<br><b style="color:var(--text-dim);">2Y column colors:</b> green = 2Y yield reading is bullish for the currency, red = bearish, gray = neutral/no read. The label text (e.g. "confirms miss" vs "diverges") tells you separately whether that yield reading agrees with the surprise data above it — agreement and direction are two different things here on purpose.</div>'+
     '<div class="surprise-list-head"><div>#</div><div>Currency</div><div>Surprise Strength</div><div>Index</div><div>State</div><div>Releases</div></div>'+
     '<div class="surprise-list">'+left+'</div></div>'+
     '<div class="surprise-card"><div class="surprise-card-title">Largest Forecast Surprises</div><div class="surprise-release-list">'+right+'</div></div></div>';
