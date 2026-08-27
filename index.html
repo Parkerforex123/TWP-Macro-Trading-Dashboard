@@ -3322,9 +3322,14 @@ function renderLockBox(){
   var msbToggle=document.getElementById("manualSaveBtn");
   if(msbToggle) msbToggle.style.display = AUTH.accessToken ? "" : "none";
   box.className="lock-box"+(lockBoxCollapsed?" collapsed":"");
-  var eyeIcon = lockBoxCollapsed ? "&#128274;" : "&#128065;";
+  // Plain SVG icons instead of emoji glyphs — emoji render in each platform's own
+  // built-in color (often gold/amber) and ignore CSS color, so they can't be forced black.
+  var svgLocked='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><rect x="5" y="11" width="14" height="10" rx="2" fill="#000"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#000" stroke-width="2.2" fill="none"/></svg>';
+  var svgUnlocked='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><rect x="5" y="11" width="14" height="10" rx="2" fill="#000"/><path d="M8 11V7a4 4 0 0 1 7.5-2" stroke="#000" stroke-width="2.2" fill="none"/></svg>';
+  var svgEye='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="#000" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" fill="#000"/></svg>';
+  var eyeIcon = lockBoxCollapsed ? svgLocked : svgEye;
   if(!AUTH.accessToken){
-    box.innerHTML='<div class="lock-state"><span class="lock-state-label">&#128274; View-only</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
+    box.innerHTML='<div class="lock-state"><span class="lock-state-label">'+svgLocked+' View-only</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
       '<div class="lock-fields">'+
       '<input type="email" id="authEmail" placeholder="Team email" autocomplete="username" style="margin-bottom:6px;">'+
       '<input type="password" id="authPw" placeholder="Password" autocomplete="current-password">'+
@@ -3352,7 +3357,7 @@ function renderLockBox(){
     document.getElementById("authPw").addEventListener("keydown",function(e){ if(e.key==="Enter") doSignIn(); });
     document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
   } else {
-    box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">&#128275; Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide">'+eyeIcon+'</button></div>'+
+    box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">'+svgUnlocked+' Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide">'+eyeIcon+'</button></div>'+
       '<div class="lock-fields"><button id="lockBtn">Sign out</button></div>';
     document.getElementById("lockBtn").onclick=function(){ authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic(); };
     document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
@@ -5025,7 +5030,7 @@ function renderPairs(){
       '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
     '<div class="table-scroll"><table class="pair-table"><thead><tr><th>1D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
-    (LOG.length? '<details class="recalc-details"><summary>Recalculation Log <span class="recalc-count">'+LOG.length+'</span></summary><div class="recalc-log-body"><div class="table-scroll"><table><thead><tr><th>Logged</th><th>Most bullish</th><th>Most bearish</th></tr></thead><tbody>'+logRows+'</tbody></table></div></div></details>':'');
+    '';
   document.getElementById("tab-pairs").innerHTML=html;
   bindPairTrendHover();
   bindBigPairTrendHover();
@@ -5374,7 +5379,7 @@ function renderRiskSentiment(){
       '<span id="riskLiveReadout" class="risk-inline-note">60% S&amp;P · 40% inverse VIX · saved closes drive the regime</span>'+
     '</div>' : '';
 
-  var historyPanel='<details class="risk-details"><summary>Recent saved daily closes</summary><div style="overflow-x:auto;margin-top:6px;"><table class="risk-history"><thead><tr><th>Date</th><th>S&amp;P</th><th>S&amp;P Δ</th><th>VIX</th><th>VIX Δ</th><th>Regime</th></tr></thead><tbody>'+histHtml+'</tbody></table></div></details>';
+  var historyPanel='';
   tab.innerHTML='<div class="risk-page"><div class="strength-card risk-compact-card">'+
     surface.html+
     inlineEditor+
