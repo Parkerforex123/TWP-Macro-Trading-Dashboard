@@ -380,7 +380,7 @@ th{font-size:12px;}
 .hist-range{display:flex;gap:4px;}
 .hist-range button{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:7px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .hist-range button.active{background:var(--amber);color:#fff;border-color:var(--amber);}
-.hist-spread-chart{height:330px;margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;}
+.hist-spread-chart{height:370px;margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;}
 .hist-spread-chart canvas{width:100%;height:100%;display:block;}
 /* Historical spread chart: give mobile labels their own breathing room. */
 @media(max-width:600px){
@@ -389,13 +389,13 @@ th{font-size:12px;}
   .hist-spread-select{max-width:138px;}
   .hist-range{flex:0 0 auto;}
   .hist-range button{padding:7px 9px;}
-  .hist-spread-chart{height:285px;}
+  .hist-spread-chart{height:315px;}
 }
 @media(max-width:380px){
   .hist-spread-controls{align-items:flex-start;}
   .hist-spread-select{max-width:126px;font-size:12px;padding:7px 8px;}
   .hist-range button{padding:7px 7px;font-size:12px;}
-  .hist-spread-chart{height:275px;}
+  .hist-spread-chart{height:300px;}
 }
 .hist-spread-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--text-faint);font-size:11px;}
 .hist-spread-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px;}
@@ -404,7 +404,7 @@ th{font-size:12px;}
 .hist-stat .v{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;margin-top:4px;}
 .hist-spread-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;margin-top:10px;}
 @media(max-width:900px){.hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(max-width:600px){.hist-spread-stats{grid-template-columns:1fr;}.hist-spread-chart{height:280px;}}
+@media(max-width:600px){.hist-spread-stats{grid-template-columns:1fr;}.hist-spread-chart{height:315px;}}
 
 
 /* V12 compression: squeeze containers/gaps, preserve existing typography sizes. */
@@ -759,7 +759,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-risk .risk-inline-field>span{font-size:9px;text-transform:uppercase;letter-spacing:.55px;color:var(--text-faint);font-weight:700;}
 #tab-risk .risk-inline-input{width:96px;flex:0 0 96px;padding:5px 7px;font-size:11.5px;}
 #tab-risk .risk-inline-note{margin-left:auto;font-size:9.5px;color:var(--text-faint);white-space:nowrap;}
-#tab-risk .risk-details{display:none!important;}
+#tab-risk .risk-date-input{width:128px;flex:0 0 128px;font-size:11px;}
 @media(max-width:700px){
   #tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:22px 62px 1fr 44px 86px;gap:6px;}
   #tab-risk .strength-bar{width:auto;}
@@ -1105,7 +1105,7 @@ body.black .card,body.ash .card{box-shadow:none;}
   .hist-spread-select{width:100%;max-width:none;}
   .hist-range{justify-content:flex-end;flex-wrap:wrap;}
   .hist-range button{padding:6px 7px;font-size:10.5px;}
-  .hist-spread-chart{height:275px;}
+  .hist-spread-chart{height:300px;}
   .hist-spread-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
   .hist-stat{min-width:0;padding:8px;}
   .hist-stat .v{font-size:13px;overflow-wrap:anywhere;}
@@ -1298,7 +1298,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-yield2y .y2-spread-view .y2-track{width:100%;min-width:90px;}
 
 /* Risk Sentiment: use the same geometry, typography and density as Macro Regime. */
-#tab-risk .risk-page{max-width:760px;}
+#tab-risk .risk-page{max-width:100%;}
 #tab-risk .strength-card{width:100%;padding-bottom:2px;}
 #tab-risk .strength-summary{grid-template-columns:repeat(4,minmax(0,1fr));}
 #tab-risk .strength-stat{padding:10px 12px;}
@@ -1724,6 +1724,255 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
   
 }
 </style>
+
+<style id="cot-regime-v1">
+#tab-cot .cot-page{max-width:100%;}
+#tab-cot .cot-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;}
+#tab-cot .cot-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+#tab-cot .cot-card-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);}
+#tab-cot .cot-title{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--text-dim);}
+#tab-cot .cot-sub{font-size:10px;color:var(--text-faint);margin-top:2px;}
+#tab-cot .cot-selector{display:flex;gap:4px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--border);background:var(--panel2);}
+#tab-cot .cot-pill{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:5px;padding:5px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:'IBM Plex Mono',monospace;}
+#tab-cot .cot-pill.active{background:var(--panel3);color:var(--text);border-color:var(--amber);}
+#tab-cot .cot-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+#tab-cot .cot-table th,#tab-cot .cot-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;}
+#tab-cot .cot-table th{font-size:10px;text-align:left;background:var(--panel2);color:var(--text-faint);letter-spacing:.7px;}
+#tab-cot .cot-table td{font-size:12px;}
+#tab-cot .cot-table tr:last-child td{border-bottom:none;}
+#tab-cot .cot-ccy{font-family:'Space Grotesk',sans-serif;font-weight:800;display:flex;align-items:center;gap:6px;}
+#tab-cot .cot-ccy img{width:18px;height:13px;object-fit:cover;border-radius:2px;}
+#tab-cot .cot-net{font-family:'IBM Plex Mono',monospace;font-weight:800;}
+#tab-cot .cot-long,.cot-short{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+#tab-cot .cot-flow{font-size:10.5px;font-weight:800;white-space:nowrap;}
+#tab-cot .cot-crowd{font-size:10.5px;font-weight:900;white-space:nowrap;}
+#tab-cot .cot-good{color:var(--bullish-strong)!important;}
+#tab-cot .cot-bad{color:var(--bearish-strong)!important;}
+#tab-cot .cot-neutral{color:var(--text-dim)!important;}
+#tab-cot .cot-muted{color:var(--text-faint)!important;}
+#tab-cot .cot-bar{height:8px;position:relative;background:var(--panel3);border-radius:3px;overflow:hidden;}
+#tab-cot .cot-bar .neg{position:absolute;right:50%;top:0;bottom:0;background:var(--bearish);opacity:.9;}
+#tab-cot .cot-bar .pos{position:absolute;left:50%;top:0;bottom:0;background:var(--bullish);opacity:.9;}
+#tab-cot .cot-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);z-index:2;}
+#tab-cot .cot-regime-cell{display:flex;align-items:center;gap:7px;}
+#tab-cot .cot-dot{width:7px;height:7px;border-radius:50%;background:var(--text-faint);flex:0 0 auto;}
+#tab-cot .cot-dot.bull{background:var(--bullish-strong);}.cot-dot.bear{background:var(--bearish-strong);}
+#tab-cot .cot-dot.neu{background:var(--amber);}
+#tab-cot .cot-hero{display:grid;grid-template-columns:220px 1fr;gap:0;min-height:280px;}
+#tab-cot .cot-side{padding:14px;border-right:1px solid var(--border);background:var(--panel2);}
+#tab-cot .cot-side .big{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+#tab-cot .cot-side .name{font-size:12px;color:var(--text-faint);margin-top:4px;}
+#tab-cot .cot-side .badge{display:inline-block;margin-top:10px;padding:5px 9px;border-radius:5px;font-size:10.5px;font-weight:900;letter-spacing:.3px;}
+#tab-cot .cot-side .stat{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:11px;color:var(--text-faint);}
+#tab-cot .cot-side .stat b{font-family:'IBM Plex Mono',monospace;color:var(--text);}
+#tab-cot .cot-chart-wrap{padding:12px 14px;min-width:0;}
+#tab-cot .cot-chart-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;}
+#tab-cot .cot-chart-title{font-size:10.5px;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:.7px;}
+#tab-cot .cot-chart-meta{font-size:10px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+#tab-cot .cot-chart{height:225px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;}
+#tab-cot .cot-chart canvas{width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;}
+#tab-cot .cot-crosshair-tip{position:absolute;display:none;z-index:5;pointer-events:none;min-width:128px;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:rgba(10,12,11,.94);box-shadow:0 5px 18px rgba(0,0,0,.35);font:10px 'IBM Plex Mono',monospace;color:var(--text);white-space:nowrap;}
+#tab-cot .cot-crosshair-tip .k{color:var(--text-faint);margin-right:5px;}
+#tab-cot .cot-crosshair-tip .v{font-weight:700;}
+#tab-cot .cot-export-btn{font:10px 'IBM Plex Mono',monospace;padding:5px 8px;border:1px solid var(--border);border-radius:5px;background:var(--panel3);color:var(--text-dim);cursor:pointer;}
+#tab-cot .cot-export-btn:hover{color:var(--text);border-color:var(--bullish-strong);}
+
+#tab-cot .cot-chart-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-faint);font-size:11px;pointer-events:none;}
+#tab-cot .cot-mini-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px;}
+#tab-cot .cot-mini{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:7px 8px;}
+#tab-cot .cot-mini .k{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--text-faint);}
+#tab-cot .cot-mini .v{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:800;margin-top:3px;}
+#tab-cot .cot-input-wrap{padding:10px 12px;border-top:1px solid var(--border);background:var(--panel2);}
+#tab-cot .cot-input-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+#tab-cot .cot-input-title{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--text-dim);font-weight:800;}
+#tab-cot .cot-input-meta{font-size:10px;color:var(--text-faint);}
+#tab-cot .cot-form-grid{display:grid;grid-template-columns:115px 1fr 1fr 1fr 1fr 120px;gap:6px;align-items:center;}
+#tab-cot .cot-form-grid>div{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;font-weight:700;}
+#tab-cot .cot-form-row{display:grid;grid-template-columns:115px 1fr 1fr 1fr 1fr 120px;gap:6px;align-items:center;margin-top:5px;}
+#tab-cot .cot-input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:6px 7px;border-radius:5px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
+#tab-cot .cot-input:focus{outline:none;border-color:var(--amber);}
+#tab-cot .cot-input:disabled{opacity:.75;}
+#tab-cot .cot-save{background:var(--amber);border:1px solid var(--amber);color:#fff;border-radius:6px;padding:7px 9px;font-size:11px;font-weight:900;cursor:pointer;}
+#tab-cot .cot-save:disabled{opacity:.45;cursor:not-allowed;}
+#tab-cot .cot-disclaimer{font-size:10px;color:var(--text-faint);line-height:1.4;margin-top:7px;}
+#tab-cot .cot-section-pad{padding:10px 12px;}
+#tab-cot .cot-scanner-note{font-size:10px;color:var(--text-faint);padding:0 12px 9px;}
+#tab-cot .cot-all-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+#tab-cot .cot-card table .right{text-align:right;}
+#tab-cot .cot-link{color:var(--amber);font-weight:800;}
+@media(max-width:1050px){#tab-cot .cot-grid{grid-template-columns:1fr;}#tab-cot .cot-hero{grid-template-columns:190px 1fr;}}
+@media(max-width:780px){#tab-cot .cot-hero{grid-template-columns:1fr;}#tab-cot .cot-side{border-right:none;border-bottom:1px solid var(--border);}#tab-cot .cot-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));}#tab-cot .cot-form-grid{display:none;}#tab-cot .cot-form-row{grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;}#tab-cot .cot-form-row>div:first-child{display:block;}}
+</style>
+
+<style id="v28-cot-yield-cleanup">
+#tab-cot .cot-howto{display:flex;gap:12px;flex-wrap:wrap;padding:8px 10px;margin-bottom:8px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text-faint);font-size:10.5px;}
+#tab-cot .cot-howto span{white-space:nowrap;}
+#tab-cot .cot-howto b{color:var(--text-dim);}
+#tab-cot .cot-split-label{display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:8.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+#tab-cot .cot-flow-main{font-size:10.5px;font-weight:800;color:var(--text);}
+#tab-cot .cot-flow-sub{font-size:9px;color:var(--text-faint);margin-top:2px;}
+#tab-cot .cot-admin-card{border-color:var(--amber);}
+#tab-cot .cot-admin-card .cot-input-wrap{background:rgba(198,154,58,.05);}
+#tab-yield2y .y2-grid{align-items:start!important;}
+#tab-yield2y .y2-grid>.card{height:auto!important;min-height:0!important;align-self:start!important;}
+#tab-yield2y .y2-grid>.card:nth-child(2){height:max-content!important;}
+#tab-yield2y .y2-grid>.card:nth-child(2) .table-scroll{overflow:visible!important;}
+#tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{padding-top:6px!important;padding-bottom:6px!important;}
+#tab-yield2y .hist-spread-card{margin-top:8px!important;}
+#tab-yield2y .hist-spread-chart{height:320px!important;}
+@media(max-width:1050px){#tab-yield2y .hist-spread-chart{height:300px!important;}}
+</style>
+
+<style id="v31-cot-bond-layout-fix">
+/* COT: fit both desktop columns in the viewport; no horizontal swipe. */
+#tab-cot .cot-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;}
+#tab-cot .cot-card{min-width:0!important;}
+#tab-cot .cot-section-pad{padding:8px 10px!important;}
+#tab-cot .cot-table{table-layout:fixed!important;}
+#tab-cot .cot-table th,#tab-cot .cot-table td{padding:5px 6px!important;}
+#tab-cot .cot-table th{font-size:10px!important;}
+#tab-cot .cot-table td{font-size:12px!important;}
+#tab-cot .cot-split-label{font-size:8px!important;}
+#tab-cot .cot-flow-main{font-size:10px!important;font-weight:700!important;}
+#tab-cot .cot-flow-sub{font-size:9px!important;}
+#tab-cot .cot-hero{grid-template-columns:185px minmax(0,1fr)!important;min-height:250px!important;}
+#tab-cot .cot-side{padding:11px!important;}
+#tab-cot .cot-side .big{font-size:25px!important;}
+#tab-cot .cot-side .stat{margin-top:7px!important;font-size:10.5px!important;}
+#tab-cot .cot-chart-wrap{padding:10px 11px!important;min-width:0!important;}
+#tab-cot .cot-chart{height:205px!important;}
+#tab-cot .cot-mini-grid{gap:5px!important;margin-top:6px!important;}
+#tab-cot .cot-mini{padding:6px 7px!important;}
+#tab-cot .cot-mini .v{font-size:12px!important;}
+#tab-cot .cot-weekly-card .cot-section-pad{padding-top:5px!important;padding-bottom:5px!important;}
+#tab-cot .cot-weekly-card .cot-table th,#tab-cot .cot-weekly-card .cot-table td{padding-top:4px!important;padding-bottom:4px!important;}
+#tab-cot .cot-howto{display:none!important;}
+#tab-cot .cot-selector{padding:6px 8px!important;}
+#tab-cot .cot-pill{padding:5px 9px!important;font-size:11px!important;}
+@media(max-width:1050px){
+  #tab-cot .cot-grid{grid-template-columns:1fr!important;}
+}
+
+/* Bond Yield Spread: compact, rectangular rate-differential monitor. */
+#tab-yield2y .y2-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;align-items:start!important;}
+#tab-yield2y .y2-grid>.card{min-height:0!important;height:214px!important;overflow:hidden!important;padding:9px 11px!important;}
+#tab-yield2y .y2-grid>.card:first-child{height:214px!important;}
+#tab-yield2y .y2-grid>.card:nth-child(2){height:214px!important;}
+#tab-yield2y .y2-grid>.card:nth-child(2) .table-scroll{overflow:hidden!important;}
+#tab-yield2y .y2-score-table{width:100%!important;table-layout:fixed!important;}
+#tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{padding:5px 6px!important;line-height:1.1!important;}
+#tab-yield2y .y2-score-table th{font-size:10px!important;}
+#tab-yield2y .y2-score-table td{font-size:13px!important;}
+#tab-yield2y .y2-score-table th:nth-child(1),#tab-yield2y .y2-score-table td:nth-child(1){width:22%!important;}
+#tab-yield2y .y2-score-table th:nth-child(2),#tab-yield2y .y2-score-table td:nth-child(2){width:17%!important;}
+#tab-yield2y .y2-score-table th:nth-child(3),#tab-yield2y .y2-score-table td:nth-child(3){width:19%!important;}
+#tab-yield2y .y2-score-table th:nth-child(4),#tab-yield2y .y2-score-table td:nth-child(4){width:20%!important;}
+#tab-yield2y .y2-score-table th:nth-child(5),#tab-yield2y .y2-score-table td:nth-child(5){width:22%!important;}
+#tab-yield2y .y2-ccy-cell{font-size:13px!important;}
+#tab-yield2y .y2-score-view .y2-score,#tab-yield2y .y2-direction-view,#tab-yield2y .y2-usd-spread{font-size:13px!important;}
+#tab-yield2y .y2-spread-view{padding:0 4px!important;}
+#tab-yield2y .y2-spread-view .y2-track{min-width:0!important;max-width:none!important;width:100%!important;height:6px!important;}
+#tab-yield2y .hist-spread-card{margin-top:8px!important;}
+@media(max-width:1050px){
+  #tab-yield2y .y2-grid{grid-template-columns:1fr!important;}
+  #tab-yield2y .y2-grid>.card{height:auto!important;overflow:visible!important;}
+  #tab-yield2y .y2-grid>.card:nth-child(2){height:auto!important;}
+}
+</style>
+
+<style id="cot-readable-font-final">
+/* COT Regime readability: enlarge text without widening the dashboard. */
+#tab-cot .cot-card-head{padding:10px 12px!important;}
+#tab-cot .cot-title{font-size:14px!important;letter-spacing:.45px!important;}
+#tab-cot .cot-sub{font-size:11px!important;}
+#tab-cot .cot-selector{padding:8px 10px!important;gap:5px!important;}
+#tab-cot .cot-pill{font-size:12px!important;padding:5px 9px!important;}
+#tab-cot .cot-table th{font-size:11px!important;letter-spacing:.55px!important;}
+#tab-cot .cot-table td{font-size:14px!important;}
+#tab-cot .cot-ccy{font-size:14px!important;gap:7px!important;}
+#tab-cot .cot-ccy img{width:20px!important;height:14px!important;}
+#tab-cot .cot-net{font-size:14px!important;}
+#tab-cot .cot-flow{font-size:12px!important;}
+#tab-cot .cot-crowd{font-size:12px!important;}
+#tab-cot .cot-split-label{font-size:10px!important;}
+#tab-cot .cot-side .big{font-size:30px!important;}
+#tab-cot .cot-side .name{font-size:13px!important;}
+#tab-cot .cot-side .badge{font-size:11.5px!important;}
+#tab-cot .cot-side .stat{font-size:12px!important;}
+#tab-cot .cot-chart-title{font-size:12px!important;}
+#tab-cot .cot-chart-meta{font-size:11px!important;}
+#tab-cot .cot-chart-empty{font-size:12px!important;}
+#tab-cot .cot-mini .k{font-size:10px!important;}
+#tab-cot .cot-mini .v{font-size:14px!important;}
+#tab-cot .cot-input-title{font-size:12px!important;}
+#tab-cot .cot-input-meta{font-size:11px!important;}
+#tab-cot .cot-form-grid>div{font-size:11px!important;}
+#tab-cot .cot-input{font-size:12px!important;}
+#tab-cot .cot-save{font-size:12px!important;}
+#tab-cot .cot-disclaimer{font-size:11px!important;}
+#tab-cot .cot-scanner-note{font-size:11px!important;}
+#tab-cot .cot-flow-main{font-size:12px!important;}
+#tab-cot .cot-flow-sub{font-size:10.5px!important;}
+@media(max-width:780px){
+  #tab-cot .cot-table th,#tab-cot .cot-table td{padding:6px 5px!important;}
+  #tab-cot .cot-table td{font-size:13px!important;}
+  #tab-cot .cot-ccy{font-size:13px!important;}
+}
+</style>
+
+
+<style id="v33-readable-cot-and-yield-fit">
+/* COT: scores are discrete -6..+6, so the dashboard never prints noisy decimals. */
+#tab-detail .stat-row .mono#statCot-USD,#tab-detail .stat-row .mono[id^="statCot-"]{font-variant-numeric:tabular-nums;}
+
+/* Rate Differential Monitor + Bond Yield Spread: keep the whole board visible on a normal desktop viewport. */
+#tab-yield2y .y2-grid>.card{min-height:0!important;}
+#tab-yield2y .y2-grid>.card:first-child{height:214px!important;}
+#tab-yield2y .y2-grid>.card:nth-child(2){height:214px!important;}
+#tab-yield2y .hist-spread-card{margin-top:8px!important;}
+#tab-yield2y .hist-spread-chart{height:300px!important;min-height:300px!important;}
+
+/* The bond-spread plot is deliberately linear: no spline overshoot or artificial bumps between observations. */
+#tab-yield2y .hist-spread-chart canvas{image-rendering:auto;}
+
+@media(max-width:1050px){
+  #tab-yield2y .y2-grid>.card:first-child,#tab-yield2y .y2-grid>.card:nth-child(2){height:auto!important;}
+  #tab-yield2y .hist-spread-chart{height:300px!important;min-height:300px!important;}
+}
+@media(max-width:700px){
+  #tab-yield2y .hist-spread-chart{height:270px!important;min-height:270px!important;}
+}
+</style>
+
+
+<style id="v3-dashboard-polish">
+/* Yield spread: give the chart real vertical breathing room without changing the table above. */
+#tab-yield2y .hist-spread-card{margin-top:10px!important;}
+#tab-yield2y .hist-spread-chart{height:370px!important;margin-top:10px!important;}
+#tab-yield2y .hist-spread-stats{margin-top:8px!important;gap:8px!important;}
+#tab-yield2y .hist-stat{padding:8px 10px!important;}
+#tab-yield2y .hist-spread-note{margin-top:7px!important;}
+
+/* COT selected-currency range readout: percentage on top, label directly below. */
+#tab-cot .cot-range-read{margin-top:10px;padding:8px 10px 7px;border:1px solid var(--border);border-radius:6px;background:var(--panel3);text-align:left;}
+#tab-cot .cot-range-pct{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:900;line-height:1.05;color:var(--text);}
+#tab-cot .cot-range-label{margin-top:3px;font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-faint);font-weight:800;}
+#tab-cot .cot-side .badge{display:block;width:max-content;max-width:100%;margin-top:7px;}
+
+/* Risk daily-close editor: explicit date + explicit save makes the data flow visible and deterministic. */
+#tab-risk .risk-inline-editor{align-items:flex-end;gap:7px;padding:9px 12px!important;}
+#tab-risk .risk-inline-field{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 105px;}
+#tab-risk .risk-inline-field>span{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-faint);font-weight:800;}
+#tab-risk .risk-date-input{font-size:11px!important;}
+#tab-risk #riskSaveCloseBtn{white-space:nowrap;flex:0 0 auto;}
+#tab-risk .risk-inline-note{flex:1 1 190px;min-width:160px;line-height:1.35;}
+@media(max-width:600px){
+  #tab-yield2y .hist-spread-chart{height:315px!important;}
+  #tab-risk .risk-inline-field{flex-basis:100%;}
+  #tab-risk #riskSaveCloseBtn{width:100%;}
+  #tab-risk .risk-inline-note{width:100%;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -1741,6 +1990,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
       <button class="tab-btn" data-tab="pairs">Pair Ranking</button>
       <button class="tab-btn" data-tab="yield2y">Bond Yield Spread</button>
       <button class="tab-btn" data-tab="risk" id="riskTabBtn">Risk Sentiment</button>
+      <button class="tab-btn" data-tab="cot" id="cotTabBtn">COT Regime</button>
     </nav>
     <div class="lock-box" id="lockBox"></div>
   </aside>
@@ -1758,6 +2008,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
     <section class="tab-panel" id="tab-pairs"></section>
     <section class="tab-panel" id="tab-yield2y"></section>
     <section class="tab-panel" id="tab-risk"></section>
+    <section class="tab-panel" id="tab-cot"></section>
   </main>
 </div>
 
@@ -1865,7 +2116,7 @@ setInterval(function(){
 
 var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD","CHF"];
 var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","CHF","JPY"];
-var CCY_NAME = {USD:"US Dollar",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc"};
+var CCY_NAME = {USD:"US Dollar Index (DX)",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc"};
 var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada",CHF:"switzerland"};
 var TE_EXACT = {
   "gdp growth rate qoq":"gdp-growth","gdp growth rate":"gdp-growth","gdp m m":"gdp-growth",
@@ -2059,6 +2310,7 @@ var CHF_YIELD_HISTORY = [{"date":"2026-05-01","CHF":0.158},{"date":"2026-05-04",
 
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
 var RISK_SENTIMENT={history:[],current:{spxClose:null,vixClose:null,spxPct:null,vixPct:null,date:""}};
+var COT_ENGINE={history:[],current:{},currentDate:"2026-08-18",inputDate:"2026-08-25"};
 var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and sparklines
 var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
@@ -2088,6 +2340,7 @@ function loadLocalCache() {
       LOG = parsed.LOG || [];
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
       RISK_SENTIMENT = normalizeRiskState(parsed.RISK_SENTIMENT);
+      COT_ENGINE = parsed.COT_ENGINE || {history:[],current:{},currentDate:"",inputDate:""};
       return true;
     }
   } catch(e) { console.error("Error reading cache", e); }
@@ -2109,7 +2362,7 @@ async function saveDataNow(){
   try {
     DATA._updatedAt = new Date().toISOString();
     RISK_SENTIMENT = normalizeRiskState(RISK_SENTIMENT);
-    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, YIELD_ENGINE: YIELD_ENGINE, RISK_SENTIMENT: RISK_SENTIMENT };
+    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, YIELD_ENGINE: YIELD_ENGINE, RISK_SENTIMENT: RISK_SENTIMENT, COT_ENGINE: COT_ENGINE };
     var payload = JSON.stringify(state);
 
     // Keep a local backup, but Supabase is now the shared source of truth.
@@ -2151,12 +2404,333 @@ function scheduleSave(){
   saveTimer = setTimeout(saveDataNow, 300);
 }
 
-function getCotScore(ccy){
-  var d=DATA[ccy];
-  var net = d.cotNet==="Bullish" ? 3 : (d.cotNet==="Bearish" ? -3 : 0);
-  var chg = (d.cotChangeBias||"Neutral")==="Bullish" ? 3 : ((d.cotChangeBias||"Neutral")==="Bearish" ? -3 : 0);
-  return net + chg;
+
+var COT_BACKFILL_52W={
+  USD:[["2025-08-26",12375,14295,31488],["2025-09-02",11357,12114,31502],["2025-09-09",18991,15755,38029],["2025-09-16",10373,16279,38526],["2025-09-23",11700,16912,40441],["2025-09-30",5597,16928,35699],["2025-10-07",6309,18760,38717],["2025-10-14",4026,20562,37137],["2025-10-21",3992,21822,35369],["2025-10-28",5884,21166,34998],["2025-11-04",8077,28935,43439],["2025-11-10",7930,28072,42792],["2025-11-18",7427,30763,44403],["2025-11-25",8860,33645,47161],["2025-12-02",6466,29734,43781],["2025-12-09",6908,28168,42972],["2025-12-16",11803,14010,26994],["2025-12-23",13485,14811,28181],["2025-12-30",14671,14673,28984],["2026-01-06",15398,14632,30078],["2026-01-13",11659,14968,29868],["2026-01-20",10984,15106,29579],["2026-01-27",16061,15686,31746],["2026-02-03",14169,13412,28190],["2026-02-10",14696,12047,27789],["2026-02-17",12894,11002,26596],["2026-02-24",12120,11270,26218],["2026-03-03",10139,14686,29871],["2026-03-10",8867,20550,32012],["2026-03-17",11169,16784,35456],["2026-03-24",10923,17844,36113],["2026-03-31",11243,20075,38735],["2026-04-07",9727,18368,36573],["2026-04-14",10581,13676,32911],["2026-04-21",9556,11965,30651],["2026-04-28",8782,11943,30611],["2026-05-05",7407,13212,32496],["2026-05-12",9720,14471,32108],["2026-05-19",11286,23002,40626],["2026-05-26",11356,23886,42278],["2026-06-02",13727,24839,43090],["2026-06-09",15886,29542,50285],["2026-06-16",16240,18110,49411],["2026-06-23",17440,22792,54908],["2026-06-30",15604,21184,54306],["2026-07-07",14930,19384,53384],["2026-07-14",13066,17932,53293],["2026-07-21",16361,18299,53953],["2026-07-28",17528,19129,58251],["2026-08-04",16271,12422,52154],["2026-08-11",15398,9626,49541],["2026-08-18",15198,7086,47928]],
+  GBP:[["2025-08-26",64127,40473,219906],["2025-09-02",65228,43549,226437],["2025-09-09",57669,40714,322879],["2025-09-16",60280,38667,234531],["2025-09-23",61382,33720,233166],["2025-09-30",61279,29168,226426],["2025-10-07",73987,39125,247550],["2025-10-14",72347,33253,237520],["2025-10-21",69452,29795,233484],["2025-10-28",80902,40509,248118],["2025-11-04",67560,41637,270917],["2025-11-10",55627,43073,272612],["2025-11-18",57629,48904,279341],["2025-11-25",51338,52667,315550],["2025-12-02",52318,47453,299768],["2025-12-09",54229,47761,332405],["2025-12-16",51009,36461,282031],["2025-12-23",52895,34060,198132],["2025-12-30",56342,30651,196003],["2026-01-06",60134,31187,206314],["2026-01-13",66540,28450,207867],["2026-01-20",66435,25657,207612],["2026-01-27",72408,35265,224459],["2026-02-03",73446,38035,227888],["2026-02-10",73525,30046,227574],["2026-02-17",74888,32522,238845],["2026-02-24",69164,29013,245891],["2026-03-03",68080,33574,269696],["2026-03-10",48818,28716,392591],["2026-03-17",46706,34938,243434],["2026-03-24",47450,31734,238862],["2026-03-31",58402,28470,243461],["2026-04-07",55779,29246,244191],["2026-04-14",54047,31716,250053],["2026-04-21",60536,31399,263523],["2026-04-28",58489,29607,263635],["2026-05-05",63113,37064,276143],["2026-05-12",70179,32877,283643],["2026-05-19",68279,36910,285647],["2026-05-26",62625,33796,282065],["2026-06-02",58403,31050,271147],["2026-06-09",58647,36335,291371],["2026-06-16",54078,37242,323315],["2026-06-23",54224,46657,297226],["2026-06-30",52097,35824,295062],["2026-07-07",57660,39681,282969],["2026-07-14",62437,33896,265153],["2026-07-21",68394,35158,262281],["2026-07-28",74612,33515,267426],["2026-08-04",67175,29001,246577],["2026-08-11",67627,26957,256447],["2026-08-18",70821,27944,286371]],
+  EUR:[["2025-08-26",109029,74822,842215],["2025-09-02",107011,77338,845820],["2025-09-09",103962,71350,878104],["2025-09-16",108039,81802,855448],["2025-09-23",106658,86855,859215],["2025-09-30",105007,82730,845775],["2025-10-07",107423,86038,855286],["2025-10-14",103080,80802,841079],["2025-10-21",102054,79590,835887],["2025-10-28",108266,90923,843717],["2025-11-04",98873,93691,835176],["2025-11-10",84211,89872,831275],["2025-11-18",87561,75140,827015],["2025-11-25",90941,76217,830589],["2025-12-02",90775,71503,851184],["2025-12-09",102769,61164,942794],["2025-12-16",116937,65636,986986],["2025-12-23",120823,64716,866951],["2025-12-30",121459,68797,869169],["2026-01-06",119570,68970,881815],["2026-01-13",103621,78229,883672],["2026-01-20",100073,89837,880948],["2026-01-27",115423,89062,919284],["2026-02-03",123767,81712,910464],["2026-02-10",132693,82489,926273],["2026-02-17",126502,82953,916813],["2026-02-24",120964,84167,911287],["2026-03-03",128443,98811,913289],["2026-03-10",105592,100361,969374],["2026-03-17",106918,113870,755789],["2026-03-24",97985,111523,764691],["2026-03-31",106291,102344,774237],["2026-04-07",104662,103780,775043],["2026-04-14",117694,92312,788828],["2026-04-21",113259,92942,790622],["2026-04-28",111857,100263,801430],["2026-05-05",110859,99013,815942],["2026-05-12",115836,97833,829377],["2026-05-19",121171,104854,826019],["2026-05-26",110985,103689,824224],["2026-06-02",109583,97556,842424],["2026-06-09",91856,109244,871507],["2026-06-16",94228,103154,894671],["2026-06-23",108150,123560,785477],["2026-06-30",102267,134911,790076],["2026-07-07",87460,132921,794833],["2026-07-14",89976,143667,799495],["2026-07-21",91110,147781,800061],["2026-07-28",92672,157870,819806],["2026-08-04",95389,147594,799909],["2026-08-11",86753,147353,801884],["2026-08-18",90140,147856,804940]],
+  JPY:[["2025-08-26",37627,79015,357366],["2025-09-02",37470,93913,414249],["2025-09-09",41473,83135,410799],["2025-09-16",39642,90432,299620],["2025-09-23",42138,95108,309893],["2025-09-30",43974,94506,305711],["2025-10-07",36311,91943,305134],["2025-10-14",43389,95490,305003],["2025-10-21",41771,88186,307569],["2025-10-28",42455,92580,321889],["2025-11-04",39743,96359,314190],["2025-11-10",41045,98659,312845],["2025-11-18",44380,107516,329456],["2025-11-25",48541,102135,344420],["2025-12-02",51732,113207,394859],["2025-12-09",43313,132007,465416],["2025-12-16",40103,122743,379679],["2025-12-23",33828,111984,285084],["2025-12-30",33087,107234,286132],["2026-01-06",47898,111128,287715],["2026-01-13",43869,142519,294242],["2026-01-20",52959,137696,292607],["2026-01-27",52084,123850,300726],["2026-02-03",58399,112851,303673],["2026-02-10",69883,123750,334948],["2026-02-17",82783,112104,354328],["2026-02-24",87174,113491,369721],["2026-03-03",88766,122991,416977],["2026-03-10",77546,126765,427718],["2026-03-17",69103,134532,326688],["2026-03-24",67921,122773,328210],["2026-03-31",77232,123414,345276],["2026-04-07",76763,127873,349373],["2026-04-14",77737,132182,354344],["2026-04-21",80220,148717,351782],["2026-04-28",81800,157602,372780],["2026-05-05",86085,138982,354005],["2026-05-12",75029,137469,362042],["2026-05-19",81097,146042,396573],["2026-05-26",87395,157903,427294],["2026-06-02",88645,176708,505555],["2026-06-09",91168,191012,505075],["2026-06-16",93889,190661,520825],["2026-06-23",90764,187856,431030],["2026-06-30",87437,202837,438825],["2026-07-07",84990,175073,398103],["2026-07-14",80938,171399,396514],["2026-07-21",81033,177218,423796],["2026-07-28",76752,178742,432366],["2026-08-04",75758,136583,419393],["2026-08-11",74973,128043,391874],["2026-08-18",67776,135747,380811]],
+  AUD:[["2025-08-26",28298,32781,191207],["2025-09-02",23431,33784,185048],["2025-09-09",28332,33086,208092],["2025-09-16",34848,37929,154790],["2025-09-23",35376,40922,160854],["2025-09-30",33684,45330,167976],["2025-10-07",35234,38271,170970],["2025-10-14",36497,31074,170002],["2025-10-21",40003,39657,173878],["2025-10-28",30047,42481,173436],["2025-11-04",40803,48291,180801],["2025-11-10",31113,46644,179467],["2025-11-18",33257,45684,179341],["2025-11-25",32135,49693,192678],["2025-12-02",31459,49128,202574],["2025-12-09",57563,39000,296662],["2025-12-16",64914,25437,293796],["2025-12-23",66955,25473,217163],["2025-12-30",66902,33231,223804],["2026-01-06",68439,33324,230926],["2026-01-13",68678,38461,229456],["2026-01-20",73064,45506,230657],["2026-01-27",92979,48253,252055],["2026-02-03",98448,39039,254240],["2026-02-10",97357,32453,247194],["2026-02-17",103196,32936,256213],["2026-02-24",92751,28098,248697],["2026-03-03",82669,28034,267280],["2026-03-10",69980,23412,315898],["2026-03-17",69124,23765,265675],["2026-03-24",68577,19432,257694],["2026-03-31",76188,23619,263962],["2026-04-07",70748,24847,264658],["2026-04-14",67142,23500,263918],["2026-04-21",73641,25316,275415],["2026-04-28",73808,25953,277370],["2026-05-05",82075,25475,279532],["2026-05-12",87122,31271,289244],["2026-05-19",92064,30886,301269],["2026-05-26",89665,29431,302802],["2026-06-02",86862,28062,305391],["2026-06-09",71653,29361,314177],["2026-06-16",68177,26639,295545],["2026-06-23",69043,29932,214349],["2026-06-30",64136,32359,215837],["2026-07-07",59300,29617,204837],["2026-07-14",55916,28694,208457],["2026-07-21",53631,28843,225153],["2026-07-28",57490,29872,229784],["2026-08-04",64639,24002,240482],["2026-08-11",72166,23625,267222],["2026-08-18",75644,23536,288526]],
+  NZD:[["2025-08-26",13515,13740,53094],["2025-09-02",13816,13531,55035],["2025-09-09",12116,13990,71602],["2025-09-16",8315,13642,49146],["2025-09-23",11825,14675,56346],["2025-09-30",24477,17612,68651],["2025-10-07",23740,18173,72345],["2025-10-14",28437,22723,82509],["2025-10-21",28061,21536,89666],["2025-10-28",26912,21866,88049],["2025-11-04",27760,25524,91568],["2025-11-10",31776,26767,102883],["2025-11-18",26356,24239,103502],["2025-11-25",25496,25058,107180],["2025-12-02",21104,23040,104251],["2025-12-09",14176,22030,114432],["2025-12-16",10608,22614,103974],["2025-12-23",11570,21914,82159],["2025-12-30",9309,23789,79352],["2026-01-06",13802,24407,84556],["2026-01-13",12239,22372,85211],["2026-01-20",19594,24713,92661],["2026-01-27",15757,27415,85552],["2026-02-03",11848,22445,71304],["2026-02-10",10313,21098,71848],["2026-02-17",9443,21908,73004],["2026-02-24",9811,20073,71503],["2026-03-03",11169,21464,79462],["2026-03-10",11699,15865,84215],["2026-03-17",5644,21561,64084],["2026-03-24",7461,24191,65011],["2026-03-31",5752,23550,70805],["2026-04-07",9015,24840,76952],["2026-04-14",6512,23603,80727],["2026-04-21",5291,23353,82508],["2026-04-28",7160,23993,83529],["2026-05-05",5654,24948,85340],["2026-05-12",7792,27227,86227],["2026-05-19",9929,25265,92545],["2026-05-26",10160,23830,91414],["2026-06-02",6068,33793,136648],["2026-06-09",10258,32512,149185],["2026-06-16",6535,28722,135171],["2026-06-23",8776,31598,103297],["2026-06-30",8260,33545,110331],["2026-07-07",7769,34970,113535],["2026-07-14",6653,35655,118190],["2026-07-21",5103,36189,108800],["2026-07-28",3676,33703,105128],["2026-08-04",3647,33937,101908],["2026-08-11",2520,35981,96840],["2026-08-18",4249,31055,89153]],
+  CAD:[["2025-08-26",19521,55664,227180],["2025-09-02",14546,58575,225322],["2025-09-09",16785,64132,249304],["2025-09-16",16778,65022,266847],["2025-09-23",17289,66045,212186],["2025-09-30",31804,77392,240191],["2025-10-07",32413,80155,261636],["2025-10-14",27050,76837,269924],["2025-10-21",25431,80276,272419],["2025-10-28",25850,84858,278750],["2025-11-04",25088,98033,292964],["2025-11-10",18784,90878,289605],["2025-11-18",21358,93726,278400],["2025-11-25",20320,92799,280112],["2025-12-02",14900,90624,274997],["2025-12-09",12559,86949,251868],["2025-12-16",11073,88091,244427],["2025-12-23",13824,71543,197138],["2025-12-30",14314,72992,211171],["2026-01-06",16030,73126,218740],["2026-01-13",22400,78099,219263],["2026-01-20",15588,72945,213597],["2026-01-27",25930,78146,227204],["2026-02-03",18431,71286,216252],["2026-02-10",18949,69957,215037],["2026-02-17",22004,64038,218415],["2026-02-24",24880,58981,222562],["2026-03-03",24944,66315,232433],["2026-03-10",28252,65411,288392],["2026-03-17",26293,64145,247753],["2026-03-24",26751,58451,182798],["2026-03-31",28325,71235,217085],["2026-04-07",31961,76105,240735],["2026-04-14",22623,84027,259258],["2026-04-21",17875,82090,255128],["2026-04-28",25239,79067,252679],["2026-05-05",25741,73499,243793],["2026-05-12",29032,66695,251467],["2026-05-19",28159,66813,292877],["2026-05-26",33148,71243,297944],["2026-06-02",34541,79142,305869],["2026-06-09",29832,88455,383773],["2026-06-16",31107,96160,492468],["2026-06-23",32530,115907,342860],["2026-06-30",36456,124557,346500],["2026-07-07",38249,124206,363847],["2026-07-14",33997,126768,368792],["2026-07-21",31615,129992,365599],["2026-07-28",26391,128886,372447],["2026-08-04",24786,126534,365083],["2026-08-11",26511,118516,364104],["2026-08-18",26172,115069,359585]],
+  CHF:[["2025-08-26",5184,5121,78933],["2025-09-02",7112,5697,80906],["2025-09-09",6407,6915,105100],["2025-09-16",6282,8691,71730],["2025-09-23",7435,8142,72030],["2025-09-30",7341,7306,71950],["2025-10-07",5883,6420,72046],["2025-10-14",5082,7423,73172],["2025-10-21",6171,8349,74034],["2025-10-28",7709,9329,74922],["2025-11-04",7138,10067,81378],["2025-11-10",6050,9601,82840],["2025-11-18",6819,8530,76329],["2025-11-25",6919,7522,77509],["2025-12-02",5302,8541,77275],["2025-12-09",7223,9441,92395],["2025-12-16",6985,11334,103436],["2025-12-23",7403,11283,88305],["2025-12-30",7179,12012,89124],["2026-01-06",8549,9789,90378],["2026-01-13",10064,10635,96220],["2026-01-20",9120,9155,98085],["2026-01-27",8819,9544,96111],["2026-02-03",7633,7272,93555],["2026-02-10",7398,8198,95799],["2026-02-17",7841,5386,95743],["2026-02-24",10272,6409,96835],["2026-03-03",11434,6978,105413],["2026-03-10",10750,6470,110897],["2026-03-17",7358,6845,74101],["2026-03-24",7950,7715,76518],["2026-03-31",10695,9205,79740],["2026-04-07",9990,10087,86646],["2026-04-14",8828,12249,93376],["2026-04-21",8282,12048,91532],["2026-04-28",7107,12281,94111],["2026-05-05",6389,13023,94468],["2026-05-12",5389,13097,94743],["2026-05-19",6894,11739,104225],["2026-05-26",6164,10987,105594],["2026-06-02",5604,15553,111432],["2026-06-09",6830,17615,115412],["2026-06-16",7480,19846,145747],["2026-06-23",7454,21270,108626],["2026-06-30",8199,17865,105912],["2026-07-07",10944,18162,107672],["2026-07-14",9951,19451,108412],["2026-07-21",9588,18485,107866],["2026-07-28",10272,19919,111939],["2026-08-04",11408,21492,109573],["2026-08-11",10165,21597,109874],["2026-08-18",11775,20846,113749]],
+};
+
+// COT_SEED_HISTORY is derived from the 52-week CFTC TFF backfill above, rather than
+// hand-maintained, so the historical range/percentile math always reflects the full
+// year of data instead of the handful of weeks that happened to be saved locally.
+// USD here is the ICE Dollar Index (DX) COT report, not a standalone USD future —
+// see CCY_NAME label and the pair-regime notes below for why that matters.
+function cotBuildSeedFromBackfill(){
+  var seed={};
+  Object.keys(COT_BACKFILL_52W).forEach(function(c){
+    var rows=COT_BACKFILL_52W[c]; // ascending [date, long, short, openInterest]
+    var nets=rows.map(function(r){return r[1]-r[2];});
+    var last=rows[rows.length-1], prev=rows[rows.length-2];
+    seed[c]={
+      high:Math.max.apply(null,nets), low:Math.min.apply(null,nets),
+      rows:rows.map(function(r){return [r[0], r[1]-r[2]];}),
+      oiRows:rows.map(function(r){return [r[0], r[3]];}),
+      long:last[1], short:last[2],
+      longChg:last[1]-prev[1], shortChg:last[2]-prev[2]
+    };
+  });
+  return seed;
 }
+var COT_SEED_HISTORY = cotBuildSeedFromBackfill();
+function cotNextReleaseDate(observationDate){
+  var d=new Date(String(observationDate||'')+'T00:00:00Z');
+  if(!Number.isFinite(d.getTime())) return '';
+  d.setUTCDate(d.getUTCDate()+3); // Tuesday observation -> Friday release
+  return d.toISOString().slice(0,10);
+}
+function cotFriendlyDate(dateStr){
+  if(!dateStr) return '—';
+  var d=new Date(String(dateStr)+'T00:00:00Z');
+  if(!Number.isFinite(d.getTime())) return dateStr;
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+}
+
+function cotNum(v){
+  if(v===null||v===undefined||String(v).trim()==="") return null;
+  var n=Number(String(v).replace(/,/g,""));
+  return Number.isFinite(n)?n:null;
+}
+function cotSortHistory(ccy){
+  if(!COT_ENGINE || !Array.isArray(COT_ENGINE.history)) return [];
+  return COT_ENGINE.history.filter(function(r){return r && r.ccy===ccy && r.date && cotNum(r.net)!=null;}).sort(function(a,b){return String(a.date).localeCompare(String(b.date));});
+}
+function cotLatest(ccy){
+  var arr=cotSortHistory(ccy), seed=COT_SEED_HISTORY[ccy];
+  var current=COT_ENGINE.current&&COT_ENGINE.current[ccy]?COT_ENGINE.current[ccy]:{};
+  var net=cotNum(current.net);
+  if(net==null && arr.length) net=cotNum(arr[arr.length-1].net);
+  var last=arr.length?arr[arr.length-1]:null;
+  var prior=arr.length>1?arr[arr.length-2]:null;
+  var rangeRows=arr.slice(-52), rangeVals=rangeRows.map(function(r){return cotNum(r.net);}).filter(function(v){return v!=null;});
+  var high=rangeVals.length?Math.max.apply(null,rangeVals):(seed?seed.high:null);
+  var low=rangeVals.length?Math.min.apply(null,rangeVals):(seed?seed.low:null);
+  var oi=cotNum(current.oi); if(oi==null && last) oi=cotNum(last.oi);
+  return {date:current.date||((last&&last.date)||''),long:cotNum(current.long),short:cotNum(current.short),longChg:cotNum(current.longChg),shortChg:cotNum(current.shortChg),net:net,netChg:cotNum(current.netChg)!=null?cotNum(current.netChg):(last&&prior?cotNum(last.net)-cotNum(prior.net):null),high:high,low:low,oi:oi};
+}
+function cotRangeLocation(ccy){
+  var d=cotLatest(ccy), hi=d.high, lo=d.low, n=d.net;
+  if(n==null||hi==null||lo==null||hi===lo) return null;
+  return Math.max(0,Math.min(100,((n-lo)/(hi-lo))*100));
+}
+function cotCrowding(ccy){
+  var d=cotLatest(ccy), loc=cotRangeLocation(ccy);
+  if(d.net==null||loc==null) return {label:'No regime',tone:'neutral',loc:null};
+  if(loc>=80) return {label:'Crowded Long',tone:'bull',loc:loc};
+  if(loc<=20) return {label:'Crowded Short',tone:'bear',loc:loc};
+  if(d.net>0) return {label:'Long',tone:'bull',loc:loc};
+  if(d.net<0) return {label:'Short',tone:'bear',loc:loc};
+  return {label:'Neutral',tone:'neutral',loc:loc};
+}
+function cotFlow(ccy){
+  var d=cotLatest(ccy), lc=d.longChg, sc=d.shortChg;
+  if(lc==null && sc==null) return 'No weekly change';
+  if(lc!=null && sc!=null){
+    if(lc>0 && sc<0) return 'More longs / fewer shorts';
+    if(lc<0 && sc>0) return 'Fewer longs / more shorts';
+    if(lc>0 && sc>0) return 'More longs / more shorts';
+    if(lc<0 && sc<0) return 'Fewer longs / fewer shorts';
+  }
+  if(lc!=null && lc!==0) return lc>0?'More longs':'Fewer longs';
+  if(sc!=null && sc!==0) return sc>0?'More shorts':'Fewer shorts';
+  return 'No weekly change';
+}
+function cotFlowHeadline(ccy){
+  var d=cotLatest(ccy), n=d.netChg;
+  if(n==null) return 'No weekly change';
+  if(n>0) return 'Net positioning improved';
+  if(n<0) return 'Net positioning weakened';
+  return 'Net positioning unchanged';
+}
+function cotFlowClass(ccy){
+  var d=cotLatest(ccy), n=d.netChg;
+  if(n==null||Math.abs(n)<1e-9) return 'cot-neutral';
+  return n>0?'cot-good':'cot-bad';
+}
+function cotBiasFromNet(ccy){ var d=cotLatest(ccy); return d.net>0?'Bullish':d.net<0?'Bearish':'Neutral'; }
+function cotBiasFromFlow(ccy){ var d=cotLatest(ccy); return d.netChg>0?'Bullish':d.netChg<0?'Bearish':'Neutral'; }
+function syncCotLegacyFields(ccy){
+  if(!DATA||!DATA[ccy]) return;
+  var d=cotLatest(ccy);
+  DATA[ccy].cotNet=cotBiasFromNet(ccy);
+  DATA[ccy].cotChangeBias=cotBiasFromFlow(ccy);
+  DATA[ccy].longPct=(d.long!=null&&d.short!=null)?((d.long/(d.long+d.short))*100).toFixed(2)+'%':'';
+  DATA[ccy].shortPct=(d.long!=null&&d.short!=null)?((d.short/(d.long+d.short))*100).toFixed(2)+'%':'';
+  DATA[ccy].changePct=d.netChg==null?'':(d.netChg>0?'+':'')+d.netChg;
+}
+function ensureCotEngine(){
+  var changed=false;
+  if(!COT_ENGINE || typeof COT_ENGINE!=='object') { COT_ENGINE={history:[],current:{},currentDate:'2026-08-18',inputDate:'2026-08-25'}; changed=true; }
+  if(!Array.isArray(COT_ENGINE.history)) { COT_ENGINE.history=[]; changed=true; }
+  if(!COT_ENGINE.current || typeof COT_ENGINE.current!=='object') { COT_ENGINE.current={}; changed=true; }
+  for(var i=0;i<CCYS.length;i++){
+    var c=CCYS[i], seed=COT_SEED_HISTORY[c];
+    var oiByDate={}; (seed.oiRows||[]).forEach(function(r){oiByDate[r[0]]=r[1];});
+    var by={};
+    COT_ENGINE.history.filter(function(r){return r&&r.ccy===c&&r.date;}).forEach(function(r){by[r.date]=Object.assign({},r);});
+    (seed.rows||[]).forEach(function(row){
+      if(!by[row[0]]){by[row[0]]={ccy:c,date:row[0],net:row[1],oi:oiByDate[row[0]]};changed=true;}
+    });
+    // Backfill Open Interest onto any locally-saved rows that predate this field, so
+    // older manual saves still get normalized (Net/OI) once the backfill is merged in.
+    Object.keys(by).forEach(function(dt){
+      if(by[dt].oi==null && oiByDate[dt]!=null){by[dt].oi=oiByDate[dt];changed=true;}
+    });
+    COT_ENGINE.history=COT_ENGINE.history.filter(function(r){return !(r&&r.ccy===c&&r.date);}).concat(Object.keys(by).sort().map(function(k){return by[k];}));
+    var latestSeed=seed.rows[seed.rows.length-1];
+    var histForC=cotSortHistory(c);
+    if(histForC.length){
+      var latestHist=histForC[histForC.length-1];
+      latestHist.long=seed.long; latestHist.short=seed.short;
+      latestHist.longChg=seed.longChg; latestHist.shortChg=seed.shortChg;
+      if(histForC.length>1){
+        var priorHist=histForC[histForC.length-2];
+        if(cotNum(priorHist.long)==null) priorHist.long=seed.long-seed.longChg;
+        if(cotNum(priorHist.short)==null) priorHist.short=seed.short-seed.shortChg;
+      }
+    }
+    var cur=COT_ENGINE.current[c]||{};
+    if(cotNum(cur.long)==null){cur.long=seed.long;changed=true;}
+    if(cotNum(cur.short)==null){cur.short=seed.short;changed=true;}
+    if(cotNum(cur.longChg)==null){cur.longChg=seed.longChg;changed=true;}
+    if(cotNum(cur.shortChg)==null){cur.shortChg=seed.shortChg;changed=true;}
+    if(cotNum(cur.net)==null){cur.net=seed.long-seed.short;changed=true;}
+    if(cotNum(cur.netChg)==null){cur.netChg=seed.rows[seed.rows.length-1][1]-seed.rows[seed.rows.length-2][1];changed=true;}
+    if(cotNum(cur.oi)==null){var latestOi=(seed.oiRows&&seed.oiRows.length)?seed.oiRows[seed.oiRows.length-1][1]:null; if(latestOi!=null){cur.oi=latestOi;changed=true;}}
+    if(!cur.date){cur.date=latestSeed[0];changed=true;}
+    COT_ENGINE.current[c]=cur;
+    syncCotLegacyFields(c);
+  }
+  if(!COT_ENGINE.currentDate) {COT_ENGINE.currentDate='2026-08-18';changed=true;}
+  if(!COT_ENGINE.inputDate) {COT_ENGINE.inputDate='2026-08-25';changed=true;}
+  return changed;
+}
+function cotFormat(n){
+  if(n==null||!Number.isFinite(Number(n))) return '—';
+  var v=Number(n), sign=v>0?'+':v<0?'−':'';
+  var a=Math.abs(v);
+  if(a>=1000000) return sign+(a/1000000).toFixed(1)+'M';
+  if(a>=1000) return sign+(a/1000).toFixed(1)+'K';
+  return sign+Math.round(a);
+}
+function cotPercent(n){ return n==null||!Number.isFinite(Number(n))?'—':((n>0?'+':'')+Number(n).toFixed(2)+'%'); }
+function cotDirectionPoints(v){
+  // COT activity is intentionally discrete: current net positioning = +/-3,
+  // weekly net change = +/-3.  Together they produce the dashboard COT score
+  // on a clean -6 to +6 scale. This prevents meaningless long decimals.
+  var n=Number(v);
+  if(!Number.isFinite(n) || n===0) return 0;
+  return n>0?3:-3;
+}
+function cotScoreValue(ccy){
+  var d=cotLatest(ccy);
+  var netPoints=cotDirectionPoints(d.net);
+  var wowPoints=cotDirectionPoints(d.netChg);
+  return netPoints+wowPoints;
+}
+function getCotScore(ccy){ return cotScoreValue(ccy); }
+
+// ---- Pair-level COT Regime -------------------------------------------------
+// This is a SEPARATE relative layer on top of the individual currency COT score
+// above. The individual score above is untouched and still contributes the
+// existing 10% COT weight to each currency's overall macro score.
+//
+// The individual score answers "what are institutions doing to this currency
+// on its own" (compressed to +/-3 per leg, +/-6 total, intentionally coarse).
+// A pair needs a different question answered: "which of the two currencies has
+// the stronger institutional positioning, right now, relative to the other" —
+// and that comparison breaks if it's built from the same +/-3 compression,
+// since two currencies that are both deeply short (e.g. CAD -88.9K, JPY -68.0K)
+// both collapse to -3 and cancel out to Neutral even though one is clearly more
+// crowded than the other.
+//
+// To fix that without inventing arbitrary raw-contract thresholds (JPY/CAD open
+// interest dwarfs NZD/CHF, so "30,000 contracts" doesn't mean the same thing for
+// both), each currency's Net and weekly Net change are normalized by that
+// currency's own Open Interest, the two legs of the pair are differenced, and the
+// CURRENT week's relative reading is ranked against that pair's own 52-week
+// history of the same relative reading. That way "how bullish/bearish" is
+// calibrated from the pair's own actual distribution, not a guess.
+function cotNormSeries(ccy){
+  var rows=cotSortHistory(ccy), out=[];
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i], oi=cotNum(r.oi), net=cotNum(r.net);
+    if(net==null) continue;
+    var rawFlow=null, normFlow=null;
+    if(i>0){
+      var pn=cotNum(rows[i-1].net);
+      if(pn!=null) rawFlow=net-pn;
+      if(pn!=null && oi!=null && oi) normFlow=(net-pn)/oi;
+    }
+    out.push({date:r.date, normNet:(oi!=null && oi)?net/oi:null, rawFlow:rawFlow, normFlow:normFlow});
+  }
+  return out;
+}
+function cotPairSeries(base,quote){
+  var b=cotNormSeries(base), q=cotNormSeries(quote), qByDate={}, out=[];
+  q.forEach(function(r){qByDate[r.date]=r;});
+  b.forEach(function(rb){
+    var rq=qByDate[rb.date]; if(!rq) return;
+    out.push({
+      date:rb.date,
+      relNet:(rb.normNet!=null && rq.normNet!=null)?(rb.normNet-rq.normNet):null,
+      // Pair WoW is intentionally RAW net-contract flow: who actually added/reduced
+      // more net positioning this week. OI normalization is NOT used for this column.
+      relFlow:(rb.rawFlow!=null && rq.rawFlow!=null)?(rb.rawFlow-rq.rawFlow):null
+    });
+  });
+  return out;
+}
+function cotPctRank(current,arr){
+  if(current==null || !arr.length) return null;
+  var below=0; for(var i=0;i<arr.length;i++){ if(arr[i]<=current) below++; }
+  return 100*below/arr.length;
+}
+// Pair COT calibration is direction-first and distribution-second.
+// The sign of the underlying relative reading is authoritative:
+//   rel > 0 => BASE has stronger institutional positioning/flow.
+//   rel < 0 => QUOTE has stronger institutional positioning/flow.
+// The 52-week history is used only to measure how large that directional
+// advantage is. Neutral therefore means no measurable relative advantage
+// (zero / unavailable), not "near the 50th percentile".
+function cotHistoricalMagnitudeScore(current,arr){
+  if(current==null || !arr.length || !Number.isFinite(Number(current))) return 0;
+  var a=Math.abs(Number(current));
+  if(a===0) return 0;
+  var absArr=[];
+  for(var i=0;i<arr.length;i++){
+    var v=Number(arr[i]);
+    if(Number.isFinite(v)) absArr.push(Math.abs(v));
+  }
+  if(!absArr.length) return 0;
+  absArr.sort(function(x,y){return x-y;});
+  var below=0;
+  for(var j=0;j<absArr.length;j++){ if(absArr[j]<=a) below++; }
+  var pct=100*below/absArr.length;
+  return (Number(current)>0?1:-1)*pct;
+}
+function cotPairBand(score){
+  var n=Number(score);
+  if(!Number.isFinite(n) || Math.abs(n)<1e-12) return 'Neutral';
+  if(n>=80) return 'Very Bullish';
+  if(n>0) return 'Bullish';
+  if(n<=-80) return 'Very Bearish';
+  return 'Bearish';
+}
+// Common Pair COT engine. Every BASE/QUOTE pair uses the same calculation.
+// Do not substitute the individual currency +6/0/-6 score here.
+function cotPairRegime(base,quote){
+  if(!base||!quote||base===quote) return {label:'Neutral',posLabel:'Neutral',flowLabel:'Neutral',posScore:0,flowScore:0,combined:0,positionAdvantage:null,flowAdvantage:null,insufficient:true};
+  var series=cotPairSeries(base,quote);
+  if(series.length<8) return {label:'Neutral',posLabel:'Neutral',flowLabel:'Neutral',posScore:0,flowScore:0,combined:0,positionAdvantage:null,flowAdvantage:null,insufficient:true};
+
+  // Current relative values use the two distinct COT concepts requested:
+  //   relNet  = BASE Net/OI - QUOTE Net/OI
+  //   relFlow = BASE ΔNet - QUOTE ΔNet  (RAW weekly net-contract change)
+  // Their signs always retain the BASE-vs-QUOTE meaning.
+  var win=series.slice(-52);
+  var netArr=win.map(function(r){return r.relNet;}).filter(function(v){return v!=null && Number.isFinite(Number(v));});
+  var flowArr=win.filter(function(r){return r.relFlow!=null && Number.isFinite(Number(r.relFlow));}).map(function(r){return r.relFlow;});
+  var cur=win[win.length-1];
+
+  // 52-week distribution determines magnitude only. It cannot reverse or
+  // erase the BASE/QUOTE direction carried by the underlying relative value.
+  var posScore=cotHistoricalMagnitudeScore(cur.relNet,netArr);
+  var flowScore=cotHistoricalMagnitudeScore(cur.relFlow,flowArr);
+  var combined=0.75*posScore+0.25*flowScore;
+
+  return {
+    label:cotPairBand(combined),
+    posLabel:cotPairBand(posScore),
+    flowLabel:cotPairBand(flowScore),
+    posScore:Math.round(posScore*10)/10,
+    flowScore:Math.round(flowScore*10)/10,
+    combined:Math.round(combined*10)/10,
+    positionAdvantage: posScore>0?base:(posScore<0?quote:null),
+    flowAdvantage: flowScore>0?base:(flowScore<0?quote:null),
+    insufficient:false
+  };
+}
+
+function cotNetOnlyScore(ccy){ return cotDirectionPoints(cotLatest(ccy).net); }
+function cotWowMagnitudeScore(ccy){
+  var chg=cotLatest(ccy).netChg;
+  if(chg==null) return 0;
+  var a=Math.abs(chg), sign=chg>0?1:-1;
+  // Weekly COT flow, banded by size of the actual move — so a currency whose net
+  // position genuinely swung hard this week (e.g. JPY -14.9K) outweighs one that
+  // barely ticked (e.g. USD +2.3K), instead of both just counting as a flat +/-1.
+  if(a<1000) return 0;
+  if(a<3000) return sign*1;
+  if(a<6000) return sign*2;
+  return sign*3;
+}
+
 
 function biasVal(b){ return b==="Bullish"?1:(b==="Bearish"?-1:0); }
 function seasonalityAvgNum(d){
@@ -2253,12 +2827,13 @@ function riskDailyPct(close, prevClose){
   if(close==null || prevClose==null || prevClose===0) return null;
   return ((close/prevClose)-1)*100;
 }
-function riskSaveObservation(spxClose,vixClose){
-  var date=riskTodayKey();
-  var spx= riskInputNum(spxClose), vix=riskInputNum(vixClose);
+function riskSaveObservation(spxClose,vixClose,dateOverride){
+  var date=String(dateOverride||riskTodayKey()).trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date=riskTodayKey();
+  var spx=riskInputNum(spxClose), vix=riskInputNum(vixClose);
   if(spx==null || vix==null) return {ok:false,msg:'Enter both closes first.'};
-  var rows=riskHistorySorted(), existing=rows.find(function(r){return r.date===date;});
-  var prior=null; for(var i=rows.length-1;i>=0;i--){if(rows[i].date<date){prior=rows[i];break;}}
+  var rows=riskHistorySorted(), prior=null;
+  for(var i=rows.length-1;i>=0;i--){if(rows[i].date<date){prior=rows[i];break;}}
   var row={date:date,spxClose:spx,vixClose:vix,spxPct:riskDailyPct(spx,prior&&prior.spxClose),vixPct:riskDailyPct(vix,prior&&prior.vixClose)};
   var by={}; rows.forEach(function(r){by[r.date]=r;}); by[date]=row;
   RISK_SENTIMENT.history=Object.keys(by).sort().map(function(k){return by[k];});
@@ -2299,10 +2874,10 @@ function riskSurfaceHtml(){
   }).join('');
   return {ready:ready,html:
     '<div class="strength-summary">'+
-      '<div class="strength-stat"><div class="strength-k">Regime</div><div class="strength-v '+(ready?(score>=0.2?'strength-pos':score<=-0.2?'strength-neg':''):'')+'">'+(ready?label:'Baseline')+'</div></div>'+
-      '<div class="strength-stat"><div class="strength-k">Strongest</div><div class="strength-v strength-pos">'+(ready?strongest.c+' '+fmt(strongest.sc):'—')+'</div></div>'+
-      '<div class="strength-stat"><div class="strength-k">Weakest</div><div class="strength-v strength-neg">'+(ready?weakest.c+' '+fmt(weakest.sc):'—')+'</div></div>'+
-      '<div class="strength-stat"><div class="strength-k">Spread</div><div class="strength-v">'+(ready?spread+' pts':'—')+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Regime</div><div id="riskRegimeValue" class="strength-v '+(ready?(score>=0.2?'strength-pos':score<=-0.2?'strength-neg':''):'')+'">'+(ready?label:'Baseline')+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Strongest</div><div id="riskStrongestValue" class="strength-v strength-pos">'+(ready?strongest.c+' '+fmt(strongest.sc):'—')+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Weakest</div><div id="riskWeakestValue" class="strength-v strength-neg">'+(ready?weakest.c+' '+fmt(weakest.sc):'—')+'</div></div>'+
+      '<div class="strength-stat"><div class="strength-k">Spread</div><div id="riskSpreadValue" class="strength-v">'+(ready?spread+' pts':'—')+'</div></div>'+
     '</div>'+
     '<div class="risk-scale-wrap">'+
       '<div class="risk-scale-label left">RISK-OFF</div>'+
@@ -2321,14 +2896,38 @@ function riskInputNum(v){
   return Number.isFinite(n)?n:null;
 }
 function riskClamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+function riskScoreFromObservation(row,prior){
+  if(!row) return null;
+  var vx0=riskInputNum(row.vixClose);
+  var levelSignal = vx0!=null ? riskClamp((20-vx0)/8,-1,1) : null;
+  var spxPct=riskInputNum(row.spxPct), vixPct=riskInputNum(row.vixPct);
+  if((spxPct==null || vixPct==null) && prior){
+    var sp=riskInputNum(row.spxClose), vx=riskInputNum(row.vixClose);
+    if(sp!=null && vx!=null && riskInputNum(prior.spxClose)!=null && riskInputNum(prior.vixClose)!=null){
+      spxPct=riskDailyPct(sp,riskInputNum(prior.spxClose));
+      vixPct=riskDailyPct(vx,riskInputNum(prior.vixClose));
+    }
+  }
+  if(spxPct!=null && vixPct!=null){
+    // A real day-over-day move exists — blend it with VIX's absolute level so a
+    // calm-but-slightly-higher VIX doesn't get called "risk-off" just because it
+    // ticked up, and a stressed-but-slightly-lower VIX doesn't get called "risk-on".
+    var spxTerm=riskClamp(spxPct/1.5,-1,1);
+    var vixMoveTerm=riskClamp(-vixPct/8,-1,1);
+    var moveBlend=riskClamp(0.60*spxTerm+0.40*vixMoveTerm,-1,1);
+    return riskClamp(0.55*(levelSignal||0)+0.45*moveBlend,-1,1);
+  }
+  // Day one — no prior close to compare against — VIX's level carries the reading.
+  if(levelSignal!=null) return levelSignal;
+  return null;
+}
 function riskRegimeScore(){
   var cur=RISK_SENTIMENT.current||{};
-  var vixLevel=riskInputNum(cur.vixClose);
-  // A single closing level is enough for the regime. The S&P close is displayed as
-  // market context, but an absolute S&P price by itself has no directional meaning.
-  // This keeps Risk Sentiment from becoming a second daily-history calculator.
-  if(vixLevel!=null) return riskClamp((19-vixLevel)/6,-1,1);
-  return 0;
+  if(!cur || (cur.spxClose==null && cur.vixClose==null)) return 0;
+  var rows=riskHistorySorted(), prior=null;
+  for(var i=rows.length-1;i>=0;i--){ if(rows[i].date && rows[i].date<(cur.date||riskTodayKey())){ prior=rows[i]; break; } }
+  var score=riskScoreFromObservation(cur,prior);
+  return score==null?0:score;
 }
 function riskHasAnyReading(){
   var cur=RISK_SENTIMENT.current||{};
@@ -2346,11 +2945,10 @@ function riskSensitivity(ccy){
 function riskTermFor(ccy){ return riskRegimeScore()*riskSensitivity(ccy); }
 function riskPublicStateFor(ccy){
   if(!riskHasAnyReading()) return 'Baseline';
-  var score=riskRegimeScore(), sens=riskSensitivity(ccy);
-  if(Math.abs(score)<0.06) return 'Neutral';
-  if(Math.abs(score)<0.20) return 'Pivot';
-  if(score>0) return sens>=0 ? 'Supportive' : 'Headwind';
-  return sens<=0 ? 'Supportive' : 'Headwind';
+  var term=riskTermFor(ccy); // regime score × this currency's own sensitivity
+  if(Math.abs(term)<0.03) return 'Neutral';
+  if(Math.abs(term)<0.08) return 'Pivot';
+  return term>0 ? 'Supportive' : 'Headwind';
 }
 function riskPublicClassFor(ccy){
   var state=riskPublicStateFor(ccy);
@@ -2449,7 +3047,7 @@ function sectorCellClass(label){
   if(label==="Very Strong") return "cell-vstrong"; if(label==="Strong") return "cell-strong";
   if(label==="Very Weak") return "cell-vweak"; if(label==="Weak") return "cell-weak"; return "cell-neutral"; }
 function cotBiasLabel(cot){ var v=Number(cot)||0; return v>0?"Bullish":(v<0?"Bearish":"Neutral"); }
-function cotInstBand(cot){ var v=Number(cot)||0; if(v>=4) return "Very Bullish"; if(v>=1.5) return "Bullish"; if(v<=-4) return "Very Bearish"; if(v<=-1.5) return "Bearish"; return "Neutral"; }
+function cotInstBand(cot){ var v=Number(cot)||0; if(v>=6) return "Very Bullish"; if(v>=3) return "Bullish"; if(v<=-6) return "Very Bearish"; if(v<=-3) return "Bearish"; return "Neutral"; }
 function instColorStyle(label){
   if(label==="Very Bullish"||label==="Bullish") return "color:var(--bullish-strong);font-weight:700;";
   if(label==="Very Bearish"||label==="Bearish") return "color:var(--bearish-strong);font-weight:700;";
@@ -2573,11 +3171,15 @@ function pairCompositeFor(base, quote){
   var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
   var y=pairYieldCalc(base,quote).score;
   var yieldTerm=(y==null?0:y/10);
-  var cotBase=getCotScore(base)/6, cotQuote=getCotScore(quote)/6;
+  // Pair COT term now comes from the pair-relative engine (cotPairRegime), scaled
+  // from its -100..100 combined score to the same -1..1 range the other terms use.
+  // This is the ONLY place pair-level COT is computed from — never the individual
+  // currency's own +6/-6 score, which answers a different question (see cotPairRegime).
+  var cotTerm=cotPairRegime(base,quote).combined/100;
   var seasBase=seasonalitySign(db), seasQuote=seasonalitySign(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   // Core pair score: Fundamentals 70% + Yield 15% + COT 10% + Seasonality 2% + Risk Sentiment 3%.
-  return 100*(0.70*(fundBase-fundQuote)+0.15*yieldTerm+0.10*(cotBase-cotQuote)+0.02*(seasBase-seasQuote)+0.03*(riskBase-riskQuote));
+  return 100*(0.70*(fundBase-fundQuote)+0.15*yieldTerm+0.10*cotTerm+0.02*(seasBase-seasQuote)+0.03*(riskBase-riskQuote));
 }
 
 function buildPairs(scores){
@@ -2751,7 +3353,8 @@ var TAB_META={
   detail:{title:"Currency Detail",sub:""},
   pairs:{title:"Pair Ranking",sub:""},
   yield2y:{title:"Bond Yield Spread",sub:""},
-  risk:{title:"Risk Sentiment",sub:"Market-risk regime"}
+  risk:{title:"Risk Sentiment",sub:"S&P 500 + VIX market-risk regime"},
+  cot:{title:"COT Regime",sub:"Institutional positioning, flow and crowding"}
 };
 function switchTab(tab){
   activeTab=tab;
@@ -2765,6 +3368,7 @@ function switchTab(tab){
   else if(tab==="pairs"){ renderPairs(); }
   else if(tab==="yield2y"){ renderYield2Y(); }
   else if(tab==="risk"){ renderRiskSentiment(); }
+  else if(tab==="cot"){ renderCotRegime(); }
   if(tab==="yield2y" && typeof histSpreadDraw==="function"){
     // The chart canvas is built while its tab is still hidden, so the browser
     // reports zero width at that point and the chart draws at the wrong size.
@@ -3279,6 +3883,22 @@ function histSpreadDraw(){
 
   var vals=rows.map(function(x){return x.spread;});
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+
+  /* Robust vertical scale: a single stale/outlier yield observation must not
+     flatten the entire spread series against the bottom/top of the panel.
+     The true series is still drawn, but extreme points are clipped to the
+     visible plotting range instead of determining the scale. */
+  var scaleVals=vals.slice().sort(function(a,b){return a-b;});
+  function pct(arr,p){
+    if(!arr.length) return 0;
+    var idx=(arr.length-1)*p, lo=Math.floor(idx), hi=Math.ceil(idx);
+    if(lo===hi) return arr[lo];
+    return arr[lo]+(arr[hi]-arr[lo])*(idx-lo);
+  }
+  if(scaleVals.length>=8){
+    var p05=pct(scaleVals,0.05), p95=pct(scaleVals,0.95);
+    if(Number.isFinite(p05)&&Number.isFinite(p95)&&p95>p05){ min=p05; max=p95; }
+  }
   if(min===max){min-=10;max+=10;}
 
   var compact=W<=600;
@@ -3289,7 +3909,10 @@ function histSpreadDraw(){
   var pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
   var extra=(max-min)*0.12; min-=extra; max+=extra;
   function X(i){return pad.l+(i/(rows.length-1))*pw;}
-  function Y(v){return pad.t+(max-v)/(max-min)*ph;}
+  function Y(v){
+    var clipped=Math.max(min,Math.min(max,v));
+    return pad.t+(max-clipped)/(max-min)*ph;
+  }
 
   var styles=getComputedStyle(document.body);
   var textDim=styles.getPropertyValue("--text-dim").trim()||"#565e6d";
@@ -3309,7 +3932,7 @@ function histSpreadDraw(){
   }
 
   var lineColor=vals[vals.length-1]>=vals[0]?bullish:bearish;
-  ctx.strokeStyle=lineColor;ctx.lineWidth=compact?2.3:2.5;ctx.lineJoin="round";ctx.lineCap="round";
+  ctx.strokeStyle=lineColor;ctx.lineWidth=compact?2.1:2.3;ctx.lineJoin="miter";ctx.lineCap="butt";
   ctx.beginPath();
   rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
   ctx.stroke();
@@ -3886,25 +4509,7 @@ function renderDetailBody(ccy){
         '</div>'+
         
         '<div class="info-item risk-detail-item"><span class="k">Risk sentiment</span><span class="v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
-        '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+' ('+(cotScore>0?"+":"")+cotScore+')</span></div>'+
-        
-        '<div class="info-item cot-change-item"><span class="k">Latest Buys &amp; Sells</span>'+(unlockedLocally?
-          '<select class="'+ ((d.cotChangeBias||"Neutral")==="Bullish"?"bias-select Bullish":(d.cotChangeBias||"Neutral")==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotChangeBiasSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotChangeBias">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===(d.cotChangeBias||"Neutral")?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
-          : '<span class="v" id="cotChangeBiasTxt-'+ccy+'" style="color:'+((d.cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(d.cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+(d.cotChangeBias||"Neutral")+'</span>')+'</div>'+
-          
-        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span>'+(unlockedLocally?
-          '<select class="'+ (d.cotNet==="Bullish"?"bias-select Bullish":d.cotNet==="Bearish"?"bias-select Bearish":"bias-select Neutral") +'" id="cotNetSel-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="cotNet">'+["Bullish","Neutral","Bearish"].map(function(o){ return '<option '+(o===d.cotNet?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
-          : '<span class="v" id="cotNetTxt-'+ccy+'" style="color:'+(d.cotNet==="Bullish"?"var(--bullish-strong)":d.cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)")+';">'+d.cotNet+'</span>')+'</div>'+
-          
-        '<div class="info-item"><span class="k">Long % / Short %</span><div class="ls-pair">'+
-          '<span class="ls-tag ls-long">L</span>'+
-          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="longPct" value="'+esc(d.longPct)+'" style="'+longShortColors(d.longPct,d.shortPct).longStyle+'" '+(unlockedLocally?"":"disabled")+'>'+
-          '<span class="ls-sep">/</span>'+
-          '<span class="ls-tag ls-short">S</span>'+
-          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="shortPct" value="'+esc(d.shortPct)+'" style="'+longShortColors(d.longPct,d.shortPct).shortStyle+'" '+(unlockedLocally?"":"disabled")+'></div></div>'+
-        '<div class="info-item"><span class="k">Change %</span>'+
-          '<input type="text" placeholder="—" data-role="ccyfield" data-ccy="'+ccy+'" data-field="changePct" value="'+esc(d.changePct)+'" style="'+changePctColor(d.changePct)+'" '+(unlockedLocally?"":"disabled")+'></div>'+
-      '</div>'+
+        '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+        '<div class="info-item"><span class="k">Latest Positioning Change</span><span class="v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span><span class="v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).net)+'">'+cotFormat(cotLatest(ccy).net)+'</span></div>'+        '<div class="info-item cot-change-item"><span class="k">COT WoW change</span><span class="v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).netChg)+'">'+cotFormat(cotLatest(ccy).netChg)+'</span></div>'+        '<div class="info-item"><span class="k">Long / Short</span><span class="v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotLatest(ccy);if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+        '<div class="info-item"><span class="k">COT regime</span><span class="v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+      '</div>'+
       renderDetailTrendPanel(ccy, sc)+
       '</div>';
   for(var s=0;s<sectors.length;s++){
@@ -4080,7 +4685,15 @@ function pillarBias(score){
 }
 function simpleRelBias(v){
   var n=Number(v)||0;
-  return n>0?'Bullish':n<0?'Bearish':'Neutral';
+  return n>=8?'Very Bullish':n>=3?'Bullish':n<=-8?'Very Bearish':n<=-3?'Bearish':'Neutral';
+}
+function netPositionRelBias(v){
+  var n=Number(v)||0;
+  return n>=6?'Very Bullish':n>=3?'Bullish':n<=-6?'Very Bearish':n<=-3?'Bearish':'Neutral';
+}
+function wowRelBias(v){
+  var n=Number(v)||0;
+  return n>=5?'Very Bullish':n>=2?'Bullish':n<=-5?'Very Bearish':n<=-2?'Bearish':'Neutral';
 }
 function pillarBiasClass(label){
   return label==='Very Bullish'?'yield-vbull':label==='Bullish'?'yield-bull':label==='Very Bearish'?'yield-vbear':label==='Bearish'?'yield-bear':'yield-neutral';
@@ -4120,7 +4733,7 @@ function sparkline(pair){
     '</linearGradient></defs>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
     '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
-    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><rect class="pair-trend-hover-band" x="'+(pts[0][0]-4).toFixed(1)+'" y="0" width="8" height="'+h+'" rx="2" fill="var(--amber)" opacity="0.09"/><line class="pair-trend-hover-line" x1="'+pts[0][0].toFixed(1)+'" y1="2" x2="'+pts[0][0].toFixed(1)+'" y2="'+(h-2)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 2" opacity="0.85"/><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="2.8" fill="var(--panel)" stroke="'+col+'" stroke-width="1.3"/></g>'+
+    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="2.8" fill="var(--panel)" stroke="'+col+'" stroke-width="1.3"/></g>'+
     hitPts+
     '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-trend-hit"/></svg>';
 }
@@ -4155,36 +4768,22 @@ function updatePairTrendCrosshair(svg, idx){
   var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
   if(!days.length) return;
   idx=Math.max(0,Math.min(days.length-1,idx));
-  var ptsLine=svg.querySelector('.pair-trend-hover-line');
-  var band=svg.querySelector('.pair-trend-hover-band');
   var dot=svg.querySelector('.pair-trend-hover-dot');
   var cross=svg.querySelector('.pair-trend-crosshair');
-  if(!ptsLine||!band||!dot||!cross) return;
-  var r=svg.getBoundingClientRect();
+  if(!dot||!cross) return;
   var vb=svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal : {width:svg.clientWidth,height:svg.clientHeight};
   var vbW=vb.width||110;
   var pad=svg.classList.contains('pair-big-trend')?30:3;
   var x=pad+(idx/(days.length-1))*(vbW-2*pad);
-  // Use the actual point's rendered screen position so the guide follows the plotted curve precisely.
-  var circles=svg.querySelectorAll('circle');
-  var target=null;
-  for(var i=0;i<circles.length;i++){
-    if(circles[i].classList.contains('pair-trend-hover-dot')) continue;
-    target=circles[i];
-  }
-  // Main hit circles are ordered by day; use the indexed circle when available.
+  // Use the actual point's rendered screen position so the dot sits exactly on the plotted curve.
   var hit=svg.querySelectorAll('circle:not(.pair-trend-hover-dot)');
   if(hit[idx]){
     x=parseFloat(hit[idx].getAttribute('cx'))||x;
     var y=parseFloat(hit[idx].getAttribute('cy'))||0;
-    ptsLine.setAttribute('x1',x.toFixed(1)); ptsLine.setAttribute('x2',x.toFixed(1));
     dot.setAttribute('cx',x.toFixed(1)); dot.setAttribute('cy',y.toFixed(1));
   } else {
-    ptsLine.setAttribute('x1',x.toFixed(1)); ptsLine.setAttribute('x2',x.toFixed(1));
     dot.setAttribute('cx',x.toFixed(1));
   }
-  var bandWidth=svg.classList.contains('pair-big-trend')?18:8;
-  band.setAttribute('x',(x-bandWidth/2).toFixed(1));
   cross.setAttribute('opacity','1');
 }
 function hidePairTrendCrosshair(svg){
@@ -4285,7 +4884,7 @@ function bigChart(pair, rangeSel){
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none" pointer-events="none"/>'+
     '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
-    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><rect class="pair-trend-hover-band" x="'+(pts[0][0]-9).toFixed(1)+'" y="'+(pad-2)+'" width="18" height="'+(h-pad+2)+'" rx="3" fill="var(--amber)" opacity="0.08"/><line class="pair-trend-hover-line" x1="'+pts[0][0].toFixed(1)+'" y1="'+pad+'" x2="'+pts[0][0].toFixed(1)+'" y2="'+baseY+'" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.9"/><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="1.8"/></g>'+labels+hitPts+
+    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="1.8"/></g>'+labels+hitPts+
     '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-big-trend-hit pair-trend-hit"/>'+
     '</svg>';
 }
@@ -4337,9 +4936,8 @@ function renderPairs(){
     var fb = fundFor(p.base), fq = fundFor(p.quote);
     var fundRel = (fb.max?(100*fb.raw/fb.max):0) - (fq.max?(100*fq.raw/fq.max):0);
     var fundBias=pillarBias(fundRel), fundBiasClass=pillarBiasClass(fundBias);
-    var cb=getCotScore(p.base), cq=getCotScore(p.quote), cotRel=cb-cq;
-    var cotWoWBase=DATA[p.base].cotChangeBias||'Neutral', cotWoWQuote=DATA[p.quote].cotChangeBias||'Neutral';
-    var cotWoWRel=biasVal(cotWoWBase)-biasVal(cotWoWQuote);
+    var cotPair=cotPairRegime(p.base,p.quote);
+    var cotDxNote=(p.base==='USD'||p.quote==='USD')?' title="USD leg uses ICE Dollar Index (DX) COT data as a proxy — not a pure single-currency future."':'';
     var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
     rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
       '<td class="day-delta-cell" data-label="1D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
@@ -4349,8 +4947,8 @@ function renderPairs(){
       '<td data-label="Bias">'+pairBiasMarkup(p.bias)+'</td>'+
       '<td data-label="Fundamentals"><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
       '<td data-label="Yield Bias"><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
-      '<td data-label="Net Positioning"><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotRel))+'">'+simpleRelBias(cotRel)+'</span></td>'+
-      '<td data-label="&Delta; WoW"><span class="pair-factor '+pillarBiasClass(simpleRelBias(cotWoWRel))+'">'+simpleRelBias(cotWoWRel)+'</span></td>'+
+      '<td data-label="Net Positioning"'+cotDxNote+'><span class="pair-factor '+pillarBiasClass(cotPair.posLabel)+'">'+cotPair.posLabel+'</span></td>'+
+      '<td data-label="&Delta; WoW"'+cotDxNote+'><span class="pair-factor '+pillarBiasClass(cotPair.flowLabel)+'">'+cotPair.flowLabel+'</span></td>'+
       '<td data-label="Seasonality"><span class="pair-factor '+pillarBiasClass(seasonalityPairText(p.base,p.quote))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
       '<td data-label="Risk Sentiment"><span class="pair-factor '+pillarBiasClass(riskPairState(p.base,p.quote))+'">'+riskPairState(p.base,p.quote)+'</span></td>'+
       '</tr>';
@@ -4371,13 +4969,33 @@ function renderPairs(){
     var epSeasLabel=seasonalityBandLabelFromValue(epSeas);
     var epRisk=100*0.03*(riskTermFor(epBase)-riskTermFor(epQuote));
     var epRiskState=riskPairState(epBase,epQuote);
+    var epCot=cotPairRegime(epBase,epQuote);
+    var epCotWhy = epCot.insufficient ? 'Not enough shared history yet' :
+      ('Position: '+(epCot.positionAdvantage?epCot.positionAdvantage+' advantage':'roughly even')+' ('+(epCot.posScore>0?'+':'')+epCot.posScore+' pts vs own 52W range)'+
+       ' · Flow: '+(epCot.flowAdvantage?epCot.flowAdvantage+' advantage':'roughly even')+' ('+(epCot.flowScore>0?'+':'')+epCot.flowScore+' pts)');
+    var epCotDxNote=(epBase==='USD'||epQuote==='USD')?' <span style="color:var(--text-faint);">· USD leg = DX index proxy</span>':'';
+    // Explanatory only — shows the Net/Open-Interest normalization the pair-level COT
+    // score is actually built from. Does not change cotPairRegime's math or weight.
+    var epBaseD=cotLatest(epBase), epQuoteD=cotLatest(epQuote);
+    var epBaseNormPct=(epBaseD.oi!=null&&epBaseD.net!=null&&epBaseD.oi)?100*epBaseD.net/epBaseD.oi:null;
+    var epQuoteNormPct=(epQuoteD.oi!=null&&epQuoteD.net!=null&&epQuoteD.oi)?100*epQuoteD.net/epQuoteD.oi:null;
+    var epOiBreakdown = (epBaseNormPct==null||epQuoteNormPct==null) ? '' :
+      '<div style="padding:0 14px 12px;font-size:11px;color:var(--text-dim);line-height:1.7;">'+
+        '<b style="color:var(--text-bright);">Why this COT reading:</b> raw net contracts aren\'t directly comparable across currencies (different market sizes), so each leg is normalized by its own Open Interest first.<br>'+
+        esc(epBase)+' — Net '+cotFormat(epBaseD.net)+' ÷ OI '+(epBaseD.oi!=null?Math.round(epBaseD.oi).toLocaleString():'—')+' = <b>'+cotPercent(epBaseNormPct)+'</b><br>'+
+        esc(epQuote)+' — Net '+cotFormat(epQuoteD.net)+' ÷ OI '+(epQuoteD.oi!=null?Math.round(epQuoteD.oi).toLocaleString():'—')+' = <b>'+cotPercent(epQuoteNormPct)+'</b><br>'+
+        'Relative: '+esc(epBase)+' ('+cotPercent(epBaseNormPct)+') vs '+esc(epQuote)+' ('+cotPercent(epQuoteNormPct)+') → <b class="'+pillarBiasClass(epCot.posLabel)+'">'+epCot.posLabel+'</b>'+
+      '</div>';
     expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span>'+
       '<div style="display:flex;align-items:center;gap:12px;"><div class="range-switch">'+rangeBtns+'</div>'+
       '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
       '<div class="pair-detail-diagnostics">'+
         '<div><span>Seasonality</span><b class="'+pillarBiasClass(epSeasLabel)+'">'+fmt(epSeas)+' · '+epSeasLabel+'</b></div>'+
         '<div><span>Risk Sentiment</span><b class="'+pillarBiasClass(epRiskState)+'">'+(epRisk>0?'+':'')+epRisk.toFixed(1)+' pts · '+epRiskState+'</b></div>'+
+        '<div><span>COT Regime</span><b class="'+pillarBiasClass(epCot.label)+'">'+epCot.label+'</b></div>'+
       '</div>'+
+      '<div style="padding:2px 14px 12px;font-size:11px;color:var(--text-dim);">'+esc(epCotWhy)+epCotDxNote+'</div>'+
+      epOiBreakdown+
       bigChart(expandedPair, expandedRange)+'</div></div>';
   }
   var filterBtns = [["All","All"],["Extremes","Extremes"],["Very Bullish","Very Bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very Bearish"]].map(function(fb){
@@ -4512,6 +5130,216 @@ function renderPairs(){
   }; }
 }
 
+
+var activeCotCcy="ALL";
+// Default to the full 52-week window so the selected COT regime is immediately traceable.
+var activeCotRange="12M";
+function cotRangeLimit(range){
+  return range==='6W'?6:(range==='3M'?13:(range==='6M'?26:(range==='12M'?52:null)));
+}
+function cotDrawChart(ccy){
+  var canvas=document.getElementById('cotRegimeCanvas'), empty=document.getElementById('cotRegimeEmpty'), tip=document.getElementById('cotCrosshairTip');
+  if(!canvas) return;
+  var allRows=cotSortHistory(ccy), limit=cotRangeLimit(activeCotRange);
+  var rows=(limit?allRows.slice(-limit):allRows), d=cotLatest(ccy);
+  var rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  var W=Math.max(340,rect.width), H=Math.max(200,rect.height);
+  canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+  var ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  canvas.__cotChartState=null;
+  canvas.__cotLocked=false;
+  if(rows.length<2){if(empty) empty.textContent='Need at least two saved weekly net observations.'; if(tip) tip.style.display='none'; return;} else if(empty) empty.textContent='';
+
+  var vals=rows.map(function(r){return Number(r.net);}), min=Math.min.apply(null,vals.concat([0])), max=Math.max.apply(null,vals.concat([0]));
+  if(min===max){min-=1000;max+=1000;}
+  var pad={l:54,r:14,t:16,b:34}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  var extra=(max-min)*0.12; min-=extra; max+=extra;
+  function X(i){return pad.l+(i/(rows.length-1))*pw;}
+  function Y(v){return pad.t+(max-v)/(max-min)*ph;}
+  var styles=getComputedStyle(document.body), td=styles.getPropertyValue('--text-dim').trim()||'#8b93a8', tf=styles.getPropertyValue('--text-faint').trim()||'#5c6478';
+  var bull=styles.getPropertyValue('--bullish-strong').trim()||'#45d792', bear=styles.getPropertyValue('--bearish-strong').trim()||'#ff6b76';
+  var grid=styles.getPropertyValue('--border').trim()||'#343c37';
+  var amber=styles.getPropertyValue('--amber').trim()||'#caa35c';
+  var panel=styles.getPropertyValue('--panel').trim()||'#111';
+  var color=vals[vals.length-1]>=vals[0]?bull:bear;
+
+  function drawBase(){
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    ctx.font='10px IBM Plex Mono, monospace'; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillStyle=td;
+    [max,min,0].forEach(function(v){var y=Y(v); if(y<10||y>H-25) return; ctx.fillText(cotFormat(v),pad.l-7,y);});
+    if(0>=min && 0<=max){ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(pad.l,Y(0));ctx.lineTo(W-pad.r,Y(0));ctx.stroke();}
+    ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();
+    vals.forEach(function(v,i){var x=X(i),y=Y(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+    // Tiny persistent weekly markers. They make every saved observation traceable without clutter.
+    vals.forEach(function(v,i){var x=X(i),y=Y(v);ctx.fillStyle=color;ctx.globalAlpha=(i===vals.length-1?0.95:0.38);ctx.beginPath();ctx.arc(x,y,i===vals.length-1?3.2:1.65,0,Math.PI*2);ctx.fill();});
+    ctx.globalAlpha=1;
+    ctx.fillStyle=tf;ctx.textBaseline='top';ctx.font='10px IBM Plex Mono, monospace';
+    var labelN=Math.min(6,rows.length); for(var i=0;i<labelN;i++){var idx=Math.round(i*(rows.length-1)/(labelN-1||1));var dt=String(rows[idx].date);var lab=dt.slice(5,10);var x=X(idx);ctx.textAlign=idx===0?'left':(idx===rows.length-1?'right':'center');ctx.fillText(lab,x,H-pad.b+10);}
+  }
+  function drawTrace(idx){
+    var row=rows[idx], val=vals[idx], x=X(idx), y=Y(val);
+    drawBase();
+    ctx.save();
+    // Dot only — no dashed guide lines, per request.
+    ctx.fillStyle=panel;ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.restore();
+    if(tip){
+      tip.innerHTML='<span class="k">'+esc(cotFriendlyDate(row.date))+'</span><span class="v">Net '+esc(cotFormat(val))+' contracts</span>';
+      var tipW=165, tipH=26, left=x+10, top=y-tipH-8;
+      if(left+tipW>W-6) left=x-tipW-10; if(top<6) top=y+10;
+      tip.style.left=Math.max(6,left)+'px'; tip.style.top=Math.max(6,top)+'px'; tip.style.display='block';
+    }
+  }
+  drawBase();
+  canvas.__cotChartState={rows:rows,vals:vals,W:W,H:H,pad:pad,X:X,Y:Y,color:color,min:min,max:max,dpr:dpr};
+
+  if(!canvas.__cotHoverBound){
+    canvas.__cotHoverBound=true;
+    function traceEvent(ev){
+      var st=canvas.__cotChartState; if(!st || st.rows.length<2) return;
+      var r=canvas.getBoundingClientRect();
+      var px=ev.clientX-r.left;
+      var plotX=Math.max(st.pad.l,Math.min(st.W-st.pad.r,px));
+      var ratio=(plotX-st.pad.l)/(st.W-st.pad.l-st.pad.r);
+      var idx=Math.max(0,Math.min(st.rows.length-1,Math.round(ratio*(st.rows.length-1))));
+      canvas.__cotHoverIndex=idx;
+      drawTrace(idx);
+    }
+    canvas.addEventListener('pointermove',traceEvent,{passive:true});
+    // Mouse fallback for browsers/webviews that do not dispatch Pointer Events reliably.
+    canvas.addEventListener('mousemove',traceEvent,{passive:true});
+    canvas.addEventListener('click',function(){
+      canvas.__cotLocked=!canvas.__cotLocked;
+      var idx=canvas.__cotHoverIndex;
+      if(canvas.__cotLocked && idx!=null) drawTrace(idx);
+      else {if(tip) tip.style.display='none'; drawBase();}
+    });
+    canvas.addEventListener('pointerleave',function(){
+      if(!canvas.__cotLocked){if(tip) tip.style.display='none'; drawBase();}
+    });
+    canvas.addEventListener('mouseleave',function(){
+      if(!canvas.__cotLocked){if(tip) tip.style.display='none'; drawBase();}
+    });
+    // Touch: drag your finger across the chart to trace it, same as moving a mouse.
+    // preventDefault stops the page from scrolling instead of the chart tracing.
+    canvas.addEventListener('touchstart',function(ev){
+      if(ev.touches && ev.touches.length){ ev.preventDefault(); canvas.__cotTouching=true; traceEvent(ev.touches[0]); }
+    },{passive:false});
+    canvas.addEventListener('touchmove',function(ev){
+      if(ev.touches && ev.touches.length){ ev.preventDefault(); traceEvent(ev.touches[0]); }
+    },{passive:false});
+    canvas.addEventListener('touchend',function(){
+      canvas.__cotTouching=false;
+      if(!canvas.__cotLocked){if(tip) tip.style.display='none'; drawBase();}
+    },{passive:true});
+  }
+}
+
+function cotCsvEscape(v){
+  var s=String(v==null?'':v);
+  return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+function cotExportCsv(){
+  ensureCotEngine();
+  var rows=[]; var fallback={};
+  Object.keys(COT_BACKFILL_52W||{}).forEach(function(c){(COT_BACKFILL_52W[c]||[]).forEach(function(r){fallback[c+'|'+r[0]]={long:r[1],short:r[2],oi:r[3]};});});
+  CCYS.forEach(function(c){
+    cotSortHistory(c).forEach(function(r){
+      var fb=fallback[c+'|'+r.date]||{};
+      var long=cotNum(r.long)!=null?cotNum(r.long):cotNum(fb.long), short=cotNum(r.short)!=null?cotNum(r.short):cotNum(fb.short);
+      var net=cotNum(r.net); if(net==null&&long!=null&&short!=null) net=long-short;
+      var oi=cotNum(r.oi)!=null?cotNum(r.oi):cotNum(fb.oi);
+      rows.push({date:r.date,ccy:c,long:long,short:short,net:net,oi:oi,longChg:cotNum(r.longChg),shortChg:cotNum(r.shortChg),netChg:cotNum(r.netChg)});
+    });
+  });
+  rows.sort(function(a,b){return a.date.localeCompare(b.date)||a.ccy.localeCompare(b.ccy);});
+  var prev={};
+  rows.forEach(function(r){var p=prev[r.ccy];if(p){if(r.netChg==null&&r.net!=null&&p.net!=null)r.netChg=r.net-p.net;if(r.longChg==null&&r.long!=null&&p.long!=null)r.longChg=r.long-p.long;if(r.shortChg==null&&r.short!=null&&p.short!=null)r.shortChg=r.short-p.short;}prev[r.ccy]=r;});
+  var header=['Date','Currency','Long','Short','Net','Open Interest','Long Change','Short Change','Net Change'];
+  var lines=[header.join(',')];
+  rows.forEach(function(r){lines.push([r.date,r.ccy,r.long==null?'':Math.round(r.long),r.short==null?'':Math.round(r.short),r.net==null?'':Math.round(r.net),r.oi==null?'':Math.round(r.oi),r.longChg==null?'':Math.round(r.longChg),r.shortChg==null?'':Math.round(r.shortChg),r.netChg==null?'':Math.round(r.netChg)].map(cotCsvEscape).join(','));});
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='TWP_COT_History_Master.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+  updateStatus('COT CSV exported · '+rows.length+' rows','var(--bullish-strong)');
+}
+function cotRenderScannerRows(){
+  var rows=CCY_ORDER.map(function(c){var d=cotLatest(c), crowd=cotCrowding(c);return {c:c,d:d,crowd:crowd};});
+  rows.sort(function(a,b){return (b.d.net||0)-(a.d.net||0);});
+  return rows.map(function(o){
+    var d=o.d, crowd=o.crowd, total=(d.long!=null&&d.short!=null)?(d.long+d.short):0, longPct=total>0?(d.long/total*100):0, shortPct=total>0?(d.short/total*100):0;
+    var netCls=d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral';
+    var dot=crowd.tone==='bull'?'bull':crowd.tone==='bear'?'bear':'neu';
+    return '<tr>'+      '<td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortPct.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longPct.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
+  }).join('');
+}
+function cotExtremesHtml(){
+  var rows=CCY_ORDER.map(function(c){var d=cotLatest(c),cr=cotCrowding(c);return {c:c,d:d,cr:cr,ext:cr.loc==null?0:Math.abs(cr.loc-50)*2};});
+  rows.sort(function(a,b){return b.ext-a.ext;});
+  return '<div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:26px">#</th><th>Asset</th><th>Range</th><th>Reading</th><th>Net</th><th>1W Δ</th></tr></thead><tbody>'+rows.map(function(o,i){var cl=o.cr.tone==='bull'?'cot-good':o.cr.tone==='bear'?'cot-bad':'cot-neutral';return '<tr><td class="cot-muted">'+(i+1)+'</td><td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td><td class="cot-muted">'+(o.cr.loc==null?'—':o.cr.loc.toFixed(0)+'%')+'</td><td class="cot-crowd '+cl+'">'+o.cr.label+'</td><td class="cot-net '+(o.d.net>0?'cot-good':o.d.net<0?'cot-bad':'cot-neutral')+'">'+cotFormat(o.d.net)+'</td><td class="cot-net '+(o.d.netChg>0?'cot-good':o.d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(o.d.netChg)+'</td></tr>';}).join('')+'</tbody></table></div>';
+}
+function cotWeeklyFlowHtml(){
+  var rows=CCY_ORDER.map(function(c){var d=cotLatest(c);return {c:c,d:d};}).sort(function(a,b){return (a.d.netChg==null?0:a.d.netChg)-(b.d.netChg==null?0:b.d.netChg);});
+  return '<div class="cot-section-pad"><table class="cot-table"><thead><tr><th>Asset</th><th>Long change</th><th>Short change</th><th>Net change</th><th>What changed</th></tr></thead><tbody>'+rows.map(function(o){var d=o.d,n=d.netChg;return '<tr><td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td><td class="cot-net '+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</td><td class="cot-net '+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</td><td class="cot-net '+(n>0?'cot-good':n<0?'cot-bad':'cot-neutral')+'">'+cotFormat(n)+'</td><td><div class="cot-flow-main">'+esc(cotFlow(o.c))+'</div><div class="cot-flow-sub">'+esc(cotFlowHeadline(o.c))+'</div></td></tr>';}).join('')+'</tbody></table></div>';
+}
+function cotDetailHtml(ccy){
+  var d=cotLatest(ccy), crowd=cotCrowding(ccy), flow=cotFlow(ccy), hist=cotSortHistory(ccy);
+  var netCls=d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral';
+  var chgCls=d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral';
+  var longPct=(d.long!=null&&d.short!=null)?(d.long/(d.long+d.short)*100):null;
+  var shortPct=(d.long!=null&&d.short!=null)?(d.short/(d.long+d.short)*100):null;
+  var badgeClass=crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral';
+  return '<div class="cot-hero">'+
+    '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net ÷ OI</span><b class="'+netCls+'">'+(d.oi!=null&&d.net!=null&&d.oi?cotPercent(100*d.net/d.oi):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">This is the normalized figure the Pair Ranking COT score actually compares against other currencies — not the raw net number above.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+hist.length+' saved weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
+}
+function renderCotRegime(){
+  var tab=document.getElementById('tab-cot'); if(!tab||!DATA) return;
+  ensureCotEngine();
+  var ccy=activeCotCcy==='ALL'?'USD':activeCotCcy;
+  var saveDate=COT_ENGINE.inputDate || '2026-08-25';
+  var releaseDate=cotNextReleaseDate(saveDate);
+  var editorRows=CCYS.map(function(c){var d=cotLatest(c);return '<div class="cot-form-row"><div class="cot-ccy">'+flagImg(c)+' '+c+'</div><div><input class="cot-input" data-cot-field="long" data-ccy="'+c+'" value="'+(d.long==null?'':Math.round(d.long))+'"></div><div><input class="cot-input" data-cot-field="short" data-ccy="'+c+'" value="'+(d.short==null?'':Math.round(d.short))+'"></div><div class="cot-net '+(d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.net)+'</div><div class="cot-flow '+cotFlowClass(c)+'">'+cotFormat(d.netChg)+'</div><div><button class="cot-save" data-save-ccy="'+c+'">Save</button></div></div>';}).join('');
+  var buttons='<div class="cot-selector"><button class="cot-pill '+(activeCotCcy==='ALL'?'active':'')+'" data-cot-select="ALL">ALL</button>'+CCYS.map(function(c){return '<button class="cot-pill '+(activeCotCcy===c?'active':'')+'" data-cot-select="'+c+'">'+c+'</button>';}).join('')+'</div>';
+  var adminInput='';
+  if(unlockedLocally){
+    adminInput='<div class="cot-card cot-admin-card" style="margin-top:10px;">'+
+      '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter only this week’s Long Contracts and Short Contracts. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta">COT week (Tuesday): <span class="cot-link">'+esc(cotFriendlyDate(saveDate))+'</span> · Report available (Friday): <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. This input panel is hidden when you are signed out.</div></div></div>';
+  }
+  tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:26%">Regime</th><th class="right" style="width:21%">Range</th></tr></thead><tbody>'+cotRenderScannerRows()+'</tbody></table></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    '<div class="cot-card cot-weekly-card" style="margin-top:8px;"><div class="cot-card-head"><div><div class="cot-title">COT week-on-week change</div><div class="cot-sub">Weekly change in long, short and net positioning</div></div></div>'+cotWeeklyFlowHtml()+'</div>'+    adminInput+  '</div>';
+  var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
+  var cotRanges=tab.querySelectorAll('[data-cot-range]'); for(var cr=0;cr<cotRanges.length;cr++){cotRanges[cr].onclick=function(){activeCotRange=this.dataset.cotRange;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
+  var inputs=tab.querySelectorAll('[data-cot-field]'); for(var j=0;j<inputs.length;j++){inputs[j].addEventListener('input',function(){isTyping=true;});inputs[j].addEventListener('blur',function(){isTyping=false;});}
+  var saveBtns=tab.querySelectorAll('[data-save-ccy]'); for(var k=0;k<saveBtns.length;k++){saveBtns[k].onclick=function(){cotCommitInputs(this.dataset.saveCcy,tab);};}
+  var cotExportBtn=document.getElementById('cotExportCsvBtn'); if(cotExportBtn) cotExportBtn.onclick=cotExportCsv;
+  requestAnimationFrame(function(){cotDrawChart(ccy);});
+}
+function cotCommitInputs(ccy,tab){
+  if(!unlockedLocally) return;
+  var li=tab.querySelector('[data-cot-field="long"][data-ccy="'+ccy+'"]'), si=tab.querySelector('[data-cot-field="short"][data-ccy="'+ccy+'"]');
+  var long=cotNum(li&&li.value), short=cotNum(si&&si.value);
+  if(long==null||short==null){updateStatus('Enter both long and short contracts first.','var(--amber)');return;}
+  var rows=cotSortHistory(ccy), previous=rows.length?rows[rows.length-1]:null;
+  var date=COT_ENGINE.inputDate || COT_ENGINE.currentDate || '2026-08-25';
+  var net=long-short, netChg=previous?net-cotNum(previous.net):null;
+  var longChg=previous&&cotNum(previous.long)!=null?long-cotNum(previous.long):null;
+  var shortChg=previous&&cotNum(previous.short)!=null?short-cotNum(previous.short):null;
+  // Open Interest isn't part of the weekly Long/Short entry — it's carried forward from
+  // the last known value automatically so the normalized (Net/OI) pair math keeps working
+  // without adding a field to the weekly workflow. Update it directly in history if a more
+  // current OI figure ever needs correcting.
+  var oi=previous?cotNum(previous.oi):null;
+  var cur={date:date,long:long,short:short,longChg:longChg,shortChg:shortChg,net:net,netChg:netChg,oi:oi};
+  COT_ENGINE.current[ccy]=cur; COT_ENGINE.currentDate=date;
+  var all=COT_ENGINE.history.filter(function(r){return !(r.ccy===ccy&&r.date===date);}); all.push({ccy:ccy,date:date,long:long,short:short,longChg:longChg,shortChg:shortChg,net:net,netChg:netChg,oi:oi}); COT_ENGINE.history=all;
+  syncCotLegacyFields(ccy);
+  var complete=CCYS.every(function(x){return COT_ENGINE.current[x] && COT_ENGINE.current[x].date===date;});
+  if(complete){
+    var dt=new Date(date+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+7);
+    COT_ENGINE.inputDate=dt.toISOString().slice(0,10);
+  }
+  scheduleSave(); updateComputed(); renderCotRegime();
+  updateStatus(ccy+' COT saved · '+date,'var(--bullish-strong)');
+}
+
 function riskPctLabel(v){ var n=riskInputNum(v); return n==null?"—":((n>0?"+":"")+n.toFixed(2)+"%"); }
 function renderRiskSentiment(){
   var tab=document.getElementById("tab-risk"); if(!tab) return;
@@ -4519,38 +5347,75 @@ function renderRiskSentiment(){
   var rows=riskHistorySorted().slice(-10).reverse();
   var cur=RISK_SENTIMENT.current||{}, spx=riskInputNum(cur.spxClose), vix=riskInputNum(cur.vixClose);
   var histHtml=rows.length?rows.map(function(r){
-    var rs=r.spxPct==null||r.vixPct==null?"Baseline":riskRegimeLabel(riskClamp(0.60*riskClamp((r.spxPct||0)/1.5,-1,1)+0.40*riskClamp(-(r.vixPct||0)/8,-1,1),-1,1));
-    return '<tr><td>'+esc(r.date)+'</td><td class="mono">'+(r.spxClose==null?'—':Number(r.spxClose).toFixed(2))+'</td><td class="mono">'+(r.spxPct==null?'—':riskPctLabel(r.spxPct))+'</td><td class="mono">'+(r.vixClose==null?'—':Number(r.vixClose).toFixed(2))+'</td><td class="mono">'+(r.vixPct==null?'—':riskPctLabel(r.vixPct))+'</td><td class="'+riskClass(r.spxPct==null?0:riskClamp(0.60*riskClamp((r.spxPct||0)/1.5,-1,1)+0.40*riskClamp(-(r.vixPct||0)/8,-1,1),-1,1))+'">'+rs+'</td></tr>';
+    var all=riskHistorySorted(), prior=null; for(var pi=all.length-1;pi>=0;pi--){if(all[pi].date<r.date){prior=all[pi];break;}}
+    var rowScore=riskScoreFromObservation(r,prior), rs=rowScore==null?"No reading":riskRegimeLabel(rowScore);
+    return '<tr><td>'+esc(r.date)+'</td><td class="mono">'+(r.spxClose==null?'—':Number(r.spxClose).toFixed(2))+'</td><td class="mono">'+(r.spxPct==null?'—':riskPctLabel(r.spxPct))+'</td><td class="mono">'+(r.vixClose==null?'—':Number(r.vixClose).toFixed(2))+'</td><td class="mono">'+(r.vixPct==null?'—':riskPctLabel(r.vixPct))+'</td><td class="'+riskClass(rowScore==null?0:rowScore)+'">'+rs+'</td></tr>';
   }).join(''):'<tr><td colspan="6"><div class="risk-empty">No saved observations yet.</div></td></tr>';
 
   var surface=riskSurfaceHtml();
   var inlineEditor = unlockedLocally ?
     '<div class="risk-inline-editor risk-inline-live">'+
-      '<span class="risk-inline-label">Latest close</span>'+
+      '<span class="risk-inline-label">Daily close</span>'+
+      '<label class="risk-inline-field"><span>Date</span><input id="riskObsDateInput" type="date" class="risk-inline-input risk-date-input" value="'+esc(cur.date||riskTodayKey())+'"></label>'+
       '<label class="risk-inline-field"><span>S&amp;P 500</span><input id="riskSpxCloseInput" class="risk-inline-input" inputmode="decimal" placeholder="Close" value="'+(spx==null?'':esc(spx))+'"></label>'+
       '<label class="risk-inline-field"><span>VIX</span><input id="riskVixCloseInput" class="risk-inline-input" inputmode="decimal" placeholder="Close" value="'+(vix==null?'':esc(vix))+'"></label>'+
-      '<span class="risk-inline-note">VIX sets the regime · S&amp;P is context</span>'+
+      '<button id="riskSaveCloseBtn" class="risk-btn primary risk-btn-sm" type="button">Save Daily Close</button>'+
+      '<span id="riskLiveReadout" class="risk-inline-note">60% S&amp;P · 40% inverse VIX · saved closes drive the regime</span>'+
     '</div>' : '';
 
+  var historyPanel='<details class="risk-details"><summary>Recent saved daily closes</summary><div style="overflow-x:auto;margin-top:6px;"><table class="risk-history"><thead><tr><th>Date</th><th>S&amp;P</th><th>S&amp;P Δ</th><th>VIX</th><th>VIX Δ</th><th>Regime</th></tr></thead><tbody>'+histHtml+'</tbody></table></div></details>';
   tab.innerHTML='<div class="risk-page"><div class="strength-card risk-compact-card">'+
     surface.html+
     inlineEditor+
+    historyPanel+
     (surface.ready?'':'<div class="risk-empty" style="padding:8px 12px 10px;">'+(unlockedLocally?'Enter the latest S&amp;P 500 and VIX closes above.':'Awaiting the latest market close.')+'</div>')+
   '</div></div>';
 
   if(!unlockedLocally) return;
-  var si=document.getElementById('riskSpxCloseInput'), vi=document.getElementById('riskVixCloseInput');
-  function applyRiskLive(){
-    var sp=riskInputNum(si?si.value:null), vx=riskInputNum(vi?vi.value:null);
-    RISK_SENTIMENT.current={spxClose:sp,vixClose:vx,spxPct:null,vixPct:null,date:riskTodayKey()};
-    scheduleSave();
+  var si=document.getElementById('riskSpxCloseInput'), vi=document.getElementById('riskVixCloseInput'), di=document.getElementById('riskObsDateInput'), sb=document.getElementById('riskSaveCloseBtn'), lr=document.getElementById('riskLiveReadout');
+  function selectedRiskDate(){ return (di&&di.value)||riskTodayKey(); }
+  function previewRiskLive(){
+    var sp=riskInputNum(si?si.value:null), vx=riskInputNum(vi?vi.value:null), date=selectedRiskDate();
+    if(sp==null || vx==null){ if(lr) lr.textContent='Enter both closes, then save the completed U.S. session.'; return; }
+    var rows=riskHistorySorted(), prior=null;
+    for(var i=rows.length-1;i>=0;i--){if(rows[i].date<date){prior=rows[i];break;}}
+    var preview={date:date,spxClose:sp,vixClose:vx,spxPct:riskDailyPct(sp,prior&&prior.spxClose),vixPct:riskDailyPct(vx,prior&&prior.vixClose)};
+    var score=riskScoreFromObservation(preview,prior);
+    RISK_SENTIMENT.current=preview;
+    var lbl=score==null?'—':riskRegimeLabel(score);
+    var reg=document.getElementById('riskRegimeValue');
+    if(reg){ reg.textContent=lbl; reg.className='strength-v '+(score>=0.20?'strength-pos':score<=-0.20?'strength-neg':''); }
+    var spxTerm=score==null?0:Math.round(riskTermFor('AUD')*100);
+    var strongest=CCY_ORDER.map(function(c){return {c:c,sc:Math.round((score||0)*riskSensitivity(c)*100)};}).sort(function(a,b){return b.sc-a.sc;});
+    var weakest=strongest[strongest.length-1];
+    var strongestEl=document.getElementById('riskStrongestValue'); if(strongestEl) strongestEl.textContent=strongest[0].c+' '+fmt(strongest[0].sc);
+    var weakestEl=document.getElementById('riskWeakestValue'); if(weakestEl) weakestEl.textContent=weakest.c+' '+fmt(weakest.sc);
+    var spreadEl=document.getElementById('riskSpreadValue'); if(spreadEl) spreadEl.textContent=(strongest[0].sc-weakest.sc)+' pts';
+    var scale=document.querySelector('#tab-risk .risk-scale i'); if(scale){scale.style.left=(((score==null?0:score)+1)/2*100).toFixed(2)+'%';scale.style.background=score>0.06?'var(--bullish-strong)':score<-0.06?'var(--bearish-strong)':'var(--text-faint)';}
+    if(lr) lr.textContent='Live preview: '+(preview.spxPct==null?'S&P —':('S&P '+riskPctLabel(preview.spxPct)))+' · '+(preview.vixPct==null?'VIX —':('VIX '+riskPctLabel(preview.vixPct)))+' · '+lbl+' · Save to store this close';
     updateComputed();
   }
-  function refreshRiskLive(){ applyRiskLive(); renderRiskSentiment(); }
-  if(si){ si.addEventListener('input',applyRiskLive); si.addEventListener('change',refreshRiskLive); si.addEventListener('blur',refreshRiskLive); }
-  if(vi){ vi.addEventListener('input',applyRiskLive); vi.addEventListener('change',refreshRiskLive); vi.addEventListener('blur',refreshRiskLive); }
+  function saveRiskClose(){
+    var sp=riskInputNum(si?si.value:null), vx=riskInputNum(vi?vi.value:null), date=selectedRiskDate();
+    var result=riskSaveObservation(sp,vx,date);
+    if(!result.ok){ if(lr) lr.textContent=result.msg; return; }
+    renderRiskSentiment();
+    updateComputed();
+    scheduleSave();
+    var savedScore=riskRegimeScore();
+    var savedLabel=riskRegimeLabel(savedScore);
+    var savedRow=result.row;
+    var live=document.getElementById('riskLiveReadout');
+    if(live) live.textContent='Saved '+date+' · S&P '+riskPctLabel(savedRow.spxPct)+' · VIX '+riskPctLabel(savedRow.vixPct)+' · '+savedLabel;
+  }
+  if(si){ si.addEventListener('input',previewRiskLive); }
+  if(vi){ vi.addEventListener('input',previewRiskLive); }
+  if(di){ di.addEventListener('change',previewRiskLive); }
+  if(sb){ sb.addEventListener('click',saveRiskClose); }
 
-  // Keep a lightweight current snapshot only; no recalculation log is needed for Risk Sentiment.
+  // Risk Sentiment now has an explicit save action and explicit observation date.
+  // This prevents a close entered for a completed session from being silently attached
+  // to the wrong automatic date.
 }
 
 function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -4590,7 +5455,7 @@ function updateComputed(){
   }
   
   if(document.getElementById("syncDataStr")){
-    document.getElementById("syncDataStr").value = btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT}));
+    document.getElementById("syncDataStr").value = btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
   }
 
   var c=activeDetailCcy, sc=scores[c];
@@ -4631,19 +5496,25 @@ function updateComputed(){
   if(instEl){ 
     var cs = getCotScore(c);
     var ib = cotInstBand(cs); 
-    instEl.textContent=ib + " ("+(cs>0?"+":"")+cs+")"; 
+    instEl.textContent=ib;
     instEl.setAttribute("style",instColorStyle(ib)); 
   }
   var netEl=document.getElementById("cotNetTxt-"+c);
-  if(netEl){ netEl.textContent=DATA[c].cotNet; netEl.style.color = DATA[c].cotNet==="Bullish"?"var(--bullish-strong)":DATA[c].cotNet==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
-  var chgEl=document.getElementById("cotChangeBiasTxt-"+c);
-  if(chgEl){ chgEl.textContent=(DATA[c].cotChangeBias||"Neutral"); chgEl.style.color = (DATA[c].cotChangeBias||"Neutral")==="Bullish"?"var(--bullish-strong)":(DATA[c].cotChangeBias||"Neutral")==="Bearish"?"var(--bearish-strong)":"var(--text-dim)"; }
+  if(netEl){ var cd=cotLatest(c); netEl.textContent=cotFormat(cd.net); netEl.style.color = cd.net>0?"var(--bullish-strong)":cd.net<0?"var(--bearish-strong)":"var(--text-dim)"; }
+  var flowEl=document.getElementById("cotFlowTxt-"+c);
+  if(flowEl){ flowEl.textContent=cotFlow(c); }
+  var wowEl=document.getElementById("cotWoWTxt-"+c);
+  if(wowEl){ var cd2=cotLatest(c); wowEl.textContent=cotFormat(cd2.netChg); wowEl.style.color = cd2.netChg>0?"var(--bullish-strong)":cd2.netChg<0?"var(--bearish-strong)":"var(--text-dim)"; }
+  var lsEl=document.getElementById("cotLongShortTxt-"+c);
+  if(lsEl){ var cd3=cotLatest(c); lsEl.textContent=cd3.long==null||cd3.short==null?"—":Math.round(cd3.long).toLocaleString()+" / "+Math.round(cd3.short).toLocaleString(); }
+  var crEl=document.getElementById("cotRegimeTxt-"+c);
+  if(crEl){ var cr3=cotCrowding(c); crEl.textContent=cr3.label; crEl.style.color=cr3.tone==='bull'?"var(--bullish-strong)":cr3.tone==='bear'?"var(--bearish-strong)":"var(--text-dim)"; }
   
   if(document.getElementById("tab-pairs")) renderPairs();
   if(document.getElementById("tab-risk")) renderRiskSentiment();
 }
 
-function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); renderRiskSentiment(); }
+function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 
 async function init(){
@@ -4720,7 +5591,7 @@ async function init(){
         useAuth: true,
         headers: { "Prefer": "return=minimal" },
         body: JSON.stringify({
-          payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, RISK_SENTIMENT:RISK_SENTIMENT}),
+          payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}),
           updated_at: new Date().toISOString()
         })
       });
@@ -4766,8 +5637,9 @@ async function init(){
   }
 
   var chfMigrated = ensureCHFUniverse();
+  var cotMigrated = ensureCotEngine();
   initMomentum();
-  if(chfMigrated && AUTH.accessToken){ await saveDataNow(); }
+  if((chfMigrated || cotMigrated) && AUTH.accessToken){ await saveDataNow(); }
 
   // The one-time fundamental-model migration has already done its job and is
   // permanently retired. It must never run again — it used to reset any
@@ -4778,7 +5650,7 @@ async function init(){
 
   if(migrateLegacyYieldFields()){
     if(AUTH.accessToken){ await saveDataNow(); }
-    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT})); } catch(e) {} }
+    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE})); } catch(e) {} }
   }
 
   var removedUnfinishedToday=y2RemoveUnfinishedToday();
@@ -4812,12 +5684,13 @@ async function init(){
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
       if(preservedInputDate) YIELD_ENGINE.inputDate=preservedInputDate;
       RISK_SENTIMENT = normalizeRiskState(parsed.RISK_SENTIMENT);
+      COT_ENGINE = parsed.COT_ENGINE || {history:[],current:{},currentDate:"",inputDate:""};
       var removedFuture = y2RemoveUnfinishedToday();
       y2SetCurrentFromLatestSaved();
       if(removedFuture && AUTH.accessToken){
         try { await saveDataNow(); } catch(e) { console.error("Future-close cleanup save failed:", e); }
       }
-      localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT}));
+      localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
       if (!isTyping) {
         renderAllStatic();
         renderLockBox();
@@ -4949,5 +5822,232 @@ init();
   #tab-yield2y .hist-spread-chart{height:280px;}
 }
 </style>
+
+<style id="v32-yield2y-layout-final">
+/* V32: final readability/layout pass for Yield 2Y.  Keep the whole board inside
+   the viewport; enlarge text by a small step and give the Spread column a real
+   visual field.  Risk Sentiment logic is intentionally untouched in this pass. */
+#tab-yield2y .y2-grid{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:stretch!important;
+}
+#tab-yield2y .y2-grid>.card{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+#tab-yield2y .y2-grid>.card:nth-child(2){
+  display:flex!important;
+  flex-direction:column!important;
+}
+#tab-yield2y .y2-grid>.card:nth-child(2) .table-scroll{
+  width:100%!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+#tab-yield2y .y2-score-table{
+  width:100%!important;
+  min-width:0!important;
+  table-layout:fixed!important;
+}
+#tab-yield2y .y2-score-table th,
+#tab-yield2y .y2-score-table td{
+  box-sizing:border-box!important;
+  vertical-align:middle!important;
+  line-height:1.15!important;
+  padding:7px 7px!important;
+}
+/* Keep every column inside the card. Direction gets enough room; Spread gets a
+   dedicated, wider plotting field so the bar is unmistakably in the Spread column. */
+#tab-yield2y .y2-score-table th:nth-child(1),#tab-yield2y .y2-score-table td:nth-child(1){width:21%!important;text-align:left!important;}
+#tab-yield2y .y2-score-table th:nth-child(2),#tab-yield2y .y2-score-table td:nth-child(2){width:15%!important;text-align:left!important;}
+#tab-yield2y .y2-score-table th:nth-child(3),#tab-yield2y .y2-score-table td:nth-child(3){width:25%!important;text-align:left!important;}
+#tab-yield2y .y2-score-table th:nth-child(4),#tab-yield2y .y2-score-table td:nth-child(4){width:18%!important;text-align:center!important;}
+#tab-yield2y .y2-score-table th:nth-child(5),#tab-yield2y .y2-score-table td:nth-child(5){width:21%!important;text-align:center!important;}
+#tab-yield2y .y2-score-table thead th{
+  font-size:11.5px!important;
+  font-weight:700!important;
+  letter-spacing:.55px!important;
+  white-space:nowrap!important;
+}
+#tab-yield2y .y2-score-table td,
+#tab-yield2y .y2-ccy-cell,
+#tab-yield2y .y2-score-view .y2-score,
+#tab-yield2y .y2-direction-view,
+#tab-yield2y .y2-usd-spread{
+  font-size:14.5px!important;
+  font-weight:600!important;
+}
+#tab-yield2y .y2-ccy-cell{gap:7px!important;white-space:nowrap!important;}
+#tab-yield2y .y2-ccy-cell .ccy-flag{width:21px!important;height:15px!important;flex:0 0 auto!important;}
+#tab-yield2y .y2-score-view .y2-score{font-weight:700!important;white-space:nowrap!important;}
+#tab-yield2y .y2-direction-view{font-weight:600!important;white-space:nowrap!important;}
+#tab-yield2y .y2-usd-spread{display:block!important;text-align:center!important;white-space:nowrap!important;font-weight:700!important;}
+#tab-yield2y .y2-spread-view{
+  display:table-cell!important;
+  vertical-align:middle!important;
+  text-align:center!important;
+  padding:0 7px!important;
+  min-width:0!important;
+}
+#tab-yield2y .y2-spread-view .y2-track{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  min-width:110px!important;
+  max-width:170px!important;
+  height:9px!important;
+  background:var(--panel3)!important;
+  border:1px solid var(--border)!important;
+  border-radius:5px!important;
+  overflow:hidden!important;
+  margin:0 auto!important;
+}
+#tab-yield2y .y2-spread-view .y2-track i{
+  z-index:2!important;
+  width:2px!important;
+  background:var(--amber)!important;
+}
+#tab-yield2y .y2-spread-view .y2-track b{
+  z-index:1!important;
+  min-width:2px!important;
+  opacity:1!important;
+}
+
+/* The historical chart gets the vertical space released by the tighter top board. */
+#tab-yield2y .hist-spread-card{
+  margin-top:10px!important;
+  padding:11px 12px 10px!important;
+}
+#tab-yield2y .hist-spread-chart{
+  height:400px!important;
+  min-height:400px!important;
+  margin-top:0!important;
+  width:100%!important;
+  overflow:hidden!important;
+}
+#tab-yield2y .hist-spread-chart canvas{
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+}
+#tab-yield2y .hist-spread-head{margin-bottom:8px!important;padding-bottom:8px!important;}
+#tab-yield2y .hist-spread-title h3{font-size:14px!important;font-weight:700!important;}
+#tab-yield2y .hist-spread-sub{font-size:11px!important;}
+#tab-yield2y .hist-live-label{font-size:10.5px!important;}
+#tab-yield2y .hist-live-value,#tab-yield2y .hist-live-change{font-size:15px!important;font-weight:700!important;}
+
+@media(max-width:1050px){
+  #tab-yield2y .y2-grid{grid-template-columns:1fr!important;}
+  #tab-yield2y .y2-grid>.card{height:auto!important;overflow:visible!important;}
+  #tab-yield2y .hist-spread-chart{height:370px!important;min-height:370px!important;}
+}
+@media(max-width:700px){
+  #tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{padding:6px 5px!important;}
+  #tab-yield2y .y2-score-table thead th{font-size:10.5px!important;}
+  #tab-yield2y .y2-score-table td,
+  #tab-yield2y .y2-ccy-cell,
+  #tab-yield2y .y2-score-view .y2-score,
+  #tab-yield2y .y2-direction-view,
+  #tab-yield2y .y2-usd-spread{font-size:13.5px!important;}
+  #tab-yield2y .y2-score-table th:nth-child(1),#tab-yield2y .y2-score-table td:nth-child(1){width:20%!important;}
+  #tab-yield2y .y2-score-table th:nth-child(2),#tab-yield2y .y2-score-table td:nth-child(2){width:14%!important;}
+  #tab-yield2y .y2-score-table th:nth-child(3),#tab-yield2y .y2-score-table td:nth-child(3){width:27%!important;}
+  #tab-yield2y .y2-score-table th:nth-child(4),#tab-yield2y .y2-score-table td:nth-child(4){width:19%!important;}
+  #tab-yield2y .y2-score-table th:nth-child(5),#tab-yield2y .y2-score-table td:nth-child(5){width:20%!important;}
+  #tab-yield2y .y2-spread-view .y2-track{min-width:70px!important;max-width:140px!important;}
+  #tab-yield2y .hist-spread-chart{height:320px!important;min-height:320px!important;}
+}
+</style>
+
+
+<style id="v33-final-trader-layout">
+/* Rate Differential Monitor: clean horizontal rhythm, no vertical cell dividers. */
+#tab-yield2y .y2-score-table{border:none!important;table-layout:fixed!important;}
+#tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{border-right:none!important;}
+#tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{border-left:none!important;}
+#tab-yield2y .y2-score-table thead th{background:transparent!important;border-bottom:1px solid var(--border)!important;}
+#tab-yield2y .y2-score-table td{border-bottom:1px solid color-mix(in srgb,var(--border) 72%,transparent)!important;}
+#tab-yield2y .y2-score-table tr:last-child td{border-bottom:none!important;}
+#tab-yield2y .y2-score-table th:nth-child(1),#tab-yield2y .y2-score-table td:nth-child(1){width:22%!important;}
+#tab-yield2y .y2-score-table th:nth-child(2),#tab-yield2y .y2-score-table td:nth-child(2){width:16%!important;}
+#tab-yield2y .y2-score-table th:nth-child(3),#tab-yield2y .y2-score-table td:nth-child(3){width:26%!important;}
+#tab-yield2y .y2-score-table th:nth-child(4),#tab-yield2y .y2-score-table td:nth-child(4){width:17%!important;text-align:center!important;}
+#tab-yield2y .y2-score-table th:nth-child(5),#tab-yield2y .y2-score-table td:nth-child(5){width:19%!important;text-align:center!important;}
+#tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{padding:5px 6px!important;}
+#tab-yield2y .y2-spread-view .y2-track{min-width:90px!important;max-width:150px!important;height:7px!important;}
+
+/* Keep the yield workspace on one screen at normal desktop heights. */
+#tab-yield2y .y2-grid{gap:8px!important;}
+#tab-yield2y .y2-grid>.card{height:214px!important;min-height:214px!important;overflow:hidden!important;}
+#tab-yield2y .hist-spread-card{margin-top:7px!important;padding:9px 11px 8px!important;}
+#tab-yield2y .hist-spread-head{margin-bottom:5px!important;padding-bottom:5px!important;}
+#tab-yield2y .hist-spread-chart{height:285px!important;min-height:285px!important;}
+@media(max-height:720px) and (min-width:1051px){
+  #tab-yield2y .y2-grid>.card{height:198px!important;min-height:198px!important;}
+  #tab-yield2y .y2-score-table th,#tab-yield2y .y2-score-table td{padding:4px 6px!important;}
+  #tab-yield2y .hist-spread-chart{height:250px!important;min-height:250px!important;}
+}
+@media(max-width:1050px){
+  #tab-yield2y .y2-grid>.card{height:auto!important;min-height:0!important;overflow:visible!important;}
+  #tab-yield2y .hist-spread-chart{height:300px!important;min-height:300px!important;}
+}
+
+/* COT history: the six seeded weeks are only the starting sample. Saved weeks accumulate. */
+#tab-cot .cot-chart-head{align-items:center!important;}
+#tab-cot .cot-chart-range{display:flex;gap:3px;flex:0 0 auto;}
+#tab-cot .cot-range-btn{background:transparent;border:1px solid var(--border);color:var(--text-faint);border-radius:4px;padding:4px 7px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;}
+#tab-cot .cot-range-btn:hover{color:var(--text);border-color:var(--amber);}
+#tab-cot .cot-range-btn.active{background:var(--amber);border-color:var(--amber);color:#fff;}
+@media(max-width:600px){#tab-cot .cot-chart-range{width:100%;margin-top:4px;}#tab-cot .cot-chart-head{flex-wrap:wrap;}#tab-cot .cot-range-btn{flex:1;}}
+
+/* Risk Sentiment: make the live state visibly diagnostic instead of dead-neutral. */
+#tab-risk .risk-inline-note{white-space:normal!important;line-height:1.25!important;}
+</style>
+
+<style id="v4-yield-risk-final">
+/* Final pass: give the historical 2Y spread chart real vertical breathing room.
+   The previous v3 stylesheet contained several later height overrides that reduced it back to 285px. */
+#tab-yield2y .y2-grid{gap:7px!important;}
+#tab-yield2y .y2-grid>.card{height:178px!important;min-height:178px!important;overflow:hidden!important;}
+#tab-yield2y .hist-spread-card{margin-top:6px!important;padding:10px 12px 10px!important;}
+#tab-yield2y .hist-spread-chart{height:360px!important;min-height:360px!important;margin-top:0!important;width:100%!important;overflow:hidden!important;}
+#tab-yield2y .hist-spread-chart canvas{width:100%!important;height:100%!important;display:block!important;}
+/* Restored per request: show the decorative spread bar next to the numeric bp value again. */
+#tab-yield2y .y2-spread-view{justify-content:center!important;padding-right:9px!important;}
+@media(max-width:1050px){
+  #tab-yield2y .y2-grid>.card{height:auto!important;min-height:0!important;overflow:visible!important;}
+  #tab-yield2y .hist-spread-chart{height:340px!important;min-height:340px!important;}
+}
+@media(max-width:700px){
+  #tab-yield2y .hist-spread-chart{height:320px!important;min-height:320px!important;}
+}
+/* Risk Sentiment: make the input/output relationship explicit and visible. */
+#tab-risk .risk-inline-editor{display:flex!important;align-items:center!important;gap:7px!important;flex-wrap:wrap!important;padding:9px 10px!important;margin-top:8px!important;border-top:1px solid var(--border)!important;background:var(--panel2)!important;}
+#tab-risk .risk-inline-label{font-size:10px!important;font-weight:800!important;color:var(--text-dim)!important;text-transform:uppercase!important;letter-spacing:.5px!important;margin-right:2px!important;}
+#tab-risk .risk-inline-field{display:flex!important;align-items:center!important;gap:5px!important;}
+#tab-risk .risk-inline-field>span{font-size:9px!important;color:var(--text-faint)!important;text-transform:uppercase!important;}
+#tab-risk .risk-inline-input{height:34px!important;width:116px!important;flex:0 0 116px!important;font-size:13px!important;background:var(--panel)!important;}
+#tab-risk #riskObsDateInput{width:150px!important;flex-basis:150px!important;min-height:34px!important;cursor:pointer;}
+#tab-risk #riskSaveCloseBtn{height:31px!important;padding:0 12px!important;}
+#tab-risk .risk-inline-note{font-size:10px!important;color:var(--text-faint)!important;flex:1 1 220px!important;}
+</style>
+<script>
+/* v4 risk guard: always calculate the visible risk state from the current saved/preview close. */
+(function(){
+  var oldRiskRegimeScore=window.riskRegimeScore;
+  window.riskRegimeScore=function(){
+    var cur=RISK_SENTIMENT&&RISK_SENTIMENT.current?RISK_SENTIMENT.current:null;
+    if(!cur || (cur.spxClose==null && cur.vixClose==null)) return 0;
+    var rows=riskHistorySorted(), prior=null;
+    for(var i=rows.length-1;i>=0;i--){ if(rows[i].date && rows[i].date<String(cur.date||riskTodayKey())){ prior=rows[i]; break; } }
+    var sc=riskScoreFromObservation(cur,prior);
+    return sc==null?0:sc;
+  };
+})();
+</script>
 </body>
 </html>
