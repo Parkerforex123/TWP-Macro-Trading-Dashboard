@@ -2546,12 +2546,17 @@ function ensureCotEngine(){
     var histForC=cotSortHistory(c);
     if(histForC.length){
       var latestHist=histForC[histForC.length-1];
-      latestHist.long=seed.long; latestHist.short=seed.short;
-      latestHist.longChg=seed.longChg; latestHist.shortChg=seed.shortChg;
-      if(histForC.length>1){
-        var priorHist=histForC[histForC.length-2];
-        if(cotNum(priorHist.long)==null) priorHist.long=seed.long-seed.longChg;
-        if(cotNum(priorHist.short)==null) priorHist.short=seed.short-seed.shortChg;
+      // Only backfill the seed's long/short onto the row that IS the seed's own last date.
+      // A prior version of this stamped seed numbers onto whatever row was CURRENTLY newest,
+      // which silently overwrote real long/short numbers you'd since saved for a later week.
+      if(latestHist.date===latestSeed[0]){
+        latestHist.long=seed.long; latestHist.short=seed.short;
+        latestHist.longChg=seed.longChg; latestHist.shortChg=seed.shortChg;
+        if(histForC.length>1){
+          var priorHist=histForC[histForC.length-2];
+          if(cotNum(priorHist.long)==null) priorHist.long=seed.long-seed.longChg;
+          if(cotNum(priorHist.short)==null) priorHist.short=seed.short-seed.shortChg;
+        }
       }
     }
     var cur=COT_ENGINE.current[c]||{};
@@ -2784,8 +2789,11 @@ function riskTodayKey(){
   var d=new Date(); d.setUTCHours(0,0,0,0);
   var day=d.getUTCDay();
   // Risk sentiment uses the latest completed U.S. cash-market session.
+  // Mon needs -3 (back to Fri), Sun needs -2 (back to Fri), Sat needs only -1 (Fri was yesterday) —
+  // Sat and Sun are NOT the same offset, unlike a prior version of this function.
   if(day===1) d.setUTCDate(d.getUTCDate()-3);
-  else if(day===0 || day===6) d.setUTCDate(d.getUTCDate()-2);
+  else if(day===0) d.setUTCDate(d.getUTCDate()-2);
+  else if(day===6) d.setUTCDate(d.getUTCDate()-1);
   else d.setUTCDate(d.getUTCDate()-1);
   return d.toISOString().slice(0,10);
 }
@@ -6035,19 +6043,5 @@ init();
 #tab-risk #riskSaveCloseBtn{height:31px!important;padding:0 12px!important;}
 #tab-risk .risk-inline-note{font-size:10px!important;color:var(--text-faint)!important;flex:1 1 220px!important;}
 </style>
-<script>
-/* v4 risk guard: always calculate the visible risk state from the current saved/preview close. */
-(function(){
-  var oldRiskRegimeScore=window.riskRegimeScore;
-  window.riskRegimeScore=function(){
-    var cur=RISK_SENTIMENT&&RISK_SENTIMENT.current?RISK_SENTIMENT.current:null;
-    if(!cur || (cur.spxClose==null && cur.vixClose==null)) return 0;
-    var rows=riskHistorySorted(), prior=null;
-    for(var i=rows.length-1;i>=0;i--){ if(rows[i].date && rows[i].date<String(cur.date||riskTodayKey())){ prior=rows[i]; break; } }
-    var sc=riskScoreFromObservation(cur,prior);
-    return sc==null?0:sc;
-  };
-})();
-</script>
 </body>
 </html>
