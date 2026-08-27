@@ -1999,7 +1999,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
       <div><p class="page-title" id="pageTitle">Macro Regime</p><p class="page-sub" id="pageSub"></p></div>
       <div style="display:flex; align-items:center; gap: 12px;">
         <span class="updated" id="updatedTag" style="transition: color 0.3s; font-family:'IBM Plex Mono',monospace; font-size: 11.5px; color: var(--text-faint);">Ready</span>
-        <button id="manualSaveBtn" style="background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;">Force Save</button>
+        <button id="manualSaveBtn" style="display:none;background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;">Force Save</button>
       </div>
     </div>
     <section class="tab-panel active" id="tab-overview"></section>
@@ -3317,6 +3317,10 @@ function syncRiskEditorVisibility(){
 function renderLockBox(){
   var box=document.getElementById("lockBox");
   if(!box) return;
+  // Force Save is an editor-only action — hide it entirely until signed in, instead of
+  // showing it to everyone and relying on the click handler alone to gate it.
+  var msbToggle=document.getElementById("manualSaveBtn");
+  if(msbToggle) msbToggle.style.display = AUTH.accessToken ? "" : "none";
   box.className="lock-box"+(lockBoxCollapsed?" collapsed":"");
   var eyeIcon = lockBoxCollapsed ? "&#128274;" : "&#128065;";
   if(!AUTH.accessToken){
@@ -5011,10 +5015,9 @@ function renderPairs(){
     return '<button class="range-btn'+(active?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
   }).join("");
   var selectionLabel = pairFilters.indexOf("All")!==-1 ? "All pairs" : (pairFilters.length?pairFilters.join(" + "):"All pairs");
-  var html = '<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
-    ''+
-    (unlockedLocally? '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
-      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>':'')+'</div>'+
+  var html = (unlockedLocally ? ('<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
+    '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
+      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>'+'</div>') : '')+
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
