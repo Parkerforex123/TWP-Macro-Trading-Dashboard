@@ -1693,7 +1693,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 #tab-detail .detail-grid{grid-template-columns:270px minmax(0,1040px)!important;justify-content:start!important;gap:14px!important;}#tab-detail .right-col{min-width:0;}#tab-detail .info-grid{grid-template-columns:repeat(3,minmax(145px,1fr))!important;}
 #tab-raw .surprise-list-head,#tab-raw .surprise-row{grid-template-columns:28px 72px 1fr 64px 92px 105px 155px!important;}#tab-raw .surprise-count{font-family:var(--ui-font)!important;font-size:14px!important;font-weight:600!important;color:var(--text-dim)!important;white-space:nowrap;}#tab-raw .surprise-summary .surprise-v{font-family:var(--ui-font)!important;font-size:17px!important;font-weight:700!important;}
 #tab-yield2y .hist-spread-chart canvas{background:transparent!important;}
-#tab-yield2y .y2-score-table{table-layout:fixed!important;min-width:0!important;}#tab-yield2y .y2-usd-spread{white-space:nowrap!important;text-align:center!important;display:block!important;}#tab-yield2y .y2-spread-view{padding:0 12px!important;justify-content:center!important;}#tab-yield2y .y2-spread-view .y2-track{width:100%!important;max-width:180px!important;min-width:110px!important;height:7px!important;}#tab-yield2y .y2-direction-view{white-space:nowrap!important;}
+#tab-yield2y .y2-score-table{table-layout:fixed!important;min-width:0!important;}#tab-yield2y .y2-usd-spread{white-space:nowrap!important;text-align:center!important;display:block!important;}#tab-yield2y .y2-spread-view{padding:0 12px!important;justify-content:center!important;}#tab-yield2y .y2-spread-view .y2-track{width:100%!important;max-width:180px!important;min-width:110px!important;height:7px!important;}#tab-yield2y .y2-direction-view{white-space:normal!important;overflow-wrap:break-word!important;word-break:break-word!important;line-height:1.25!important;}
 </style>
 <style id="v30-final-cleanup">
 /* Final cleanup: keep Currency Detail untouched; correct only the remaining views. */
@@ -2777,6 +2777,28 @@ function ensureCotEngine(){
   if(!COT_ENGINE || typeof COT_ENGINE!=='object') { COT_ENGINE={history:[],current:{},currentDate:'2026-08-18',inputDate:'2026-08-25'}; changed=true; }
   if(!Array.isArray(COT_ENGINE.history)) { COT_ENGINE.history=[]; changed=true; }
   if(!COT_ENGINE.current || typeof COT_ENGINE.current!=='object') { COT_ENGINE.current={}; changed=true; }
+  // Self-heal: no CFTC report can exist for a date beyond today, so any saved rows
+  // dated past today are leftovers from the input week auto-advancing before every
+  // currency actually had new figures entered (a Save on an unchanged row used to
+  // still count as "done for the week"). Strip them and roll the week back until
+  // it lines up with the latest report that could actually exist.
+  var cotToday=new Date().toISOString().slice(0,10);
+  while(COT_ENGINE.inputDate && COT_ENGINE.inputDate>cotToday){
+    var cotFutureDate=COT_ENGINE.inputDate;
+    COT_ENGINE.history=COT_ENGINE.history.filter(function(r){return !(r&&r.date===cotFutureDate);});
+    for(var fh=0;fh<CCYS.length;fh++){
+      var fc=CCYS[fh];
+      if(COT_ENGINE.current[fc] && COT_ENGINE.current[fc].date===cotFutureDate){
+        var fcHist=COT_ENGINE.history.filter(function(r){return r&&r.ccy===fc&&r.date&&cotNum(r.net)!=null;}).sort(function(a,b){return String(a.date).localeCompare(String(b.date));});
+        var fcLast=fcHist.length?fcHist[fcHist.length-1]:null;
+        COT_ENGINE.current[fc]=fcLast?Object.assign({},fcLast):{};
+      }
+    }
+    var cotDt=new Date(cotFutureDate+'T00:00:00Z'); cotDt.setUTCDate(cotDt.getUTCDate()-7);
+    COT_ENGINE.inputDate=cotDt.toISOString().slice(0,10);
+    COT_ENGINE.currentDate=COT_ENGINE.inputDate;
+    changed=true;
+  }
   for(var i=0;i<CCYS.length;i++){
     var c=CCYS[i], seed=COT_SEED_HISTORY[c];
     var oiByDate={}; (seed.oiRows||[]).forEach(function(r){oiByDate[r[0]]=r[1];});
@@ -5851,13 +5873,25 @@ function renderCotRegime(){
   var adminInput='';
   if(unlockedLocally){
     adminInput='<div class="cot-card cot-admin-card" style="margin-top:10px;">'+
-      '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter only this week’s Long Contracts and Short Contracts. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta">COT week (Tuesday): <span class="cot-link">'+esc(cotFriendlyDate(saveDate))+'</span> · Report available (Friday): <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. This input panel is hidden when you are signed out.</div></div></div>';
+      '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter only this week’s Long Contracts and Short Contracts. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">COT week (Tuesday): <input type="date" id="cotInputDate" class="cot-input" style="width:140px;display:inline-block;" value="'+esc(saveDate)+'"> · Report available (Friday): <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. If the week above ever gets ahead of (or behind) the actual latest CFTC report, correct it directly in that date field. This input panel is hidden when you are signed out.</div></div></div>';
   }
   tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:26%">Regime</th><th class="right" style="width:21%">Range</th></tr></thead><tbody>'+cotRenderScannerRows()+'</tbody></table></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    adminInput+  '</div>';
   var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
   var cotRanges=tab.querySelectorAll('[data-cot-range]'); for(var cr=0;cr<cotRanges.length;cr++){cotRanges[cr].onclick=function(){activeCotRange=this.dataset.cotRange;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
   var inputs=tab.querySelectorAll('[data-cot-field]'); for(var j=0;j<inputs.length;j++){inputs[j].addEventListener('input',function(){isTyping=true;});inputs[j].addEventListener('blur',function(){isTyping=false;});}
   var saveBtns=tab.querySelectorAll('[data-save-ccy]'); for(var k=0;k<saveBtns.length;k++){saveBtns[k].onclick=function(){cotCommitInputs(this.dataset.saveCcy,tab);};}
+  var cotDateEl=document.getElementById('cotInputDate'); if(cotDateEl){
+    cotDateEl.addEventListener('focus',function(){isTyping=true;});
+    cotDateEl.addEventListener('blur',function(){isTyping=false;});
+    cotDateEl.onchange=function(){
+      var d=this.value;
+      if(!d) return;
+      COT_ENGINE.inputDate=d;
+      scheduleSave();
+      renderCotRegime();
+      updateStatus('COT input week set to '+d,'var(--bullish-strong)');
+    };
+  }
   var cotExportBtn=document.getElementById('cotExportCsvBtn'); if(cotExportBtn) cotExportBtn.onclick=cotExportCsv;
   requestAnimationFrame(function(){cotDrawChart(ccy);});
 }
@@ -5866,8 +5900,23 @@ function cotCommitInputs(ccy,tab){
   var li=tab.querySelector('[data-cot-field="long"][data-ccy="'+ccy+'"]'), si=tab.querySelector('[data-cot-field="short"][data-ccy="'+ccy+'"]');
   var long=cotNum(li&&li.value), short=cotNum(si&&si.value);
   if(long==null||short==null){updateStatus('Enter both long and short contracts first.','var(--amber)');return;}
-  var rows=cotSortHistory(ccy), previous=rows.length?rows[rows.length-1]:null;
   var date=COT_ENGINE.inputDate || COT_ENGINE.currentDate || '2026-08-25';
+  // If this currency already has a saved row for THIS SAME week with these exact
+  // long/short numbers, re-clicking Save is a no-op resave, not a real weekly update.
+  // Letting it through used to (a) diff the row against itself -> WoW change of 0, and
+  // (b) still count as "this currency is done for the week", which could falsely
+  // complete the round and auto-advance the input week before every currency actually
+  // had new figures entered. Block it here instead.
+  var existingThisWeek=null;
+  for(var ei=0;ei<COT_ENGINE.history.length;ei++){var er=COT_ENGINE.history[ei]; if(er&&er.ccy===ccy&&er.date===date){existingThisWeek=er;break;}}
+  if(existingThisWeek && cotNum(existingThisWeek.long)===long && cotNum(existingThisWeek.short)===short){
+    updateStatus(ccy+' — already saved for '+date+' with these numbers (no change to record).','var(--amber)');
+    return;
+  }
+  // Exclude any existing row for THIS SAME date before picking "previous" -- otherwise
+  // re-saving (or saving twice in one week) treats this week's own just-saved row as
+  // "previous", diffs it against itself, and always yields a WoW change of 0.
+  var rows=cotSortHistory(ccy).filter(function(r){return r.date!==date;}), previous=rows.length?rows[rows.length-1]:null;
   var net=long-short, netChg=previous?net-cotNum(previous.net):null;
   var longChg=previous&&cotNum(previous.long)!=null?long-cotNum(previous.long):null;
   var shortChg=previous&&cotNum(previous.short)!=null?short-cotNum(previous.short):null;
@@ -6433,7 +6482,7 @@ init();
 #tab-yield2y .y2-ccy-cell{gap:7px!important;white-space:nowrap!important;}
 #tab-yield2y .y2-ccy-cell .ccy-flag{width:21px!important;height:15px!important;flex:0 0 auto!important;}
 #tab-yield2y .y2-score-view .y2-score{font-weight:700!important;white-space:nowrap!important;}
-#tab-yield2y .y2-direction-view{font-weight:600!important;white-space:nowrap!important;}
+#tab-yield2y .y2-direction-view{font-weight:600!important;white-space:normal!important;overflow-wrap:break-word!important;word-break:break-word!important;line-height:1.25!important;}
 #tab-yield2y .y2-usd-spread{display:block!important;text-align:center!important;white-space:nowrap!important;font-weight:700!important;}
 #tab-yield2y .y2-spread-view{
   display:table-cell!important;
