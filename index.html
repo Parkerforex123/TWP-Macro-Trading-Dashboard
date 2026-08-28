@@ -6170,6 +6170,7 @@ async function init(){
         LOG = parsed.LOG || [];
         YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
         RISK_SENTIMENT = normalizeRiskState(parsed.RISK_SENTIMENT);
+        COT_ENGINE = parsed.COT_ENGINE || {history:[],current:{},currentDate:"",inputDate:""};
         localStorage.setItem('twp_dashboard_state_v4', rows[0].payload);
         loaded = true;
       }
