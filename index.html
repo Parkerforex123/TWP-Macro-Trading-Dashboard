@@ -1771,6 +1771,12 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 #tab-cot .cot-chart-meta{font-size:10px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
 #tab-cot .cot-chart{height:225px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;}
 #tab-cot .cot-chart canvas{width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;}
+/* COT crowding zone: only a compact band near the current end of the history is shaded.
+   Crowded longs warn of positioning saturation; crowded shorts highlight a potential
+   mean-reversion/bounce zone. The actual net-contract line keeps its existing tone. */
+#tab-cot .cot-chart-zone-note{position:absolute;right:8px;top:7px;z-index:2;pointer-events:none;display:none;padding:3px 5px;border:1px solid currentColor;border-radius:4px;background:rgba(10,12,11,.72);font:8.5px 'IBM Plex Mono',monospace;font-weight:800;letter-spacing:.55px;text-transform:uppercase;}
+#tab-cot .cot-chart-zone-note.warn{display:block;color:var(--bearish-strong);}
+#tab-cot .cot-chart-zone-note.bounce{display:block;color:var(--bullish-strong);}
 #tab-cot .cot-crosshair-tip{position:absolute;display:none;z-index:5;pointer-events:none;min-width:128px;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:rgba(10,12,11,.94);box-shadow:0 5px 18px rgba(0,0,0,.35);font:10px 'IBM Plex Mono',monospace;color:var(--text);white-space:nowrap;}
 #tab-cot .cot-crosshair-tip .k{color:var(--text-faint);margin-right:5px;}
 #tab-cot .cot-crosshair-tip .v{font-weight:700;}
@@ -1971,6 +1977,249 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
   #tab-risk .risk-inline-field{flex-basis:100%;}
   #tab-risk #riskSaveCloseBtn{width:100%;}
   #tab-risk .risk-inline-note{width:100%;}
+}
+</style>
+<style id="v5-trader-layout-polish">
+#tab-cot .cot-chart-zone-note{display:none!important;}
+#tab-risk .risk-page{max-width:680px!important;}
+#tab-risk .strength-card{max-width:680px!important;}
+#tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:28px 72px 180px 52px 100px!important;gap:7px!important;}
+#tab-risk .strength-bar{width:180px!important;}
+#tab-risk .strength-row{padding:7px 10px!important;min-height:34px!important;}
+#tab-risk .strength-list-head{padding:7px 10px!important;}
+#tab-detail .detail-grid{grid-template-columns:255px minmax(0,900px)!important;justify-content:start!important;gap:12px!important;}
+#tab-detail .right-col{min-width:0!important;}
+#tab-detail .info-grid{grid-template-columns:repeat(3,minmax(130px,1fr))!important;}
+body:not(.editing) #tab-detail .sector-block table th:last-child,body:not(.editing) #tab-detail .sector-block table td:last-child{display:none!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(1),body:not(.editing) #tab-detail .sector-block table td:nth-child(1){width:36%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(3),body:not(.editing) #tab-detail .sector-block table td:nth-child(3),body:not(.editing) #tab-detail .sector-block table th:nth-child(4),body:not(.editing) #tab-detail .sector-block table td:nth-child(4){width:15%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(5),body:not(.editing) #tab-detail .sector-block table td:nth-child(5){width:15%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(6),body:not(.editing) #tab-detail .sector-block table td:nth-child(6){width:19%!important;}
+#tab-pairs .bigchart{width:760px!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;padding:11px 12px!important;}
+#tab-pairs .pair-big-trend{max-height:128px!important;}
+#tab-pairs .bigchart-head{margin-bottom:7px!important;}
+.pair-macro-summary{margin:0 0 9px;padding:9px 11px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;line-height:1.45;}
+.pair-macro-summary-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.65px;font-size:10px;color:var(--text-faint);}
+.pair-macro-summary-head b{font-size:11px;}
+.pair-macro-line{font-size:11px;color:var(--text-dim);margin-top:3px;}
+.pair-macro-verdict{font-size:11px;font-weight:700;color:var(--text);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
+@media(max-width:1050px){#tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:28px 70px 1fr 52px 96px!important;}#tab-risk .strength-bar{width:auto!important;}#tab-detail .detail-grid{grid-template-columns:240px minmax(0,1fr)!important;}}
+@media(max-width:700px){#tab-risk .risk-page,#tab-risk .strength-card{max-width:100%!important;}#tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:24px 64px 1fr 50px 90px!important;gap:6px!important;}#tab-detail .detail-grid{grid-template-columns:1fr!important;}#tab-detail .info-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+</style>
+<style id="v35-final-interaction-polish">
+#tab-detail .detail-trend-spark{overflow:visible;}
+#tab-detail .detail-trend-hover-dot{filter:drop-shadow(0 0 3px rgba(255,255,255,.14));}
+#tab-cot .cot-chart-zone-note{display:block!important;position:absolute;right:9px;z-index:2;pointer-events:none;padding:2px 0;background:transparent;border:none;font:8.5px 'IBM Plex Mono',monospace;font-weight:800;letter-spacing:.4px;text-transform:uppercase;}
+#tab-cot .cot-chart-zone-note.warn{color:var(--bearish-strong)!important;}
+#tab-cot .cot-chart-zone-note.bounce{color:var(--bullish-strong)!important;}
+#tab-risk .risk-page,#tab-risk .strength-card{max-width:620px!important;}
+#tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:26px 66px 150px 46px 88px!important;gap:6px!important;}
+#tab-risk .strength-bar{width:150px!important;}
+.brand-mark{color:#42df91!important;font-weight:800!important;letter-spacing:.8px!important;text-shadow:0 0 10px rgba(66,223,145,.16),0 1px 0 rgba(0,0,0,.35);}
+.lock-box button.lock-eye{background:var(--panel2)!important;border:1px solid var(--border)!important;color:var(--text-dim)!important;border-radius:4px!important;}
+.lock-box button.lock-eye:hover{border-color:var(--amber)!important;color:var(--text)!important;}
+#tab-detail .detail-grid{grid-template-columns:245px minmax(0,1fr)!important;max-width:100%!important;justify-content:stretch!important;}
+#tab-detail .right-col{max-width:none!important;width:100%!important;}
+#tab-detail .info-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+#tab-detail .sector-block{margin-bottom:9px!important;}
+#tab-detail .guidance-box{color:#d1d6d0!important;}
+@media(max-width:1050px){#tab-detail .detail-grid{grid-template-columns:230px minmax(0,1fr)!important;}#tab-detail .info-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}}
+@media(max-width:700px){#tab-risk .risk-page,#tab-risk .strength-card{max-width:100%!important;}#tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:24px 62px 1fr 44px 84px!important;}#tab-detail .detail-grid{grid-template-columns:1fr!important;}#tab-detail .info-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+</style>
+
+<style id="v36-macro-read-and-currency-detail-polish">
+/* Currency Detail: keep the working compact geometry from the earlier trader layout.
+   The indicators should end at Bias rather than leaving a large empty tail. */
+#tab-detail .detail-grid{
+  grid-template-columns:245px minmax(0,920px)!important;
+  max-width:1165px!important;
+  justify-content:start!important;
+  gap:12px!important;
+}
+#tab-detail .right-col{
+  width:100%!important;
+  max-width:920px!important;
+}
+#tab-detail .sector-block table{
+  width:100%!important;
+}
+body:not(.editing) #tab-detail .sector-block table th:last-child,
+body:not(.editing) #tab-detail .sector-block table td:last-child{
+  display:none!important;
+}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(1),
+body:not(.editing) #tab-detail .sector-block table td:nth-child(1){width:43%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(3),
+body:not(.editing) #tab-detail .sector-block table td:nth-child(3){width:14%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(4),
+body:not(.editing) #tab-detail .sector-block table td:nth-child(4){width:14%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(5),
+body:not(.editing) #tab-detail .sector-block table td:nth-child(5){width:14%!important;}
+body:not(.editing) #tab-detail .sector-block table th:nth-child(6),
+body:not(.editing) #tab-detail .sector-block table td:nth-child(6){width:15%!important;}
+
+/* Forward guidance stays orange; just bring the brightness up from the very deep
+   scanner-orange so the field reads without becoming loud. */
+#tab-detail .field-label{
+  color:#e07a3f!important;
+}
+#tab-detail .guidance-box{
+  color:#e07a3f!important;
+  border-color:#c85b16!important;
+  caret-color:#e07a3f!important;
+}
+
+/* TWP is a small brand mark, so give it a subtle terminal-like lift rather than
+   changing the established green. */
+.brand-mark{
+  color:#42df91!important;
+  font-weight:800!important;
+  letter-spacing:1px!important;
+  text-shadow:0 0 8px rgba(66,223,145,.22),0 1px 0 rgba(0,0,0,.42)!important;
+  filter:saturate(1.06);
+}
+
+/* COT warning/bounce note: visible but quiet. */
+#tab-cot .cot-chart-zone-note{
+  font-size:8.5px!important;
+  font-weight:800!important;
+  letter-spacing:.45px!important;
+  opacity:.96!important;
+}
+</style>
+
+
+<style id="v37-lock-visibility">
+body.black .lock-box button.lock-eye,html.black .lock-box button.lock-eye,
+body.ash .lock-box button.lock-eye,html.ash .lock-box button.lock-eye{
+  background:#151614!important;
+  border:1px solid #4a514b!important;
+  color:#aeb7b0!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.025) inset!important;
+}
+body.black .lock-box button.lock-eye:hover,html.black .lock-box button.lock-eye:hover,
+body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hover{
+  border-color:#e07a3f!important;
+  color:#eef1ee!important;
+}
+</style>
+
+
+<style id="v41-deep-green-orange-and-macro-read">
+/* TWP: deeper terminal green, restrained texture. */
+.brand-mark{
+  color:#1f9a5d!important;
+  background:linear-gradient(180deg,#2aa96b 0%,#1c8b53 52%,#0f5e38 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-weight:850!important;
+  letter-spacing:1.6px!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.62)!important;
+  filter:saturate(.96) brightness(.86)!important;
+}
+.brand-mark:before{
+  background:linear-gradient(90deg,transparent,#8d4a12 20%,#c05b14 50%,#8d4a12 80%,transparent)!important;
+  opacity:.8;
+}
+.brand-mark:after{background:rgba(255,255,255,.045)!important;}
+
+/* Forward guidance: deeper orange, more breathing room from the edges. */
+#tab-detail .field-label{
+  color:#b65310!important;
+}
+#tab-detail .guidance-box{
+  background:#0c0f0d!important;
+  color:#c45a12!important;
+  border:1px solid #8f3f08!important;
+  box-shadow:inset 0 0 0 1px rgba(182,83,16,.10), inset 0 1px 0 rgba(255,255,255,.018), 0 0 0 1px rgba(0,0,0,.25)!important;
+  padding:14px 16px!important;
+  margin-top:8px!important;
+  border-radius:7px!important;
+  caret-color:#c45a12!important;
+}
+#tab-detail .guidance-box:focus{
+  border-color:#b65310!important;
+  outline:none!important;
+  box-shadow:inset 0 0 0 1px rgba(182,83,16,.16),0 0 0 2px rgba(182,83,16,.08)!important;
+}
+
+/* Macro read: exactly three compact trader lines, with less repetition and more data. */
+#tab-pairs .pair-macro-summary{
+  padding:10px 13px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.014),transparent 72%),var(--panel2)!important;
+}
+#tab-pairs .pair-macro-lead,
+#tab-pairs .pair-macro-line,
+#tab-pairs .pair-macro-verdict{
+  font-size:11.25px!important;
+  line-height:1.5!important;
+}
+#tab-pairs .pair-macro-line:before{display:none!important;}
+#tab-pairs .pair-macro-line{padding-left:0!important;margin-top:4px!important;}
+#tab-pairs .pair-macro-verdict{
+  padding-left:0!important;
+  margin-top:6px!important;
+  padding-top:6px!important;
+}
+</style>
+
+<style id="v42-visible-green-and-expanded-macro-read">
+/* TWP mark: deep green, but clearly visible against the black scanner background. */
+.brand-mark{
+  color:#35d681!important;
+  background:none!important;
+  -webkit-text-fill-color:#35d681!important;
+  font-weight:850!important;
+  letter-spacing:1.6px!important;
+  text-shadow:0 0 7px rgba(53,214,129,.18),0 1px 0 rgba(0,0,0,.36)!important;
+  filter:none!important;
+}
+.brand-mark:before{
+  background:linear-gradient(90deg,transparent 0%,rgba(53,214,129,.24) 18%,rgba(53,214,129,.72) 50%,rgba(53,214,129,.24) 82%,transparent 100%)!important;
+}
+
+/* Macro read: ten readable, pair-specific sentences. */
+#tab-pairs .pair-macro-summary{padding:11px 14px!important;}
+#tab-pairs .pair-macro-line{font-size:11.25px!important;line-height:1.5!important;margin-top:4px!important;color:var(--text-dim)!important;}
+#tab-pairs .pair-macro-line.macro-line-0{color:var(--text)!important;font-weight:700!important;}
+#tab-pairs .pair-macro-line.macro-line-9{color:var(--text)!important;font-weight:650!important;padding-top:4px!important;margin-top:6px!important;border-top:1px solid var(--border)!important;}
+
+/* Forward guidance: keep the field open and use a deep orange scanner tone. */
+#tab-detail .guidance-box{
+  background:#0d100e!important;
+  color:#d06216!important;
+  border:1px solid #9a430a!important;
+  padding:16px 18px!important;
+  min-height:104px!important;
+  margin-top:9px!important;
+  box-shadow:inset 0 0 0 1px rgba(197,88,18,.08),inset 0 1px 0 rgba(255,255,255,.02)!important;
+}
+#tab-detail .guidance-box:focus{border-color:#bd520e!important;box-shadow:0 0 0 2px rgba(189,82,14,.09),inset 0 0 0 1px rgba(189,82,14,.15)!important;}
+#tab-detail .field-label{color:#bd520e!important;}
+</style>
+
+<style id="v43-forward-guidance-visible-orange">
+/* Forward Guidance: clearly visible deep orange/gold, with an open dark surface. */
+#tab-detail .guidance-box{
+  background:#17110c!important;
+  color:#e87922!important;
+  border:1.5px solid #c65a12!important;
+  padding:16px 18px!important;
+  min-height:104px!important;
+  margin-top:9px!important;
+  border-radius:7px!important;
+  caret-color:#f08a2e!important;
+  box-shadow:inset 0 0 0 1px rgba(230,111,27,.12),inset 0 1px 0 rgba(255,194,120,.035),0 0 10px rgba(198,90,18,.05)!important;
+}
+#tab-detail .guidance-box:focus{
+  background:#1b120b!important;
+  color:#f08a2e!important;
+  border-color:#e0731d!important;
+  outline:none!important;
+  box-shadow:0 0 0 2px rgba(224,115,29,.10),inset 0 0 0 1px rgba(240,138,46,.18),0 0 12px rgba(198,90,18,.08)!important;
+}
+#tab-detail .field-label{
+  color:#d86a19!important;
 }
 </style>
 </head>
@@ -3324,9 +3573,9 @@ function renderLockBox(){
   box.className="lock-box"+(lockBoxCollapsed?" collapsed":"");
   // Plain SVG icons instead of emoji glyphs — emoji render in each platform's own
   // built-in color (often gold/amber) and ignore CSS color, so they can't be forced black.
-  var svgLocked='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><rect x="5" y="11" width="14" height="10" rx="2" fill="#000"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#000" stroke-width="2.2" fill="none"/></svg>';
-  var svgUnlocked='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><rect x="5" y="11" width="14" height="10" rx="2" fill="#000"/><path d="M8 11V7a4 4 0 0 1 7.5-2" stroke="#000" stroke-width="2.2" fill="none"/></svg>';
-  var svgEye='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="#000" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" fill="#000"/></svg>';
+  var svgLocked='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><rect x="5" y="11" width="14" height="10" rx="2" fill="var(--text-dim)"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="var(--text-dim)" stroke-width="2.2" fill="none"/></svg>';
+  var svgUnlocked='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><rect x="5" y="11" width="14" height="10" rx="2" fill="var(--text-dim)"/><path d="M8 11V7a4 4 0 0 1 7.5-2" stroke="var(--text-dim)" stroke-width="2.2" fill="none"/></svg>';
+  var svgEye='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="var(--text-dim)" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" fill="var(--text-dim)"/></svg>';
   var eyeIcon = lockBoxCollapsed ? svgLocked : svgEye;
   if(!AUTH.accessToken){
     box.innerHTML='<div class="lock-state"><span class="lock-state-label">'+svgLocked+' View-only</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
@@ -3763,7 +4012,7 @@ function renderYield2Y(){
     '<div class="card"><h3>Rate Differential Monitor</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>2Y Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div class="hist-spread-title"><div><h3>Bond Yield Spread</h3><div class="hist-spread-sub">Base 2Y yield − quote 2Y yield · basis points</div></div><div class="hist-spread-live"><div><div class="hist-live-label">Current spread</div><div id="histSpreadLiveValue" class="hist-live-value">—</div><div id="histSpreadLiveMeta" class="hist-live-meta">Select a pair</div><div id="histSpreadLiveChange" class="hist-live-change"></div></div></div></div>'+
     '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
-    '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div></div>'+
+    '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
     '</div>';
   document.getElementById('tab-yield2y').innerHTML=html;
@@ -3999,6 +4248,49 @@ function histSpreadDraw(){
   if(liveChange){ liveChange.innerHTML="Change <span>"+histSpreadFmt(change)+"</span>"; var __chgStyles=getComputedStyle(document.body); liveChange.style.color=change>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#2dbb78"):(change<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#d9535f"):"var(--text-dim)"); }
   }
   if(stats) stats.innerHTML="";
+
+  var hoverDot=document.getElementById("histSpreadHoverDot");
+  var hoverTip=document.getElementById("histSpreadTraceTip");
+  canvas.__histSpreadState={rows:rows,vals:vals,W:W,H:H,pad:pad,X:X,Y:Y,lineColor:lineColor};
+  if(!canvas.__histSpreadHoverBound){
+    canvas.__histSpreadHoverBound=true;
+    function spreadTrace(ev){
+      var st=canvas.__histSpreadState;
+      if(!st || st.rows.length<2) return;
+      var rr=canvas.getBoundingClientRect();
+      var px=Math.max(st.pad.l,Math.min(st.W-st.pad.r,ev.clientX-rr.left));
+      var plotW=st.W-st.pad.l-st.pad.r;
+      var ratio=plotW<=0?0:(px-st.pad.l)/plotW;
+      var idx=Math.max(0,Math.min(st.rows.length-1,Math.round(ratio*(st.rows.length-1))));
+      var x=st.X(idx), y=st.Y(st.vals[idx]);
+      if(hoverDot){
+        hoverDot.style.left=x+'px';
+        hoverDot.style.top=y+'px';
+        hoverDot.classList.toggle('bear',st.vals[idx]<0);
+        hoverDot.style.display='block';
+      }
+      if(hoverTip){
+        var v=st.vals[idx], row=st.rows[idx];
+        hoverTip.innerHTML='<div class="d">'+esc(row.date)+' · '+esc(histSpreadLabel(HIST_SPREAD_ACTIVE))+'</div><div class="v" style="color:'+(v>0?'var(--bullish-strong)':v<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(histSpreadFmt(v))+'</div>';
+        hoverTip.style.display='block';
+        var tw=hoverTip.offsetWidth||132, th=hoverTip.offsetHeight||38;
+        var left=x+12, top=y-th-10;
+        if(left+tw>W-6) left=x-tw-12;
+        if(top<6) top=y+10;
+        hoverTip.style.left=Math.max(6,left)+'px';
+        hoverTip.style.top=Math.max(6,top)+'px';
+      }
+    }
+    function endSpreadTrace(){
+      if(hoverDot) hoverDot.style.display='none';
+      if(hoverTip) hoverTip.style.display='none';
+    }
+    canvas.addEventListener("pointermove",spreadTrace,{passive:true});
+    canvas.addEventListener("mousemove",spreadTrace,{passive:true});
+    canvas.addEventListener("pointerenter",spreadTrace,{passive:true});
+    canvas.addEventListener("pointerleave",endSpreadTrace);
+    canvas.addEventListener("mouseleave",endSpreadTrace);
+  }
 }
 function initHistoricalSpreadPanel(){
   var select=document.getElementById("histSpreadPair");
@@ -4074,6 +4366,7 @@ function renderOverview(){
     '<div class="strength-card"><div class="strength-list-head"><div>#</div><div>Asset</div><div>Trend</div><div>Score</div><div>Bias</div></div>'+rightList+'</div>'+
     '</div>';
   document.getElementById('tab-overview').innerHTML=html;
+  bindPairTrendHover();
   var gotos=document.querySelectorAll('#tab-overview [data-goto]');
   for(var i=0;i<gotos.length;i++){gotos[i].onclick=function(){activeDetailCcy=this.dataset.goto;switchTab('detail');renderDetail();};}
 }
@@ -4202,17 +4495,24 @@ function surpriseBigChart(ccy, rangeSel){
   var w=680,h=170,pad=30;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined; }).sort();
   var days=filterDaysByRange(allDays, rangeSel);
-  if(days.length<2){
-    var msg = allDays.length<2
-      ? "Not enough history yet. Click \"Recalculate & log today\" on the Pair Ranking page on at least two different days to start this line -- that's the one button that saves everything on TWP, including this."
-      : "No logged data falls inside this window -- try a wider range.";
+  if(days.length<1){
+    var msg = allDays.length<1
+      ? "No saved Surprise Index history yet. Use \"Recalculate & log today\" on Pair Ranking to start the series."
+      : "No logged data falls inside this window — try a wider range.";
     return '<div class="building">'+msg+'</div>';
   }
+
   var vals=days.map(function(dt){ return Number(DAILY[dt][key]); });
-  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+  if(min===max){ min-=5; max+=5; }
   var range=max-min;
-  var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
+  var pts=vals.map(function(v,i){
+    var x=days.length===1?w/2:pad+(i/(vals.length-1))*(w-2*pad);
+    var y=h-pad-((v-min)/range)*(h-2*pad);
+    return [x,y];
+  });
   var colStrong = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+
   var labels="";
   var mobileView = (typeof window !== "undefined" && window.innerWidth <= 700);
   var labelTarget = mobileView ? 4 : 8;
@@ -4221,30 +4521,78 @@ function surpriseBigChart(ccy, rangeSel){
   if(labelCount===1){ labelIdx=[0]; }
   else { for(var li=0;li<labelCount;li++) labelIdx.push(Math.round(li*(days.length-1)/(labelCount-1))); }
   for(var lj=0;lj<labelIdx.length;lj++){
-    var i=labelIdx[lj], x=pad+(i/(vals.length-1))*(w-2*pad);
+    var i=labelIdx[lj], x=pts[i][0];
     var anchor = i===0 ? "start" : (i===days.length-1 ? "end" : "middle");
     labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
-  var gradId="surpArea-"+ccy;
-  var linePath=smoothPath(pts);
+
+  var linePath;
+  if(days.length===1){
+    linePath='M '+pts[0][0].toFixed(1)+','+pts[0][1].toFixed(1);
+  }else{
+    linePath=pts.map(function(p,i){ return (i===0?'M ':'L ')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+  }
   var baseY=h-pad;
-  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
-  var hitPts=days.map(function(dt,i){
-    var v=vals[i];
-    var lbl=surpriseLabel(Math.round(v*10)/10);
-    var label=String(dt)+' \u00b7 Index '+(v>0?"+":"")+v.toFixed(1)+' \u00b7 '+lbl;
-    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="9" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
-  }).join('');
-  return '<svg class="surprise-big-trend" data-ccy="'+esc(ccy)+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;">'+
+  var areaPath=days.length===1
+    ? 'M '+(pts[0][0]-10).toFixed(1)+','+pts[0][1].toFixed(1)+' L '+(pts[0][0]+10).toFixed(1)+','+pts[0][1].toFixed(1)+' L '+(pts[0][0]+10).toFixed(1)+','+baseY+' L '+(pts[0][0]-10).toFixed(1)+','+baseY+' Z'
+    : linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+
+  var gradId="surpArea-"+ccy;
+  var labelsTitle=days.length===1
+    ? '<text x="'+(w/2)+'" y="'+(pts[0][1]-10)+'" text-anchor="middle" font-size="9" fill="var(--text-faint)" font-family="IBM Plex Mono, monospace">single saved observation</text>'
+    : '';
+
+  return '<svg class="surprise-big-trend" data-ccy="'+esc(ccy)+'" data-days="'+esc(days.join(','))+'" viewBox="0 0 '+w+' '+h+'" width="100%" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
-      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
+      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.18"/>'+
       '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
     '</linearGradient></defs>'+
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none" pointer-events="none"/>'+
-    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
-    labels+hitPts+
+    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    labels+labelsTitle+
+    '<g class="surprise-trend-crosshair" opacity="0" pointer-events="none"><circle class="surprise-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="4" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="1.7"/></g>'+
+    '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="surprise-trend-hitbox"/>'+
     '</svg>';
+}
+function bindSurpriseTrendHover(){
+  var svgs=document.querySelectorAll('#tab-raw .surprise-big-trend');
+  for(var i=0;i<svgs.length;i++){
+    var svg=svgs[i];
+    if(svg.__surpriseHoverBound) continue;
+    svg.__surpriseHoverBound=true;
+    var move=function(ev){
+      var el=ev.currentTarget, days=(el.getAttribute('data-days')||'').split(',').filter(Boolean);
+      if(!days.length) return;
+      var r=el.getBoundingClientRect(), x=ev.clientX-r.left, ratio=Math.max(0,Math.min(1,x/r.width));
+      var idx=days.length===1?0:Math.round(ratio*(days.length-1));
+      var circle=el.querySelector('.surprise-trend-hover-dot'), cross=el.querySelector('.surprise-trend-crosshair');
+      if(circle && cross){
+        /* Reconstruct the point using the SVG geometry already implied by the viewBox. */
+        var vals=days.map(function(dt){return Number(DAILY[dt]["SURPRISE_"+el.getAttribute('data-ccy')]);});
+        var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+        if(min===max){min-=5;max+=5;}
+        var ppad=30, ww=680, hh=170, rr=max-min;
+        var cx=days.length===1?ww/2:ppad+(idx/(days.length-1))*(ww-2*ppad);
+        var cy=hh-ppad-((vals[idx]-min)/rr)*(hh-2*ppad);
+        circle.setAttribute('cx',cx.toFixed(1)); circle.setAttribute('cy',cy.toFixed(1)); cross.setAttribute('opacity','1');
+      }
+      var day=days[idx], ccy=el.getAttribute('data-ccy'), score=Number(DAILY[day]["SURPRISE_"+ccy]);
+      var tt=ensurePairScoreTooltip();
+      tt.innerHTML='<div class="tt-date">'+esc(formatShortDate(day))+' · '+esc(ccy)+'</div><div class="tt-score">Index '+(score>0?'+':'')+score.toFixed(1)+'</div><div class="tt-regime">'+esc(surpriseLabel(score))+'</div>';
+      tt.style.display='block';
+      var tr=tt.getBoundingClientRect(), left=Math.min(ev.clientX+12,window.innerWidth-tr.width-8), top=Math.min(ev.clientY+12,window.innerHeight-tr.height-8);
+      tt.style.left=Math.max(8,left)+'px'; tt.style.top=Math.max(8,top)+'px';
+    };
+    var end=function(ev){
+      hidePairScoreTooltip();
+      var c=ev.currentTarget.querySelector('.surprise-trend-crosshair'); if(c)c.setAttribute('opacity','0');
+    };
+    svg.addEventListener('pointermove',move);
+    svg.addEventListener('pointerenter',move);
+    svg.addEventListener('pointerleave',end);
+    svg.addEventListener('pointerdown',move);
+  }
 }
 function renderRaw(){
   if(!DATA)return;
@@ -4297,7 +4645,7 @@ function renderRaw(){
     '<div class="surprise-card"><div class="surprise-summary">'+
       '<div class="surprise-stat"><div class="surprise-k">Releases</div><div class="surprise-v">'+totalReleases+'</div></div>'+
       '<div class="surprise-stat"><div class="surprise-k">Average surprise</div><div class="surprise-v '+(avgAll>0?'surprise-pos':avgAll<0?'surprise-neg':'surprise-neu')+'">'+(avgAll>0?"+":"")+avgAll.toFixed(1)+'</div></div>'+
-    '</div><div class="surprise-note">The release count is the number of current growth, inflation and labour release rows stored for each currency. The Surprise Index trend itself is saved separately in DAILY when you use “Recalculate & log today”, so the trend can accumulate over time without changing this release count.</div>'+
+    '</div><div class="surprise-note">This measures the current growth, inflation and labour releases for each currency.</div>'+
     '<div class="surprise-list-head"><div>#</div><div>Currency</div><div>Surprise Strength</div><div>Index</div><div>State</div><div>Releases</div><div>2Y Yield</div></div>'+
     '<div class="surprise-list">'+left+'</div></div>'+
     '<div class="surprise-card"><div class="surprise-card-title">Recent Forecast Surprises</div><div class="surprise-release-list">'+right+'</div></div></div>';
@@ -4318,6 +4666,7 @@ function renderRaw(){
   }
   var closeSurpriseX=document.getElementById("closeSurpriseChart");
   if(closeSurpriseX){ closeSurpriseX.onclick=function(e){ e.stopPropagation(); expandedSurpriseCcy=null; renderRaw(); }; }
+  bindSurpriseTrendHover();
   var srangeBtns=document.querySelectorAll("#tab-raw .srange-btn");
   for(var sr=0;sr<srangeBtns.length;sr++){ srangeBtns[sr].onclick=function(e){ e.stopPropagation(); expandedSurpriseRange=this.dataset.srange; renderRaw(); }; }
 }
@@ -4442,12 +4791,15 @@ function renderDetailTrendPanel(ccy, liveScore){
     var fillVar = t.dir==="up"?"var(--bullish-strong)":(t.dir==="down"?"var(--bearish-strong)":"var(--text-faint)");
     var hitPts=series.map(function(s,i){
       var p=xy[i];
-      var label=formatShortDate(s.date)+" · Score "+fmt(s.val)+" · "+bandLabel(s.val);
-      return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="7" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+      return '<circle class="detail-trend-hit" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"/>';
     }).join("");
-    spark='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="overflow:visible;">'+
-      '<polygon points="'+areaPts+'" fill="'+fillVar+'" fill-opacity="0.16" stroke="none"/>'+
-      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="1.7" points="'+linePts+'"/>'+hitPts+'</svg>';
+    spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="overflow:visible;touch-action:none;cursor:crosshair;">'+
+      '<polygon points="'+areaPts+'" fill="'+fillVar+'" fill-opacity="0.12" stroke="none" pointer-events="none"/>'+
+      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="1.7" points="'+linePts+'" pointer-events="none"/>'+
+      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="3.8" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="1.8"/></g>'+
+      hitPts+
+      '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="detail-trend-hitbox"/>'+
+      '</svg>';
     var midIdx=Math.floor((series.length-1)/2);
     dateLabels='<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-faint);margin-top:2px;width:'+w+'px;">'+
       '<span>'+formatShortDate(series[0].date)+'</span>'+
@@ -4461,6 +4813,44 @@ function renderDetailTrendPanel(ccy, liveScore){
     '<div class="trend-delta '+cls+'">'+symbol+' '+deltaTxt+'</div></div>'+
     spark+dateLabels+'</div>';
 }
+function showCcyTrendTooltip(svg, idx, clientX, clientY){
+  var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
+  var ccy=svg.getAttribute('data-ccy')||'';
+  var day=days[idx];
+  if(!day || !DAILY[day] || DAILY[day][ccy]===undefined) return;
+  var score=Number(DAILY[day][ccy]);
+  var tt=ensurePairScoreTooltip();
+  tt.innerHTML='<div class="tt-date">'+esc(formatShortDate(day))+' · '+esc(ccy)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(bandLabel(score))+'</div>';
+  tt.style.display='block';
+  var rect=tt.getBoundingClientRect();
+  var x=Math.min(clientX+12, window.innerWidth-rect.width-8);
+  var y=Math.min(clientY+12, window.innerHeight-rect.height-8);
+  tt.style.left=Math.max(8,x)+'px'; tt.style.top=Math.max(8,y)+'px';
+}
+function updateCcyTrendCrosshair(svg, idx){
+  var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
+  if(days.length<2) return;
+  idx=Math.max(0,Math.min(days.length-1,idx));
+  var dot=svg.querySelector('.detail-trend-hover-dot'), cross=svg.querySelector('.detail-trend-crosshair'), hit=svg.querySelectorAll('.detail-trend-hit');
+  if(!dot||!cross||!hit[idx]) return;
+  dot.setAttribute('cx',hit[idx].getAttribute('cx')); dot.setAttribute('cy',hit[idx].getAttribute('cy')); cross.setAttribute('opacity','1');
+}
+function bindDetailTrendHover(){
+  var svgs=document.querySelectorAll('#tab-detail .detail-trend-spark');
+  for(var i=0;i<svgs.length;i++){
+    var svg=svgs[i];
+    if(svg.__detailTrendHoverBound) continue;
+    svg.__detailTrendHoverBound=true;
+    var move=function(ev){
+      var el=ev.currentTarget, days=(el.getAttribute('data-days')||'').split(',').filter(Boolean);
+      if(days.length<2) return;
+      var r=el.getBoundingClientRect(), x=ev.clientX-r.left, ratio=Math.max(0,Math.min(1,x/r.width)), idx=Math.round(ratio*(days.length-1));
+      updateCcyTrendCrosshair(el,idx); showCcyTrendTooltip(el,idx,ev.clientX,ev.clientY);
+    };
+    var end=function(ev){ hidePairScoreTooltip(); var c=ev.currentTarget.querySelector('.detail-trend-crosshair'); if(c)c.setAttribute('opacity','0'); };
+    svg.addEventListener('pointermove',move); svg.addEventListener('pointerenter',move); svg.addEventListener('pointerleave',end); svg.addEventListener('pointerdown',move);
+  }
+}
 function renderDetail(){
   if(!DATA) return;
   var html='<div class="ccy-pills" id="detailPills"></div><div id="detailBody"></div>';
@@ -4470,6 +4860,7 @@ function renderDetail(){
   var pills=document.querySelectorAll("#detailPills .ccy-pill");
   for(var p=0;p<pills.length;p++){ pills[p].onclick=function(){ activeDetailCcy=this.dataset.ccy; renderDetail(); }; }
   renderDetailBody(activeDetailCcy);
+  bindDetailTrendHover();
 }
 function renderDetailBody(ccy){
   if(!DATA || !DATA[ccy]) return;
@@ -4808,7 +5199,7 @@ function hidePairTrendCrosshair(svg){
   if(cross) cross.setAttribute('opacity','0');
 }
 function bindPairTrendHover(){
-  var svgs=document.querySelectorAll('#tab-pairs .pair-trend-spark');
+  var svgs=document.querySelectorAll('#tab-pairs .pair-trend-spark,#tab-overview .pair-trend-spark');
   for(var i=0;i<svgs.length;i++){
     var svg=svgs[i];
     if(svg.__pairHoverBound) continue;
@@ -4857,7 +5248,7 @@ function bindBigPairTrendHover(){
 }
 
 function bigChart(pair, rangeSel){
-  var w=680,h=170,pad=30;
+  var w=620,h=128,pad=26;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
   var days=filterDaysByRange(allDays, rangeSel);
   if(days.length<2){
@@ -4888,10 +5279,13 @@ function bigChart(pair, rangeSel){
   var linePath=smoothPath(pts);
   var baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  var histDots=days.map(function(dt,i){
+    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="'+(i===days.length-1?2.8:2.0)+'" fill="'+colStrong+'" fill-opacity="'+(i===days.length-1?0.96:0.38)+'" stroke="var(--panel2)" stroke-width="0.7" pointer-events="none"/>';
+  }).join('');
   var hitPts=days.map(function(dt,i){
     var v=Number(vals[i]);
     var label=String(dt)+' · Score '+fmt(v)+' · '+bandLabel(v);
-    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="9" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join('');
   return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
@@ -4915,6 +5309,107 @@ function sortExtremePairs(pairs){
   var bears=pairs.filter(function(p){ return p.bias==="Very Bearish"; }).sort(function(a,b){ return a.score-b.score; });
   return bulls.concat(bears);
 }
+function pairMacroSummaryHtml(pair, score){
+  var base=pair.slice(0,3), quote=pair.slice(3,6);
+  var fb=fundFor(base), fq=fundFor(quote);
+  var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
+  var y=pairYieldCalc(base,quote), yScore=y.score;
+  var cot=cotPairRegime(base,quote);
+  var riskDiff=100*0.03*(riskTermFor(base)-riskTermFor(quote));
+  var riskState=riskPairState(base,quote);
+  var seas=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
+  var overall=bandLabel(score);
+  var baseData=DATA[base]||{}, quoteData=DATA[quote]||{};
+
+  function clean(v){ return String(v==null?'':v).replace(/\s+/g,' ').trim(); }
+  function num(v){ return v==null?'':String(v); }
+  function biasSign(ind){
+    return ind && ind.bias==='Bullish' ? 1 : ind && ind.bias==='Bearish' ? -1 : 0;
+  }
+  function effectFor(ccy, ind){
+    var b=biasSign(ind);
+    return ccy===base ? b : -b;
+  }
+  function allIndicators(){
+    var out=[];
+    [base,quote].forEach(function(ccy){
+      var d=DATA[ccy]||{};
+      ['growth','inflation','labour'].forEach(function(group){
+        (d[group]||[]).forEach(function(ind){
+          var effect=effectFor(ccy,ind);
+          var wt=Math.abs(Number(ind.weight)||0);
+          if(effect!==0) out.push({ccy:ccy,group:group,ind:ind,effect:effect,weight:wt});
+        });
+      });
+    });
+    return out;
+  }
+  var facts=allIndicators();
+  var supportive=facts.filter(function(x){return x.effect>0;}).sort(function(a,b){return b.weight-a.weight;});
+  var opposing=facts.filter(function(x){return x.effect<0;}).sort(function(a,b){return b.weight-a.weight;});
+  function factText(x){
+    if(!x) return '';
+    var n=clean(x.ind.name), a=num(x.ind.actual), f=num(x.ind.forecast);
+    if(a && f && f!=='-' && f!=='—') return x.ccy+' '+n+' '+a+' vs '+f+' forecast';
+    if(a) return x.ccy+' '+n+' '+a;
+    return x.ccy+' '+n+' is '+clean(x.ind.bias||'neutral').toLowerCase();
+  }
+  function strongestDataPhrase(list){
+    if(!list.length) return 'The latest growth, inflation and labour data are not giving either side a clean edge yet.';
+    if(list.length===1) return factText(list[0])+', which is the clearest fundamental push in this pair.';
+    return factText(list[0])+' and '+factText(list[1])+', giving '+(list[0].effect>0?base:quote)+' the cleaner data impulse.';
+  }
+  var lines=[];
+  lines.push('The composite is '+overall.toLowerCase()+' at '+Math.round(score)+', so the current macro balance is leaning '+(score>0?base:score<0?quote:'neither leg')+'.');
+  if(fundRel>8) lines.push(base+' has the stronger fundamental stack overall, with growth, inflation and labour carrying a clear relative advantage.');
+  else if(fundRel<-8) lines.push(quote+' has the stronger fundamental stack overall, so the data is pulling against '+base+' even if the pair composite says otherwise.');
+  else lines.push('The fundamental gap is fairly narrow, so the pair is not being driven by one overwhelming growth, inflation or labour story.');
+  lines.push(strongestDataPhrase(supportive));
+  if(opposing.length) lines.push('The main fundamental drag is '+factText(opposing[0])+', which keeps the data story from being one-way.');
+  else lines.push('There is no obvious high-weight fundamental shock on the opposite side to break the current data story.');
+  if(yScore==null) lines.push('The 2Y rate differential is not fully populated, so rates are not yet a clean confirmation signal.');
+  else {
+    var bp=Math.round(y.current*100);
+    if(Math.abs(bp)<5) lines.push('The 2Y spread is only '+(bp>=0?'+':'')+bp+'bp, leaving the rate story broadly balanced.');
+    else if(bp>0) lines.push('The 2Y spread is +'+bp+'bp, putting the rate advantage on '+base+' and reinforcing the pair bias.');
+    else lines.push('The 2Y spread is '+bp+'bp, giving '+quote+' the clearer rate advantage and making '+base+' work harder to justify the move.');
+  }
+  var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
+  if(cot.insufficient) lines.push('Positioning is still thin for a clean pair call, so COT should be treated as secondary rather than decisive.');
+  else {
+    var edge=cot.combined>5?base:(cot.combined<-5?quote:'neither');
+    if(edge!=='neither'){
+      var d=edge===base?cotBase:cotQuote, loc=cotRangeLocation(edge);
+      var flow=d && d.netChg!=null ? (d.netChg>0?'net longs are building':d.netChg<0?'net longs are being cut':'net positioning is unchanged') : 'weekly flow is unavailable';
+      lines.push('Positioning favours '+edge+(loc!=null?' around '+Math.round(loc)+'% of its 52-week range':'')+', while '+flow+'.');
+    } else {
+      var bl=cotRangeLocation(base), ql=cotRangeLocation(quote);
+      lines.push('Positioning is not giving a clean winner: '+base+(bl!=null?' is around '+Math.round(bl)+'% of its range':'')+' while '+quote+(ql!=null?' is around '+Math.round(ql)+'%':'')+'.');
+    }
+  }
+  lines.push('Seasonality is '+seasonalityBandLabelFromValue(seas).toLowerCase()+', giving '+(seas>0?base:seas<0?quote:'neither leg')+' the timing edge rather than the core macro edge.');
+  lines.push('Risk sentiment is '+riskState.toLowerCase()+', with the current risk regime '+(riskDiff>0?'helping '+base:riskDiff<0?'helping '+quote:'not separating the two legs')+'.');
+  var alignmentText = (fundRel*score>0 && (yScore==null || y.current*score>=0)) ? 'Macro alignment is strongest where the fundamental gap and rate spread point in the same direction.' : 'The macro pillars are not fully aligned, so the score is carrying more tension than a clean one-way setup.';
+  lines.push(alignmentText);
+  var conflict=[];
+  if(fundRel*score<0 && Math.abs(fundRel)>=7) conflict.push('fundamentals');
+  if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=0.10) conflict.push('rates');
+  if(cot.combined*score<0 && Math.abs(cot.combined)>=6) conflict.push('positioning');
+  if(riskDiff*score<0 && Math.abs(riskDiff)>=4) conflict.push('risk');
+  if(seas*score<0 && Math.abs(seas)>=0.75) conflict.push('seasonality');
+  if(conflict.length===1) lines.push('The key watch point is '+conflict[0]+': it is leaning against the composite and is the clearest place to look for divergence.');
+  else if(conflict.length>1) lines.push('The cleanest divergence check is '+conflict.slice(0,2).join(' and ')+', because both are fighting the current composite.');
+  else if(supportive.length) lines.push('The setup stays strongest while the leading data impulse and rate differential continue to confirm each other.');
+  else lines.push('The next meaningful data surprise is the main catalyst because no single pillar is dominating the pair.');
+
+  /* Exactly ten sentences: enough room for a real trader read, without turning the panel into a wall of text. */
+  lines=lines.slice(0,10);
+  return '<div class="pair-macro-summary">'+
+    '<div class="pair-macro-summary-head"><span>Macro read</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
+    lines.map(function(t,i){return '<div class="pair-macro-line macro-line-'+i+'">'+esc(t)+'</div>';}).join('')+
+  '</div>';
+}
+
 function renderPairs(){
   if(!DATA) return;
   var scores=allScores(), pairsAll=buildPairs(scores);
@@ -5006,13 +5501,7 @@ function renderPairs(){
     expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span>'+
       '<div style="display:flex;align-items:center;gap:12px;"><div class="range-switch">'+rangeBtns+'</div>'+
       '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
-      '<div class="pair-detail-diagnostics">'+
-        '<div><span>Seasonality</span><b class="'+pillarBiasClass(epSeasLabel)+'">'+fmt(epSeas)+' · '+epSeasLabel+'</b></div>'+
-        '<div><span>Risk Sentiment</span><b class="'+pillarBiasClass(epRiskState)+'">'+(epRisk>0?'+':'')+epRisk.toFixed(1)+' pts · '+epRiskState+'</b></div>'+
-        '<div><span>COT Regime</span><b class="'+pillarBiasClass(epCot.label)+'">'+epCot.label+'</b></div>'+
-      '</div>'+
-      '<div style="padding:2px 14px 12px;font-size:11px;color:var(--text-dim);">'+esc(epCotWhy)+epCotDxNote+'</div>'+
-      epOiBreakdown+
+      pairMacroSummaryHtml(expandedPair, pairCompositeFor(epBase,epQuote))+
       bigChart(expandedPair, expandedRange)+'</div></div>';
   }
   var filterBtns = [["All","All"],["Extremes","Extremes"],["Very Bullish","Very Bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very Bearish"]].map(function(fb){
@@ -5154,16 +5643,20 @@ function cotRangeLimit(range){
   return range==='6W'?6:(range==='3M'?13:(range==='6M'?26:(range==='12M'?52:null)));
 }
 function cotDrawChart(ccy){
-  var canvas=document.getElementById('cotRegimeCanvas'), empty=document.getElementById('cotRegimeEmpty'), tip=document.getElementById('cotCrosshairTip');
+  var canvas=document.getElementById('cotRegimeCanvas'), empty=document.getElementById('cotRegimeEmpty'), tip=document.getElementById('cotCrosshairTip'), zoneNote=document.getElementById('cotChartZoneNote');
   if(!canvas) return;
   var allRows=cotSortHistory(ccy), limit=cotRangeLimit(activeCotRange);
-  var rows=(limit?allRows.slice(-limit):allRows), d=cotLatest(ccy);
+  var rows=(limit?allRows.slice(-limit):allRows), d=cotLatest(ccy), crowd=cotCrowding(ccy);
   var rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
   var W=Math.max(340,rect.width), H=Math.max(200,rect.height);
   canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
   var ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
   canvas.__cotChartState=null;
   canvas.__cotLocked=false;
+  if(zoneNote){
+    zoneNote.className='cot-chart-zone-note';
+    zoneNote.textContent='';
+  }
   if(rows.length<2){if(empty) empty.textContent='Need at least two saved weekly net observations.'; if(tip) tip.style.display='none'; return;} else if(empty) empty.textContent='';
 
   var vals=rows.map(function(r){return Number(r.net);}), min=Math.min.apply(null,vals.concat([0])), max=Math.max.apply(null,vals.concat([0]));
@@ -5179,11 +5672,51 @@ function cotDrawChart(ccy){
   var panel=styles.getPropertyValue('--panel').trim()||'#111';
   var color=vals[vals.length-1]>=vals[0]?bull:bear;
 
+  /* Draw a compact crowding band only at the current end of the chart. The band is
+     derived from the same 52W location logic that drives the Crowded Long/Short regime:
+     80-100% for crowded longs and 0-20% for crowded shorts. */
+  var zone=null, zoneTone=null;
+  if(crowd.loc!=null && d.low!=null && d.high!=null && d.high!==d.low){
+    if(crowd.label==='Crowded Long'){
+      zoneTone='warn';
+      zone={lo:d.low+(d.high-d.low)*0.80,hi:d.high};
+    }else if(crowd.label==='Crowded Short'){
+      zoneTone='bounce';
+      zone={lo:d.low,hi:d.low+(d.high-d.low)*0.20};
+    }
+  }
+  if(zone && zoneNote){
+    zoneNote.textContent = zoneTone==='warn' ? 'Crowded long · watch reversal' : 'Crowded short · bounce zone';
+    zoneNote.className='cot-chart-zone-note '+zoneTone;
+  }
+
+  function drawCrowdingZone(){
+    if(!zone) return;
+    var yTop=Y(zone.hi), yBot=Y(zone.lo);
+    var top=Math.max(pad.t,Math.min(pad.t+ph,yTop));
+    var bot=Math.max(pad.t,Math.min(pad.t+ph,yBot));
+    var h=Math.max(0,bot-top);
+    if(h<=1) return;
+    var zoneW=Math.max(78,Math.min(pw*0.26,156));
+    var zx=W-pad.r-zoneW;
+    var fill=zoneTone==='warn'?bear:bull;
+    ctx.save();
+    /* Soft side-zone only: no outline, no guide lines, no stripes. */
+    var rgb=zoneTone==='warn'?'rgba(217,83,95,1)':'rgba(45,187,120,1)';
+    var gx=ctx.createRadialGradient(W-pad.r,(top+bot)/2,0,W-pad.r,(top+bot)/2,Math.max(zoneW,h)*0.95);
+    gx.addColorStop(0,rgb.replace(',1)',',0.23)'));
+    gx.addColorStop(0.52,rgb.replace(',1)',',0.12)'));
+    gx.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gx;
+    ctx.fillRect(zx,top,zoneW,h);
+    ctx.restore();
+  }
   function drawBase(){
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
     ctx.font='10px IBM Plex Mono, monospace'; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillStyle=td;
     [max,min,0].forEach(function(v){var y=Y(v); if(y<10||y>H-25) return; ctx.fillText(cotFormat(v),pad.l-7,y);});
     if(0>=min && 0<=max){ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(pad.l,Y(0));ctx.lineTo(W-pad.r,Y(0));ctx.stroke();}
+    drawCrowdingZone();
     ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();
     vals.forEach(function(v,i){var x=X(i),y=Y(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
     // Tiny persistent weekly markers. They make every saved observation traceable without clutter.
@@ -5305,7 +5838,7 @@ function cotDetailHtml(ccy){
   var shortPct=(d.long!=null&&d.short!=null)?(d.short/(d.long+d.short)*100):null;
   var badgeClass=crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral';
   return '<div class="cot-hero">'+
-    '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net ÷ OI</span><b class="'+netCls+'">'+(d.oi!=null&&d.net!=null&&d.oi?cotPercent(100*d.net/d.oi):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">This is the normalized figure the Pair Ranking COT score actually compares against other currencies — not the raw net number above.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+hist.length+' saved weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
+    '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net ÷ OI</span><b class="'+netCls+'">'+(d.oi!=null&&d.net!=null&&d.oi?cotPercent(100*d.net/d.oi):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">This is the normalized figure the Pair Ranking COT score actually compares against other currencies — not the raw net number above.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+hist.length+' saved weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div><div id="cotChartZoneNote" class="cot-chart-zone-note"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
 }
 function renderCotRegime(){
   var tab=document.getElementById('tab-cot'); if(!tab||!DATA) return;
@@ -6050,6 +6583,134 @@ init();
 #tab-risk #riskObsDateInput{width:150px!important;flex-basis:150px!important;min-height:34px!important;cursor:pointer;}
 #tab-risk #riskSaveCloseBtn{height:31px!important;padding:0 12px!important;}
 #tab-risk .risk-inline-note{font-size:10px!important;color:var(--text-faint)!important;flex:1 1 220px!important;}
+</style>
+
+<style id="v40-trader-texture-and-trace">
+/* Clean, serious texture — subtle depth, no decorative/glossy look. */
+body.black .rail, body.black .card, body.ash .rail, body.ash .card{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018), 0 8px 26px rgba(0,0,0,.12);
+}
+body.black .rail, body.ash .rail{
+  background-image:linear-gradient(to bottom,rgba(255,255,255,.012),transparent 18%);
+}
+.brand{position:relative;}
+.brand-mark{
+  position:relative;
+  display:inline-block;
+  color:#42df91!important;
+  font-weight:850!important;
+  letter-spacing:1.6px!important;
+  background:linear-gradient(180deg,#59e99e 0%,#42df91 48%,#2fbc76 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 1px 0 rgba(0,0,0,.45);
+  filter:saturate(1.04);
+}
+.brand-mark:before{
+  content:"";
+  position:absolute;
+  left:1px; right:1px; bottom:-5px;
+  height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(66,223,145,.22) 18%,rgba(66,223,145,.75) 50%,rgba(66,223,145,.22) 82%,transparent 100%);
+}
+.brand-mark:after{
+  content:"";
+  position:absolute;
+  left:4px; right:4px; top:3px; height:1px;
+  background:rgba(255,255,255,.10);
+  opacity:.55;
+}
+
+/* Overview trend: one moving point, no cluttered crosshair. */
+#tab-overview .pair-trend-spark,
+#tab-overview .pair-trend-hit{cursor:crosshair;}
+#tab-overview .pair-trend-hover-dot,
+#tab-pairs .pair-trend-hover-dot{
+  filter:drop-shadow(0 0 3px rgba(255,255,255,.10));
+}
+#tab-overview .strength-spark svg{overflow:visible;}
+
+/* Pair macro read: compact trader note rather than repeated boilerplate. */
+#tab-pairs .pair-macro-summary{
+  position:relative;
+  background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 72%),var(--panel2);
+  border-color:rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+#tab-pairs .pair-macro-summary:before{
+  content:"";
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:2px;
+  background:var(--border);
+  border-radius:7px 0 0 7px;
+}
+#tab-pairs .pair-macro-summary-head{
+  padding-left:3px;
+  margin-bottom:7px;
+}
+#tab-pairs .pair-macro-lead{
+  font-size:11.5px;
+  font-weight:700;
+  color:var(--text);
+  line-height:1.45;
+  margin-bottom:4px;
+}
+#tab-pairs .pair-macro-line{
+  font-size:11px;
+  line-height:1.48;
+  color:var(--text-dim);
+  padding-left:10px;
+  position:relative;
+}
+#tab-pairs .pair-macro-line:before{
+  content:"·";
+  position:absolute;
+  left:3px;
+  color:var(--text-faint);
+}
+#tab-pairs .pair-macro-verdict{
+  margin-top:7px;
+  padding:7px 0 0 10px;
+  font-size:10.8px;
+  line-height:1.45;
+  color:var(--text);
+  border-top:1px solid var(--border);
+}
+#tab-pairs .pair-macro-summary-head b{font-size:10.5px;}
+
+/* Bond Yield Spread tracing: the dot follows the cursor's nearest observation. */
+#tab-yield2y .hist-spread-chart{position:relative;}
+#tab-yield2y .hist-spread-hover-dot{
+  position:absolute;
+  width:9px;height:9px;
+  margin:-4.5px 0 0 -4.5px;
+  border-radius:50%;
+  background:var(--panel);
+  border:2px solid var(--bullish-strong);
+  box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 7px rgba(66,223,145,.16);
+  pointer-events:none;
+  display:none;
+  z-index:3;
+}
+#tab-yield2y .hist-spread-hover-dot.bear{border-color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 7px rgba(255,113,123,.13);}
+#tab-yield2y .hist-spread-trace-tip{
+  position:absolute;
+  z-index:4;
+  display:none;
+  pointer-events:none;
+  min-width:132px;
+  padding:6px 8px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--panel);
+  box-shadow:0 8px 22px rgba(0,0,0,.24);
+  font-size:10.5px;
+  line-height:1.35;
+  color:var(--text);
+}
+#tab-yield2y .hist-spread-trace-tip .d{font-family:'IBM Plex Mono',monospace;color:var(--text-faint);font-size:9.5px;}
+#tab-yield2y .hist-spread-trace-tip .v{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;margin-top:2px;}
 </style>
 </body>
 </html>
