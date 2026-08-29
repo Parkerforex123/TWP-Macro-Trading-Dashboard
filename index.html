@@ -2249,6 +2249,16 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-cot .cot-crowd{font-size:10.5px!important;}
 #tab-cot .cot-scanner-note{padding:5px 6px 8px!important;}
 </style>
+
+<style id="macro-analyst-read-v2">
+#tab-pairs .pair-macro-summary{padding:13px 15px!important;}
+#tab-pairs .pair-macro-summary-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px!important;}
+#tab-pairs .pair-macro-lead{font-size:12px!important;line-height:1.58!important;font-weight:700!important;color:var(--text)!important;margin:0 0 7px 0!important;}
+#tab-pairs .pair-macro-line{font-size:11.4px!important;line-height:1.58!important;color:var(--text-dim)!important;padding:0!important;margin:6px 0 0 0!important;}
+#tab-pairs .pair-macro-line:before{display:none!important;}
+#tab-pairs .pair-macro-verdict{font-size:11.5px!important;line-height:1.6!important;color:var(--text)!important;margin-top:9px!important;padding:9px 0 0 0!important;border-top:1px solid var(--border)!important;font-weight:650!important;}
+#tab-pairs .pair-macro-summary:before{background:linear-gradient(180deg,var(--amber),var(--border))!important;}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -5396,9 +5406,18 @@ function pairMacroSummaryHtml(pair, score){
   var seas=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
   var overall=bandLabel(score);
   var baseData=DATA[base]||{}, quoteData=DATA[quote]||{};
+  var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
 
   function clean(v){ return String(v==null?'':v).replace(/\s+/g,' ').trim(); }
   function num(v){ return v==null?'':String(v); }
+  function sideName(){ return score>0?base:score<0?quote:'neither'; }
+  function labelWord(){
+    if(score>=25) return ['decisive','the stronger side is clearly in front'];
+    if(score>=8) return ['constructive','the balance is leaning in favour of '+base];
+    if(score<=-25) return ['decisive','the stronger side is clearly in front'];
+    if(score<=-8) return ['fragile','the balance is leaning in favour of '+quote];
+    return ['two-sided','the pair does not have a dominant macro winner'];
+  }
   function biasSign(ind){
     return ind && ind.bias==='Bullish' ? 1 : ind && ind.bias==='Bearish' ? -1 : 0;
   }
@@ -5430,59 +5449,108 @@ function pairMacroSummaryHtml(pair, score){
     if(a) return x.ccy+' '+n+' '+a;
     return x.ccy+' '+n+' is '+clean(x.ind.bias||'neutral').toLowerCase();
   }
-  function strongestDataPhrase(list){
-    if(!list.length) return 'The latest growth, inflation and labour data are not giving either side a clean edge yet.';
-    if(list.length===1) return factText(list[0])+', which is the clearest fundamental push in this pair.';
-    return factText(list[0])+' and '+factText(list[1])+', giving '+(list[0].effect>0?base:quote)+' the cleaner data impulse.';
+  function groupName(g){ return g==='growth'?'growth':g==='inflation'?'inflation':'labour'; }
+  function groupScore(f,g){
+    var x=f[g]; return x.max?(100*x.raw/x.max):0;
   }
-  var lines=[];
-  lines.push('The composite is '+overall.toLowerCase()+' at '+Math.round(score)+', so the current macro balance is leaning '+(score>0?base:score<0?quote:'neither leg')+'.');
-  if(fundRel>8) lines.push(base+' has the stronger fundamental stack overall, with growth, inflation and labour carrying a clear relative advantage.');
-  else if(fundRel<-8) lines.push(quote+' has the stronger fundamental stack overall, so the data is pulling against '+base+' even if the pair composite says otherwise.');
-  else lines.push('The fundamental gap is fairly narrow, so the pair is not being driven by one overwhelming growth, inflation or labour story.');
-  lines.push(strongestDataPhrase(supportive));
-  if(opposing.length) lines.push('The main fundamental drag is '+factText(opposing[0])+', which keeps the data story from being one-way.');
-  else lines.push('There is no obvious high-weight fundamental shock on the opposite side to break the current data story.');
-  if(yScore==null) lines.push('The 2Y rate differential is not fully populated, so rates are not yet a clean confirmation signal.');
-  else {
+  function strongestGroup(f){
+    var arr=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];
+    arr.sort(function(a,b){return Math.abs(b[1])-Math.abs(a[1]);});
+    return arr[0];
+  }
+  function topFundLine(){
+    if(!supportive.length && !opposing.length) return 'The macro data is unusually quiet here: nothing in growth, inflation or labour is creating a strong relative impulse yet.';
+    var s=strongestGroup(score>=0?fb:fq), leader=score>=0?base:quote;
+    if(Math.abs(fundRel)<5) return 'The data is mixed rather than one-way. The strongest information is coming from '+leader+' '+groupName(s[0])+', but the gap is not wide enough to call this a clean fundamental trend.';
+    if(supportive.length>=2) return 'The real story is the breadth of the data rather than one headline. '+factText(supportive[0])+' and '+factText(supportive[1])+' are pulling the macro balance toward '+(supportive[0].effect>0?base:quote)+'.';
+    return 'The cleanest data signal is '+factText(supportive[0]||opposing[0])+', which is doing most of the work behind the relative fundamental call.';
+  }
+  function rateNarrative(){
+    if(yScore==null) return 'The rate layer is incomplete, so the yield market cannot yet be used as a strong confirmation signal.';
     var bp=Math.round(y.current*100);
-    if(Math.abs(bp)<5) lines.push('The 2Y spread is only '+(bp>=0?'+':'')+bp+'bp, leaving the rate story broadly balanced.');
-    else if(bp>0) lines.push('The 2Y spread is +'+bp+'bp, putting the rate advantage on '+base+' and reinforcing the pair bias.');
-    else lines.push('The 2Y spread is '+bp+'bp, giving '+quote+' the clearer rate advantage and making '+base+' work harder to justify the move.');
+    if(Math.abs(bp)<5) return 'The 2Y spread is only '+(bp>=0?'+':'')+bp+'bp. That leaves the rate story almost flat, so this pair is being decided more by data and positioning than by a clear yield advantage.';
+    var winner=bp>0?base:quote;
+    var reinforces=(score>0&&bp>0)||(score<0&&bp<0);
+    if(reinforces) return 'Rates are helping the same side as the composite: the 2Y spread sits at '+(bp>0?'+':'')+bp+'bp in favour of '+winner+'. That matters because the data story is not standing alone; the rate market is backing it.';
+    return 'Rates are the awkward part of the picture. The 2Y spread is '+(bp>0?'+':'')+bp+'bp in favour of '+winner+', but the broader composite leans the other way. That is the tension worth respecting rather than smoothing over.';
   }
-  var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
-  if(cot.insufficient) lines.push('Positioning is still thin for a clean pair call, so COT should be treated as secondary rather than decisive.');
-  else {
-    var edge=cot.combined>5?base:(cot.combined<-5?quote:'neither');
-    if(edge!=='neither'){
-      var d=edge===base?cotBase:cotQuote, loc=cotRangeLocation(edge);
-      var flow=d && d.netChg!=null ? (d.netChg>0?'net longs are building':d.netChg<0?'net longs are being cut':'net positioning is unchanged') : 'weekly flow is unavailable';
-      lines.push('Positioning favours '+edge+(loc!=null?' around '+Math.round(loc)+'% of its 52-week range':'')+', while '+flow+'.');
-    } else {
-      var bl=cotRangeLocation(base), ql=cotRangeLocation(quote);
-      lines.push('Positioning is not giving a clean winner: '+base+(bl!=null?' is around '+Math.round(bl)+'% of its range':'')+' while '+quote+(ql!=null?' is around '+Math.round(ql)+'%':'')+'.');
+  function cotNarrative(){
+    if(cot.insufficient) return 'COT is still too thin to carry the argument. Treat positioning as background information until the pair has a usable history.';
+    var bn=(cotBase.oi&&cotBase.net!=null)?100*cotBase.net/cotBase.oi:null;
+    var qn=(cotQuote.oi&&cotQuote.net!=null)?100*cotQuote.net/cotQuote.oi:null;
+    var winner=cot.combined>5?base:(cot.combined<-5?quote:'neither');
+    var flowBase=cotBase.netChg==null?0:cotBase.netChg;
+    var flowQuote=cotQuote.netChg==null?0:cotQuote.netChg;
+    var flowWinner=flowBase>flowQuote?base:flowBase<flowQuote?quote:'neither';
+    if(winner!=='neither'){
+      var norm=winner===base?bn:qn;
+      var raw=winner===base?cotBase.net:cotQuote.net;
+      var move=winner===flowWinner?(flowBase===flowQuote?'positioning is broadly unchanged':'the weekly flow is moving the same way'):('the weekly flow is moving against it');
+      return 'Positioning leans toward '+winner+(norm!=null?' with net positioning at roughly '+norm.toFixed(1)+'% of open interest':'')+' (raw net '+cotFormat(raw)+'). '+move+'. That makes COT a useful confirmation or warning flag, not a substitute for the macro story.';
     }
+    return 'COT is not giving the pair a clean institutional winner right now. The useful question is whether the weekly flow starts separating the two currencies; until then, positioning is a secondary signal.';
   }
-  lines.push('Seasonality is '+seasonalityBandLabelFromValue(seas).toLowerCase()+', giving '+(seas>0?base:seas<0?quote:'neither leg')+' the timing edge rather than the core macro edge.');
-  lines.push('Risk sentiment is '+riskState.toLowerCase()+', with the current risk regime '+(riskDiff>0?'helping '+base:riskDiff<0?'helping '+quote:'not separating the two legs')+'.');
-  var alignmentText = (fundRel*score>0 && (yScore==null || y.current*score>=0)) ? 'Macro alignment is strongest where the fundamental gap and rate spread point in the same direction.' : 'The macro pillars are not fully aligned, so the score is carrying more tension than a clean one-way setup.';
-  lines.push(alignmentText);
-  var conflict=[];
-  if(fundRel*score<0 && Math.abs(fundRel)>=7) conflict.push('fundamentals');
-  if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=0.10) conflict.push('rates');
-  if(cot.combined*score<0 && Math.abs(cot.combined)>=6) conflict.push('positioning');
-  if(riskDiff*score<0 && Math.abs(riskDiff)>=4) conflict.push('risk');
-  if(seas*score<0 && Math.abs(seas)>=0.75) conflict.push('seasonality');
-  if(conflict.length===1) lines.push('The key watch point is '+conflict[0]+': it is leaning against the composite and is the clearest place to look for divergence.');
-  else if(conflict.length>1) lines.push('The cleanest divergence check is '+conflict.slice(0,2).join(' and ')+', because both are fighting the current composite.');
-  else if(supportive.length) lines.push('The setup stays strongest while the leading data impulse and rate differential continue to confirm each other.');
-  else lines.push('The next meaningful data surprise is the main catalyst because no single pillar is dominating the pair.');
+  function riskNarrative(){
+    if(!riskHasAnyReading()) return 'Risk sentiment is not populated enough to add a meaningful pair distinction.';
+    if(riskState==='Neutral') return 'Risk is not separating the two legs enough to matter. It is background rather than a driver here.';
+    return 'Risk is '+riskState.toLowerCase()+' for the pair, so the broader market regime is '+(riskDiff>0?'giving '+base:'giving '+quote)+' some support. It matters, but it is still a smaller input than fundamentals and rates.';
+  }
+  function seasonNarrative(){
+    var sl=seasonalityBandLabelFromValue(seas);
+    if(sl==='Neutral') return 'Seasonality is neutral. There is no meaningful calendar tailwind to lean on, which keeps the trade anchored to the live macro picture.';
+    return 'Seasonality is '+sl.toLowerCase()+' for '+(seas>0?base:quote)+'. Think of it as timing rather than the reason for the trade: it can reinforce a move, but it should not overrule the macro evidence.';
+  }
 
-  /* Exactly ten sentences: enough room for a real trader read, without turning the panel into a wall of text. */
-  lines=lines.slice(0,10);
+  var conflicts=[];
+  if(fundRel*score<0 && Math.abs(fundRel)>=7) conflicts.push('fundamentals');
+  if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=0.10) conflicts.push('rates');
+  if(cot.combined*score<0 && Math.abs(cot.combined)>=6) conflicts.push('positioning');
+  if(riskDiff*score<0 && Math.abs(riskDiff)>=4) conflicts.push('risk');
+  if(seas*score<0 && Math.abs(seas)>=0.75) conflicts.push('seasonality');
+
+  var side=sideName(), story=labelWord();
+  var lead;
+  if(side==='neither'){
+    lead='There is no clean hero in '+pair+'. The dashboard is reading a two-sided macro market, so the important question is which pillar breaks the balance first rather than forcing a directional story that the evidence does not support.';
+  } else {
+    lead=pair+' is '+story[0]+': '+side+' has the upper hand, but the quality of that edge depends on whether the other macro pillars confirm it. The score tells you who is in front; the read below explains why.';
+  }
+
+  var divergence;
+  if(conflicts.length===0){
+    divergence='The pieces are broadly pulling in the same direction. That is the cleaner kind of setup: data, rates and the supporting layers are not fighting the main signal. The next risk is not contradiction, but a fresh piece of information strong enough to change that alignment.';
+  } else if(conflicts.length===1){
+    divergence='The important tension is '+conflicts[0]+'. That is where I would look first for divergence: if it keeps disagreeing while the headline score stays firm, the pair is carrying more internal conflict than the headline bias suggests.';
+  } else {
+    divergence='This is not a one-way macro story. '+conflicts.slice(0,3).join(', ')+' are not fully agreeing with the composite, so the quality of the signal matters more than the label. The best confirmation will come from the pillars moving back into alignment, not from a bigger score alone.';
+  }
+
+  var conclusion;
+  if(side==='neither'){
+    conclusion='Bottom line: neutrality here is not a blank verdict. It means the market lacks a dominant macro force at this moment. Watch the next meaningful data or rate repricing for the first clean separation between the two currencies.';
+  } else if(conflicts.length===0){
+    conclusion='Bottom line: '+side+' has the cleaner macro story. The signal becomes more trustworthy if the same side keeps winning in the data and the rate market while positioning does not become excessively stretched.';
+  } else if(conflicts.length<=2){
+    conclusion='Bottom line: '+side+' still leads, but it is not a free pass. The disagreement above is the part of the dashboard that can invalidate the simple headline bias, so it deserves more attention than the score itself.';
+  } else {
+    conclusion='Bottom line: the headline bias is weaker than it looks because several pillars are pulling against it. This is the type of pair where waiting for confirmation can be more valuable than interpreting every small move as a new trend.';
+  }
+
+  var blocks=[
+    lead,
+    topFundLine(),
+    rateNarrative(),
+    cotNarrative(),
+    riskNarrative()+ ' '+seasonNarrative(),
+    divergence,
+    conclusion
+  ];
+
   return '<div class="pair-macro-summary">'+
-    '<div class="pair-macro-summary-head"><span>Macro read</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
-    lines.map(function(t,i){return '<div class="pair-macro-line macro-line-'+i+'">'+esc(t)+'</div>';}).join('')+
+    '<div class="pair-macro-summary-head"><span>Macro read · analyst brief</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
+    '<div class="pair-macro-lead">'+esc(blocks[0])+'</div>'+
+    blocks.slice(1,6).map(function(t){return '<div class="pair-macro-line">'+esc(t)+'</div>';}).join('')+
+    '<div class="pair-macro-verdict">'+esc(blocks[6])+'</div>'+
   '</div>';
 }
 
