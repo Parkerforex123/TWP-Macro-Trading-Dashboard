@@ -5533,6 +5533,7 @@ function renderPairs(){
   var selectionLabel = pairFilters.indexOf("All")!==-1 ? "All pairs" : (pairFilters.length?pairFilters.join(" + "):"All pairs");
   var html = (unlockedLocally ? ('<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
     '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
+      '<button class="recalc-btn" id="exportTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Export trend history</button>'+
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>'+'</div>') : '')+
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
@@ -5628,6 +5629,8 @@ function renderPairs(){
     saveDataNow();
     renderPairs();
   }; }
+  var exportTrendBtn=document.getElementById("exportTrendBtn");
+  if(exportTrendBtn){ exportTrendBtn.onclick=dailyExportCsv; }
   var clearBtn=document.getElementById("clearHistBtn");
   if(clearBtn){ clearBtn.onclick=function(){
     if(!confirm("Clear all trend history and the recalculation log? This wipes every logged day so the trend chart starts fresh from your next recalculate. This can't be undone.")) return;
@@ -5809,6 +5812,36 @@ function cotDrawChart(ccy){
 function cotCsvEscape(v){
   var s=String(v==null?'':v);
   return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+// Exports the DAILY[date][key] trend history the "Recalculate & log today" button builds up.
+// Each logged day holds a mix of keys: plain pair codes (e.g. "EURUSD") for the Pair Ranking
+// score, plain currency codes (e.g. "USD") for that currency's overall composite, and prefixed
+// keys (FUND_/COT_/SURPRISE_ + currency) for the individual sub-scores. Exported long/tidy
+// (one row per date+metric) rather than wide, since the pair list and currency set can both
+// change over time and a tidy export never needs its columns rebuilt to match.
+function dailyExportCsv(){
+  var dates=Object.keys(DAILY).sort();
+  if(!dates.length){ updateStatus('No trend history logged yet — use "Recalculate & log today" first.','var(--amber)'); return; }
+  var header=['Date','Metric','Type','Value'];
+  var lines=[header.join(',')];
+  var rowCount=0;
+  dates.forEach(function(dt){
+    var snap=DAILY[dt]||{};
+    Object.keys(snap).sort().forEach(function(k){
+      var v=snap[k];
+      if(v==null||!Number.isFinite(Number(v))) return;
+      var type='Pair score';
+      if(k.indexOf('FUND_')===0) type='Fundamentals %';
+      else if(k.indexOf('COT_')===0) type='COT score';
+      else if(k.indexOf('SURPRISE_')===0) type='Surprise Index';
+      else if(CCYS.indexOf(k)!==-1) type='Currency composite';
+      lines.push([dt,k,type,Math.round(Number(v)*100)/100].map(cotCsvEscape).join(','));
+      rowCount++;
+    });
+  });
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='TWP_Trend_History.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+  updateStatus('Trend history CSV exported · '+dates.length+' days, '+rowCount+' rows','var(--bullish-strong)');
 }
 function cotExportCsv(){
   ensureCotEngine();
