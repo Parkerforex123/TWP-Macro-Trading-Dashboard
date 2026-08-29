@@ -1792,7 +1792,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 #tab-cot .cot-input-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
 #tab-cot .cot-input-title{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--text-dim);font-weight:800;}
 #tab-cot .cot-input-meta{font-size:10px;color:var(--text-faint);}
-#tab-cot .cot-form-grid{display:grid;grid-template-columns:115px 1fr 1fr 1fr 1fr 120px;gap:6px;align-items:center;}
+#tab-cot .cot-form-grid{display:grid;grid-template-columns:115px 1fr 1fr 1fr 1fr 1fr 90px;gap:6px;align-items:center;}
 #tab-cot .cot-form-grid>div{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;font-weight:700;}
 #tab-cot .cot-form-row{display:grid;grid-template-columns:115px 1fr 1fr 1fr 1fr 120px;gap:6px;align-items:center;margin-top:5px;}
 #tab-cot .cot-input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:6px 7px;border-radius:5px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
@@ -1807,7 +1807,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 #tab-cot .cot-card table .right{text-align:right;}
 #tab-cot .cot-link{color:var(--amber);font-weight:800;}
 @media(max-width:1050px){#tab-cot .cot-grid{grid-template-columns:1fr;}#tab-cot .cot-hero{grid-template-columns:190px 1fr;}}
-@media(max-width:780px){#tab-cot .cot-hero{grid-template-columns:1fr;}#tab-cot .cot-side{border-right:none;border-bottom:1px solid var(--border);}#tab-cot .cot-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));}#tab-cot .cot-form-grid{display:none;}#tab-cot .cot-form-row{grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;}#tab-cot .cot-form-row>div:first-child{display:block;}}
+@media(max-width:780px){#tab-cot .cot-hero{grid-template-columns:1fr;}#tab-cot .cot-side{border-right:none;border-bottom:1px solid var(--border);}#tab-cot .cot-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));}#tab-cot .cot-form-grid{display:none;}#tab-cot .cot-form-row{grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr 1fr;}#tab-cot .cot-form-row>div:first-child{display:block;}}
 </style>
 
 <style id="v28-cot-yield-cleanup">
@@ -2557,7 +2557,7 @@ function seed(){
 
 var CHF_YIELD_HISTORY = [{"date":"2026-05-01","CHF":0.158},{"date":"2026-05-04","CHF":0.174},{"date":"2026-05-05","CHF":0.146},{"date":"2026-05-06","CHF":0.094},{"date":"2026-05-07","CHF":0.088},{"date":"2026-05-08","CHF":0.085},{"date":"2026-05-11","CHF":0.108},{"date":"2026-05-12","CHF":0.149},{"date":"2026-05-13","CHF":0.138},{"date":"2026-05-14","CHF":0.174},{"date":"2026-05-15","CHF":0.211},{"date":"2026-05-18","CHF":0.228},{"date":"2026-05-19","CHF":0.248},{"date":"2026-05-20","CHF":0.198},{"date":"2026-05-21","CHF":0.226},{"date":"2026-05-22","CHF":0.199},{"date":"2026-05-26","CHF":0.154},{"date":"2026-05-27","CHF":0.113},{"date":"2026-05-28","CHF":0.078},{"date":"2026-05-29","CHF":0.064},{"date":"2026-06-01","CHF":0.098},{"date":"2026-06-02","CHF":0.091},{"date":"2026-06-03","CHF":0.131},{"date":"2026-06-04","CHF":0.111},{"date":"2026-06-05","CHF":0.144},{"date":"2026-06-08","CHF":0.142},{"date":"2026-06-09","CHF":0.134},{"date":"2026-06-10","CHF":0.134},{"date":"2026-06-11","CHF":0.149},{"date":"2026-06-12","CHF":0.071},{"date":"2026-06-15","CHF":0.048},{"date":"2026-06-16","CHF":0.043},{"date":"2026-06-17","CHF":0.048},{"date":"2026-06-18","CHF":0.035},{"date":"2026-06-22","CHF":0.03},{"date":"2026-06-23","CHF":0.018},{"date":"2026-06-24","CHF":0.013},{"date":"2026-06-25","CHF":0.004},{"date":"2026-06-26","CHF":0.012},{"date":"2026-06-29","CHF":0.034},{"date":"2026-06-30","CHF":0.04},{"date":"2026-07-01","CHF":0.038},{"date":"2026-07-02","CHF":0.038},{"date":"2026-07-06","CHF":0.034},{"date":"2026-07-07","CHF":0.047},{"date":"2026-07-08","CHF":0.077},{"date":"2026-07-09","CHF":0.073},{"date":"2026-07-10","CHF":0.083},{"date":"2026-07-13","CHF":0.11},{"date":"2026-07-14","CHF":0.116},{"date":"2026-07-15","CHF":0.113},{"date":"2026-07-16","CHF":0.131},{"date":"2026-07-17","CHF":0.136},{"date":"2026-07-20","CHF":0.157},{"date":"2026-07-21","CHF":0.152},{"date":"2026-07-22","CHF":0.168},{"date":"2026-07-23","CHF":0.23},{"date":"2026-07-24","CHF":0.198},{"date":"2026-07-27","CHF":0.132},{"date":"2026-07-28","CHF":0.087},{"date":"2026-07-29","CHF":0.132},{"date":"2026-07-30","CHF":0.118},{"date":"2026-07-31","CHF":0.135},{"date":"2026-08-03","CHF":0.101},{"date":"2026-08-04","CHF":0.078},{"date":"2026-08-05","CHF":0.073},{"date":"2026-08-06","CHF":0.065},{"date":"2026-08-07","CHF":0.076},{"date":"2026-08-10","CHF":0.115},{"date":"2026-08-11","CHF":0.109},{"date":"2026-08-12","CHF":0.097},{"date":"2026-08-13","CHF":0.077},{"date":"2026-08-14","CHF":0.087},{"date":"2026-08-17","CHF":0.086},{"date":"2026-08-18","CHF":0.101},{"date":"2026-08-19","CHF":0.097}];
 
-var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[];
+var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[], SIGNAL_LOG={};
 var RISK_SENTIMENT={history:[],current:{spxClose:null,vixClose:null,spxPct:null,vixPct:null,date:""}};
 var COT_ENGINE={history:[],current:{},currentDate:"2026-08-18",inputDate:"2026-08-25"};
 var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and sparklines
@@ -2587,12 +2587,35 @@ function loadLocalCache() {
       SETTINGS = parsed.SETTINGS || {passwordHash:null};
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
+      SIGNAL_LOG = parsed.SIGNAL_LOG || {};
       YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
       RISK_SENTIMENT = normalizeRiskState(parsed.RISK_SENTIMENT);
       COT_ENGINE = parsed.COT_ENGINE || {history:[],current:{},currentDate:"",inputDate:""};
       return true;
     }
   } catch(e) { console.error("Error reading cache", e); }
+  return false;
+}
+
+function readPendingCloudState(){
+  try { var raw=localStorage.getItem('twp_pending_cloud_state_v1'); return raw?JSON.parse(raw):null; }
+  catch(e){ console.error('Error reading pending cloud state',e); return null; }
+}
+function writePendingCloudState(payload,reason){
+  try { localStorage.setItem('twp_pending_cloud_state_v1', JSON.stringify({payload:payload,queuedAt:new Date().toISOString(),reason:reason||'cloud save failed'})); }
+  catch(e){ console.error('Error queueing pending cloud state',e); }
+}
+function clearPendingCloudState(){ try{localStorage.removeItem('twp_pending_cloud_state_v1');}catch(e){} }
+function applyPendingCloudStateIfNewer(cloudUpdatedAt){
+  var pending=readPendingCloudState(); if(!pending||!pending.payload) return false;
+  try{
+    var parsed=JSON.parse(pending.payload), pendingAt=parsed&&parsed.DATA?parsed.DATA._updatedAt:null;
+    if(parsed&&parsed.DATA&&(!cloudUpdatedAt||!pendingAt||pendingAt>cloudUpdatedAt)){
+      DATA=parsed.DATA; SETTINGS=parsed.SETTINGS||{passwordHash:null}; DAILY=parsed.DAILY||{}; LOG=parsed.LOG||[]; SIGNAL_LOG=parsed.SIGNAL_LOG||{};
+      YIELD_ENGINE=parsed.YIELD_ENGINE||{history:[],current:{}}; RISK_SENTIMENT=normalizeRiskState(parsed.RISK_SENTIMENT); COT_ENGINE=parsed.COT_ENGINE||{history:[],current:{},currentDate:'',inputDate:''};
+      return true;
+    }
+  }catch(e){ console.error('Error applying pending cloud state',e); }
   return false;
 }
 
@@ -2611,7 +2634,7 @@ async function saveDataNow(){
   try {
     DATA._updatedAt = new Date().toISOString();
     RISK_SENTIMENT = normalizeRiskState(RISK_SENTIMENT);
-    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, YIELD_ENGINE: YIELD_ENGINE, RISK_SENTIMENT: RISK_SENTIMENT, COT_ENGINE: COT_ENGINE };
+    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, SIGNAL_LOG: SIGNAL_LOG, YIELD_ENGINE: YIELD_ENGINE, RISK_SENTIMENT: RISK_SENTIMENT, COT_ENGINE: COT_ENGINE };
     var payload = JSON.stringify(state);
 
     // Keep a local backup, but Supabase is now the shared source of truth.
@@ -2627,15 +2650,19 @@ async function saveDataNow(){
       throw new Error("Cloud save returned no updated dashboard row.");
     }
 
+    clearPendingCloudState();
     updateStatus("Saved to cloud", "var(--bullish-strong)");
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
   } catch(e) {
     console.error("Supabase save error:", e);
+    try { localStorage.setItem('twp_dashboard_state_v4', payload); } catch(ignore) {}
+    writePendingCloudState(payload, String(e.message||'cloud save failed'));
     if(String(e.message||"").indexOf("401") !== -1 || String(e.message||"").indexOf("403") !== -1){
-      updateStatus("Session expired — sign in again", "var(--bearish-strong)");
+      updateStatus("Session expired — local copy queued for cloud retry", "var(--bearish-strong)");
       authSignOut(); unlockedLocally=false; renderLockBox();
     } else {
-      updateStatus("Cloud save failed", "var(--bearish-strong)");
+      updateStatus("Cloud save failed — local copy queued; retrying", "var(--amber)");
+      setTimeout(function(){ if(AUTH.accessToken && !isSaving) saveDataNow(); }, 5000);
     }
   } finally {
     isSaving = false;
@@ -3600,7 +3627,7 @@ function renderLockBox(){
   var svgEye='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="var(--text-dim)" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" fill="var(--text-dim)"/></svg>';
   var eyeIcon = lockBoxCollapsed ? svgLocked : svgEye;
   if(!AUTH.accessToken){
-    box.innerHTML='<div class="lock-state"><span class="lock-state-label">'+svgLocked+' View-only</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
+    box.innerHTML='<div class="lock-state"><span class="lock-state-label">'+svgLocked+' View-only</span><button class="lock-eye" id="lockEyeBtnSignedOut" title="Show/hide sign-in">'+eyeIcon+'</button></div>'+
       '<div class="lock-fields">'+
       '<input type="email" id="authEmail" placeholder="Team email" autocomplete="username" style="margin-bottom:6px;">'+
       '<input type="password" id="authPw" placeholder="Password" autocomplete="current-password">'+
@@ -3626,12 +3653,12 @@ function renderLockBox(){
     };
     document.getElementById("authSignInBtn").onclick=doSignIn;
     document.getElementById("authPw").addEventListener("keydown",function(e){ if(e.key==="Enter") doSignIn(); });
-    document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
+    document.getElementById("lockEyeBtnSignedOut").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
   } else {
-    box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">'+svgUnlocked+' Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtn" title="Show/hide">'+eyeIcon+'</button></div>'+
+    box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">'+svgUnlocked+' Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtnSignedIn" title="Show/hide">'+eyeIcon+'</button></div>'+
       '<div class="lock-fields"><button id="lockBtn">Sign out</button></div>';
     document.getElementById("lockBtn").onclick=function(){ authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic(); };
-    document.getElementById("lockEyeBtn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
+    document.getElementById("lockEyeBtnSignedIn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
   }
 }
 
@@ -5614,8 +5641,9 @@ function renderPairs(){
       snap["COT_"+cc]=getCotScore(cc);
       snap["SURPRISE_"+cc]=Math.round(surpriseDataForCurrency(cc).avg*10)/10; // Surprise Index snapshot, own key too
     }
-    DAILY[todayKey]=snap;
     var nowTs=new Date().toISOString();
+    var isFirstSignal=!SIGNAL_LOG[todayKey];
+    if(isFirstSignal){ DAILY[todayKey]=snap; SIGNAL_LOG[todayKey]={ts:nowTs}; }
     var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
     var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
       && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
@@ -5628,13 +5656,14 @@ function renderPairs(){
     if(LOG.length>50) LOG=LOG.slice(0,50);
     saveDataNow();
     renderPairs();
+    updateStatus(isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history unchanged'), isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)');
   }; }
   var exportTrendBtn=document.getElementById("exportTrendBtn");
   if(exportTrendBtn){ exportTrendBtn.onclick=dailyExportCsv; }
   var clearBtn=document.getElementById("clearHistBtn");
   if(clearBtn){ clearBtn.onclick=function(){
     if(!confirm("Clear all trend history and the recalculation log? This wipes every logged day so the trend chart starts fresh from your next recalculate. This can't be undone.")) return;
-    DAILY={}; LOG=[]; expandedPair=null;
+    DAILY={}; LOG=[]; SIGNAL_LOG={}; expandedPair=null;
     saveDataNow();
     renderPairs();
   }; }
@@ -5822,7 +5851,7 @@ function cotCsvEscape(v){
 function dailyExportCsv(){
   var dates=Object.keys(DAILY).sort();
   if(!dates.length){ updateStatus('No trend history logged yet — use "Recalculate & log today" first.','var(--amber)'); return; }
-  var header=['Date','Metric','Type','Value'];
+  var header=['Date','Signal Timestamp','Metric','Type','Value'];
   var lines=[header.join(',')];
   var rowCount=0;
   dates.forEach(function(dt){
@@ -5835,7 +5864,7 @@ function dailyExportCsv(){
       else if(k.indexOf('COT_')===0) type='COT score';
       else if(k.indexOf('SURPRISE_')===0) type='Surprise Index';
       else if(CCYS.indexOf(k)!==-1) type='Currency composite';
-      lines.push([dt,k,type,Math.round(Number(v)*100)/100].map(cotCsvEscape).join(','));
+      lines.push([dt,(SIGNAL_LOG[dt]&&SIGNAL_LOG[dt].ts)||'',k,type,Math.round(Number(v)*100)/100].map(cotCsvEscape).join(','));
       rowCount++;
     });
   });
@@ -5901,12 +5930,12 @@ function renderCotRegime(){
   var ccy=activeCotCcy==='ALL'?'USD':activeCotCcy;
   var saveDate=COT_ENGINE.inputDate || '2026-08-25';
   var releaseDate=cotNextReleaseDate(saveDate);
-  var editorRows=CCYS.map(function(c){var d=cotLatest(c);return '<div class="cot-form-row"><div class="cot-ccy">'+flagImg(c)+' '+c+'</div><div><input class="cot-input" data-cot-field="long" data-ccy="'+c+'" value="'+(d.long==null?'':Math.round(d.long))+'"></div><div><input class="cot-input" data-cot-field="short" data-ccy="'+c+'" value="'+(d.short==null?'':Math.round(d.short))+'"></div><div class="cot-net '+(d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.net)+'</div><div class="cot-flow '+cotFlowClass(c)+'">'+cotFormat(d.netChg)+'</div><div><button class="cot-save" data-save-ccy="'+c+'">Save</button></div></div>';}).join('');
+  var editorRows=CCYS.map(function(c){var d=cotLatest(c);return '<div class="cot-form-row"><div class="cot-ccy">'+flagImg(c)+' '+c+'</div><div><input class="cot-input" data-cot-field="long" data-ccy="'+c+'" value="'+(d.long==null?'':Math.round(d.long))+'"></div><div><input class="cot-input" data-cot-field="short" data-ccy="'+c+'" value="'+(d.short==null?'':Math.round(d.short))+'"></div><div><input class="cot-input" data-cot-field="oi" data-ccy="'+c+'" value="'+(d.oi==null?'':Math.round(d.oi))+'"></div><div class="cot-net '+(d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.net)+'</div><div class="cot-flow '+cotFlowClass(c)+'">'+cotFormat(d.netChg)+'</div><div><button class="cot-save" data-save-ccy="'+c+'">Save</button></div></div>';}).join('');
   var buttons='<div class="cot-selector"><button class="cot-pill '+(activeCotCcy==='ALL'?'active':'')+'" data-cot-select="ALL">ALL</button>'+CCYS.map(function(c){return '<button class="cot-pill '+(activeCotCcy===c?'active':'')+'" data-cot-select="'+c+'">'+c+'</button>';}).join('')+'</div>';
   var adminInput='';
   if(unlockedLocally){
     adminInput='<div class="cot-card cot-admin-card" style="margin-top:10px;">'+
-      '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter only this week’s Long Contracts and Short Contracts. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">COT week (Tuesday): <input type="date" id="cotInputDate" class="cot-input" style="width:140px;display:inline-block;" value="'+esc(saveDate)+'"> · Report available (Friday): <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. If the week above ever gets ahead of (or behind) the actual latest CFTC report, correct it directly in that date field. This input panel is hidden when you are signed out.</div></div></div>';
+      '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter this week’s Long Contracts, Short Contracts, and Open Interest. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">COT week (Tuesday): <input type="date" id="cotInputDate" class="cot-input" style="width:140px;display:inline-block;" value="'+esc(saveDate)+'"> · Report available (Friday): <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Open Interest</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. Enter the report’s actual Open Interest when available; if omitted, the last known OI is carried forward. If the week above ever gets ahead of (or behind) the actual latest CFTC report, correct it directly in that date field. This input panel is hidden when you are signed out.</div></div></div>';
   }
   tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:26%">Regime</th><th class="right" style="width:21%">Range</th></tr></thead><tbody>'+cotRenderScannerRows()+'</tbody></table></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    adminInput+  '</div>';
   var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
@@ -5940,9 +5969,10 @@ function cotCommitInputs(ccy,tab){
   // (b) still count as "this currency is done for the week", which could falsely
   // complete the round and auto-advance the input week before every currency actually
   // had new figures entered. Block it here instead.
+  var oiInput=tab.querySelector('[data-cot-field="oi"][data-ccy="'+ccy+'"]'), enteredOi=cotNum(oiInput&&oiInput.value);
   var existingThisWeek=null;
   for(var ei=0;ei<COT_ENGINE.history.length;ei++){var er=COT_ENGINE.history[ei]; if(er&&er.ccy===ccy&&er.date===date){existingThisWeek=er;break;}}
-  if(existingThisWeek && cotNum(existingThisWeek.long)===long && cotNum(existingThisWeek.short)===short){
+  if(existingThisWeek && cotNum(existingThisWeek.long)===long && cotNum(existingThisWeek.short)===short && (enteredOi==null || cotNum(existingThisWeek.oi)===enteredOi)){
     updateStatus(ccy+' — already saved for '+date+' with these numbers (no change to record).','var(--amber)');
     return;
   }
@@ -5953,11 +5983,8 @@ function cotCommitInputs(ccy,tab){
   var net=long-short, netChg=previous?net-cotNum(previous.net):null;
   var longChg=previous&&cotNum(previous.long)!=null?long-cotNum(previous.long):null;
   var shortChg=previous&&cotNum(previous.short)!=null?short-cotNum(previous.short):null;
-  // Open Interest isn't part of the weekly Long/Short entry — it's carried forward from
-  // the last known value automatically so the normalized (Net/OI) pair math keeps working
-  // without adding a field to the weekly workflow. Update it directly in history if a more
-  // current OI figure ever needs correcting.
-  var oi=previous?cotNum(previous.oi):null;
+  var oi=enteredOi;
+  if(oi==null && previous) oi=cotNum(previous.oi);
   var cur={date:date,long:long,short:short,longChg:longChg,shortChg:shortChg,net:net,netChg:netChg,oi:oi};
   COT_ENGINE.current[ccy]=cur; COT_ENGINE.currentDate=date;
   var all=COT_ENGINE.history.filter(function(r){return !(r.ccy===ccy&&r.date===date);}); all.push({ccy:ccy,date:date,long:long,short:short,longChg:longChg,shortChg:shortChg,net:net,netChg:netChg,oi:oi}); COT_ENGINE.history=all;
@@ -6086,7 +6113,7 @@ function updateComputed(){
   }
   
   if(document.getElementById("syncDataStr")){
-    document.getElementById("syncDataStr").value = btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
+    document.getElementById("syncDataStr").value = btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
   }
 
   var c=activeDetailCcy, sc=scores[c];
@@ -6201,6 +6228,7 @@ async function init(){
         SETTINGS = parsed.SETTINGS || {passwordHash:null};
         DAILY = parsed.DAILY || {};
         LOG = parsed.LOG || [];
+        SIGNAL_LOG = parsed.SIGNAL_LOG || {};
         YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
         RISK_SENTIMENT = normalizeRiskState(parsed.RISK_SENTIMENT);
         COT_ENGINE = parsed.COT_ENGINE || {history:[],current:{},currentDate:"",inputDate:""};
@@ -6212,10 +6240,19 @@ async function init(){
     console.error("Supabase load error:", e);
   }
 
+  var pendingRecovered=false;
+  if(loaded){
+    var cloudUpdatedAt=null;
+    try { var cloudMeta=await supabaseRequest(SUPABASE_TABLE+"?id=eq."+SUPABASE_ROW_ID+"&select=updated_at",{useAuth:true}); cloudUpdatedAt=cloudMeta&&cloudMeta[0]?cloudMeta[0].updated_at:null; } catch(e){}
+    pendingRecovered=applyPendingCloudStateIfNewer(cloudUpdatedAt);
+  } else {
+    pendingRecovered=applyPendingCloudStateIfNewer(null);
+  }
+
   // First-time migration: if the shared row is still empty, preserve the
   // existing local dashboard data from this browser and upload it once.
   if (!loaded) {
-    if (!loadLocalCache()) DATA = seed();
+    if (!pendingRecovered) { if (!loadLocalCache()) DATA = seed(); pendingRecovered=applyPendingCloudStateIfNewer(null); }
     initMomentum();
     try {
       await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
@@ -6223,7 +6260,7 @@ async function init(){
         useAuth: true,
         headers: { "Prefer": "return=minimal" },
         body: JSON.stringify({
-          payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}),
+          payload: JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}),
           updated_at: new Date().toISOString()
         })
       });
@@ -6271,7 +6308,7 @@ async function init(){
   var chfMigrated = ensureCHFUniverse();
   var cotMigrated = ensureCotEngine();
   initMomentum();
-  if((chfMigrated || cotMigrated) && AUTH.accessToken){ await saveDataNow(); }
+  if((chfMigrated || cotMigrated || pendingRecovered) && AUTH.accessToken){ await saveDataNow(); }
 
   // The one-time fundamental-model migration has already done its job and is
   // permanently retired. It must never run again — it used to reset any
@@ -6282,7 +6319,7 @@ async function init(){
 
   if(migrateLegacyYieldFields()){
     if(AUTH.accessToken){ await saveDataNow(); }
-    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE})); } catch(e) {} }
+    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE})); } catch(e) {} }
   }
 
   var removedUnfinishedToday=y2RemoveUnfinishedToday();
@@ -6322,7 +6359,7 @@ async function init(){
       if(removedFuture && AUTH.accessToken){
         try { await saveDataNow(); } catch(e) { console.error("Future-close cleanup save failed:", e); }
       }
-      localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
+      localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
       if (!isTyping) {
         renderAllStatic();
         renderLockBox();
