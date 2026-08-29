@@ -2222,6 +2222,33 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
   color:#d86a19!important;
 }
 </style>
+
+<style id="cot-net-oi-scanner-final">
+#tab-cot .cot-table th:nth-child(3),#tab-cot .cot-table th:nth-child(4),#tab-cot .cot-table th:nth-child(5),#tab-cot .cot-table th:nth-child(7),
+#tab-cot .cot-table td:nth-child(3),#tab-cot .cot-table td:nth-child(4),#tab-cot .cot-table td:nth-child(5),#tab-cot .cot-table td:nth-child(7){text-align:right;}
+#tab-cot .cot-table th:nth-child(6),#tab-cot .cot-table td:nth-child(6){text-align:left;}
+#tab-cot .cot-net-oi{font-family:'IBM Plex Mono',monospace;font-weight:800;white-space:nowrap;}
+#tab-cot .cot-scanner-note{margin-top:6px;color:var(--text-faint);font-size:9.5px;line-height:1.35;}
+@media(max-width:780px){#tab-cot .cot-scanner-note{font-size:9px;}}
+</style>
+
+
+<style id="cot-netoi-final-fix">
+#tab-cot .cot-table th,#tab-cot .cot-table td{padding:5px 6px!important;}
+#tab-cot .cot-table th:nth-child(1),#tab-cot .cot-table td:nth-child(1){width:13%!important;}
+#tab-cot .cot-table th:nth-child(2),#tab-cot .cot-table td:nth-child(2){width:20%!important;}
+#tab-cot .cot-table th:nth-child(3),#tab-cot .cot-table td:nth-child(3){width:10%!important;text-align:right!important;}
+#tab-cot .cot-table th:nth-child(4),#tab-cot .cot-table td:nth-child(4){width:10%!important;text-align:right!important;}
+#tab-cot .cot-table th:nth-child(5),#tab-cot .cot-table td:nth-child(5){width:12%!important;text-align:right!important;}
+#tab-cot .cot-table th:nth-child(6),#tab-cot .cot-table td:nth-child(6){width:20%!important;text-align:left!important;}
+#tab-cot .cot-table th:nth-child(7),#tab-cot .cot-table td:nth-child(7){width:15%!important;text-align:right!important;}
+#tab-cot .cot-table th{font-size:9.5px!important;letter-spacing:.45px!important;}
+#tab-cot .cot-table td{font-size:11.5px!important;}
+#tab-cot .cot-table .cot-net{white-space:nowrap;}
+#tab-cot .cot-regime-cell{gap:5px!important;}
+#tab-cot .cot-crowd{font-size:10.5px!important;}
+#tab-cot .cot-scanner-note{padding:5px 6px 8px!important;}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -5902,7 +5929,9 @@ function cotRenderScannerRows(){
     var d=o.d, crowd=o.crowd, total=(d.long!=null&&d.short!=null)?(d.long+d.short):0, longPct=total>0?(d.long/total*100):0, shortPct=total>0?(d.short/total*100):0;
     var netCls=d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral';
     var dot=crowd.tone==='bull'?'bull':crowd.tone==='bear'?'bear':'neu';
-    return '<tr>'+      '<td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortPct.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longPct.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
+    var normOi=(d.oi!=null&&d.net!=null&&d.oi)?(100*d.net/d.oi):null;
+    var normCls=normOi==null?'cot-neutral':normOi>0?'cot-good':normOi<0?'cot-bad':'cot-neutral';
+    return '<tr>'+      '<td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortPct.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longPct.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td class="cot-net '+normCls+'">'+(normOi==null?'—':cotPercent(normOi))+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
   }).join('');
 }
 function cotExtremesHtml(){
@@ -5937,7 +5966,7 @@ function renderCotRegime(){
     adminInput='<div class="cot-card cot-admin-card" style="margin-top:10px;">'+
       '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter this week’s Long Contracts, Short Contracts, and Open Interest. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">COT week (Tuesday): <input type="date" id="cotInputDate" class="cot-input" style="width:140px;display:inline-block;" value="'+esc(saveDate)+'"> · Report available (Friday): <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Open Interest</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. Enter the report’s actual Open Interest when available; if omitted, the last known OI is carried forward. If the week above ever gets ahead of (or behind) the actual latest CFTC report, correct it directly in that date field. This input panel is hidden when you are signed out.</div></div></div>';
   }
-  tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:26%">Regime</th><th class="right" style="width:21%">Range</th></tr></thead><tbody>'+cotRenderScannerRows()+'</tbody></table></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    adminInput+  '</div>';
+  tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:11%" title="Net divided by Open Interest">Net / OI</th><th style="width:19%">Regime</th><th class="right" style="width:17%">Range</th></tr></thead><tbody>'+cotRenderScannerRows()+'</tbody></table><div class="cot-scanner-note">Net = absolute positioning. 1W Δ = this week’s raw net-contract flow. Net / OI = normalized positioning used for the Pair Ranking COT comparison.</div></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    adminInput+  '</div>';
   var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
   var cotRanges=tab.querySelectorAll('[data-cot-range]'); for(var cr=0;cr<cotRanges.length;cr++){cotRanges[cr].onclick=function(){activeCotRange=this.dataset.cotRange;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
   var inputs=tab.querySelectorAll('[data-cot-field]'); for(var j=0;j<inputs.length;j++){inputs[j].addEventListener('input',function(){isTyping=true;});inputs[j].addEventListener('blur',function(){isTyping=false;});}
