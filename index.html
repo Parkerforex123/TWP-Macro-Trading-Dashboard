@@ -938,7 +938,8 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-pairs .chip{font-size:14px;font-weight:800;}
 #tab-pairs .pair-factor{font-size:14px;font-weight:800;}
 #tab-detail .seasonality-avg-input,.seasonality-avg-input{width:78px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
-.seasonality-avg-input:focus{outline:none;border-color:var(--amber);}
+.seasonality-avg-input:focus,.seasonality-month-input:focus{outline:none;border-color:var(--amber);}
+.seasonality-month-input{width:118px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
 .seasonality-derived{font-weight:800;font-size:11.5px;}
 .seasonality-derived.Bullish{color:var(--bullish-strong);}
 .seasonality-derived.Bearish{color:var(--bearish-strong);}
@@ -3073,32 +3074,74 @@ function cotWowMagnitudeScore(ccy){
 
 
 function biasVal(b){ return b==="Bullish"?1:(b==="Bearish"?-1:0); }
+function currentSeasonalityMonthKey(){
+  var d=new Date();
+  return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0");
+}
+function seasonalityMonthLabel(key){
+  if(!key || !/^\d{4}-\d{2}$/.test(String(key))) return "Current month";
+  var parts=String(key).split("-");
+  var y=Number(parts[0]), m=Number(parts[1]);
+  if(!y || m<1 || m>12) return "Current month";
+  var names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return names[m-1]+" "+y;
+}
+function seasonalityRawNum(v){
+  var txt=String(v==null?"":v).replace(/%/g,"").replace(/,/g,"").trim();
+  if(txt==="") return null;
+  var n=Number(txt);
+  return Number.isFinite(n)?n:null;
+}
+function ensureSeasonalityState(d){
+  if(!d || typeof d!=="object") return;
+  if(!d.seasonalityHistory || typeof d.seasonalityHistory!=="object" || Array.isArray(d.seasonalityHistory)) d.seasonalityHistory={};
+  if(!d.seasonalityMonth || !/^\d{4}-\d{2}$/.test(String(d.seasonalityMonth))) d.seasonalityMonth=currentSeasonalityMonthKey();
+  var n=seasonalityRawNum(d.seasonalityAvg);
+  if(n!=null && d.seasonalityHistory[d.seasonalityMonth]==null) d.seasonalityHistory[d.seasonalityMonth]=n;
+}
+function migrateSeasonalityData(){
+  if(!DATA) return;
+  var cur=currentSeasonalityMonthKey();
+  for(var i=0;i<CCYS.length;i++){
+    var d=DATA[CCYS[i]]; if(!d) continue;
+    ensureSeasonalityState(d);
+    if(d.seasonalityMonth<cur){
+      var oldN=seasonalityRawNum(d.seasonalityAvg);
+      if(oldN!=null) d.seasonalityHistory[d.seasonalityMonth]=oldN;
+      d.seasonalityMonth=cur;
+      var nextN=seasonalityRawNum(d.seasonalityHistory[cur]);
+      d.seasonalityAvg=nextN==null?"":String(nextN);
+      d.seasonality=seasonalityLabel(d);
+    }
+  }
+}
 function seasonalityAvgNum(d){
   if(!d) return null;
-  var n=Number(String(d.seasonalityAvg==null?"":d.seasonalityAvg).replace(/%/g,"").replace(/,/g,"").trim());
-  return Number.isFinite(n) && String(d.seasonalityAvg).trim()!=="" ? n : null;
+  ensureSeasonalityState(d);
+  var key=d.seasonalityMonth || currentSeasonalityMonthKey();
+  var hist=seasonalityRawNum(d.seasonalityHistory && d.seasonalityHistory[key]);
+  if(hist!=null) return hist;
+  return seasonalityRawNum(d.seasonalityAvg);
 }
-// Seasonality is treated as a relative-strength factor, not a binary sign.
-// < +/-0.50% is neutral noise; 0.50-0.99% is directional; +/-1.00% is strong.
+// Seasonality keeps the actual monthly percentage on a continuous -1..+1 scale.
+// Small values remain small; only readings beyond +/-1.00% are capped.
 function seasonalityBandScoreFromValue(n){
   if(n==null || !Number.isFinite(n)) return 0;
-  var a=Math.abs(n);
-  if(a<0.50) return 0;
-  if(a<1.00) return n>0?0.5:-0.5;
-  return n>0?1:-1;
+  return Math.max(-1,Math.min(1,Number(n)));
 }
 function seasonalityBandLabelFromValue(n){
-  if(n==null || !Number.isFinite(n) || Math.abs(n)<0.50) return "Neutral";
+  if(n==null || !Number.isFinite(n) || Math.abs(n)<0.20) return "Neutral";
   if(n>=1.00) return "Very Bullish";
   if(n>=0.50) return "Bullish";
   if(n<=-1.00) return "Very Bearish";
-  return "Bearish";
+  if(n<=-0.50) return "Bearish";
+  return n>0?"Leaning Bullish":"Leaning Bearish";
 }
 function seasonalitySign(d){
   var n=seasonalityAvgNum(d);
   if(n!=null) return seasonalityBandScoreFromValue(n);
   var label=d && d.seasonality;
-  return label==="Very Bullish"?1:(label==="Bullish"?0.5:(label==="Very Bearish"?-1:(label==="Bearish"?-0.5:0)));
+  return label==="Very Bullish"?1:(label==="Bullish"?0.5:(label==="Leaning Bullish"?0.25:(label==="Very Bearish"?-1:(label==="Bearish"?-0.5:(label==="Leaning Bearish"?-0.25:0)))));
 }
 function seasonalityLabel(d){
   var n=seasonalityAvgNum(d);
@@ -3107,14 +3150,53 @@ function seasonalityLabel(d){
 }
 function seasonalityValue(d){
   var n=seasonalityAvgNum(d);
-  return n!=null ? n : seasonalitySign(d);
+  return n!=null ? seasonalityBandScoreFromValue(n) : seasonalitySign(d);
+}
+function seasonalityScoreFmt(n){
+  if(n==null || !Number.isFinite(Number(n))) return "0.00";
+  var x=seasonalityBandScoreFromValue(Number(n));
+  return (x>0?"+":"")+x.toFixed(2);
+}
+function seasonalitySetMonth(d,key){
+  if(!d) return;
+  ensureSeasonalityState(d);
+  var oldKey=d.seasonalityMonth;
+  var oldN=seasonalityRawNum(d.seasonalityAvg);
+  if(oldN!=null) d.seasonalityHistory[oldKey]=oldN;
+  d.seasonalityMonth=key || currentSeasonalityMonthKey();
+  var nextN=seasonalityRawNum(d.seasonalityHistory[d.seasonalityMonth]);
+  d.seasonalityAvg=nextN==null?"":String(nextN);
+  d.seasonality=seasonalityLabel(d);
+}
+function seasonalitySetAverage(d,value){
+  if(!d) return;
+  ensureSeasonalityState(d);
+  d.seasonalityAvg=String(value==null?"":value);
+  var n=seasonalityRawNum(value);
+  var key=d.seasonalityMonth || currentSeasonalityMonthKey();
+  if(n==null) delete d.seasonalityHistory[key];
+  else d.seasonalityHistory[key]=n;
+  d.seasonality=seasonalityLabel(d);
+}
+function seasonalityPairSpread(base,quote){
+  var a=seasonalityValue(DATA[base]), b=seasonalityValue(DATA[quote]);
+  if(!Number.isFinite(Number(a)) || !Number.isFinite(Number(b))) return null;
+  return Number(a)-Number(b);
+}
+// Pair seasonality is explicitly relative: both legs can be negative, yet the less-negative
+// currency still has the seasonal advantage. The label therefore depends on the spread,
+// not on whether each currency is individually above/below zero.
+function seasonalityPairLabelFromSpread(spread){
+  if(spread==null || !Number.isFinite(Number(spread)) || Math.abs(spread)<0.15) return "Neutral";
+  if(spread>=0.75) return "Very Bullish";
+  if(spread>=0.40) return "Bullish";
+  if(spread>0) return "Leaning Bullish";
+  if(spread<=-0.75) return "Very Bearish";
+  if(spread<=-0.40) return "Bearish";
+  return "Leaning Bearish";
 }
 function seasonalityPairText(base,quote){
-  var a=seasonalityAvgNum(DATA[base]), b=seasonalityAvgNum(DATA[quote]);
-  var diff=(a!=null && b!=null)?(a-b):null;
-  if(diff!=null) return seasonalityBandLabelFromValue(diff);
-  var rel=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
-  return seasonalityBandLabelFromValue(rel);
+  return seasonalityPairLabelFromSpread(seasonalityPairSpread(base,quote));
 }
 function b_seas(s){ return s && typeof s==="object" ? seasonalitySign(s) : seasonalityBandScoreFromValue(Number(s)); }
 function sectorCalc(list){ var raw=0,max=0; for(var i=0;i<list.length;i++){ var w=Number(list[i].weight)||0; raw+=w*biasVal(list[i].bias); max+=w; } return {raw:raw,max:max}; }
@@ -3519,7 +3601,7 @@ function pairCompositeFor(base, quote){
   // This is the ONLY place pair-level COT is computed from — never the individual
   // currency's own +6/-6 score, which answers a different question (see cotPairRegime).
   var cotTerm=cotPairRegime(base,quote).combined/100;
-  var seasBase=seasonalitySign(db), seasQuote=seasonalitySign(dq);
+  var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   // Core pair score: Fundamentals 70% + Yield 15% + COT 10% + Seasonality 2% + Risk Sentiment 3%.
   return 100*(0.70*(fundBase-fundQuote)+0.15*yieldTerm+0.10*cotTerm+0.02*(seasBase-seasQuote)+0.03*(riskBase-riskQuote));
@@ -4744,6 +4826,8 @@ function renderRaw(){
   };
   var seasonEls=document.querySelectorAll("#tab-raw [data-role=\"ccyfield\"][data-field=\"seasonalityAvg\"]");
   for(var si=0;si<seasonEls.length;si++){
+    seasonEls[si].addEventListener("focus",function(){isTyping=true;});
+    seasonEls[si].addEventListener("blur",function(){isTyping=false;});
     seasonEls[si].addEventListener("input",onCcyFieldInput);
     seasonEls[si].addEventListener("change",onCcyFieldInput);
     // Editing seasonality sits inside the clickable row -- don't let that click also
@@ -4994,12 +5078,15 @@ function renderDetailBody(ccy){
     '<div class="right-col">'+
       '<div class="info-trend-row">'+
       '<div class="info-grid">'+
-        '<div class="info-item"><span class="k">Seasonality Avg (current month)</span>'+
+        '<div class="info-item"><span class="k">Seasonality Avg</span>'+
           '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">'+
-            '<input class="seasonality-avg-input" id="seasAvg-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(d.seasonalityAvg||"")+'" '+(unlockedLocally?"":"disabled")+'>'+
+            '<input class="seasonality-avg-input" id="seasAvg-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(d.seasonalityAvg||'')+'" '+(unlockedLocally?"":"disabled")+'>'+
             '<span class="seasonality-derived '+seasonalityLabel(d)+'" id="seasTxt-'+ccy+'">'+seasonalityLabel(d)+'</span>'+
           '</div>'+
-          '<span class="seasonality-month" id="seasMonth-'+ccy+'">'+new Date().toLocaleString("en-US",{month:"short"})+' average</span>'+
+          '<div style="display:flex;align-items:center;gap:7px;margin-top:4px;">'+
+            '<input class="seasonality-month-input" id="seasMonthInput-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityMonth" type="month" value="'+esc(d.seasonalityMonth||currentSeasonalityMonthKey())+'" '+(unlockedLocally?"":"disabled")+'>'+
+            '<span class="seasonality-month" id="seasMonth-'+ccy+'">'+seasonalityMonthLabel(d.seasonalityMonth||currentSeasonalityMonthKey())+' average</span>'+
+          '</div>'+
         '</div>'+
         
         '<div class="info-item risk-detail-item"><span class="k">Risk sentiment</span><span class="v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
@@ -5073,12 +5160,23 @@ function onDetailInput(e){
     t.className="bias-select "+t.value;
   }
   if(t.dataset.field==="seasonalityAvg"){
-    var d=DATA[ccy], n=seasonalityAvgNum(DATA[ccy]), lab=seasonalityLabel(DATA[ccy]);
+    var d=DATA[ccy];
+    seasonalitySetAverage(d,t.value);
+    var lab=seasonalityLabel(d);
     var labelEl=document.querySelector('[data-season-label="'+ccy+'"]');
     if(labelEl){ labelEl.textContent=lab; labelEl.className="seasonality-derived "+lab; }
     var detailEl=document.getElementById("seasTxt-"+ccy);
     if(detailEl){ detailEl.textContent=lab; detailEl.className="seasonality-derived "+lab; }
-    d.seasonality=lab;
+  }
+  if(t.dataset.field==="seasonalityMonth"){
+    var dm=DATA[ccy];
+    seasonalitySetMonth(dm,t.value);
+    var monthAvg=document.getElementById("seasAvg-"+ccy); if(monthAvg) monthAvg.value=dm.seasonalityAvg||"";
+    var monthEl=document.getElementById("seasMonth-"+ccy); if(monthEl) monthEl.textContent=seasonalityMonthLabel(dm.seasonalityMonth)+" average";
+    var labm=seasonalityLabel(dm), labelElm=document.querySelector('[data-season-label="'+ccy+'"]');
+    if(labelElm){ labelElm.textContent=labm; labelElm.className="seasonality-derived "+labm; }
+    var detailElm=document.getElementById("seasTxt-"+ccy);
+    if(detailElm){ detailElm.textContent=labm; detailElm.className="seasonality-derived "+labm; }
   }
     if(t.dataset.field==="changePct"){ t.setAttribute("style", changePctColor(t.value)); }
     if(t.dataset.field==="longPct" || t.dataset.field==="shortPct"){
@@ -5419,7 +5517,7 @@ function pairMacroSummaryHtml(pair, score){
   var cot=cotPairRegime(base,quote);
   var riskDiff=100*0.03*(riskTermFor(base)-riskTermFor(quote));
   var riskState=riskPairState(base,quote);
-  var seas=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
+  var seas=seasonalityPairSpread(base,quote);
   var overall=bandLabel(score);
   var baseData=DATA[base]||{}, quoteData=DATA[quote]||{};
   var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
@@ -5637,8 +5735,8 @@ function renderPairs(){
       return '<button class="range-btn'+(expandedRange===r?" active":"")+'" data-range="'+r+'">'+r+'</button>';
     }).join("");
     var epBase=expandedPair.slice(0,3), epQuote=expandedPair.slice(3,6);
-    var epSeas=seasonalityValue(DATA[epBase])-seasonalityValue(DATA[epQuote]);
-    var epSeasLabel=seasonalityBandLabelFromValue(epSeas);
+    var epSeas=seasonalityPairSpread(epBase,epQuote);
+    var epSeasLabel=seasonalityPairLabelFromSpread(epSeas);
     var epRisk=100*0.03*(riskTermFor(epBase)-riskTermFor(epQuote));
     var epRiskState=riskPairState(epBase,epQuote);
     var epCot=cotPairRegime(epBase,epQuote);
@@ -6200,9 +6298,16 @@ function onCcyFieldInput(e){
   if(field==="guidance" && typeof autoGrowGuidance==="function"){ autoGrowGuidance(t); }
   if(field==="cotNet" || field==="cotChangeBias"){ t.className="bias-select "+t.value; }
   if(field==="seasonalityAvg"){
-    DATA[c].seasonality=seasonalityLabel(DATA[c]);
+    seasonalitySetAverage(DATA[c],t.value);
     var rawLabel=document.querySelector('[data-season-label="'+c+'"]');
     if(rawLabel){ rawLabel.textContent=DATA[c].seasonality; rawLabel.className="seasonality-derived "+DATA[c].seasonality; }
+  }
+  if(field==="seasonalityMonth"){
+    seasonalitySetMonth(DATA[c],t.value);
+    var avgEl=document.getElementById('seasAvg-'+c); if(avgEl) avgEl.value=DATA[c].seasonalityAvg||'';
+    var detailMonth=document.getElementById('seasMonth-'+c); if(detailMonth) detailMonth.textContent=seasonalityMonthLabel(DATA[c].seasonalityMonth)+' average';
+    var monthLabel=document.querySelector('[data-season-label="'+c+'"]');
+    if(monthLabel){ monthLabel.textContent=DATA[c].seasonality; monthLabel.className="seasonality-derived "+DATA[c].seasonality; }
   }
   if(field==="changePct"){ t.setAttribute("style", changePctColor(t.value)); }
   if(field==="longPct" || field==="shortPct"){
@@ -6235,7 +6340,7 @@ function updateComputed(){
   var txt=document.getElementById("gaugeScoreTxt-"+c); if(txt) txt.textContent=fmt(sc);
   var chip=document.getElementById("gaugeBiasChip-"+c); if(chip){ var lbl=bandLabel(sc); chip.className=chipClass(lbl); chip.textContent=lbl; }
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
-  var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=fmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
+  var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=seasonalityScoreFmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
   var statRisk=document.getElementById("statRisk-"+c); if(statRisk){ var riskPtsNow=riskContributionFor(c); statRisk.textContent=(riskPtsNow>0?"+":"")+riskPtsNow.toFixed(1); statRisk.setAttribute("style",numColor(riskPtsNow)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
   var alignEl=document.getElementById("statAlign-"+c);
@@ -6260,6 +6365,10 @@ function updateComputed(){
   }
   var seasAvgEl=document.getElementById("seasAvg-"+c);
   if(seasAvgEl) seasAvgEl.value=DATA[c].seasonalityAvg||"";
+  var seasMonthInput=document.getElementById("seasMonthInput-"+c);
+  if(seasMonthInput) seasMonthInput.value=DATA[c].seasonalityMonth||currentSeasonalityMonthKey();
+  var seasMonthEl=document.getElementById("seasMonth-"+c);
+  if(seasMonthEl) seasMonthEl.textContent=seasonalityMonthLabel(DATA[c].seasonalityMonth||currentSeasonalityMonthKey())+" average";
   
   var riskDetailEl=document.getElementById("riskDetailTxt-"+c);
   if(riskDetailEl){ riskDetailEl.innerHTML='<span class="mono '+riskPublicClassFor(c)+'">'+riskPublicStateFor(c)+'</span>'; }
@@ -6439,6 +6548,7 @@ async function init(){
   y2SetCurrentFromLatestSaved();
   if(removedUnfinishedToday && AUTH.accessToken){ await saveDataNow(); }
 
+  migrateSeasonalityData();
   renderLockBox();
   renderAllStatic();
 
@@ -6452,13 +6562,15 @@ async function init(){
       if (!rows || !rows.length || !rows[0].payload) return;
       const row = rows[0];
       if (lastCloudUpdatedAt === row.updated_at) return;
-      // Do not acknowledge a cloud version while a local save is still in flight.
-      // Otherwise the poll can consume the stale cloud payload and mark it as handled.
-      if (isSaving || isSaveQueued) return;
+      // Never replace in-memory edits while a user is typing. The old version
+      // assigned DATA=parsed.DATA before checking isTyping, which could snap a
+      // just-entered seasonality value back to the older cloud value.
+      if (isTyping || isSaving || isSaveQueued) return;
       lastCloudUpdatedAt = row.updated_at;
       const parsed = JSON.parse(row.payload);
       if (!parsed || !parsed.DATA) return;
       DATA = parsed.DATA;
+      migrateSeasonalityData();
       SETTINGS = parsed.SETTINGS || {passwordHash:null};
       DAILY = parsed.DAILY || {};
       LOG = parsed.LOG || [];
