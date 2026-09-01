@@ -3861,6 +3861,11 @@ function alignmentFor(ccy){
   if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 10);
   vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 10);
   vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 10);
+  // Central-bank stance is a full 10-point alignment vote, matching its 10%
+  // contribution to the composite score. HIKE agrees with a bullish composite;
+  // CUT agrees with a bearish composite; HOLD contributes no directional vote.
+  var cbAlign=cbStanceScore(ccy);
+  vote(cbAlign>0?1:(cbAlign<0?-1:0), 10);
   vote(seasonalitySign(d), 2);
   vote(riskTermFor(ccy), 3);
   if(dirSign===0 || totalW===0) return null;
@@ -3960,9 +3965,11 @@ function allScores(){ var out={}; for(var i=0;i<CCYS.length;i++){ out[CCYS[i]]=c
 function liveValueForTrendKey(key, scoresCache){
   if(CCYS.indexOf(key)!==-1) return compositeFor(key);
   if(key && key.length===6){
-    var scores=scoresCache||allScores();
-    var base=scores[key.slice(0,3)], quote=scores[key.slice(3)];
-    if(base!==undefined && quote!==undefined) return Number(base)-Number(quote);
+    // Pair Ranking has its own pair-level COT normalization, so its live score must come
+    // from the exact same pairCompositeFor() calculation as the visible Score column.
+    // Do not derive it by subtracting the two currency composites.
+    var base=key.slice(0,3), quote=key.slice(3,6);
+    if(CCY_ORDER.indexOf(base)!==-1 && CCY_ORDER.indexOf(quote)!==-1) return Math.round(pairCompositeFor(base,quote));
   }
   return null;
 }
@@ -5833,9 +5840,8 @@ function pairTrend30d(pair){
      COT, seasonality or 2Y inputs change, even before today's snapshot is logged. */
   var days=allDays.slice(-TREND_WINDOW_DAYS);
   var first=Number(DAILY[days[0]][pair]);
-  var scores=allScores();
-  var liveScores=scores || {};
-  var live=Number(liveScores[pair.slice(0,3)]||0)-Number(liveScores[pair.slice(3)]||0);
+  // Use the exact live Pair Ranking score, including pair-level COT treatment.
+  var live=liveValueForTrendKey(pair);
   if(!Number.isFinite(live)) live=Number(DAILY[days[days.length-1]][pair]);
   var delta=Math.round(live-first), dir=trendDirectionFromLatest(pair,live);
   if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
@@ -5890,7 +5896,10 @@ function sparkline(pair){
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
-  var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+  // Use the same live-vs-previous direction as the trend marker so the line color flips
+  // immediately with a recalculated score instead of staying tied to the 30D start.
+  var trendDir=live==null ? null : trendDirectionFromLatest(pair,live);
+  var col = trendDir==="up" ? "var(--bullish)" : trendDir==="down" ? "var(--bearish)" : (vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)");
   var gradId="spark-"+pair.replace(/[^A-Za-z0-9]/g,"");
   var linePath=smoothPath(pts), baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
@@ -6057,8 +6066,9 @@ function bigChart(pair, rangeSel){
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
-  var col = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
-  var colStrong = vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)";
+  var trendDir=live==null ? null : trendDirectionFromLatest(pair,live);
+  var col = trendDir==="up" ? "var(--bullish)" : trendDir==="down" ? "var(--bearish)" : (vals[vals.length-1]>=vals[0] ? "var(--bullish)" : "var(--bearish)");
+  var colStrong = col;
   var labels="";
   var mobileView = (typeof window !== "undefined" && window.innerWidth <= 700);
   var labelTarget = mobileView ? 4 : 8;
@@ -6472,8 +6482,11 @@ function renderPairs(){
       LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
     }
     if(LOG.length>50) LOG=LOG.slice(0,50);
-    var saved=await saveDataNow();
+    // Re-render before awaiting cloud persistence. The score, trend arrow and sparkline
+    // are live UI state and must respond immediately to Recalculate; saving must never
+    // block the visual update.
     renderPairs();
+    var saved=await saveDataNow();
     updateStatus(saved
       ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history unchanged'))
       : (isFirstSignal ? ('Signal calculated · local copy queued for cloud save') : ('Live recalculated · cloud save queued')),
