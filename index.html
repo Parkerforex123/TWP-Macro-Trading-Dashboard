@@ -1362,8 +1362,19 @@ body.black .card,body.ash .card{box-shadow:none;}
    pair-bias-lean-bull/bear -- the lean-* classes are pinned to a deliberately muted color
    elsewhere in this file (they mean "Leaning", a weak signal). Very is the strongest signal,
    so it gets full-strength green/red here, same intensity as the plain Bullish/Bearish cells. */
-#tab-pairs .pair-bias-vbull .lean-word,#tab-pairs .pair-bias-vbull strong{color:var(--bullish-strong)!important;}
-#tab-pairs .pair-bias-vbear .lean-word,#tab-pairs .pair-bias-vbear strong{color:var(--bearish-strong)!important;}
+/* FOUND BUG #3: this file has three separate green variables (--bullish-strong, --ref-green,
+   --pair-green) and three separate red variables (--bearish-strong, --ref-red, --pair-red),
+   each redefined multiple times at different points in the cascade, and different rules for
+   plain Bullish/Bearish vs Very Bullish/Bearish happened to reference different ones -- so they
+   were never guaranteed to be the same shade even though they're supposed to mean the same
+   thing at different strength. Hardcoding one exact color for every bull/bear state in this
+   table (plain and Very both) so there's no variable-resolution ambiguity left to drift. */
+#tab-pairs .pair-table .pair-bias-single.bull,
+#tab-pairs .pair-table .pair-bias-vbull .lean-word,
+#tab-pairs .pair-table .pair-bias-vbull strong{color:#42df91!important;}
+#tab-pairs .pair-table .pair-bias-single.bear,
+#tab-pairs .pair-table .pair-bias-vbear .lean-word,
+#tab-pairs .pair-table .pair-bias-vbear strong{color:#ff717b!important;}
 /* FOUND BUG #2: columns 8-11 were force-centered by an older rule (`#tab-pairs th:nth-child(8..11){text-align:center}`).
    Centering pulls each value toward the middle of its own column -- i.e. toward the shared
    border with its neighbor -- so two adjacent centered values (e.g. Net Position "VERY BULLISH"
