@@ -5287,6 +5287,15 @@ function smoothPath(pts){
   }
   return d;
 }
+// Straight point-to-point path: unlike smoothPath's Catmull-Rom curve (which can bow past a
+// point's real value between two dots in order to look smooth), this always sits exactly on
+// the value trajectory the dots represent -- so the line reads as the exact move, dot to dot.
+function linearPath(pts){
+  if(pts.length<2) return "";
+  var d="M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1)+" ";
+  for(var i=1;i<pts.length;i++){ d += "L"+pts[i][0].toFixed(1)+","+pts[i][1].toFixed(1)+" "; }
+  return d;
+}
 function filterDaysByRange(days, range){
   if(!range || range==="ALL") return days;
   var lookback = range==="1M" ? 30 : (range==="3M" ? 90 : (range==="1Y" ? 365 : null));
@@ -5571,7 +5580,7 @@ function bigChart(pair, rangeSel){
     labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
   var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
-  var linePath=smoothPath(pts);
+  var linePath=linearPath(pts);
   var baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
   var histDots=days.map(function(dt,i){
@@ -5951,7 +5960,15 @@ function renderPairs(){
     }
     var nowTs=new Date().toISOString();
     var isFirstSignal=!SIGNAL_LOG[todayKey];
-    if(isFirstSignal){ DAILY[todayKey]=snap; SIGNAL_LOG[todayKey]={ts:nowTs}; }
+    // FOUND BUG: this used to be `if(isFirstSignal){ DAILY[todayKey]=snap; SIGNAL_LOG...}` --
+    // meaning DAILY[todayKey] (the snapshot every trend chart on the dashboard reads, including
+    // the Surprise Index) only got written on the FIRST Recalculate of the day. Editing
+    // fundamentals later that day and hitting Recalculate again recomputed `snap` correctly but
+    // never saved it, so every trend line looked frozen no matter how many times you recalculated.
+    // DAILY should always reflect the latest same-day numbers; only SIGNAL_LOG (used purely to
+    // dedupe the bullish/bearish LOG entries below) needs to be "first time today" gated.
+    DAILY[todayKey]=snap;
+    if(isFirstSignal){ SIGNAL_LOG[todayKey]={ts:nowTs}; }
     var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
     var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
       && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
