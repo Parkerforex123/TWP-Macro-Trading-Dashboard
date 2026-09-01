@@ -1284,6 +1284,7 @@ body.black .card,body.ash .card{box-shadow:none;}
     "trend trend"
     "bias bias"
     "fund yield"
+    "cb cb"
     "cot wow"
     "season risk";
   }
@@ -1335,6 +1336,50 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){width:8%;}
 #tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:9%;}
 #tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
+
+/* FOUND BUG: the six blocks above (and others earlier in this file) each redefined this same
+   table's column widths at a different point in its history -- 10 columns, then 11, then 12 --
+   and none of them was ever cleaned up after the next one was added. Risk Sentiment (column 12)
+   never got a width rule at all in any of them, and several columns had conflicting percentages
+   fighting each other in the cascade. That's what produced uneven gaps in some spots and
+   overlapping/crushed text in others. This single block is now the authoritative one -- it
+   covers all 12 columns, sums cleanly to 100%, and !important guarantees it wins over every
+   older duplicate above regardless of source order, so those don't need to be hunted down and
+   deleted one by one for this to render correctly today. */
+#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:5%!important;}
+#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:11%!important;}
+#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:7%!important;}
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:11%!important;}
+#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:8%!important;padding-right:9px!important;}
+#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:9%!important;padding-left:9px!important;}
+#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:8%!important;padding-left:9px!important;}
+#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:9%!important;padding-left:9px!important;}
+#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:8%!important;padding-left:9px!important;}
+#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8%!important;}
+#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:8%!important;padding-right:9px!important;}
+#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:8%!important;padding-left:9px!important;}
+/* "Very Bullish/Bearish" got its own class (pair-bias-vbull/vbear) instead of reusing
+   pair-bias-lean-bull/bear -- the lean-* classes are pinned to a deliberately muted color
+   elsewhere in this file (they mean "Leaning", a weak signal). Very is the strongest signal,
+   so it gets full-strength green/red here, same intensity as the plain Bullish/Bearish cells. */
+#tab-pairs .pair-bias-vbull .lean-word,#tab-pairs .pair-bias-vbull strong{color:var(--bullish-strong)!important;}
+#tab-pairs .pair-bias-vbear .lean-word,#tab-pairs .pair-bias-vbear strong{color:var(--bearish-strong)!important;}
+/* FOUND BUG #2: columns 8-11 were force-centered by an older rule (`#tab-pairs th:nth-child(8..11){text-align:center}`).
+   Centering pulls each value toward the middle of its own column -- i.e. toward the shared
+   border with its neighbor -- so two adjacent centered values (e.g. Net Position "VERY BULLISH"
+   and WoW Δ "VERY BULLISH") drift toward each other and visually touch. Left-aligning pins every
+   value to its own column's left edge instead, away from the neighbor, which is what actually
+   creates separation -- the padding tweaks above only helped at the margins. */
+#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5),
+#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6),
+#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7),
+#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8),
+#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9),
+#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10),
+#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11),
+#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){
+  text-align:left!important;justify-content:flex-start!important;
+}
 
 /* Currency Detail: direct, colour-coded risk language. */
 #tab-detail .risk-detail-item .v .risk-bull{color:var(--bullish-strong)!important;}
@@ -3857,8 +3902,10 @@ function flagPair(base,quote){
 function pairBiasMarkup(label){
   if(label==="Leaning Bullish") return '<span class="pair-bias-stack pair-bias-lean-bull"><span class="lean-word">Leaning</span><strong>Bullish</strong></span>';
   if(label==="Leaning Bearish") return '<span class="pair-bias-stack pair-bias-lean-bear"><span class="lean-word">Leaning</span><strong>Bearish</strong></span>';
-  if(label==="Very Bullish" || label==="Bullish") return '<span class="pair-bias-single bull">'+label+'</span>';
-  if(label==="Very Bearish" || label==="Bearish") return '<span class="pair-bias-single bear">'+label+'</span>';
+  if(label==="Very Bullish") return '<span class="pair-bias-stack pair-bias-vbull"><span class="lean-word">Very</span><strong>Bullish</strong></span>';
+  if(label==="Very Bearish") return '<span class="pair-bias-stack pair-bias-vbear"><span class="lean-word">Very</span><strong>Bearish</strong></span>';
+  if(label==="Bullish") return '<span class="pair-bias-single bull">'+label+'</span>';
+  if(label==="Bearish") return '<span class="pair-bias-single bear">'+label+'</span>';
   return '<span class="pair-bias-single neutral">'+label+'</span>';
 }
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
@@ -6257,13 +6304,13 @@ function renderPairs(){
       '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
       '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span></div></td>'+
       '<td data-label="Bias">'+pairBiasMarkup(p.bias)+'</td>'+
-      '<td data-label="Fundamentals"><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
-      '<td data-label="Yield Bias"><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
-      '<td data-label="CB Stance"><span class="pair-factor '+pillarBiasClass(pairCbStanceLabel(p.base,p.quote))+'">'+pairCbStanceLabel(p.base,p.quote)+'</span></td>'+
-      '<td data-label="Net Positioning"'+cotDxNote+'><span class="pair-factor '+pillarBiasClass(cotPair.posLabel)+'">'+cotPair.posLabel+'</span></td>'+
-      '<td data-label="&Delta; WoW"'+cotDxNote+'><span class="pair-factor '+pillarBiasClass(cotPair.flowLabel)+'">'+cotPair.flowLabel+'</span></td>'+
-      '<td data-label="Seasonality"><span class="pair-factor '+pillarBiasClass(seasonalityPairText(p.base,p.quote))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
-      '<td data-label="Risk Sentiment"><span class="pair-factor '+pillarBiasClass(riskPairState(p.base,p.quote))+'">'+riskPairState(p.base,p.quote)+'</span></td>'+
+      '<td data-label="Fundamentals">'+pairBiasMarkup(fundBias)+'</td>'+
+      '<td data-label="Yield Bias">'+pairBiasMarkup(yb)+'</td>'+
+      '<td data-label="CB Stance">'+pairBiasMarkup(pairCbStanceLabel(p.base,p.quote))+'</td>'+
+      '<td data-label="Net Positioning"'+cotDxNote+'>'+pairBiasMarkup(cotPair.posLabel)+'</td>'+
+      '<td data-label="&Delta; WoW"'+cotDxNote+'>'+pairBiasMarkup(cotPair.flowLabel)+'</td>'+
+      '<td data-label="Seasonality">'+pairBiasMarkup(seasonalityPairText(p.base,p.quote))+'</td>'+
+      '<td data-label="Risk Sentiment">'+pairBiasMarkup(riskPairState(p.base,p.quote))+'</td>'+
       '</tr>';
   }
   var logRows="";
