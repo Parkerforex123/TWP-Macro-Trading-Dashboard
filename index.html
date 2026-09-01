@@ -2599,6 +2599,25 @@ var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[], SIGNAL_LOG={};
 var RISK_SENTIMENT={history:[],current:{spxClose:null,vixClose:null,spxPct:null,vixPct:null,date:""}};
 var COT_ENGINE={history:[],current:{},currentDate:"2026-08-18",inputDate:"2026-08-25"};
 var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and sparklines
+// Merges today's LIVE value onto the end of a logged (days, vals) series so trend lines
+// never look stale after an intra-day edit. If today's daily snapshot is already locked
+// (Recalculate was hit earlier today), this overrides just the displayed last point with
+// the live value -- it does NOT touch DAILY itself, so the locked history stays intact for
+// tomorrow's 30D-delta baseline. If today has no logged entry yet, it appends one.
+// Returns {days:[...], vals:[...], liveIdx:N} where liveIdx marks which point is live (not logged).
+function withLiveToday(days, vals, liveVal, maxLen){
+  var todayKey=new Date().toISOString().slice(0,10);
+  var outDays=days.slice(), outVals=vals.slice(), liveIdx;
+  if(outDays.length && outDays[outDays.length-1]===todayKey){
+    outVals[outVals.length-1]=liveVal;
+    liveIdx=outDays.length-1;
+  } else {
+    outDays.push(todayKey); outVals.push(liveVal);
+    liveIdx=outDays.length-1;
+    if(maxLen && outDays.length>maxLen){ outDays=outDays.slice(-maxLen); outVals=outVals.slice(-maxLen); liveIdx=outDays.length-1; }
+  }
+  return {days:outDays, vals:outVals, liveIdx:liveIdx};
+}
 var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
@@ -3498,6 +3517,18 @@ function longShortColors(longV, shortV){
   return {longStyle:"color:var(--text-dim);", shortStyle:"color:var(--text-dim);"};
 }
 function allScores(){ var out={}; for(var i=0;i<CCYS.length;i++){ out[CCYS[i]]=compositeFor(CCYS[i]); } return out; }
+// Live value for any DAILY-logged key -- a plain currency code ("EUR") or a 6-char pair
+// ("EURUSD") -- computed fresh from current inputs, no snapshot lookup. Used to keep trend
+// lines from looking stale after an intra-day edit (see withLiveToday()).
+function liveValueForTrendKey(key, scoresCache){
+  if(CCYS.indexOf(key)!==-1) return compositeFor(key);
+  if(key && key.length===6){
+    var scores=scoresCache||allScores();
+    var base=scores[key.slice(0,3)], quote=scores[key.slice(3)];
+    if(base!==undefined && quote!==undefined) return Number(base)-Number(quote);
+  }
+  return null;
+}
 // ===== Canonical pair 2Y yield differential series =====
 // ONE source of truth for both the visible Bond Yield Spread chart and the
 // pair-level yield score. Every pair observation is exactly: BASE 2Y - QUOTE 2Y,
@@ -4333,6 +4364,16 @@ function histSpreadDraw(){
     var p05=pct(scaleVals,0.05), p95=pct(scaleVals,0.95);
     if(Number.isFinite(p05)&&Number.isFinite(p95)&&p95>p05){ min=p05; max=p95; }
   }
+  /* The percentile clip above exists to stop a stale/bad mid-series print from
+     flattening the chart -- it was never meant to also mute today's live
+     reading, which is exactly the real breakout move a trader needs to see.
+     So the most recent observation always gets to set/extend the scale, even
+     if it lands outside the 5th-95th percentile band. */
+  var lastVal=vals[vals.length-1];
+  if(Number.isFinite(lastVal)){
+    if(lastVal>max) max=lastVal;
+    if(lastVal<min) min=lastVal;
+  }
   if(min===max){min-=10;max+=10;}
 
   var compact=W<=600;
@@ -4925,9 +4966,13 @@ function autoGrowGuidance(el){
 // Pulls this currency's own logged composite-score history (same DAILY[date][ccy] key the
 // Desk Board trend arrow reads from) so the Currency Detail page can show the actual line,
 // not just an arrow + delta.
-function ccyHistorySeries(ccy){
+function ccyHistorySeries(ccy, liveScore){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][ccy]!==undefined; }).sort();
-  return allDays.slice(-TREND_WINDOW_DAYS).map(function(dt){ return {date:dt, val:Number(DAILY[dt][ccy])}; });
+  var days=allDays.slice(-TREND_WINDOW_DAYS);
+  var vals=days.map(function(dt){ return Number(DAILY[dt][ccy]); });
+  if(liveScore==null || !Number.isFinite(Number(liveScore))) return days.map(function(dt,i){ return {date:dt,val:vals[i]}; });
+  var merged=withLiveToday(days, vals, Number(liveScore), TREND_WINDOW_DAYS);
+  return merged.days.map(function(dt,i){ return {date:dt, val:merged.vals[i], live:i===merged.liveIdx}; });
 }
 function formatShortDate(iso){
   var parts=(iso||"").split("-"); if(parts.length!==3) return iso||"";
@@ -4935,8 +4980,14 @@ function formatShortDate(iso){
   var mi=parseInt(parts[1],10)-1;
   return (months[mi]||parts[1])+" "+parseInt(parts[2],10);
 }
+function renderDetailTrendPanelWrap(ccy, liveScore){
+  return '<div id="trendPanelWrap-'+esc(ccy)+'">'+renderDetailTrendPanel(ccy, liveScore)+'</div>';
+}
 function renderDetailTrendPanel(ccy, liveScore){
-  var series=ccyHistorySeries(ccy); // [{date,val}, ...] oldest -> newest, up to TREND_WINDOW_DAYS long
+  // Always append/override today's point with the live score (see withLiveToday()) so this
+  // line never looks stale after an intra-day edit, even if today's snapshot was already
+  // locked in by an earlier Recalculate.
+  var series=ccyHistorySeries(ccy, liveScore); // [{date,val,live}, ...] oldest -> newest, up to TREND_WINDOW_DAYS long
   var t=ccyTrend30d(ccy, liveScore);
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
   var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
@@ -4963,18 +5014,25 @@ function renderDetailTrendPanel(ccy, liveScore){
       var p=xy[i];
       return '<circle class="detail-trend-hit" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"/>';
     }).join("");
-    spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="overflow:visible;touch-action:none;cursor:crosshair;">'+
+    // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
+    // "today, live" rather than another logged day.
+    var liveIdx=-1;
+    for(var si=0;si<series.length;si++){ if(series[si].live){ liveIdx=si; break; } }
+    var liveDot = liveIdx>=0 ? '<circle cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="3.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2" pointer-events="none"/>' : '';
+    spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" data-vals="'+esc(series.map(function(s){return s.val;}).join(','))+'" data-live-idx="'+liveIdx+'" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="overflow:visible;touch-action:none;cursor:crosshair;">'+
       '<polygon points="'+areaPts+'" fill="'+fillVar+'" fill-opacity="0.12" stroke="none" pointer-events="none"/>'+
       '<polyline fill="none" stroke="'+fillVar+'" stroke-width="1.7" points="'+linePts+'" pointer-events="none"/>'+
+      liveDot+
       '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="3.8" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="1.8"/></g>'+
       hitPts+
       '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="detail-trend-hitbox"/>'+
       '</svg>';
     var midIdx=Math.floor((series.length-1)/2);
+    var lastLabel = liveIdx===series.length-1 ? 'Live' : formatShortDate(series[series.length-1].date);
     dateLabels='<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-faint);margin-top:2px;width:'+w+'px;">'+
       '<span>'+formatShortDate(series[0].date)+'</span>'+
       '<span>'+formatShortDate(series[midIdx].date)+'</span>'+
-      '<span>'+formatShortDate(series[series.length-1].date)+'</span></div>';
+      '<span>'+lastLabel+'</span></div>';
   } else {
     spark='<div style="font-size:11.5px;color:var(--text-faint);margin-top:14px;line-height:1.4;">No history logged yet — hit Recalculate on Pair Ranking a few times to start building this line.</div>';
   }
@@ -4985,12 +5043,18 @@ function renderDetailTrendPanel(ccy, liveScore){
 }
 function showCcyTrendTooltip(svg, idx, clientX, clientY){
   var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
+  var valsAttr=(svg.getAttribute('data-vals')||'').split(',').filter(function(v){return v!=="";});
+  var liveIdx=Number(svg.getAttribute('data-live-idx'));
   var ccy=svg.getAttribute('data-ccy')||'';
   var day=days[idx];
-  if(!day || !DAILY[day] || DAILY[day][ccy]===undefined) return;
-  var score=Number(DAILY[day][ccy]);
+  // Read the score straight off the rendered series (data-vals) instead of re-querying DAILY --
+  // the live "today" point isn't in DAILY until the next Recalculate, so a DAILY lookup would
+  // silently fail to show a tooltip for it.
+  if(!day || valsAttr[idx]===undefined) return;
+  var score=Number(valsAttr[idx]);
+  var isLive=idx===liveIdx;
   var tt=ensurePairScoreTooltip();
-  tt.innerHTML='<div class="tt-date">'+esc(formatShortDate(day))+' · '+esc(ccy)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(bandLabel(score))+'</div>';
+  tt.innerHTML='<div class="tt-date">'+esc(isLive?'Live (today)':formatShortDate(day))+' · '+esc(ccy)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(bandLabel(score))+'</div>';
   tt.style.display='block';
   var rect=tt.getBoundingClientRect();
   var x=Math.min(clientX+12, window.innerWidth-rect.width-8);
@@ -5091,7 +5155,7 @@ function renderDetailBody(ccy){
         
         '<div class="info-item risk-detail-item"><span class="k">Risk sentiment</span><span class="v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
         '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+        '<div class="info-item"><span class="k">Latest Positioning Change</span><span class="v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span><span class="v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).net)+'">'+cotFormat(cotLatest(ccy).net)+'</span></div>'+        '<div class="info-item cot-change-item"><span class="k">COT WoW change</span><span class="v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).netChg)+'">'+cotFormat(cotLatest(ccy).netChg)+'</span></div>'+        '<div class="info-item"><span class="k">Long / Short</span><span class="v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotLatest(ccy);if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+        '<div class="info-item"><span class="k">COT regime</span><span class="v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+      '</div>'+
-      renderDetailTrendPanel(ccy, sc)+
+      renderDetailTrendPanelWrap(ccy, sc)+
       '</div>';
   for(var s=0;s<sectors.length;s++){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
@@ -5305,8 +5369,13 @@ function sparkline(pair){
   var w=110,h=30,pad=3;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
   if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:12px;">—</span>';
-  var days=allDays.slice(-TREND_WINDOW_DAYS);
-  var vals=days.map(function(dt){ return DAILY[dt][pair]; });
+  var loggedDays=allDays.slice(-TREND_WINDOW_DAYS);
+  var loggedVals=loggedDays.map(function(dt){ return DAILY[dt][pair]; });
+  // Merge in today's live value (see withLiveToday()) so this line never looks stale after
+  // an intra-day edit, even if today's snapshot was already locked in by an earlier Recalculate.
+  var live=liveValueForTrendKey(pair);
+  var merged = live==null ? {days:loggedDays,vals:loggedVals,liveIdx:-1} : withLiveToday(loggedDays, loggedVals, live, TREND_WINDOW_DAYS);
+  var days=merged.days, vals=merged.vals, liveIdx=merged.liveIdx;
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
@@ -5316,15 +5385,18 @@ function sparkline(pair){
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
   var hitPts=days.map(function(dt,i){
     var v=Number(vals[i]);
-    var label=String(dt)+" · Score "+fmt(v)+" · "+bandLabel(v);
+    var isLive=i===liveIdx;
+    var label=(isLive?'Live (today)':String(dt))+" · Score "+fmt(v)+" · "+bandLabel(v);
     return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join("");
-  return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
+  var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="2.6" fill="var(--panel)" stroke="'+col+'" stroke-width="1.6" pointer-events="none"/>' : '';
+  return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
       '<stop offset="0%" stop-color="'+col+'" stop-opacity="0.3"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
     '</linearGradient></defs>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none"/>'+
     '<path d="'+linePath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    liveDot+
     '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="2.8" fill="var(--panel)" stroke="'+col+'" stroke-width="1.3"/></g>'+
     hitPts+
     '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-trend-hit"/></svg>';
@@ -5342,13 +5414,18 @@ function hidePairScoreTooltip(){
 }
 function showPairScoreTooltip(svg, idx, clientX, clientY){
   var days=(svg.getAttribute('data-days')||'').split(',').filter(Boolean);
+  var valsAttr=(svg.getAttribute('data-vals')||'').split(',').filter(function(v){return v!=="";});
+  var liveIdx=Number(svg.getAttribute('data-live-idx'));
   var pair=svg.getAttribute('data-pair')||'';
   var day=days[idx];
-  if(!day || !DAILY[day] || DAILY[day][pair]===undefined) return;
-  var score=Number(DAILY[day][pair]);
+  // Read the score straight off the rendered series (data-vals) instead of re-querying DAILY --
+  // the live "today" point isn't in DAILY until the next Recalculate.
+  if(!day || valsAttr[idx]===undefined) return;
+  var score=Number(valsAttr[idx]);
+  var isLive=idx===liveIdx;
   var tt=ensurePairScoreTooltip();
   var regime=bandLabel(score);
-  tt.innerHTML='<div class="tt-date">'+esc(day)+' · '+esc(pair)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(regime)+'</div>';
+  tt.innerHTML='<div class="tt-date">'+esc(isLive?'Live (today)':day)+' · '+esc(pair)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(regime)+'</div>';
   tt.style.display='block';
   var rect=tt.getBoundingClientRect();
   var x=Math.min(clientX+12, window.innerWidth-rect.width-8);
@@ -5458,6 +5535,14 @@ function bigChart(pair, rangeSel){
     return '<div class="building">'+msg+'</div>';
   }
   var vals=days.map(function(dt){ return DAILY[dt][pair]; });
+  // Merge in today's live value (see withLiveToday()) so this line never looks stale after an
+  // intra-day edit, even if today's snapshot was already locked in by an earlier Recalculate.
+  var live=liveValueForTrendKey(pair);
+  var liveIdx=-1;
+  if(live!=null){
+    var merged=withLiveToday(days, vals, live, null);
+    days=merged.days; vals=merged.vals; liveIdx=merged.liveIdx;
+  }
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
@@ -5484,10 +5569,13 @@ function bigChart(pair, rangeSel){
   }).join('');
   var hitPts=days.map(function(dt,i){
     var v=Number(vals[i]);
-    var label=String(dt)+' · Score '+fmt(v)+' · '+bandLabel(v);
+    var label=(i===liveIdx?'Live (today)':String(dt))+' · Score '+fmt(v)+' · '+bandLabel(v);
     return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join('');
-  return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
+  // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
+  // "today, live" rather than another logged day.
+  var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="4.4" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="2.2" pointer-events="none"/>' : '';
+  return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
       '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
       '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
@@ -5495,6 +5583,7 @@ function bigChart(pair, rangeSel){
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
     '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none" pointer-events="none"/>'+
     '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    liveDot+
     '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="1.8"/></g>'+labels+hitPts+
     '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-big-trend-hit pair-trend-hit"/>'+
     '</svg>';
@@ -6335,6 +6424,15 @@ function updateComputed(){
   }
 
   var c=activeDetailCcy, sc=scores[c];
+  // FOUND BUG: the composite-trend chart on Currency Detail was built once by renderDetail()
+  // when the tab/currency was opened, then never touched again -- every OTHER stat on this
+  // page (score chip, gauge, fundamentals, alignment, etc.) is patched live below, but this
+  // chart's DOM node was simply never in that patch list. So editing an indicator moved the
+  // live score instantly everywhere else while this chart kept showing whatever it looked
+  // like at the moment you opened the tab, however out of date. Re-render it here, live,
+  // on every edit, same as everything else on this page already does.
+  var trendWrap=document.getElementById("trendPanelWrap-"+c);
+  if(trendWrap){ trendWrap.innerHTML=renderDetailTrendPanel(c, sc); bindDetailTrendHover(); }
   var needle=document.getElementById("gaugeNeedle-"+c);
   if(needle){ var g=gaugeGeom(sc); needle.setAttribute("x2",g.nx); needle.setAttribute("y2",g.ny); }
   var txt=document.getElementById("gaugeScoreTxt-"+c); if(txt) txt.textContent=fmt(sc);
