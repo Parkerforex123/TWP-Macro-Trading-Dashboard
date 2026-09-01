@@ -2325,6 +2325,7 @@ async function supabaseRequest(path, options = {}) {
 
 // --- Real Supabase Auth (email + password checked server-side, not a client-side comparison) ---
 var AUTH = { accessToken: null, refreshToken: null, expiresAt: null, email: null };
+var authRefreshInFlight = null;
 
 function loadAuthFromStorage(){
   try {
@@ -2366,26 +2367,31 @@ async function authSignIn(email, password){
 
 async function authRefresh(){
   if(!AUTH.refreshToken) return false;
-  try {
-    const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
-      method: "POST",
-      headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: AUTH.refreshToken })
-    });
-    const data = await res.json();
-    if(!res.ok) throw new Error("refresh failed");
-    AUTH.accessToken = data.access_token;
-    AUTH.refreshToken = data.refresh_token;
-    AUTH.expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
-    persistAuthToStorage();
-    return true;
-  } catch(e) {
-    console.error("Session refresh failed, signing out", e);
-    authSignOut();
-    return false;
-  }
+  if(authRefreshInFlight) return authRefreshInFlight;
+  authRefreshInFlight=(async function(){
+    try {
+      const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: AUTH.refreshToken })
+      });
+      const data = await res.json();
+      if(!res.ok) throw new Error((data && (data.error_description || data.msg || data.error)) || "refresh failed");
+      AUTH.accessToken = data.access_token;
+      AUTH.refreshToken = data.refresh_token || AUTH.refreshToken;
+      AUTH.expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+      persistAuthToStorage();
+      return true;
+    } catch(e) {
+      console.error("Session refresh failed, signing out", e);
+      authSignOut();
+      return false;
+    } finally {
+      authRefreshInFlight=null;
+    }
+  })();
+  return authRefreshInFlight;
 }
-
 function authSignOut(){
   AUTH.accessToken = null; AUTH.refreshToken = null; AUTH.expiresAt = null; AUTH.email = null;
   persistAuthToStorage();
@@ -2666,54 +2672,49 @@ function clearPendingCloudState(){ try{localStorage.removeItem('twp_pending_clou
 function applyPendingCloudStateIfNewer(cloudUpdatedAt){
   var pending=readPendingCloudState(); if(!pending||!pending.payload) return false;
   try{
-    var parsed=JSON.parse(pending.payload), pendingAt=parsed&&parsed.DATA?parsed.DATA._updatedAt:null;
-    if(parsed&&parsed.DATA&&(!cloudUpdatedAt||!pendingAt||pendingAt>cloudUpdatedAt)){
-      DATA=parsed.DATA; SETTINGS=parsed.SETTINGS||{passwordHash:null}; DAILY=parsed.DAILY||{}; LOG=parsed.LOG||[]; SIGNAL_LOG=parsed.SIGNAL_LOG||{};
-      YIELD_ENGINE=parsed.YIELD_ENGINE||{history:[],current:{}}; RISK_SENTIMENT=normalizeRiskState(parsed.RISK_SENTIMENT); COT_ENGINE=parsed.COT_ENGINE||{history:[],current:{},currentDate:'',inputDate:''};
-      return true;
-    }
+    var parsed=JSON.parse(pending.payload), pendingAt=(parsed&&parsed.DATA&&parsed.DATA._updatedAt)||pending.queuedAt||null;
+    if(!parsed||!parsed.DATA) return false;
+    if(cloudUpdatedAt && pendingAt && pendingAt<=cloudUpdatedAt){ clearPendingCloudState(); return false; }
+    if(cloudUpdatedAt && !pendingAt){ clearPendingCloudState(); return false; }
+    DATA=parsed.DATA; SETTINGS=parsed.SETTINGS||{passwordHash:null}; DAILY=parsed.DAILY||{}; LOG=parsed.LOG||[]; SIGNAL_LOG=parsed.SIGNAL_LOG||{};
+    YIELD_ENGINE=parsed.YIELD_ENGINE||{history:[],current:{}}; RISK_SENTIMENT=normalizeRiskState(parsed.RISK_SENTIMENT); COT_ENGINE=parsed.COT_ENGINE||{history:[],current:{},currentDate:'',inputDate:''};
+    return true;
   }catch(e){ console.error('Error applying pending cloud state',e); }
   return false;
 }
-
+function buildPersistedState(){
+  if(!DATA) return null;
+  return { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, SIGNAL_LOG: SIGNAL_LOG, YIELD_ENGINE: YIELD_ENGINE, RISK_SENTIMENT: normalizeRiskState(RISK_SENTIMENT), COT_ENGINE: COT_ENGINE };
+}
+function persistLocalState(payload){
+  try { localStorage.setItem('twp_dashboard_state_v4', payload); return true; }
+  catch(e) { console.error('Local state backup failed:', e); return false; }
+}
 async function saveDataNow(){
-  if(!DATA) return;
-  // Never drop a save just because another cloud write is in flight.
-  // The old guard could silently discard an import/save, after which the 5s
-  // cloud poll could restore the older history.
-  if(isSaving){ isSaveQueued=true; return; }
-  if(!AUTH.accessToken){
-    updateStatus("Sign in to save changes", "var(--amber)");
-    return;
-  }
+  if(!DATA) return false;
+  if(isSaving){ isSaveQueued=true; return false; }
+  if(saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
+  DATA._updatedAt = new Date().toISOString();
+  RISK_SENTIMENT = normalizeRiskState(RISK_SENTIMENT);
+  var payload = JSON.stringify(buildPersistedState());
+  persistLocalState(payload);
+  if(!AUTH.accessToken){ updateStatus("Sign in to save changes", "var(--amber)"); return false; }
   isSaving = true;
   updateStatus("Saving to cloud...", "var(--text-dim)");
+  var ok=false;
   try {
-    DATA._updatedAt = new Date().toISOString();
-    RISK_SENTIMENT = normalizeRiskState(RISK_SENTIMENT);
-    var state = { DATA: DATA, SETTINGS: SETTINGS, DAILY: DAILY, LOG: LOG, SIGNAL_LOG: SIGNAL_LOG, YIELD_ENGINE: YIELD_ENGINE, RISK_SENTIMENT: RISK_SENTIMENT, COT_ENGINE: COT_ENGINE };
-    var payload = JSON.stringify(state);
-
-    // Keep a local backup, but Supabase is now the shared source of truth.
-    localStorage.setItem('twp_dashboard_state_v4', payload);
-
     var savedRows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID, {
-      method: "PATCH",
-      useAuth: true,
+      method: "PATCH", useAuth: true,
       headers: { "Prefer": "return=representation" },
       body: JSON.stringify({ payload: payload, updated_at: DATA._updatedAt })
     });
-    if(!Array.isArray(savedRows) || savedRows.length !== 1 || String(savedRows[0].id) !== String(SUPABASE_ROW_ID)){
-      throw new Error("Cloud save returned no updated dashboard row.");
-    }
-
-    clearPendingCloudState();
+    if(!Array.isArray(savedRows) || savedRows.length !== 1 || String(savedRows[0].id) !== String(SUPABASE_ROW_ID)) throw new Error("Cloud save returned no updated dashboard row.");
+    clearPendingCloudState(); ok=true;
     updateStatus("Saved to cloud", "var(--bullish-strong)");
     setTimeout(function(){ updateStatus("Live synced", "var(--text-faint)"); }, 2000);
   } catch(e) {
     console.error("Supabase save error:", e);
-    try { localStorage.setItem('twp_dashboard_state_v4', payload); } catch(ignore) {}
-    writePendingCloudState(payload, String(e.message||'cloud save failed'));
+    persistLocalState(payload); writePendingCloudState(payload, String(e.message||'cloud save failed'));
     if(String(e.message||"").indexOf("401") !== -1 || String(e.message||"").indexOf("403") !== -1){
       updateStatus("Session expired — local copy queued for cloud retry", "var(--bearish-strong)");
       authSignOut(); unlockedLocally=false; renderLockBox();
@@ -2722,19 +2723,15 @@ async function saveDataNow(){
       setTimeout(function(){ if(AUTH.accessToken && !isSaving) saveDataNow(); }, 5000);
     }
   } finally {
-    isSaving = false;
-    // A save request that arrived during the previous write must be sent now
-    // using the latest in-memory state. This makes imports and edits lossless.
-    if(isSaveQueued){
-      isSaveQueued=false;
-      saveDataNow();
-    }
+    isSaving=false;
+    if(isSaveQueued){ isSaveQueued=false; saveDataNow(); }
   }
+  return ok;
 }
 
 function scheduleSave(){
   if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveDataNow, 300);
+  saveTimer = setTimeout(function(){ saveTimer=null; saveDataNow(); }, 300);
 }
 
 
@@ -3807,7 +3804,14 @@ function renderLockBox(){
   } else {
     box.innerHTML='<div class="lock-state unlocked"><span class="lock-state-label">'+svgUnlocked+' Signed in'+(AUTH.email?(' as <span style="color:var(--text);">'+esc(AUTH.email)+'</span>'):'')+'</span><button class="lock-eye" id="lockEyeBtnSignedIn" title="Show/hide">'+eyeIcon+'</button></div>'+
       '<div class="lock-fields"><button id="lockBtn">Sign out</button></div>';
-    document.getElementById("lockBtn").onclick=function(){ authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic(); };
+    document.getElementById("lockBtn").onclick=async function(){
+      if(saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
+      persistLocalState(JSON.stringify(buildPersistedState()));
+      if(AUTH.accessToken){
+        try{ await fetch(SUPABASE_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+AUTH.accessToken,"Content-Type":"application/json"}}); }catch(e){}
+      }
+      authSignOut(); unlockedLocally=false; renderLockBox(); renderAllStatic();
+    };
     document.getElementById("lockEyeBtnSignedIn").onclick=function(){ lockBoxCollapsed=!lockBoxCollapsed; renderLockBox(); };
   }
 }
@@ -4584,15 +4588,22 @@ function labelFromScore(s){return bandLabel(s);}
 // just against DATA.MOMENTUM-style daily snapshots stored per-currency in DAILY under the
 // currency's own key (e.g. DAILY[date]["USD"]) if you're logging single-currency composites.
 // Falls back gracefully to "flat/no history" if you haven't been logging that yet.
+function trendDirectionFromLatest(key, liveVal){
+  var todayKey=new Date().toISOString().slice(0,10);
+  var days=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined && dt!==todayKey; }).sort();
+  if(!days.length || !Number.isFinite(Number(liveVal))) return null;
+  var previous=Number(DAILY[days[days.length-1]][key]);
+  if(!Number.isFinite(previous)) return null;
+  var d=Number(liveVal)-previous;
+  return d>0?"up":d<0?"down":"flat";
+}
 function ccyTrend30d(ccy, liveScore){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][ccy]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null,label:"No trend history yet"};
-  var days=allDays.slice(-TREND_WINDOW_DAYS);
-  var first=Number(DAILY[days[0]][ccy]);
-  var delta=Math.round(liveScore-first);
-  if(delta>1) return {dir:"up",delta:delta,label:"Score rising over the trend window"};
-  if(delta< -1) return {dir:"down",delta:delta,label:"Score falling over the trend window"};
-  return {dir:"flat",delta:delta,label:"Score broadly flat over the trend window"};
+  var days=allDays.slice(-TREND_WINDOW_DAYS), first=Number(DAILY[days[0]][ccy]), delta=Math.round(liveScore-first), dir=trendDirectionFromLatest(ccy,liveScore);
+  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
+  var label=dir==="up"?"Score rising vs last logged observation":dir==="down"?"Score falling vs last logged observation":"Score unchanged vs last logged observation";
+  return {dir:dir,delta:delta,label:label};
 }
 function ccyTrendMarker(ccy, liveScore){
   var t=ccyTrend30d(ccy, liveScore);
@@ -4626,10 +4637,9 @@ function fillOverviewRows(scores){
 function componentTrend30d(key, liveVal){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null};
-  var days=allDays.slice(-TREND_WINDOW_DAYS), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first);
-  if(delta>1) return {dir:"up",delta:delta};
-  if(delta< -1) return {dir:"down",delta:delta};
-  return {dir:"flat",delta:delta};
+  var days=allDays.slice(-TREND_WINDOW_DAYS), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first), dir=trendDirectionFromLatest(key,liveVal);
+  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
+  return {dir:dir,delta:delta};
 }
 function componentTrendMarker(key, liveVal){
   var t=componentTrend30d(key, liveVal);
@@ -5326,10 +5336,10 @@ function pairTrend30d(pair){
   var liveScores=scores || {};
   var live=Number(liveScores[pair.slice(0,3)]||0)-Number(liveScores[pair.slice(3)]||0);
   if(!Number.isFinite(live)) live=Number(DAILY[days[days.length-1]][pair]);
-  var delta=Math.round(live-first);
-  if(delta>1) return {dir:"up",delta:delta,label:"Score rising over the trend window"};
-  if(delta< -1) return {dir:"down",delta:delta,label:"Score falling over the trend window"};
-  return {dir:"flat",delta:delta,label:"Score broadly flat over the trend window"};
+  var delta=Math.round(live-first), dir=trendDirectionFromLatest(pair,live);
+  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
+  var label=dir==="up"?"Score rising vs last logged observation":dir==="down"?"Score falling vs last logged observation":"Score unchanged vs last logged observation";
+  return {dir:dir,delta:delta,label:label};
 }
 function pillarBias(score){
   var s=Math.round(Number(score)||0);
@@ -5952,9 +5962,12 @@ function renderPairs(){
       LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
     }
     if(LOG.length>50) LOG=LOG.slice(0,50);
-    saveDataNow();
+    var saved=await saveDataNow();
     renderPairs();
-    updateStatus(isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history unchanged'), isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)');
+    updateStatus(saved
+      ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history unchanged'))
+      : (isFirstSignal ? ('Signal calculated · local copy queued for cloud save') : ('Live recalculated · cloud save queued')),
+      saved ? (isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)') : 'var(--amber)');
   }; }
   var exportTrendBtn=document.getElementById("exportTrendBtn");
   if(exportTrendBtn){ exportTrendBtn.onclick=dailyExportCsv; }
@@ -6377,6 +6390,11 @@ function renderRiskSentiment(){
 }
 
 function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function encodeDataForTransfer(obj){
+  var json=JSON.stringify(obj);
+  try { return btoa(unescape(encodeURIComponent(json))); }
+  catch(e) { try { return btoa(json); } catch(ignore) { return ""; } }
+}
 function onCcyFieldInput(e){
   var t=e.target; if(!unlockedLocally || !t.dataset || t.dataset.role!=="ccyfield") return;
   var c=t.dataset.ccy, field=t.dataset.field;
@@ -6420,7 +6438,7 @@ function updateComputed(){
   }
   
   if(document.getElementById("syncDataStr")){
-    document.getElementById("syncDataStr").value = btoa(JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
+    document.getElementById("syncDataStr").value = encodeDataForTransfer(buildPersistedState());
   }
 
   var c=activeDetailCcy, sc=scores[c];
@@ -6438,6 +6456,7 @@ function updateComputed(){
   var txt=document.getElementById("gaugeScoreTxt-"+c); if(txt) txt.textContent=fmt(sc);
   var chip=document.getElementById("gaugeBiasChip-"+c); if(chip){ var lbl=bandLabel(sc); chip.className=chipClass(lbl); chip.textContent=lbl; }
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
+  var statCot=document.getElementById("statCot-"+c); if(statCot){ var cotNow=getCotScore(c); statCot.textContent=(cotNow>0?"+":"")+cotNow; statCot.setAttribute("style",numColor(cotNow)); }
   var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=seasonalityScoreFmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
   var statRisk=document.getElementById("statRisk-"+c); if(statRisk){ var riskPtsNow=riskContributionFor(c); statRisk.textContent=(riskPtsNow>0?"+":"")+riskPtsNow.toFixed(1); statRisk.setAttribute("style",numColor(riskPtsNow)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
@@ -6515,12 +6534,12 @@ async function init(){
   
   var msb = document.getElementById("manualSaveBtn");
   if(msb) {
-    msb.onclick = function() {
-      saveDataNow();
-      var orig = this.textContent;
-      this.textContent = "Saved!";
-      var btn = this;
-      setTimeout(function(){ btn.textContent = orig; }, 1500);
+    msb.onclick = async function() {
+      var btn=this, orig=btn.textContent;
+      btn.disabled=true; btn.textContent="Saving...";
+      var ok=await saveDataNow();
+      btn.textContent=ok?"Saved!":"Save queued";
+      setTimeout(function(){ btn.textContent=orig; btn.disabled=false; },1500);
     };
   }
 
@@ -6552,7 +6571,7 @@ async function init(){
         YIELD_ENGINE = parsed.YIELD_ENGINE || {history:[], current:{}};
         RISK_SENTIMENT = normalizeRiskState(parsed.RISK_SENTIMENT);
         COT_ENGINE = parsed.COT_ENGINE || {history:[],current:{},currentDate:"",inputDate:""};
-        localStorage.setItem('twp_dashboard_state_v4', rows[0].payload);
+        persistLocalState(rows[0].payload);
         loaded = true;
       }
     }
@@ -6639,7 +6658,7 @@ async function init(){
 
   if(migrateLegacyYieldFields()){
     if(AUTH.accessToken){ await saveDataNow(); }
-    else { try { localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE})); } catch(e) {} }
+    else { persistLocalState(JSON.stringify(buildPersistedState())); }
   }
 
   var removedUnfinishedToday=y2RemoveUnfinishedToday();
@@ -6660,10 +6679,23 @@ async function init(){
       if (!rows || !rows.length || !rows[0].payload) return;
       const row = rows[0];
       if (lastCloudUpdatedAt === row.updated_at) return;
-      // Never replace in-memory edits while a user is typing. The old version
-      // assigned DATA=parsed.DATA before checking isTyping, which could snap a
-      // just-entered seasonality value back to the older cloud value.
+      // Never replace in-memory edits while a user is typing or while a local
+      // save is still in flight/queued. More importantly, a failed cloud save
+      // leaves a newer pending local snapshot behind; an older cloud poll must
+      // never overwrite that recovery copy during the retry window.
       if (isTyping || isSaving || isSaveQueued) return;
+      var pendingDuringPoll = readPendingCloudState();
+      if(pendingDuringPoll && pendingDuringPoll.payload){
+        try{
+          var pendingParsedPoll=JSON.parse(pendingDuringPoll.payload);
+          var pendingAtPoll=(pendingParsedPoll&&pendingParsedPoll.DATA&&pendingParsedPoll.DATA._updatedAt)||pendingDuringPoll.queuedAt||null;
+          if(pendingAtPoll && row.updated_at && pendingAtPoll>row.updated_at){
+            lastCloudUpdatedAt=row.updated_at;
+            updateStatus('Local changes queued — waiting for cloud retry', 'var(--amber)');
+            return;
+          }
+        }catch(e){}
+      }
       lastCloudUpdatedAt = row.updated_at;
       const parsed = JSON.parse(row.payload);
       if (!parsed || !parsed.DATA) return;
@@ -6682,7 +6714,7 @@ async function init(){
       if(removedFuture && AUTH.accessToken){
         try { await saveDataNow(); } catch(e) { console.error("Future-close cleanup save failed:", e); }
       }
-      localStorage.setItem('twp_dashboard_state_v4', JSON.stringify({DATA:DATA, SETTINGS:SETTINGS, DAILY:DAILY, LOG:LOG, SIGNAL_LOG:SIGNAL_LOG, YIELD_ENGINE:YIELD_ENGINE, RISK_SENTIMENT:RISK_SENTIMENT, COT_ENGINE:COT_ENGINE}));
+      persistLocalState(JSON.stringify(buildPersistedState()));
       if (!isTyping) {
         renderAllStatic();
         renderLockBox();
