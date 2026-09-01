@@ -2260,6 +2260,370 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-pairs .pair-macro-verdict{font-size:11.5px!important;line-height:1.6!important;color:var(--text)!important;margin-top:9px!important;padding:9px 0 0 0!important;border-top:1px solid var(--border)!important;font-weight:650!important;}
 #tab-pairs .pair-macro-summary:before{background:linear-gradient(180deg,var(--amber),var(--border))!important;}
 </style>
+
+<style id="policy-monitor-ui">
+/* Policy monitor is a primary top-right diagnostic, beside Composite Trend. */
+.info-trend-row{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(240px,.85fr) minmax(240px,.85fr);gap:8px;align-items:stretch;}
+.info-trend-row .info-grid{min-width:0;height:100%;margin-bottom:0;}
+.info-trend-row .trend-panel{min-width:0;height:100%;margin-bottom:0;}
+.policy-monitor{margin:0!important;padding:10px 11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;height:100%;}
+.policy-monitor-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.policy-monitor-title{font-family:'Space Grotesk',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);font-weight:700;}
+.policy-diagnostic{font-size:9.5px;color:var(--text-faint);text-align:right;line-height:1.2;}
+.policy-monitor-grid{display:grid;grid-template-columns:1fr;gap:9px;flex:1;}
+.policy-metric{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.policy-k{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.55px;}
+.policy-value{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;line-height:1.15;}
+.policy-sub{font-size:9.5px;color:var(--text-faint);line-height:1.25;}
+.policy-score{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;margin-left:3px;}
+.policy-bull,.policy-match{color:var(--bullish-strong);}
+.policy-bear,.policy-diverge{color:var(--bearish-strong);}
+.policy-neutral,.policy-watch{color:var(--text-dim);}
+.policy-diverge{border-color:rgba(217,83,95,.35)!important;}
+.policy-relation{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--text-faint);}
+.policy-relation strong{font-family:'Space Grotesk',sans-serif;font-size:11px;text-align:right;}
+.policy-relation.policy-match strong{color:var(--bullish-strong);}
+.policy-relation.policy-diverge strong{color:var(--bearish-strong);}
+.policy-relation.policy-watch strong{color:var(--amber);}
+@media(max-width:1100px){.info-trend-row{grid-template-columns:minmax(0,1fr) minmax(240px,.8fr);}.info-trend-row .info-grid{grid-column:1 / -1;}.info-trend-row .trend-panel{grid-column:1;}.info-trend-row .policy-monitor{grid-column:2;}}
+@media(max-width:700px){.info-trend-row{display:flex!important;flex-direction:column;}.info-trend-row .info-grid,.info-trend-row .trend-panel,.info-trend-row .policy-monitor{width:100%;}.policy-monitor-grid{grid-template-columns:1fr 1fr;}.policy-monitor-head{align-items:flex-start;}.policy-diagnostic{max-width:140px;}}
+@media(max-width:480px){.policy-monitor-grid{grid-template-columns:1fr;}}
+</style>
+
+<style id="policy-monitor-final-trader-fit">
+/* Final trader-fit pass: restore normal readable sizing, reduce empty vertical space,
+   and clearly separate Institutional Activity Bias from Latest Positioning Change. */
+.info-trend-row{
+  grid-template-columns:minmax(0,1.35fr) minmax(300px,.9fr) minmax(260px,.9fr)!important;
+  gap:10px!important;
+}
+.policy-monitor{
+  padding:11px 13px!important;
+  justify-content:flex-start!important;
+}
+.policy-monitor-head{
+  margin-bottom:10px!important;
+}
+.policy-monitor-title{
+  font-size:12.5px!important;
+  letter-spacing:.75px!important;
+}
+.policy-monitor-grid{
+  grid-template-columns:1fr 1fr!important;
+  gap:13px!important;
+  flex:0 0 auto!important;
+}
+.policy-metric{
+  gap:4px!important;
+}
+.policy-k{
+  font-size:11px!important;
+  letter-spacing:.55px!important;
+}
+.policy-value{
+  font-size:15px!important;
+  line-height:1.2!important;
+}
+.policy-sub{
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+.policy-score{
+  font-size:11.5px!important;
+}
+.policy-relation{
+  margin-top:11px!important;
+  padding-top:9px!important;
+  font-size:11px!important;
+}
+.policy-relation strong{
+  font-size:12px!important;
+}
+/* The top COT/info strip gets a clean visual break between these two items. */
+#tab-detail .institutional-bias-item{
+  padding-right:12px!important;
+  border-right:1px solid var(--border)!important;
+}
+#tab-detail .latest-position-item{
+  padding-left:12px!important;
+}
+#tab-detail .institutional-bias-item .k,
+#tab-detail .latest-position-item .k{
+  min-height:30px;
+}
+@media(max-width:1100px){
+  .info-trend-row{grid-template-columns:minmax(0,1fr) minmax(280px,.9fr)!important;}
+}
+@media(max-width:700px){
+  .policy-monitor-grid{grid-template-columns:1fr 1fr!important;gap:10px!important;}
+  #tab-detail .institutional-bias-item{padding-right:8px!important;}
+  #tab-detail .latest-position-item{padding-left:8px!important;}
+}
+@media(max-width:480px){
+  .policy-monitor-grid{grid-template-columns:1fr!important;}
+}
+</style>
+
+
+<style id="policy-monitor-v4-final-sharpness">
+/* V4: sharper Currency Detail top strip — readable type, controlled gaps, no clumped labels. */
+#tab-detail .info-trend-row{
+  gap:12px!important;
+  align-items:stretch!important;
+}
+#tab-detail .info-trend-row .info-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  column-gap:18px!important;
+  row-gap:9px!important;
+  padding:9px 13px!important;
+  align-content:start!important;
+}
+#tab-detail .info-grid .info-item{
+  min-width:0!important;
+  padding:0!important;
+}
+#tab-detail .info-grid .info-item .k{
+  font-size:11.5px!important;
+  line-height:1.15!important;
+  letter-spacing:.45px!important;
+  white-space:normal!important;
+}
+#tab-detail .info-grid .info-item .v{
+  font-size:14px!important;
+  line-height:1.2!important;
+  margin-top:3px!important;
+}
+/* Institutional Bias and Latest Positioning Change: space them apart, no vertical divider. */
+#tab-detail .institutional-bias-item,
+#tab-detail .latest-position-item{
+  border-right:none!important;
+}
+#tab-detail .institutional-bias-item{padding-right:7px!important;}
+#tab-detail .latest-position-item{padding-left:7px!important;}
+/* Prevent the labels from visually running together even at narrower widths. */
+#tab-detail .institutional-bias-item .k,
+#tab-detail .latest-position-item .k{
+  min-height:0!important;
+}
+/* Keep the top COT row compact and separate from the second row. */
+#tab-detail .cot-net-item,
+#tab-detail .cot-change-item,
+#tab-detail .cot-net-item + .info-item,
+#tab-detail .cot-change-item + .info-item{
+  padding-top:0!important;
+}
+/* Policy Monitor: same normal dashboard scale, but much tighter and more deliberate. */
+#tab-detail .policy-monitor{
+  padding:10px 13px!important;
+  justify-content:flex-start!important;
+}
+#tab-detail .policy-monitor-head{margin-bottom:8px!important;}
+#tab-detail .policy-monitor-title{font-size:13px!important;}
+#tab-detail .policy-monitor-grid{
+  gap:16px!important;
+  flex:0 0 auto!important;
+}
+#tab-detail .policy-metric{gap:3px!important;}
+#tab-detail .policy-k{font-size:11.5px!important;line-height:1.15!important;}
+#tab-detail .policy-value{font-size:15px!important;line-height:1.18!important;}
+#tab-detail .policy-sub{font-size:11px!important;line-height:1.25!important;}
+#tab-detail .policy-score{font-size:11.5px!important;}
+#tab-detail .policy-relation{
+  margin-top:9px!important;
+  padding-top:8px!important;
+  font-size:11.5px!important;
+}
+#tab-detail .policy-relation strong{font-size:12px!important;}
+@media(max-width:1100px){
+  #tab-detail .info-trend-row{gap:10px!important;}
+  #tab-detail .info-trend-row .info-grid{column-gap:15px!important;}
+}
+@media(max-width:700px){
+  #tab-detail .info-trend-row{gap:8px!important;}
+  #tab-detail .info-trend-row .info-grid{column-gap:13px!important;row-gap:8px!important;}
+  #tab-detail .institutional-bias-item{padding-right:4px!important;}
+  #tab-detail .latest-position-item{padding-left:4px!important;}
+}
+</style>
+
+
+<style id="top-info-final-cleanup">
+/* Final cleanup: give every top information item its own column and enough horizontal breathing room. */
+#tab-detail .info-trend-row .info-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-auto-flow:row!important;
+  column-gap:22px!important;
+  row-gap:7px!important;
+  align-content:start!important;
+  padding:10px 14px!important;
+}
+#tab-detail .info-grid .info-item{
+  min-width:0!important;
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  gap:3px!important;
+  overflow:visible!important;
+}
+#tab-detail .info-grid .info-item .k{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  white-space:normal!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  line-height:1.25!important;
+  letter-spacing:.25px!important;
+  margin:0!important;
+}
+#tab-detail .info-grid .info-item .v{
+  display:block!important;
+  width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  word-break:normal!important;
+  line-height:1.2!important;
+  margin:0!important;
+}
+/* These four top-line fields stay visually distinct: no divider, no clumping. */
+#tab-detail .institutional-bias-item,
+#tab-detail .latest-position-item{
+  border:none!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+#tab-detail .institutional-bias-item .k,
+#tab-detail .latest-position-item .k{
+  min-height:0!important;
+}
+@media(max-width:1100px){
+  #tab-detail .info-trend-row .info-grid{column-gap:18px!important;}
+}
+@media(max-width:700px){
+  #tab-detail .info-trend-row .info-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    column-gap:16px!important;
+    row-gap:8px!important;
+  }
+}
+</style>
+
+
+<style id="top-info-v6-real-fix">
+/* V6: stop top-detail labels from colliding. Give the long labels dedicated space. */
+#tab-detail .info-trend-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.65fr) minmax(285px,.82fr) minmax(300px,.88fr)!important;
+  gap:12px!important;
+  align-items:stretch!important;
+}
+#tab-detail .info-trend-row .info-grid{
+  display:grid!important;
+  grid-template-columns:minmax(105px,1.05fr) minmax(82px,.72fr) minmax(150px,1.22fr) minmax(165px,1.38fr)!important;
+  grid-template-areas:
+    "season risk institutional latest"
+    "cotnet cotchg longshort regime"!important;
+  column-gap:20px!important;
+  row-gap:8px!important;
+  padding:9px 14px!important;
+  align-content:start!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+#tab-detail .info-grid .info-item{
+  min-width:0!important;
+  width:auto!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:visible!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  gap:3px!important;
+}
+#tab-detail .info-grid .info-item:nth-child(1){grid-area:season!important;}
+#tab-detail .info-grid .info-item:nth-child(2){grid-area:risk!important;}
+#tab-detail .info-grid .info-item:nth-child(3){grid-area:institutional!important;}
+#tab-detail .info-grid .info-item:nth-child(4){grid-area:latest!important;}
+#tab-detail .info-grid .info-item:nth-child(5){grid-area:cotnet!important;}
+#tab-detail .info-grid .info-item:nth-child(6){grid-area:cotchg!important;}
+#tab-detail .info-grid .info-item:nth-child(7){grid-area:longshort!important;}
+#tab-detail .info-grid .info-item:nth-child(8){grid-area:regime!important;}
+#tab-detail .info-grid .info-item .k{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  white-space:normal!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  line-height:1.25!important;
+  margin:0!important;
+}
+#tab-detail .info-grid .info-item .v{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  word-break:normal!important;
+  line-height:1.2!important;
+  margin:0!important;
+}
+#tab-detail .info-grid .risk-detail-item{padding-left:4px!important;}
+#tab-detail .info-grid .institutional-bias-item,
+#tab-detail .info-grid .latest-position-item{
+  border:0!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+#tab-detail .info-grid .institutional-bias-item .k,
+#tab-detail .info-grid .latest-position-item .k{
+  max-width:100%!important;
+}
+/* Keep the lower COT row tight; the top row carries the visual hierarchy. */
+#tab-detail .info-grid .cot-net-item,
+#tab-detail .info-grid .cot-change-item{padding-top:0!important;}
+
+/* Policy monitor: use the same readable scale without excess blank height. */
+#tab-detail .policy-monitor{
+  padding:10px 13px!important;
+  justify-content:flex-start!important;
+}
+#tab-detail .policy-monitor-grid{
+  gap:12px!important;
+}
+
+@media(max-width:1100px){
+  #tab-detail .info-trend-row{
+    grid-template-columns:minmax(0,1fr) minmax(290px,.82fr)!important;
+  }
+  #tab-detail .info-trend-row .info-grid{
+    grid-column:1 / -1!important;
+  }
+  #tab-detail .info-trend-row .trend-panel{grid-column:1!important;}
+  #tab-detail .info-trend-row .policy-monitor{grid-column:2!important;}
+}
+@media(max-width:700px){
+  #tab-detail .info-trend-row{display:flex!important;flex-direction:column!important;gap:8px!important;}
+  #tab-detail .info-trend-row .info-grid,
+  #tab-detail .info-trend-row .trend-panel,
+  #tab-detail .info-trend-row .policy-monitor{width:100%!important;}
+  #tab-detail .info-trend-row .info-grid{
+    grid-template-columns:1fr 1fr!important;
+    grid-template-areas:
+      "season risk"
+      "institutional latest"
+      "cotnet cotchg"
+      "longshort regime"!important;
+    column-gap:16px!important;
+    row-gap:8px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -5106,6 +5470,50 @@ function renderDetail(){
   renderDetailBody(activeDetailCcy);
   bindDetailTrendHover();
 }
+function policyStanceInfo(ccy){
+  var d=DATA[ccy]||{};
+  var move=(d.nextMove||"HOLD").toUpperCase();
+  var conviction=(d.conviction||"Medium conviction").toLowerCase();
+  var sign=move==="HIKE"?1:(move==="CUT"?-1:0);
+  var base=move==="HIKE"?"Hawkish":(move==="CUT"?"Dovish":"Neutral");
+  var strong=(conviction.indexOf("high")>=0);
+  var very=(strong && sign!==0);
+  var label=very?(sign>0?"Very Hawkish":"Very Dovish"):base;
+  var cls=sign>0?"policy-bull":(sign<0?"policy-bear":"policy-neutral");
+  return {sign:sign,label:label,cls:cls,move:move,conviction:d.conviction||"Medium conviction"};
+}
+function policyMarketInfo(ccy){
+  var p=policyStanceInfo(ccy), y=y2Calc(ccy).score;
+  var marketSign=(y!=null && y>=2)?1:(y!=null && y<=-2)?-1:0;
+  var market=y==null?"No 2Y signal":(y>=6?"Strongly rising":y>=2?"Rising":y<=-6?"Strongly falling":y<=-2?"Falling":"Steady");
+  var relCls="policy-neutral", rel="No clear comparison";
+  if(p.sign!==0 && marketSign===p.sign){ rel="They agree"; relCls="policy-match"; }
+  else if(p.sign!==0 && marketSign===-p.sign){ rel="They disagree"; relCls="policy-diverge"; }
+  else if(p.sign!==0 && marketSign===0){ rel="Market not confirming"; relCls="policy-watch"; }
+  else if(p.sign===0 && marketSign>0){ rel="Market is starting to price a hike"; relCls="policy-watch"; }
+  else if(p.sign===0 && marketSign<0){ rel="Market is starting to price a cut"; relCls="policy-watch"; }
+  else if(p.sign===0 && marketSign===0){ rel="Both are neutral"; relCls="policy-match"; }
+  return {policy:p,market:market,marketSign:marketSign,relation:rel,relationCls:relCls,y:y};
+}
+function renderPolicyMonitor(ccy){
+  var x=policyMarketInfo(ccy), p=x.policy;
+  var yTxt=x.y==null?"—":((x.y>0?"+":"")+x.y);
+  return '<div class="policy-monitor" id="policyMonitor-'+ccy+'">'+
+    '<div class="policy-monitor-head"><span class="policy-monitor-title">Policy Monitor</span></div>'+
+    '<div class="policy-monitor-grid">'+
+      '<div class="policy-metric"><span class="policy-k">Policy stance</span><span id="policyStance-'+ccy+'" class="policy-value '+p.cls+'">'+p.label+'</span><span class="policy-sub">Next move: '+p.move+' · '+esc(p.conviction)+'</span></div>'+
+      '<div class="policy-metric"><span class="policy-k">2Y market signal</span><span id="policyMarket-'+ccy+'" class="policy-value '+(x.y==null?'policy-neutral':(x.y>1?'policy-bull':x.y<-1?'policy-bear':'policy-neutral'))+'">'+x.market+' <span class="policy-score">'+yTxt+'</span></span><span class="policy-sub">Own-history 2Y score</span></div>'+ 
+    '</div>'+
+    '<div class="policy-relation '+x.relationCls+'"><span>Policy vs market</span><strong id="policyRelation-'+ccy+'">'+x.relation+'</strong></div>'+
+  '</div>';
+}
+function updatePolicyMonitor(ccy){
+  var root=document.getElementById("policyMonitor-"+ccy); if(!root) return;
+  var x=policyMarketInfo(ccy), p=x.policy;
+  var st=document.getElementById("policyStance-"+ccy); if(st){ st.textContent=p.label; st.className="policy-value "+p.cls; }
+  var mk=document.getElementById("policyMarket-"+ccy); if(mk){ var yTxt=x.y==null?"—":((x.y>0?"+":"")+x.y); mk.innerHTML=x.market+' <span class="policy-score">'+yTxt+'</span>'; mk.className="policy-value "+(x.y==null||Math.abs(x.y)<=1?"policy-neutral":x.y>0?"policy-bull":"policy-bear"); }
+  var rel=document.getElementById("policyRelation-"+ccy); if(rel){ rel.textContent=x.relation; rel.parentElement.className="policy-relation "+x.relationCls; }
+}
 function renderDetailBody(ccy){
   if(!DATA || !DATA[ccy]) return;
   var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
@@ -5164,7 +5572,8 @@ function renderDetailBody(ccy){
         '</div>'+
         
         '<div class="info-item risk-detail-item"><span class="k">Risk sentiment</span><span class="v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
-        '<div class="info-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+        '<div class="info-item"><span class="k">Latest Positioning Change</span><span class="v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span><span class="v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).net)+'">'+cotFormat(cotLatest(ccy).net)+'</span></div>'+        '<div class="info-item cot-change-item"><span class="k">COT WoW change</span><span class="v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).netChg)+'">'+cotFormat(cotLatest(ccy).netChg)+'</span></div>'+        '<div class="info-item"><span class="k">Long / Short</span><span class="v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotLatest(ccy);if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+        '<div class="info-item"><span class="k">COT regime</span><span class="v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+      '</div>'+
+        '<div class="info-item institutional-bias-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+        '<div class="info-item latest-position-item"><span class="k">Latest Positioning Change</span><span class="v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span><span class="v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).net)+'">'+cotFormat(cotLatest(ccy).net)+'</span></div>'+        '<div class="info-item cot-change-item"><span class="k">COT WoW change</span><span class="v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).netChg)+'">'+cotFormat(cotLatest(ccy).netChg)+'</span></div>'+        '<div class="info-item"><span class="k">Long / Short</span><span class="v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotLatest(ccy);if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+        '<div class="info-item"><span class="k">COT regime</span><span class="v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+      '</div>'+
+      renderPolicyMonitor(ccy)+
       renderDetailTrendPanelWrap(ccy, sc)+
       '</div>';
   for(var s=0;s<sectors.length;s++){
@@ -5229,6 +5638,10 @@ function onDetailInput(e){
     DATA[ccy][t.dataset.field]=t.value;
     if(t.dataset.field==="nextMove"){ t.className="move-select "+t.value; }
     if(t.dataset.field==="conviction"){ t.className="conv-select "+t.value.split(" ")[0]; }
+    /* Policy Monitor must react immediately to Next Move / Conviction edits, not wait on any save cycle. */
+    if(t.dataset.field==="nextMove" || t.dataset.field==="conviction"){
+      updatePolicyMonitor(ccy);
+    }
     if(t.dataset.field==="guidance"){ autoGrowGuidance(t); }
     if(t.dataset.field==="cotNet" || t.dataset.field==="cotChangeBias"){
     t.className="bias-select "+t.value;
@@ -6477,6 +6890,7 @@ function updateComputed(){
   var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=seasonalityScoreFmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
   var statRisk=document.getElementById("statRisk-"+c); if(statRisk){ var riskPtsNow=riskContributionFor(c); statRisk.textContent=(riskPtsNow>0?"+":"")+riskPtsNow.toFixed(1); statRisk.setAttribute("style",numColor(riskPtsNow)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
+  updatePolicyMonitor(c);
   var alignEl=document.getElementById("statAlign-"+c);
   if(alignEl){
     var align2=alignmentFor(c);
@@ -7210,3 +7624,73 @@ body.black .rail, body.ash .rail{
 </style>
 </body>
 </html>
+
+<style id="top-info-v7-no-overlap">
+/* V7: final hard separation between the COT/info card and Policy Monitor.
+   The previous layout allowed the four info columns' minimum widths to exceed
+   their actual grid track, so the long labels could visually bleed into the
+   adjacent Policy Monitor card. */
+#tab-detail .info-trend-row{
+  grid-template-columns:minmax(0,1.58fr) minmax(0,.84fr) minmax(0,.92fr)!important;
+  gap:12px!important;
+}
+#tab-detail .info-trend-row > .info-grid,
+#tab-detail .info-trend-row > .policy-monitor,
+#tab-detail .info-trend-row > .trend-panel{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#tab-detail .info-trend-row > .info-grid{
+  grid-template-columns:minmax(0,.95fr) minmax(0,.68fr) minmax(0,1.15fr) minmax(0,1.28fr)!important;
+  grid-template-areas:
+    "season risk institutional latest"
+    "cotnet cotchg longshort regime"!important;
+  column-gap:14px!important;
+  row-gap:8px!important;
+  overflow:hidden!important;
+}
+#tab-detail .info-grid .info-item{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+#tab-detail .info-grid .info-item .k,
+#tab-detail .info-grid .info-item .v{
+  max-width:100%!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+  hyphens:none!important;
+}
+#tab-detail .info-grid .risk-detail-item{
+  padding-left:0!important;
+}
+#tab-detail .info-grid .institutional-bias-item,
+#tab-detail .info-grid .latest-position-item{
+  padding-left:0!important;
+  padding-right:0!important;
+  border:0!important;
+}
+#tab-detail .info-grid .institutional-bias-item .v,
+#tab-detail .info-grid .latest-position-item .v{
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  line-height:1.2!important;
+}
+#tab-detail .policy-monitor{
+  overflow:hidden!important;
+}
+@media(max-width:1250px){
+  #tab-detail .info-trend-row{
+    grid-template-columns:minmax(0,1.42fr) minmax(0,.86fr) minmax(0,.92fr)!important;
+    gap:10px!important;
+  }
+  #tab-detail .info-trend-row > .info-grid{
+    column-gap:11px!important;
+    grid-template-columns:minmax(0,.9fr) minmax(0,.64fr) minmax(0,1.12fr) minmax(0,1.2fr)!important;
+  }
+}
+</style>
