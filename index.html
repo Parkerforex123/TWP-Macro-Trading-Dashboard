@@ -973,9 +973,10 @@ body.black .card,body.ash .card{box-shadow:none;}
   #tab-pairs .pair-table td[data-label="Bias"]{order:4;width:100%;}
   #tab-pairs .pair-table td[data-label="Fundamentals"]{order:5;width:50%;}
   #tab-pairs .pair-table td[data-label="Yield Bias"]{order:6;width:50%;}
-  #tab-pairs .pair-table td[data-label="Net Positioning"]{order:7;width:50%;}
-  #tab-pairs .pair-table td[data-label="Δ WoW"]{order:8;width:50%;}
-  #tab-pairs .pair-table td[data-label="Seasonality"]{order:9;width:100%;}
+  #tab-pairs .pair-table td[data-label="CB Stance"]{order:7;width:100%;}
+  #tab-pairs .pair-table td[data-label="Net Positioning"]{order:8;width:50%;}
+  #tab-pairs .pair-table td[data-label="Δ WoW"]{order:9;width:50%;}
+  #tab-pairs .pair-table td[data-label="Seasonality"]{order:10;width:100%;}
   #tab-pairs .pair-table td[data-label]:not(.ccy-name):not(.pair-score)::before{
     content:attr(data-label);flex-shrink:0;margin-right:7px;
     font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);font-weight:700;
@@ -1024,6 +1025,7 @@ body.black .card,body.ash .card{box-shadow:none;}
     "trend trend"
     "bias bias"
     "fund yield"
+    "cb cb"
     "cot wow"
     "season season";
     width:100%;margin:0 0 8px;padding:10px 10px 8px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);}
@@ -1035,6 +1037,7 @@ body.black .card,body.ash .card{box-shadow:none;}
   #tab-pairs .pair-table td[data-label="Bias"]{grid-area:bias;order:initial;padding-top:7px!important;}
   #tab-pairs .pair-table td[data-label="Fundamentals"]{grid-area:fund;order:initial;padding-right:8px!important;}
   #tab-pairs .pair-table td[data-label="Yield Bias"]{grid-area:yield;order:initial;padding-left:8px!important;}
+  #tab-pairs .pair-table td[data-label="CB Stance"]{grid-area:cb;order:initial;padding-top:7px!important;}
   #tab-pairs .pair-table td[data-label="Net Positioning"]{grid-area:cot;order:initial;padding-right:8px!important;}
   #tab-pairs .pair-table td[data-label="Δ WoW"]{grid-area:wow;order:initial;padding-left:8px!important;}
   #tab-pairs .pair-table td[data-label="Seasonality"]{grid-area:season;order:initial;padding-top:7px!important;}
@@ -3767,10 +3770,25 @@ function riskPairState(base,quote){
   if(Math.abs(diff)<0.06) return 'Neutral';
   return diff>0 ? 'Bullish' : 'Bearish';
 }
+function cbStanceScore(ccy){
+  // Mechanical CB stance score. HOLD is always 0 (a hold is confidence in neutrality,
+  // not a directional lean). HIKE/CUT magnitude is set by conviction: Low=3, Medium=6, High=10.
+  var d=DATA[ccy]||{};
+  var move=(d.nextMove||"HOLD").toUpperCase();
+  if(move!=="HIKE" && move!=="CUT") return 0;
+  var conv=(d.conviction||"Medium conviction").toLowerCase();
+  var mag = conv.indexOf("high")>=0 ? 10 : (conv.indexOf("low")>=0 ? 3 : 6);
+  return move==="HIKE" ? mag : -mag;
+}
+function pairCbStanceLabel(base,quote){
+  var diff=cbStanceScore(base)-cbStanceScore(quote);
+  return diff>=7?'Very Bullish':diff>=3?'Bullish':diff<=-7?'Very Bearish':diff<=-3?'Bearish':'Neutral';
+}
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
-  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy);
-  return 100*(0.70*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.02*seasTerm+0.03*riskTerm); }
+  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
+  // Weights: Fundamentals 60% + Yield 15% + COT 10% + CB Stance 10% + Risk Sentiment 3% + Seasonality 2%
+  return 100*(0.60*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.10*cbTerm+0.03*riskTerm+0.02*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
@@ -3995,8 +4013,9 @@ function pairCompositeFor(base, quote){
   var cotTerm=cotPairRegime(base,quote).combined/100;
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
-  // Core pair score: Fundamentals 70% + Yield 15% + COT 10% + Seasonality 2% + Risk Sentiment 3%.
-  return 100*(0.70*(fundBase-fundQuote)+0.15*yieldTerm+0.10*cotTerm+0.02*(seasBase-seasQuote)+0.03*(riskBase-riskQuote));
+  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
+  // Core pair score: Fundamentals 60% + Yield 15% + COT 10% + CB Stance 10% + Risk Sentiment 3% + Seasonality 2%.
+  return 100*(0.60*(fundBase-fundQuote)+0.15*yieldTerm+0.10*cotTerm+0.10*(cbBase-cbQuote)+0.03*(riskBase-riskQuote)+0.02*(seasBase-seasQuote));
 }
 
 function buildPairs(scores){
@@ -5519,6 +5538,7 @@ function renderDetailBody(ccy){
   var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
   var sectors=[["growth","Growth",f.g],["inflation","Inflation",f.inf],["labour","Labour",f.l]];
   var cotScore = getCotScore(ccy);
+  var cbScore = cbStanceScore(ccy);
   var y2Score = y2Calc(ccy).score;
   var align = alignmentFor(ccy);
   var flagged = align && align.pct>=80;
@@ -5535,6 +5555,7 @@ function renderDetailBody(ccy){
         '<div class="stat-row"><span>Currency regime score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
         '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:190px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
         '<div class="stat-row"><span>COT positioning score</span><span class="mono" id="statCot-'+ccy+'" style="'+numColor(cotScore)+'">'+(cotScore>0?"+":"")+cotScore+'</span></div>'+
+        '<div class="stat-row"><span>CB stance score</span><span class="mono" id="statCb-'+ccy+'" style="'+numColor(cbScore)+'">'+(cbScore>0?"+":"")+cbScore+'</span></div>'+
         '<div class="stat-row"><span>Seasonality score</span><span class="mono" id="statSeason-'+ccy+'" style="'+numColor(seasonalitySign(d))+'">'+fmt(seasonalitySign(d))+'</span></div>'+
         '<div class="stat-row"><span>Risk sentiment contribution</span><span class="mono" id="statRisk-'+ccy+'" style="'+numColor(riskContributionFor(ccy))+'">'+(riskContributionFor(ccy)>0?"+":"")+riskContributionFor(ccy).toFixed(1)+'</span></div>'+
         '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
@@ -6208,7 +6229,7 @@ function renderPairs(){
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="10" style="text-align:center;color:var(--text-faint);padding:18px 0;">'+
+    rows='<tr><td colspan="12" style="text-align:center;color:var(--text-faint);padding:18px 0;">'+
       (pairSearchTerm ? 'No pairs match &quot;'+esc(pairSearchTerm)+'&quot; with the current filter.' : 'No pairs match this filter right now.')+
       '</td></tr>';
   }
@@ -6238,6 +6259,7 @@ function renderPairs(){
       '<td data-label="Bias">'+pairBiasMarkup(p.bias)+'</td>'+
       '<td data-label="Fundamentals"><span class="pair-factor '+fundBiasClass+'">'+fundBias+'</span></td>'+
       '<td data-label="Yield Bias"><span class="pair-factor yield-bias-text '+ybc+'">'+yb+'</span></td>'+
+      '<td data-label="CB Stance"><span class="pair-factor '+pillarBiasClass(pairCbStanceLabel(p.base,p.quote))+'">'+pairCbStanceLabel(p.base,p.quote)+'</span></td>'+
       '<td data-label="Net Positioning"'+cotDxNote+'><span class="pair-factor '+pillarBiasClass(cotPair.posLabel)+'">'+cotPair.posLabel+'</span></td>'+
       '<td data-label="&Delta; WoW"'+cotDxNote+'><span class="pair-factor '+pillarBiasClass(cotPair.flowLabel)+'">'+cotPair.flowLabel+'</span></td>'+
       '<td data-label="Seasonality"><span class="pair-factor '+pillarBiasClass(seasonalityPairText(p.base,p.quote))+'">'+seasonalityPairText(p.base,p.quote)+'</span></td>'+
@@ -6297,7 +6319,7 @@ function renderPairs(){
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
       '<div class="pair-search-wrap"><div style="position:relative;flex:1;min-width:0;"><span class="pair-search-icon">⌕</span><input id="pairSearchInput" class="pair-search" type="search" autocomplete="off" spellcheck="false" value="'+esc(pairSearchTerm)+'" placeholder="Search pair e.g. GBPUSD" aria-label="Search pair"><button id="pairSearchClear" class="pair-search-clear" type="button" aria-label="Clear pair search">&times;</button></div><span id="pairSearchCount" class="pair-search-count"></span></div>'+
       '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>1D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>1D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     '';
   document.getElementById("tab-pairs").innerHTML=html;
@@ -6887,6 +6909,7 @@ function updateComputed(){
   var chip=document.getElementById("gaugeBiasChip-"+c); if(chip){ var lbl=bandLabel(sc); chip.className=chipClass(lbl); chip.textContent=lbl; }
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
   var statCot=document.getElementById("statCot-"+c); if(statCot){ var cotNow=getCotScore(c); statCot.textContent=(cotNow>0?"+":"")+cotNow; statCot.setAttribute("style",numColor(cotNow)); }
+  var statCb=document.getElementById("statCb-"+c); if(statCb){ var cbNow=cbStanceScore(c); statCb.textContent=(cbNow>0?"+":"")+cbNow; statCb.setAttribute("style",numColor(cbNow)); }
   var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=seasonalityScoreFmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
   var statRisk=document.getElementById("statRisk-"+c); if(statRisk){ var riskPtsNow=riskContributionFor(c); statRisk.textContent=(riskPtsNow>0?"+":"")+riskPtsNow.toFixed(1); statRisk.setAttribute("style",numColor(riskPtsNow)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
