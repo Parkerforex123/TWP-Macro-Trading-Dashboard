@@ -5909,7 +5909,7 @@ function sparkline(pair){
     var label=(isLive?'Live (today)':String(dt))+" · Score "+fmt(v)+" · "+bandLabel(v);
     return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join("");
-  var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="2.6" fill="var(--panel)" stroke="'+col+'" stroke-width="1.6" pointer-events="none"/>' : '';
+  var liveDot = liveIdx>=0 ? '<circle class="pair-trend-live-dot" cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="2.6" fill="var(--panel)" stroke="'+col+'" stroke-width="1.6" pointer-events="none"/>' : '';
   return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
       '<stop offset="0%" stop-color="'+col+'" stop-opacity="0.3"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
@@ -5965,7 +5965,11 @@ function updatePairTrendCrosshair(svg, idx){
   var pad=svg.classList.contains('pair-big-trend')?30:3;
   var x=pad+(idx/(days.length-1))*(vbW-2*pad);
   // Use the actual point's rendered screen position so the dot sits exactly on the plotted curve.
-  var hit=svg.querySelectorAll('circle:not(.pair-trend-hover-dot)');
+  // FIX: the live/current-value dot (.pair-trend-live-dot) is drawn as a plain <circle> in the
+  // SVG markup, positioned before the per-day hit-point circles. Excluding only the hover-dot
+  // left the live dot inside this NodeList, shifting every index by one and making the crosshair
+  // land on the wrong day's point. Both non-data circles must be excluded here.
+  var hit=svg.querySelectorAll('circle:not(.pair-trend-hover-dot):not(.pair-trend-live-dot)');
   if(hit[idx]){
     x=parseFloat(hit[idx].getAttribute('cx'))||x;
     var y=parseFloat(hit[idx].getAttribute('cy'))||0;
@@ -6020,7 +6024,9 @@ function bindBigPairTrendHover(){
       // inside the viewBox, so using the full element width was shifting the picked
       // date away from wherever the mouse visually sat on the line (worst near the
       // edges -- e.g. hovering the 30th would pick the 29th).
-      var hit=el.querySelectorAll('circle:not(.pair-trend-hover-dot)');
+      // FIX: also exclude .pair-trend-live-dot -- same indexing bug as updatePairTrendCrosshair
+      // below (this NodeList must contain exactly the per-day data points, nothing else).
+      var hit=el.querySelectorAll('circle:not(.pair-trend-hover-dot):not(.pair-trend-live-dot)');
       var ratio;
       if(hit.length>=2){
         var vb=el.viewBox && el.viewBox.baseVal ? el.viewBox.baseVal : {width:620};
@@ -6095,7 +6101,7 @@ function bigChart(pair, rangeSel){
   }).join('');
   // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
   // "today, live" rather than another logged day.
-  var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="4.4" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="2.2" pointer-events="none"/>' : '';
+  var liveDot = liveIdx>=0 ? '<circle class="pair-trend-live-dot" cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="4.4" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="2.2" pointer-events="none"/>' : '';
   return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
       '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
@@ -7785,6 +7791,54 @@ body.black .rail, body.ash .rail{
   #tab-detail .info-trend-row > .info-grid{
     column-gap:11px!important;
     grid-template-columns:minmax(0,.9fr) minmax(0,.64fr) minmax(0,1.12fr) minmax(0,1.2fr)!important;
+  }
+}
+</style>
+
+<style id="yield-layout-correction-clean">
+/* ONLY layout correction. Preserve all existing typography, data, scoring and controls. */
+@media(min-width:1051px){
+  /* Keep both upper cards at the original readable size so every 2Y input,
+     including JPY/CHF and the observation date, remains visible and usable. */
+  #tab-yield2y .y2-grid{
+    gap:8px!important;
+    align-items:start!important;
+  }
+  #tab-yield2y .y2-grid>.card{
+    height:214px!important;
+    min-height:214px!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  /* Do not alter font sizes, row heights, labels or controls in the Rate Differential Monitor. */
+  #tab-yield2y .y2-grid>.card:first-child,
+  #tab-yield2y .y2-grid>.card:nth-child(2){
+    padding:10px 12px!important;
+  }
+
+  /* The Bond Yield Spread begins AFTER the complete two-card workspace.
+     Its own chart keeps a normal readable size, using only the leftover viewport
+     height so the chart does not climb over or cover the cards above it. */
+  #tab-yield2y .hist-spread-card{
+    margin-top:8px!important;
+    padding:11px 12px 10px!important;
+  }
+  #tab-yield2y .hist-spread-chart{
+    height:clamp(230px,calc(100vh - 500px),300px)!important;
+    min-height:clamp(230px,calc(100vh - 500px),300px)!important;
+    max-height:300px!important;
+    margin-top:0!important;
+  }
+}
+
+@media(max-width:1050px){
+  /* Responsive behavior remains natural on smaller screens. */
+  #tab-yield2y .y2-grid>.card{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
   }
 }
 </style>
