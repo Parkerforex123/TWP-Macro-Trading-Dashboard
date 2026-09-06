@@ -3762,6 +3762,165 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-pro-kpis .ov-score-regime.score-bear{color:var(--bearish-strong)!important;}
 #tab-overview .ov-pro-kpis .ov-spread-positive{color:var(--bullish-strong)!important;}
 </style>
+
+<style id="pair-ranking-v53-alignment">
+/* V53: Pair Ranking alignment column + rebalanced 13-column scanner.
+   Alignment is a descriptive percentage only; it does not alter the pair score. */
+#tab-pairs .pair-table .pair-alignment{
+  font-family:'IBM Plex Mono',monospace!important;
+  font-size:12.5px!important;
+  font-weight:900!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+}
+#tab-pairs .pair-alignment.align-bull-strong{color:var(--bullish-strong)!important;}
+#tab-pairs .pair-alignment.align-bear-strong{color:var(--bearish-strong)!important;}
+#tab-pairs .pair-alignment.align-bull{color:var(--bullish-lean)!important;}
+#tab-pairs .pair-alignment.align-bear{color:var(--bearish-lean)!important;}
+#tab-pairs .pair-alignment.align-neutral{color:var(--text-dim)!important;}
+
+#tab-pairs .table-scroll{overflow-x:hidden!important;}
+#tab-pairs table.pair-table{
+  width:100%!important;
+  min-width:0!important;
+  table-layout:fixed!important;
+}
+/* 13 columns = 100%. The longer descriptive fields each retain enough width to stay
+   on one line; the compact score/delta/alignment fields give the space back. */
+#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:4%!important;}
+#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:8%!important;}
+#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:4%!important;}
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:6%!important;}
+#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:8%!important;}
+#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:8.75%!important;}
+#tab-pairs table.pair-table th:nth-child(13),#tab-pairs table.pair-table td:nth-child(13){width:8.75%!important;}
+#tab-pairs table.pair-table th{
+  white-space:nowrap!important;
+  word-break:normal!important;
+  line-height:1.15!important;
+  padding-left:5px!important;
+  padding-right:5px!important;
+}
+#tab-pairs table.pair-table td{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  padding-left:5px!important;
+  padding-right:5px!important;
+}
+#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1),
+#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3),
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){text-align:center!important;}
+#tab-pairs table.pair-table th:nth-child(n+5),#tab-pairs table.pair-table td:nth-child(n+5){text-align:left!important;}
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){padding-left:2px!important;padding-right:2px!important;}
+
+@media(max-width:700px){
+  /* Mobile remains a stacked card: alignment sits directly under Score, matching desktop order. */
+  #tab-pairs .pair-table td[data-label="ALIGN..."]{order:3;width:100%;justify-content:flex-end;padding-top:0!important;padding-bottom:7px!important;}
+  #tab-pairs .pair-table td[data-label="Trend"]{order:4;}
+  #tab-pairs .pair-table td[data-label="Bias"]{order:5;}
+  #tab-pairs .pair-table td[data-label="Fundamentals"]{order:6;}
+  #tab-pairs .pair-table td[data-label="Yield Bias"]{order:7;}
+  #tab-pairs .pair-table td[data-label="CB Stance"]{order:8;}
+  #tab-pairs .pair-table td[data-label="Net Positioning"]{order:9;}
+  #tab-pairs .pair-table td[data-label="Δ WoW"]{order:10;}
+  #tab-pairs .pair-table td[data-label="Seasonality"]{order:11;}
+  #tab-pairs .pair-table td[data-label="Risk Sentiment"]{order:12;width:100%;}
+  #tab-pairs .pair-table td[data-label="ALIGN..."]::before{content:'ALIGN...';}
+}
+</style>
+
+<style id="v51-pair-ranking-final-fit">
+/* Final Pair Ranking fit: reclaim a little horizontal room from the left rail,
+   then give all 13 columns an explicit, clean 100% width allocation. */
+@media(min-width:821px){
+  .rail{width:210px!important;flex-basis:210px!important;}
+}
+@media(min-width:821px) and (max-width:1100px){
+  .rail{width:210px!important;flex-basis:210px!important;}
+  .content{padding-left:12px!important;padding-right:12px!important;}
+}
+#tab-pairs .table-scroll{overflow-x:hidden!important;}
+#tab-pairs table.pair-table{
+  width:100%!important;
+  min-width:0!important;
+  table-layout:fixed!important;
+}
+/* 13 columns, sum = exactly 100%. */
+#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:5.5%!important;}
+#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:8.5%!important;}
+#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:4%!important;}
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:5%!important;}
+#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:9.5%!important;}
+#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:7.5%!important;}
+#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:8.5%!important;}
+#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:8%!important;}
+#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:8.5%!important;}
+#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8%!important;}
+#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:7.5%!important;}
+#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:9%!important;}
+#tab-pairs table.pair-table th:nth-child(13),#tab-pairs table.pair-table td:nth-child(13){width:10.5%!important;}
+
+#tab-pairs table.pair-table th{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  word-break:normal!important;
+  line-height:1.15!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
+}
+#tab-pairs table.pair-table td{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
+}
+#tab-pairs table.pair-table td:nth-child(2){overflow:visible!important;}
+#tab-pairs .pair-name-wrap{white-space:nowrap!important;overflow:visible!important;}
+#tab-pairs .pair-flags{margin-right:5px!important;}
+#tab-pairs .pair-bias-stack,
+#tab-pairs .pair-bias-single,
+#tab-pairs .pair-factor{
+  display:inline-flex!important;
+  align-items:center!important;
+  white-space:nowrap!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+#tab-pairs .pair-bias-stack .lean-word{margin-right:3px!important;}
+#tab-pairs .pair-alignment{
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  padding-left:3px!important;
+  padding-right:3px!important;
+}
+#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1),
+#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3),
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){text-align:center!important;}
+#tab-pairs table.pair-table th:nth-child(n+5),#tab-pairs table.pair-table td:nth-child(n+5){text-align:left!important;}
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){text-align:center!important;}
+
+@media(max-width:700px){
+  .rail{width:100%!important;flex-basis:auto!important;}
+  #tab-pairs table.pair-table{table-layout:auto!important;width:100%!important;min-width:0!important;}
+  #tab-pairs table.pair-table th,#tab-pairs table.pair-table td{white-space:normal!important;}
+  #tab-pairs .pair-bias-stack,#tab-pairs .pair-bias-single,#tab-pairs .pair-factor{display:inline-flex!important;white-space:normal!important;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -5093,8 +5252,8 @@ function pairCbStanceLabel(base,quote){
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Weights: Fundamentals 60% + Yield 15% + COT 10% + CB Stance 10% + Risk Sentiment 3% + Seasonality 2%
-  return 100*(0.60*fundTerm+0.15*yieldTerm+0.10*cotTerm+0.10*cbTerm+0.03*riskTerm+0.02*seasTerm); }
+  // Weights: Fundamentals 55% + Yield 20% + CB Stance 10% + COT 8% + Risk Sentiment 5% + Seasonality 2%
+  return 100*(0.55*fundTerm+0.20*yieldTerm+0.10*cbTerm+0.08*cotTerm+0.05*riskTerm+0.02*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
@@ -5152,11 +5311,21 @@ function regimeColorClass(label){
 }
 function pairScoreClass(score){
   var s=Math.round(Number(score)||0);
-  if(s>=21) return "score-bull";
-  if(s>=15) return "score-lean-bull";
-  if(s<=-21) return "score-bear";
-  if(s<=-15) return "score-lean-bear";
+  if(s>=20) return "score-bull";
+  if(s>=8) return "score-lean-bull";
+  if(s<=-20) return "score-bear";
+  if(s<=-8) return "score-lean-bear";
   return "score-neutral";
+}
+
+function pairAlignmentClass(score, alignment){
+  var s=Number(score)||0, a=Number(alignment);
+  if(!Number.isFinite(a)) return 'align-neutral';
+  if(a>=80 && s>0) return 'align-bull-strong';
+  if(a>=80 && s<0) return 'align-bear-strong';
+  if(s>0) return 'align-bull';
+  if(s<0) return 'align-bear';
+  return 'align-neutral';
 }
 var CCY_FLAG_ISO = {USD:"us",GBP:"gb",EUR:"eu",JPY:"jp",AUD:"au",NZD:"nz",CAD:"ca",CHF:"ch"};
 function flagPair(base,quote){
@@ -5173,6 +5342,13 @@ function pairBiasMarkup(label){
   if(label==="Bullish") return '<span class="pair-bias-single bull">'+label+'</span>';
   if(label==="Bearish") return '<span class="pair-bias-single bear">'+label+'</span>';
   return '<span class="pair-bias-single neutral">'+label+'</span>';
+}
+function pairRankingBiasMarkup(label){
+  if(label==="Leaning Bullish") return '<span class="pair-bias-single pair-bias-compact-lean-bull">L.Bullish</span>';
+  if(label==="Leaning Bearish") return '<span class="pair-bias-single pair-bias-compact-lean-bear">L.Bearish</span>';
+  if(label==="Very Bullish") return '<span class="pair-bias-single pair-bias-compact-vbull">V.Bullish</span>';
+  if(label==="Very Bearish") return '<span class="pair-bias-single pair-bias-compact-vbear">V.Bearish</span>';
+  return pairBiasMarkup(label);
 }
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
   if(a<20) label="Neutral"; else if(a<50) label=pct>0?"Strong":"Weak"; else label=pct>0?"Very Strong":"Very Weak"; return {pct:pct,label:label}; }
@@ -5330,14 +5506,86 @@ function pairCompositeFor(base, quote){
   var cbPair=(cbBase-cbQuote)/2;
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  return 100*(0.60*fundPair+0.15*yieldTerm+0.10*cotTerm+0.10*cbPair+0.03*riskPair+0.02*seasPair);
+  // Shared macro hierarchy: Fundamentals 55% + Yield 20% + CB Stance 10% + COT 8% + Risk Sentiment 5% + Seasonality 2%.
+  return 100*(0.55*fundPair+0.20*yieldTerm+0.10*cbPair+0.08*cotTerm+0.05*riskPair+0.02*seasPair);
+}
+
+
+// Pair Ranking uses its own relative-score bands. Currency Detail keeps the canonical
+// currency bands above, while pairs get a narrower neutral zone so small but meaningful
+// relative edges are visible instead of being flattened into Neutral.
+function pairBandLabel(s){
+  s=Math.round(Number(s)||0);
+  if(s>=35) return "Very Bullish";
+  if(s>=20) return "Bullish";
+  if(s>=8) return "Leaning Bullish";
+  if(s>=-7) return "Neutral";
+  if(s>=-19) return "Leaning Bearish";
+  if(s>=-34) return "Bearish";
+  return "Very Bearish";
+}
+
+// Pair alignment is descriptive, not an extra scoring pillar. It answers:
+// "How much of the weighted evidence is pointing in the same direction as the live pair score?"
+// It deliberately uses the same live inputs and the same macro hierarchy as pairCompositeFor.
+// No historical-distribution calibration is used.
+function pairAlignmentFor(base, quote, score){
+  var dir=Number(score)>0.0001?1:(Number(score)<-0.0001?-1:0);
+  if(!dir) return null;
+  var total=0, agree=0;
+  function vote(sign, weight){
+    if(sign===0 || !Number.isFinite(Number(weight)) || weight<=0) return;
+    total += Number(weight);
+    if(sign===dir) agree += Number(weight);
+  }
+  function indicatorSign(ind){
+    return ind && ind.bias==='Bullish' ? 1 : ind && ind.bias==='Bearish' ? -1 : 0;
+  }
+  function pairIndicatorSign(ccy, ind){
+    var sign=indicatorSign(ind);
+    return ccy===base ? sign : -sign;
+  }
+  // Fundamentals occupy 55% of the total model. Each underlying indicator keeps its
+  // existing importance inside that pillar; the pillar is normalized to 55 total points.
+  var fundWeightSum=0, fundAgreeWeight=0;
+  [base,quote].forEach(function(ccy){
+    var d=DATA[ccy]||{};
+    ['growth','inflation','labour'].forEach(function(group){
+      (d[group]||[]).forEach(function(ind){
+        var w=Math.abs(Number(ind.weight)||0), sign=pairIndicatorSign(ccy,ind);
+        if(!w || !sign) return;
+        fundWeightSum += w;
+        if(sign===dir) fundAgreeWeight += w;
+      });
+    });
+  });
+  if(fundWeightSum>0){
+    total += 55;
+    agree += 55*(fundAgreeWeight/fundWeightSum);
+  }
+  // Yield = 20% of the model.
+  var y=pairYieldCalc(base,quote).score;
+  if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,20);
+  // COT = 8%. The pair-level COT engine already combines current positioning + weekly flow.
+  var cot=cotPairRegime(base,quote);
+  if(!cot.insufficient && Number(cot.combined)!==0) vote(Number(cot.combined)>0?1:-1,8);
+  // CB stance = 10%. HOLD remains exactly neutral/zero by design.
+  var cbDiff=cbStanceScore(base)-cbStanceScore(quote);
+  if(cbDiff!==0) vote(cbDiff>0?1:-1,10);
+  // Risk = 5%.
+  var riskDiff=riskTermFor(base)-riskTermFor(quote);
+  if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,5);
+  // Seasonality = 2%.
+  var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
+  if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,2);
+  return total ? Math.round((agree/total)*100) : null;
 }
 
 function buildPairs(scores){
   var pairs=[];
   for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
     var base=CCY_ORDER[i], quote=CCY_ORDER[j], raw=pairCompositeFor(base,quote), sc=Math.round(raw), y=pairYieldCalc(base,quote);
-    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:bandLabel(sc),yieldScore:y.score,yieldSpread:y.current});
+    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:pairBandLabel(sc),alignment:pairAlignmentFor(base,quote,sc),yieldScore:y.score,yieldSpread:y.current});
   } }
   pairs.sort(function(a,b){ return b.score-a.score; });
   return pairs;
@@ -6540,8 +6788,8 @@ function renderOverview(){
 
   /* ---- Pair radar: explicitly split bullish and bearish setups ---- */
   var pairs=buildPairs(scores).slice().sort(function(a,b){return b.score-a.score;});
-  var pairTop=pairs.filter(function(p){return Number(p.score)>=21;}).slice(0,3);
-  var pairBottom=pairs.filter(function(p){return Number(p.score)<=-21;}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
+  var pairTop=pairs.filter(function(p){return Number(p.score)>=20;}).slice(0,3);
+  var pairBottom=pairs.filter(function(p){return Number(p.score)<=-20;}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
   function miniPair(p){
     var trend=pairTrend30d(p.pair), cls=pairScoreClass(p.score);
     return '<div class="ov-pair-row" data-pair="'+esc(p.pair)+'" title="Open '+esc(p.pair)+' in Pair Ranking">'+
@@ -6586,8 +6834,8 @@ function renderOverview(){
         '<div class="ov-pro-live">LIVE DASHBOARD READ</div>'+ 
       '</div>'+ 
       '<div class="ov-pro-kpis">'+
-        '<div><span class="ov-kpi-label-strongest">STRONGEST</span><b class="ov-pos"><strong>'+strongest+'</strong> <i class="ov-score-regime '+pairScoreClass(scores[strongest])+'">'+signFmt(scores[strongest])+'</i></b></div>'+ 
-        '<div><span class="ov-kpi-label-weakest">WEAKEST</span><b class="ov-neg"><strong>'+weakest+'</strong> <i class="ov-score-regime '+pairScoreClass(scores[weakest])+'">'+signFmt(scores[weakest])+'</i></b></div>'+ 
+        '<div><span class="ov-kpi-label-strongest">STRONGEST</span><b class="ov-pos"><strong>'+strongest+'</strong> <i class="ov-score-regime '+regimeColorClass(bandLabel(scores[strongest]))+'">'+signFmt(scores[strongest])+'</i> <span class="ov-kpi-trend-arrow '+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'up':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'down':'flat')+'">'+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'▲':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'▼':'—')+'</span></b></div>'+ 
+        '<div><span class="ov-kpi-label-weakest">WEAKEST</span><b class="ov-neg"><strong>'+weakest+'</strong> <i class="ov-score-regime '+regimeColorClass(bandLabel(scores[weakest]))+'">'+signFmt(scores[weakest])+'</i> <span class="ov-kpi-trend-arrow '+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'up':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'down':'flat')+'">'+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'▲':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'▼':'—')+'</span></b></div>'+ 
         '<div><span>SPREAD</span><b class="ov-spread-positive">'+spread+' pts</b></div>'+ 
       '</div>'+ 
       '<div class="ov-pro-breadth">'+
@@ -6679,13 +6927,9 @@ function trendDirectionFromLatest(key, liveVal){
 function ccyTrend30d(ccy, liveScore){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][ccy]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null,label:"No trend history yet"};
-  var days=trendDaysForKey(ccy), first=Number(DAILY[days[0]][ccy]), delta=Math.round(liveScore-first);
-  // The arrow must describe the SAME comparison as the delta number sitting next to it
-  // (today vs the start of this window). Deriving direction from trendDirectionFromLatest
-  // (today vs only yesterday) answers a different question and can point the opposite
-  // way from a delta that's clearly positive or negative over the full window.
-  var dir=delta>0?"up":delta<0?"down":"flat";
-  var label=dir==="up"?"Score up vs "+TREND_WINDOW_DAYS+"d ago":dir==="down"?"Score down vs "+TREND_WINDOW_DAYS+"d ago":"Score unchanged vs "+TREND_WINDOW_DAYS+"d ago";
+  var days=trendDaysForKey(ccy), first=Number(DAILY[days[0]][ccy]), delta=Math.round(liveScore-first), dir=trendDirectionFromLatest(ccy,liveScore);
+  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
+  var label=dir==="up"?"Score rising vs last logged observation":dir==="down"?"Score falling vs last logged observation":"Score unchanged vs last logged observation";
   return {dir:dir,delta:delta,label:label};
 }
 function ccyTrendMarker(ccy, liveScore){
@@ -6721,8 +6965,8 @@ function fillOverviewRows(scores){
 function componentTrend30d(key, liveVal){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null};
-  var days=trendDaysForKey(key), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first);
-  var dir=delta>0?"up":delta<0?"down":"flat";
+  var days=trendDaysForKey(key), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first), dir=trendDirectionFromLatest(key,liveVal);
+  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
   return {dir:dir,delta:delta};
 }
 function componentTrendMarker(key, liveVal){
@@ -7101,71 +7345,69 @@ function renderDetailTrendPanel(ccy, liveScore){
   // Always append/override today's point with the live score (see withLiveToday()) so this
   // line never looks stale after an intra-day edit, even if today's snapshot was already
   // locked in by an earlier Recalculate.
-  var series=ccyHistorySeries(ccy, liveScore); // [{date,val,live}, ...] oldest -> newest, up to TREND_WINDOW_DAYS long
-  var t=ccyTrend30d(ccy, liveScore);
+  var series=ccyHistorySeries(ccy, liveScore); // [{date,val,live}, ...] oldest -> newest, up to TREND_WINDOW_DAYS long -- the LINE stays a rolling 90-day view.
+  // The delta/arrow underneath intentionally answers a different, shorter question than the
+  // 90-day line above it: "how has this moved over the last two weeks specifically" -- same
+  // 14-day comparison as Pair Ranking's "14D Δ" column, not the full 90-day span of the chart.
+  var t=last14DayDelta(ccy, liveScore);
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
   var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
-  var deltaTxt=t.delta==null?"Log a few recalculations to start the trend":((t.delta>0?"+":"")+t.delta+' pts / '+TREND_WINDOW_DAYS+'d');
+  var deltaTxt=t.delta==null?"Need a logged day at least 14 calendar days back to compare yet":((t.delta>0?"+":"")+t.delta+' pts / 14d');
   var spark="", dateLabels="";
   if(series.length>1){
-    var w=280,h=110,pl=28,pr=8,pt=8,pb=8;
-    var plotW=w-pl-pr, plotH=h-pt-pb;
+    // Bigger canvas, thicker line, larger axis type -- matches the reference size instead
+    // of the earlier small/thin build. Axis gutter on the left for the Y labels. Ticks are
+    // the 90D bound (auto, rounded to a clean multiple of 5, same approach as Overview's
+    // Composite Strength chart).
+    var w=300,h=124,pad=8,axisGutter=32;
+    var plotW=w-axisGutter;
     var vals=series.map(function(s){ return s.val; });
-    // Always include zero in the visible range (even if every point this window is on one
-    // side of it) so there's a fixed reference to read "how far from zero" off, per request --
-    // then pad and round outward to a clean step so gridline labels are tidy numbers.
-    var rawMin=Math.min.apply(null,vals), rawMax=Math.max.apply(null,vals);
-    var min0=Math.min(0,rawMin), max0=Math.max(0,rawMax);
-    var span0=Math.max(1,max0-min0), pad0=Math.max(2,span0*.18);
-    var step=(span0+pad0*2)>60?20:(span0+pad0*2)>30?10:5;
-    var min=Math.floor((min0-pad0)/step)*step, max=Math.ceil((max0+pad0)/step)*step;
-    if(min===max){ min-=step; max+=step; }
-    function xPos(i){ return pl+(i/(series.length-1))*plotW; }
-    function yPos(v){ return pt+(max-v)/(max-min)*plotH; }
-    var xy=series.map(function(s,i){ return [xPos(i), yPos(s.val)]; });
+    var magnitude=Math.max.apply(null,vals.map(Math.abs));
+    var padAmt=Math.max(4,magnitude*.12);
+    var bound=Math.ceil((magnitude+padAmt)/5)*5;
+    if(bound<20) bound=20; // keep the zero line comfortably inside the drawn range, not hugging an edge
+    var min=-bound, max=bound;
+    function yPos(v){ return h-pad-((v-min)/(max-min))*(h-2*pad); }
+    var xy=series.map(function(s,i){
+      var x=axisGutter+pad+(i/(series.length-1))*(plotW-2*pad);
+      return [x,yPos(s.val)];
+    });
     var linePts=xy.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
-    // Area fill: same points, then close down to the zero line and back to the start x --
-    // this is the "line chart with a shaded region beneath it" look (TradingView's Area style),
-    // not just a bare polyline. Closes at zero (not the chart bottom) so shading always reads
-    // as "distance from zero", matching the gridlines.
-    var zeroY=yPos(0);
-    var areaPts=linePts+" "+xy[xy.length-1][0].toFixed(1)+","+zeroY.toFixed(1)+" "+xy[0][0].toFixed(1)+","+zeroY.toFixed(1);
     var fillVar = Number(liveScore)>=15 ? "var(--bullish-strong)" : (Number(liveScore)<=-15 ? "var(--bearish-strong)" : "var(--text-faint)");
-    // Y-axis gridlines + labels, same approach as the Currency Strength Index chart:
-    // a handful of evenly-spaced ticks, with the zero line drawn dashed and bolder.
-    var grid="", tickCount=4;
-    for(var gi=0; gi<tickCount; gi++){
-      var gv=max-(max-min)*(gi/(tickCount-1));
-      var gy=yPos(gv);
-      if(Math.abs(gv)<1e-6){
-        grid+='<line x1="'+pl+'" y1="'+gy.toFixed(1)+'" x2="'+(w-pr)+'" y2="'+gy.toFixed(1)+'" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="4 4" opacity=".85" vector-effect="non-scaling-stroke"/>'+
-          '<text x="'+(pl-6)+'" y="'+(gy+3).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="700" fill="var(--text-dim)" font-family="Inter,system-ui,sans-serif">0</text>';
-      } else {
-        grid+='<line x1="'+pl+'" y1="'+gy.toFixed(1)+'" x2="'+(w-pr)+'" y2="'+gy.toFixed(1)+'" stroke="var(--text-faint)" stroke-width="1" opacity=".2" vector-effect="non-scaling-stroke"/>'+
-          '<text x="'+(pl-6)+'" y="'+(gy+3).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="600" fill="var(--text-faint)" font-family="Inter,system-ui,sans-serif">'+Math.round(gv)+'</text>';
-      }
-    }
     var hitPts=series.map(function(s,i){
       var p=xy[i];
-      return '<circle class="detail-trend-hit" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"/>';
+      return '<circle class="detail-trend-hit" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="10" fill="transparent" stroke="transparent" pointer-events="all"/>';
     }).join("");
     // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
     // "today, live" rather than another logged day.
     var liveIdx=-1;
     for(var si=0;si<series.length;si++){ if(series[si].live){ liveIdx=si; break; } }
-    var liveDot = liveIdx>=0 ? '<circle cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="3.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2" pointer-events="none"/>' : '';
-    spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" data-vals="'+esc(series.map(function(s){return s.val;}).join(','))+'" data-live-idx="'+liveIdx+'" data-plot-l="'+pl+'" data-plot-w="'+plotW+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" style="width:100%;height:110px;display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
-      grid+
-      '<polygon points="'+areaPts+'" fill="'+fillVar+'" fill-opacity="0.12" stroke="none" pointer-events="none"/>'+
-      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="1.7" points="'+linePts+'" pointer-events="none"/>'+
+    var liveDot = liveIdx>=0 ? '<circle cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2.4" pointer-events="none"/>' : '';
+    // Single zero reference line, in place of the old +/-14 shaded band -- dashed, dark
+    // goldenrod, so "above this line = improving, below it = deteriorating" reads at a glance
+    // regardless of which currency or scale is on screen. Axis ticks: bound, 0, -bound.
+    var yZero=yPos(0);
+    var zeroLine='<line x1="'+axisGutter+'" y1="'+yZero.toFixed(1)+'" x2="'+w+'" y2="'+yZero.toFixed(1)+'" stroke="#b8860b" stroke-width="1.6" stroke-dasharray="5 4" opacity=".9" vector-effect="non-scaling-stroke"/>';
+    var ticks=[max,0,min].filter(function(v,i,a){ return a.indexOf(v)===i; });
+    var axisSvg='';
+    ticks.forEach(function(gv){
+      var gy=yPos(gv);
+      if(gv===0) return; // the zero tick's line is drawn as the goldenrod zeroLine above, not a faint gridline
+      axisSvg+='<line x1="'+axisGutter+'" y1="'+gy.toFixed(1)+'" x2="'+w+'" y2="'+gy.toFixed(1)+'" stroke="var(--text-faint)" stroke-width="1" opacity=".22" vector-effect="non-scaling-stroke"/>'+
+        '<text x="'+(axisGutter-6)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="600" fill="var(--text-faint)" font-family="Inter,system-ui,sans-serif">'+Math.round(gv)+'</text>';
+    });
+    axisSvg+='<text x="'+(axisGutter-6)+'" y="'+(yZero+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="700" fill="#b8860b" font-family="Inter,system-ui,sans-serif">0</text>';
+    spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" data-vals="'+esc(series.map(function(s){return s.val;}).join(','))+'" data-live-idx="'+liveIdx+'" data-axis-gutter="'+axisGutter+'" data-view-w="'+w+'" viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="none" style="overflow:visible;touch-action:none;cursor:crosshair;display:block;">'+
+      axisSvg+zeroLine+
+      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="2.4" points="'+linePts+'" pointer-events="none"/>'+
       liveDot+
-      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="3.8" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="1.8"/></g>'+
+      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="4.6" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2"/></g>'+
       hitPts+
-      '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="detail-trend-hitbox"/>'+
+      '<rect x="'+axisGutter+'" y="0" width="'+plotW+'" height="'+h+'" fill="transparent" pointer-events="all" class="detail-trend-hitbox"/>'+
       '</svg>';
     var midIdx=Math.floor((series.length-1)/2);
     var lastLabel = liveIdx===series.length-1 ? 'Live' : formatShortDate(series[series.length-1].date);
-    dateLabels='<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-faint);margin-top:2px;padding-left:'+pl+'px;width:100%;box-sizing:border-box;">'+
+    dateLabels='<div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-faint);margin-top:4px;width:100%;padding-left:'+axisGutter+'px;box-sizing:border-box;">'+
       '<span>'+formatShortDate(series[0].date)+'</span>'+
       '<span>'+formatShortDate(series[midIdx].date)+'</span>'+
       '<span>'+lastLabel+'</span></div>';
@@ -7214,12 +7456,13 @@ function bindDetailTrendHover(){
     var move=function(ev){
       var el=ev.currentTarget, days=(el.getAttribute('data-days')||'').split(',').filter(Boolean);
       if(days.length<2) return;
-      // Data points only span the plot area (viewBox minus the left/right axis-label
-      // margins), not the full SVG width -- map pointer position accordingly.
-      var vb=(el.viewBox&&el.viewBox.baseVal&&el.viewBox.baseVal.width)||el.getAttribute('width')||280;
-      var plotL=Number(el.getAttribute('data-plot-l'))||0, plotW=Number(el.getAttribute('data-plot-w'))||vb;
-      var r=el.getBoundingClientRect(), xPx=ev.clientX-r.left, xUnits=xPx/r.width*vb;
-      var ratio=Math.max(0,Math.min(1,(xUnits-plotL)/plotW)), idx=Math.round(ratio*(days.length-1));
+      // Account for the left-side axis-label gutter added for the Y-axis: the plotted
+      // points start after the gutter, not at x=0, so the hover ratio must be measured
+      // from the gutter's edge, not the full SVG width, to still land on the right day.
+      var gutter=Number(el.getAttribute('data-axis-gutter'))||0, viewW=Number(el.getAttribute('data-view-w'))||1;
+      var r=el.getBoundingClientRect(), gutterPx=(gutter/viewW)*r.width;
+      var x=ev.clientX-r.left-gutterPx, plotPx=r.width-gutterPx;
+      var ratio=Math.max(0,Math.min(1,plotPx>0?x/plotPx:0)), idx=Math.round(ratio*(days.length-1));
       updateCcyTrendCrosshair(el,idx); showCcyTrendTooltip(el,idx,ev.clientX,ev.clientY);
     };
     var end=function(ev){ hidePairScoreTooltip(); var c=ev.currentTarget.querySelector('.detail-trend-crosshair'); if(c)c.setAttribute('opacity','0'); };
@@ -7573,7 +7816,7 @@ function pairTrendMarker(pair){
   var arrowCls=t.dir==="up"?"pair-trend-arrow trend-up":(t.dir==="down"?"pair-trend-arrow trend-down":"pair-trend-arrow trend-flat");
   var deltaCls=t.dir==="up"?"delta-up":(t.dir==="down"?"delta-down":"delta-flat");
   var live=liveValueForTrendKey(pair);
-  var scoreCls=Number(live)>=15?"score-regime-bull":(Number(live)<=-15?"score-regime-bear":"score-regime-neutral");
+  var scoreCls=Number(live)>=8?"score-regime-bull":(Number(live)<=-8?"score-regime-bear":"score-regime-neutral");
   var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta);
   return '<span class="pair-trend-marker '+scoreCls+'" title="'+esc(t.label)+(t.delta==null?'':(' · score change vs 90-calendar-day start: '+(t.delta>0?"+":"")+t.delta+' points'))+'">'+
     '<span class="'+arrowCls+'">'+symbol+'</span>'+
@@ -7598,14 +7841,14 @@ function sparkline(pair){
   // the separate "14D Δ" column is for). A deeply bearish score that ticked up today should
   // still read red here, not flip green because of one day's move.
   var scoreForColor = live==null ? vals[vals.length-1] : live;
-  var col = scoreForColor>=15 ? "var(--bullish)" : scoreForColor<=-15 ? "var(--bearish)" : "var(--text-faint)";
+  var col = scoreForColor>=8 ? "var(--bullish)" : scoreForColor<=-8 ? "var(--bearish)" : "var(--text-faint)";
   var gradId="spark-"+pair.replace(/[^A-Za-z0-9]/g,"");
   var linePath=smoothPath(pts), baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
   var hitPts=days.map(function(dt,i){
     var v=Number(vals[i]);
     var isLive=i===liveIdx;
-    var label=(isLive?'Live (today)':String(dt))+" · Score "+fmt(v)+" · "+bandLabel(v);
+    var label=(isLive?'Live (today)':String(dt))+" · Score "+fmt(v)+" · "+pairBandLabel(v);
     return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join("");
   var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="2.6" fill="var(--panel)" stroke="'+col+'" stroke-width="1.6" pointer-events="none"/>' : '';
@@ -7643,7 +7886,7 @@ function showPairScoreTooltip(svg, idx, clientX, clientY){
   var score=Number(valsAttr[idx]);
   var isLive=idx===liveIdx;
   var tt=ensurePairScoreTooltip();
-  var regime=bandLabel(score);
+  var regime=pairBandLabel(score);
   tt.innerHTML='<div class="tt-date">'+esc(isLive?'Live (today)':day)+' · '+esc(pair)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(regime)+'</div>';
   tt.style.display='block';
   var rect=tt.getBoundingClientRect();
@@ -7767,7 +8010,7 @@ function bigChart(pair, rangeSel){
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
   var trendDir=live==null ? null : trendDirectionFromLatest(pair,live);
   var liveScoreForColor=live==null ? Number(vals[vals.length-1]) : Number(live);
-  var col = liveScoreForColor>=15 ? "var(--bullish)" : liveScoreForColor<=-15 ? "var(--bearish)" : "var(--text-faint)";
+  var col = liveScoreForColor>=8 ? "var(--bullish)" : liveScoreForColor<=-8 ? "var(--bearish)" : "var(--text-faint)";
   var colStrong = col;
   var labels="";
   var mobileView = (typeof window !== "undefined" && window.innerWidth <= 700);
@@ -7790,7 +8033,7 @@ function bigChart(pair, rangeSel){
   }).join('');
   var hitPts=days.map(function(dt,i){
     var v=Number(vals[i]);
-    var label=(i===liveIdx?'Live (today)':String(dt))+' · Score '+fmt(v)+' · '+bandLabel(v);
+    var label=(i===liveIdx?'Live (today)':String(dt))+' · Score '+fmt(v)+' · '+pairBandLabel(v);
     return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join('');
   // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
@@ -7828,7 +8071,7 @@ function pairMacroSummaryHtml(pair, score){
   var riskDiff=100*0.03*(riskTermFor(base)-riskTermFor(quote));
   var riskState=riskPairState(base,quote);
   var seas=seasonalityPairSpread(base,quote);
-  var overall=bandLabel(score);
+  var overall=pairBandLabel(score);
   var baseData=DATA[base]||{}, quoteData=DATA[quote]||{};
   var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
 
@@ -7997,7 +8240,7 @@ function renderPairs(){
   var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
   var rows="";
   if(!pairs.length){
-    rows='<tr><td colspan="12" style="text-align:center;color:var(--text-faint);padding:18px 0;">'+
+    rows='<tr><td colspan="13" style="text-align:center;color:var(--text-faint);padding:18px 0;">'+
       (pairSearchTerm ? 'No pairs match &quot;'+esc(pairSearchTerm)+'&quot; with the current filter.' : 'No pairs match this filter right now.')+
       '</td></tr>';
   }
@@ -8023,15 +8266,16 @@ function renderPairs(){
       '<td class="day-delta-cell" data-label="14D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td class="ccy-name" data-label="Pair"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
       '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
+      '<td class="pair-alignment '+pairAlignmentClass(p.score,p.alignment)+'" data-label="ALIGN...">'+(p.alignment==null?'—':Math.round(p.alignment)+'%')+'</td>'+
       '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span></div></td>'+
-      '<td data-label="Bias">'+pairBiasMarkup(p.bias)+'</td>'+
-      '<td data-label="Fundamentals">'+pairBiasMarkup(fundBias)+'</td>'+
-      '<td data-label="Yield Bias">'+pairBiasMarkup(yb)+'</td>'+
-      '<td data-label="CB Stance">'+pairBiasMarkup(pairCbStanceLabel(p.base,p.quote))+'</td>'+
-      '<td data-label="Net Positioning"'+cotDxNote+'>'+pairBiasMarkup(cotPair.posLabel)+'</td>'+
-      '<td data-label="&Delta; WoW"'+cotDxNote+'>'+pairBiasMarkup(cotPair.flowLabel)+'</td>'+
-      '<td data-label="Seasonality">'+pairBiasMarkup(seasonalityPairText(p.base,p.quote))+'</td>'+
-      '<td data-label="Risk Sentiment">'+pairBiasMarkup(riskPairState(p.base,p.quote))+'</td>'+
+      '<td data-label="Bias">'+pairRankingBiasMarkup(p.bias)+'</td>'+
+      '<td data-label="Fundamentals">'+pairRankingBiasMarkup(fundBias)+'</td>'+
+      '<td data-label="Yield Bias">'+pairRankingBiasMarkup(yb)+'</td>'+
+      '<td data-label="CB Stance">'+pairRankingBiasMarkup(pairCbStanceLabel(p.base,p.quote))+'</td>'+
+      '<td data-label="Net Positioning"'+cotDxNote+'>'+pairRankingBiasMarkup(cotPair.posLabel)+'</td>'+
+      '<td data-label="&Delta; WoW"'+cotDxNote+'>'+pairRankingBiasMarkup(cotPair.flowLabel)+'</td>'+
+      '<td data-label="Seasonality">'+pairRankingBiasMarkup(seasonalityPairText(p.base,p.quote))+'</td>'+
+      '<td data-label="Risk Sentiment">'+pairRankingBiasMarkup(riskPairState(p.base,p.quote))+'</td>'+
       '</tr>';
   }
   var logRows="";
@@ -8088,7 +8332,7 @@ function renderPairs(){
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
       '<div class="pair-search-wrap"><div style="position:relative;flex:1;min-width:0;"><span class="pair-search-icon">⌕</span><input id="pairSearchInput" class="pair-search" type="search" autocomplete="off" spellcheck="false" value="'+esc(pairSearchTerm)+'" placeholder="Search pair e.g. GBPUSD" aria-label="Search pair"><button id="pairSearchClear" class="pair-search-clear" type="button" aria-label="Clear pair search">&times;</button></div><span id="pairSearchCount" class="pair-search-count"></span></div>'+
       '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>14D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>14D &Delta;</th><th>Pair</th><th>Score</th><th>ALIGN...</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     '';
   document.getElementById("tab-pairs").innerHTML=html;
@@ -8120,7 +8364,7 @@ function renderPairs(){
         if(tbody){
           emptySearch=document.createElement("tr");
           emptySearch.id="pairSearchEmpty";
-          emptySearch.innerHTML='<td colspan="10" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pair matches "'+
+          emptySearch.innerHTML='<td colspan="13" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pair matches "'+
             String(pairSearchTerm).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")+
             '" with the current filter.</td>';
           tbody.appendChild(emptySearch);
@@ -10850,15 +11094,24 @@ body,html{background:var(--bg);}
     font-weight:800!important;
     white-space:nowrap!important;
   }
-  #tab-overview .ov-macro-trend.pos .ov-macro-trend-move{color:var(--bullish-strong)!important;}
-  #tab-overview .ov-macro-trend.neg .ov-macro-trend-move{color:var(--bearish-strong)!important;}
-  #tab-overview .ov-macro-trend.neu .ov-macro-trend-move{color:var(--text-faint)!important;}
+  /* Was a nested-descendant selector (.ov-macro-trend.pos .ov-macro-trend-move), but the
+     pos/neg/neu class actually lands on this same span, not a parent -- so it never matched
+     and the arrow just sat at its unstyled inherited color. Matched to the actual markup. */
+  #tab-overview .ov-macro-trend-move.pos{color:var(--bullish-strong)!important;}
+  #tab-overview .ov-macro-trend-move.neg{color:var(--bearish-strong)!important;}
+  #tab-overview .ov-macro-trend-move.neu{color:var(--text-faint)!important;}
 
   /* Flags remain visible and scores are never ellipsized in the snapshot. */
   #tab-overview .ov-pro-snapshot .ov-pro-kpis b{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;}
 }
 </style>
 </body>
+<style id="overview-kpi-trend-arrows-final">
+#tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow{font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:900;margin-left:5px;display:inline-block;vertical-align:middle;}
+#tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow.up{color:var(--bullish-strong)!important;}
+#tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow.down{color:var(--bearish-strong)!important;}
+#tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow.flat{color:var(--text-faint)!important;}
+</style>
 </html>
 
 <style id="calendar-grouped-date-layout-final">
@@ -10945,4 +11198,15 @@ html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
 #tab-cot .cot-table th{font-size:11px!important;}
 #tab-cot .cot-table td{font-size:14px!important;}
 #tab-cot .cot-crowd{font-size:12px!important;}
+</style>
+
+<style id="v50-pair-ranking-regime-labels">
+/* Pair Ranking Bias column only: compact regime labels; scoring and classification remain unchanged. */
+/* v1 deepen (#4cc48a/#c25e66) landed too close to the full Bullish/Bearish shades.
+   Pulled back to the midpoint between the original pale lean tone and that first
+   deepen -- a moderate step up, not halfway to full strength. */
+#tab-pairs .pair-bias-compact-lean-bull{color:#5bb687!important;}
+#tab-pairs .pair-bias-compact-lean-bear{color:#a3595f!important;}
+#tab-pairs .pair-bias-compact-vbull{color:var(--bullish-strong)!important;}
+#tab-pairs .pair-bias-compact-vbear{color:var(--pair-red)!important;}
 </style>
