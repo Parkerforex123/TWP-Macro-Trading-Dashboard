@@ -8031,7 +8031,8 @@ function renderPairs(){
   var html = (unlockedLocally ? ('<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
     '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
       '<button class="recalc-btn" id="exportTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Export trend history</button>'+
-      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button></div>'+'</div>') : '')+
+      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button>'+
+      '<button class="recalc-btn" id="clearPairTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear pair trend only</button></div>'+'</div>') : '')+
     expandedHtml+
     '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
@@ -8148,6 +8149,28 @@ function renderPairs(){
   if(clearBtn){ clearBtn.onclick=function(){
     if(!confirm("Clear all trend history and the recalculation log? This wipes every logged day so the trend chart starts fresh from your next recalculate. This can't be undone.")) return;
     DAILY={}; LOG=[]; SIGNAL_LOG={}; expandedPair=null;
+    saveDataNow();
+    renderPairs();
+  }; }
+  var clearPairTrendBtn=document.getElementById("clearPairTrendBtn");
+  if(clearPairTrendBtn){ clearPairTrendBtn.onclick=function(){
+    if(!confirm("Clear ONLY the Pair Ranking trend history (the numbers from before the pair-scoring fix)? Currency composite scores, Fundamentals, COT, and Surprise Index history are all left untouched. This can't be undone.")) return;
+    // A pair key is exactly two currency codes from CCYS concatenated back-to-back (e.g. "EURUSD").
+    // Composite/FUND_/COT_/SURPRISE_ keys never match this shape, so this only ever removes
+    // pair-score entries -- everything else logged in DAILY is left exactly as it was.
+    function isPairKey(key){
+      if(typeof key!=="string" || key.length!==6) return false;
+      var base=key.slice(0,3), quote=key.slice(3);
+      return base!==quote && CCYS.indexOf(base)!==-1 && CCYS.indexOf(quote)!==-1;
+    }
+    Object.keys(DAILY).forEach(function(dt){
+      var day=DAILY[dt]; if(!day) return;
+      Object.keys(day).forEach(function(k){ if(isPairKey(k)) delete day[k]; });
+    });
+    // LOG only ever stores mostBullish/mostBearish PAIR scores, so it's entirely pair-derived
+    // and gets wiped alongside the pair trend. SIGNAL_LOG (dedupe timestamps only, no scores)
+    // is left alone so today's recalculate behaves normally.
+    LOG=[]; expandedPair=null;
     saveDataNow();
     renderPairs();
   }; }
