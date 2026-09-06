@@ -6488,7 +6488,7 @@ function calendarVisibleEvents(){ensureEconomicCalendarSeed();var now=Date.now()
 function calendarRow(e){
   var tone=calendarReleaseTone(e),actual=e.actual!==undefined&&e.actual!==""?esc(e.actual):"—",forecast=e.forecast!==undefined&&e.forecast!==""?esc(e.forecast):"—";
   return '<div class="ov-cal-row" data-cal-id="'+esc(e.id)+'">'+
-    '<div class="ov-cal-release"><span class="ov-cal-ccy">'+calendarFlag(e.ccy)+' '+esc(e.ccy||"—")+'</span><strong title="'+esc(e.name||"Release")+'">'+esc(e.name||"Release")+'</strong><i class="ov-cal-impact '+calendarImpactClass(e.impact)+'"></i></div>'+
+    '<div class="ov-cal-release"><span class="ov-cal-ccy">'+flagImg(e.ccy)+' '+esc(e.ccy||"—")+'</span><strong title="'+esc(e.name||"Release")+'">'+esc(e.name||"Release")+'</strong><i class="ov-cal-impact '+calendarImpactClass(e.impact)+'"></i></div>'+
     '<div class="ov-cal-value '+tone+'">'+actual+'</div>'+
     '<div class="ov-cal-value '+(forecast==="—"?"neutral":"neutral")+'">'+forecast+'</div>'+ (unlockedLocally?'<button class="ov-cal-del" data-cal-delete="'+esc(e.id)+'" title="Remove from recent tape">×</button>':'')+
   '</div>';
