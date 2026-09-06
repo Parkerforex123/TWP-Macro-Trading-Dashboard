@@ -5267,16 +5267,21 @@ function alignmentFor(ccy){
     (d[sector]||[]).forEach(function(ind){ vote(biasVal(ind.bias), Number(ind.weight)||0); });
   });
   var y2s=y2Calc(ccy).score;
-  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 10);
-  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 10);
-  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 10);
+  // Vote weights below are kept proportional to the current composite hierarchy
+  // (Fundamentals 55% + Yield 20% + CB Stance 10% + COT 8% + Risk 5% + Seasonality 2%),
+  // matching pairAlignmentFor. Yield=20, COT split 4+4=8 (net position + weekly change), Risk=5.
+  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 20);
+  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 4);
+  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 4);
   // Central-bank stance is a full 10-point alignment vote, matching its 10%
   // contribution to the composite score. HIKE agrees with a bullish composite;
   // CUT agrees with a bearish composite; HOLD contributes no directional vote.
   var cbAlign=cbStanceScore(ccy);
   vote(cbAlign>0?1:(cbAlign<0?-1:0), 10);
-  vote(seasonalitySign(d), 2);
-  vote(riskTermFor(ccy), 3);
+  var seasVal=seasonalitySign(d);
+  vote(seasVal>0?1:(seasVal<0?-1:0), 2);
+  var riskVal=riskTermFor(ccy);
+  vote(riskVal>0?1:(riskVal<0?-1:0), 5);
   if(dirSign===0 || totalW===0) return null;
   return {pct:Math.round(agreeW/totalW*100), dir:dirSign>0?"Bullish":"Bearish"};
 }
@@ -6927,9 +6932,13 @@ function trendDirectionFromLatest(key, liveVal){
 function ccyTrend30d(ccy, liveScore){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][ccy]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null,label:"No trend history yet"};
-  var days=trendDaysForKey(ccy), first=Number(DAILY[days[0]][ccy]), delta=Math.round(liveScore-first), dir=trendDirectionFromLatest(ccy,liveScore);
-  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
-  var label=dir==="up"?"Score rising vs last logged observation":dir==="down"?"Score falling vs last logged observation":"Score unchanged vs last logged observation";
+  var days=trendDaysForKey(ccy), first=Number(DAILY[days[0]][ccy]), delta=Math.round(liveScore-first);
+  // The arrow must describe the SAME comparison as the delta number shown next to it (today
+  // vs the start of this window) -- deriving it from trendDirectionFromLatest (today vs only
+  // yesterday) answers a different question and can point the opposite way from a delta
+  // that's clearly positive or negative over the full window.
+  var dir=delta>0?"up":delta<0?"down":"flat";
+  var label=dir==="up"?"Score up vs "+TREND_WINDOW_DAYS+"d ago":dir==="down"?"Score down vs "+TREND_WINDOW_DAYS+"d ago":"Score unchanged vs "+TREND_WINDOW_DAYS+"d ago";
   return {dir:dir,delta:delta,label:label};
 }
 function ccyTrendMarker(ccy, liveScore){
@@ -6965,8 +6974,8 @@ function fillOverviewRows(scores){
 function componentTrend30d(key, liveVal){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined; }).sort();
   if(!allDays.length) return {dir:"flat",delta:null};
-  var days=trendDaysForKey(key), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first), dir=trendDirectionFromLatest(key,liveVal);
-  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
+  var days=trendDaysForKey(key), first=Number(DAILY[days[0]][key]), delta=Math.round(liveVal-first);
+  var dir=delta>0?"up":delta<0?"down":"flat";
   return {dir:dir,delta:delta};
 }
 function componentTrendMarker(key, liveVal){
@@ -7782,9 +7791,9 @@ function pairTrend30d(pair){
   // Use the exact live Pair Ranking score, including pair-level COT treatment.
   var live=liveValueForTrendKey(pair);
   if(!Number.isFinite(live)) live=Number(DAILY[days[days.length-1]][pair]);
-  var delta=Math.round(live-first), dir=trendDirectionFromLatest(pair,live);
-  if(!dir) dir=delta>1?"up":delta<-1?"down":"flat";
-  var label=dir==="up"?"Score rising vs last logged observation":dir==="down"?"Score falling vs last logged observation":"Score unchanged vs last logged observation";
+  var delta=Math.round(live-first);
+  var dir=delta>0?"up":delta<0?"down":"flat";
+  var label=dir==="up"?"Score up vs "+TREND_WINDOW_DAYS+"d ago":dir==="down"?"Score down vs "+TREND_WINDOW_DAYS+"d ago":"Score unchanged vs "+TREND_WINDOW_DAYS+"d ago";
   return {dir:dir,delta:delta,label:label};
 }
 function pillarBias(score){
@@ -8008,7 +8017,6 @@ function bigChart(pair, rangeSel){
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
-  var trendDir=live==null ? null : trendDirectionFromLatest(pair,live);
   var liveScoreForColor=live==null ? Number(vals[vals.length-1]) : Number(live);
   var col = liveScoreForColor>=8 ? "var(--bullish)" : liveScoreForColor<=-8 ? "var(--bearish)" : "var(--text-faint)";
   var colStrong = col;
