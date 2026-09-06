@@ -1581,7 +1581,7 @@ body.black, html.black{
 #tab-overview td,#tab-raw td,#tab-detail td,#tab-pairs td,#tab-yield2y td,#tab-risk td,
 #tab-overview .strength-ccy,#tab-overview .strength-score,#tab-overview .strength-bias,
 #tab-risk .strength-ccy,#tab-risk .strength-score,#tab-risk .strength-bias,
-#tab-detail .stat-row,#tab-detail .info-item .v,
+#tab-detail .info-item .v,
 #tab-raw .ind-link,#tab-raw .ind-name,#tab-raw .ind-num,#tab-raw .ind-txt,#tab-raw .surprise,#tab-raw .bias-select,#tab-raw .bias-chip-text,
 #tab-pairs .pair-table .pair-score,#tab-pairs .pair-table .pair-factor,#tab-pairs .pair-table .pair-bias-single,
 #tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,#tab-pairs .pair-table .ccy-name,
@@ -1594,12 +1594,24 @@ body.black, html.black{
   font-weight:600!important;
   letter-spacing:0!important;
 }
+#tab-detail .stat-row{
+  font-family:var(--ui-font)!important;
+  font-size:var(--ui-size)!important;
+  font-weight:400!important;
+  letter-spacing:0!important;
+}
 
 /* Table headers are the same size across all views; only weight/letter-spacing differentiates them. */
-#tab-overview th,#tab-raw th,#tab-detail th,#tab-pairs th,#tab-yield2y th,#tab-risk th{
+#tab-overview th,#tab-raw th,#tab-pairs th,#tab-yield2y th,#tab-risk th{
   font-family:var(--ui-font)!important;
   font-size:var(--ui-head-size)!important;
   font-weight:700!important;
+  letter-spacing:.55px!important;
+}
+#tab-detail th{
+  font-family:var(--ui-font)!important;
+  font-size:12.5px!important;
+  font-weight:400!important;
   letter-spacing:.55px!important;
 }
 
@@ -9834,16 +9846,20 @@ body.black .rail, body.ash .rail{
 #tab-pairs table.pair-table{width:100%!important;min-width:0!important;table-layout:fixed!important;}
 #tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:3.7%!important;}
 #tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:9.2%!important;}
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:4.4%!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:7.5%!important;}
-#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:10%!important;}
-#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:10%!important;}
-#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:9.4%!important;}
-#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:9.4%!important;}
-#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:10%!important;}
-#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:7.5%!important;}
-#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:9.4%!important;}
-#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:9.4%!important;}
+#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:3.4%!important;}
+#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:4.5%!important;}
+/* Columns 5-12 (Bias, Fundamentals, Yield Bias, CB Stance, Net Position, WoW Δ, Seasonality,
+   Risk Sentiment) all render via pairBiasMarkup(), so any of them can show the two-word
+   "Very Bullish"/"Very Bearish" stack -- widened by 0.5% each, borrowed from Score/Trend above,
+   so that stack stops clipping under text-overflow:ellipsis. */
+#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:10.5%!important;}
+#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:10.5%!important;}
+#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:9.9%!important;}
+#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:9.9%!important;}
+#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:10.5%!important;}
+#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8%!important;}
+#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:9.9%!important;}
+#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:9.9%!important;}
 #tab-pairs table.pair-table td{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;padding-left:8px!important;padding-right:8px!important;}
 #tab-pairs table.pair-table th{white-space:normal!important;line-height:1.25!important;padding-left:8px!important;padding-right:8px!important;word-break:normal!important;}
 /* Give each value a touch more breathing room from its neighbor's border,
@@ -10883,4 +10899,19 @@ html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
   html #tab-pairs .pair-table td.ccy-name,
   html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{font-size:11.5px!important;font-weight:500!important;}
 }
+</style>
+
+<style id="cot-table-restore-readable-size">
+/* The "COT Positioning" table (left card on the COT tab) had already been bumped to a
+   readable size by an earlier patch (id="cot-readable-font-final": th 11px, td 14px,
+   .cot-crowd 12px) -- but a LATER patch (id="cot-netoi-final-fix", further down the file)
+   quietly shrank exactly those same three properties back down again (th 9.5px, td 11.5px,
+   .cot-crowd 10.5px) while only meaning to touch column widths/padding/alignment. That's
+   the actual cause of the table looking noticeably smaller than the rest of the dashboard.
+   Restoring the readable values here, at the very end of the file, so this wins for good.
+   Only font-size is touched -- the column widths/padding/alignment from that later patch
+   are left exactly as they are. */
+#tab-cot .cot-table th{font-size:11px!important;}
+#tab-cot .cot-table td{font-size:14px!important;}
+#tab-cot .cot-crowd{font-size:12px!important;}
 </style>
