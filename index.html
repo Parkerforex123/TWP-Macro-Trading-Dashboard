@@ -202,7 +202,7 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
 .pair-table .trend-cell{min-height:26px!important;}
 .pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-family:'Space Grotesk',sans-serif!important;text-transform:uppercase!important;letter-spacing:.3px;}
 .pair-table th:nth-child(10),.pair-table td:nth-child(10){text-align:center!important;}
-/* 1D Δ column -- its own cell, sized to match the Score column font so it
+/* 14D Δ column -- its own cell, sized to match the Score column font so it
    never reads as a second, smaller number crammed onto the pair name line. */
 .pair-table .day-delta{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
 .pair-table .day-delta-up{color:var(--bullish-strong)!important;}
@@ -7449,33 +7449,40 @@ function filterDaysByRange(days, range){
   var cutoffKey = cutoff.toISOString().slice(0,10);
   return days.filter(function(d){ return d>=cutoffKey; });
 }
-// Quick "since your last log" pulse, sitting right next to the pair name -- different from the
+// "14 calendar days ago" pulse, sitting right next to the pair name -- different from the
 // Trend column (which looks back up to 90 days) and from Delta WoW (which is COT positioning,
-// not score). This compares live score to the single most recent logged day before today, so if
-// you recalculate daily it reads as a same-day-to-yesterday move.
-function lastLoggedDelta(key, liveVal){
+// not score). This is calendar-day anchored (like the week/month lookbacks elsewhere), NOT a
+// fixed count of logged observations: it finds the 14th calendar day back from today, then
+// compares the live score to the most recent day you actually logged on or before that date.
+// That way a gap in your logging (a skipped weekend, a missed day) never silently turns this
+// into a 12-day or 16-day comparison -- it always anchors to the real 14-day calendar mark.
+function last14DayDelta(key, liveVal){
   var todayKey=new Date().toISOString().slice(0,10);
-  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined && dt!==todayKey; }).sort();
-  if(!allDays.length) return {dir:"flat",delta:null,day:null};
-  var prevDay=allDays[allDays.length-1];
-  var delta=Math.round(liveVal-Number(DAILY[prevDay][key]));
-  if(delta>0) return {dir:"up",delta:delta,day:prevDay};
-  if(delta<0) return {dir:"down",delta:delta,day:prevDay};
-  return {dir:"flat",delta:delta,day:prevDay};
+  var cutoff=new Date(todayKey+'T00:00:00Z');
+  cutoff.setUTCDate(cutoff.getUTCDate()-14);
+  var cutoffKey=cutoff.toISOString().slice(0,10);
+  var priorDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined && dt!==todayKey && dt<=cutoffKey; }).sort();
+  if(!priorDays.length) return {dir:"flat",delta:null,day:null};
+  var anchorDay=priorDays[priorDays.length-1]; // closest logged day on/before the 14-day-ago mark
+  var delta=Math.round(liveVal-Number(DAILY[anchorDay][key]));
+  if(delta>0) return {dir:"up",delta:delta,day:anchorDay};
+  if(delta<0) return {dir:"down",delta:delta,day:anchorDay};
+  return {dir:"flat",delta:delta,day:anchorDay};
 }
-// Standalone "1D Δ" column -- its own cell to the left of the pair flags,
+// Standalone "14D Δ" column -- its own cell to the left of the pair flags,
 // sized to match the Score column so it never reads as clutter mixed into
-// the pair name line. Shows "0" (not a dash) when nothing moved since the
-// last log, and a plain dash only when there's no prior logged day yet.
+// the pair name line. Shows "0" (not a dash) when the score is unchanged over
+// the 14-day window, and a plain dash only when you don't yet have a logged
+// day at least 14 calendar days back to compare against.
 function dailyChangeCell(key, liveVal){
-  var t=lastLoggedDelta(key, liveVal);
+  var t=last14DayDelta(key, liveVal);
   if(t.delta==null){
-    return '<span class="mono day-delta day-delta-flat" title="No prior logged day to compare yet">&mdash;</span>';
+    return '<span class="mono day-delta day-delta-flat" title="Need a logged day at least 14 calendar days back to compare yet">&mdash;</span>';
   }
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
   var cls=t.dir==="up"?"day-delta-up":(t.dir==="down"?"day-delta-down":"day-delta-flat");
   var deltaTxt=(t.delta>0?"+":"")+t.delta;
-  return '<span class="mono day-delta '+cls+'" title="Change vs your last logged recalculation ('+t.day+')">'+symbol+' '+deltaTxt+'</span>';
+  return '<span class="mono day-delta '+cls+'" title="Change vs score logged on '+t.day+' (14 calendar days ago)">'+symbol+' '+deltaTxt+'</span>';
 }
 function pairTrend30d(pair){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
@@ -7544,8 +7551,8 @@ function sparkline(pair){
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
-  // Color follows the pair's overall score, not the most recent 1-day tick (that's what
-  // the separate "1D Δ" column is for). A deeply bearish score that ticked up today should
+  // Color follows the pair's overall score, not the most recent 14-day tick (that's what
+  // the separate "14D Δ" column is for). A deeply bearish score that ticked up today should
   // still read red here, not flip green because of one day's move.
   var scoreForColor = live==null ? vals[vals.length-1] : live;
   var col = scoreForColor>=15 ? "var(--bullish)" : scoreForColor<=-15 ? "var(--bearish)" : "var(--text-faint)";
@@ -7970,7 +7977,7 @@ function renderPairs(){
     var cotDxNote=(p.base==='USD'||p.quote==='USD')?' title="USD leg uses ICE Dollar Index (DX) COT data as a proxy — not a pure single-currency future."':'';
     var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
     rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
-      '<td class="day-delta-cell" data-label="1D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
+      '<td class="day-delta-cell" data-label="14D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td class="ccy-name" data-label="Pair"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
       '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
       '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span></div></td>'+
@@ -8038,7 +8045,7 @@ function renderPairs(){
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
       '<div class="pair-search-wrap"><div style="position:relative;flex:1;min-width:0;"><span class="pair-search-icon">⌕</span><input id="pairSearchInput" class="pair-search" type="search" autocomplete="off" spellcheck="false" value="'+esc(pairSearchTerm)+'" placeholder="Search pair e.g. GBPUSD" aria-label="Search pair"><button id="pairSearchClear" class="pair-search-clear" type="button" aria-label="Clear pair search">&times;</button></div><span id="pairSearchCount" class="pair-search-count"></span></div>'+
       '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>1D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>14D &Delta;</th><th>Pair</th><th>Score</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     '';
   document.getElementById("tab-pairs").innerHTML=html;
