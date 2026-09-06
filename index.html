@@ -10858,3 +10858,29 @@ body,html{background:var(--bg);}
   #tab-overview .ov-macro-trend-spark{width:104px!important;height:28px!important;display:block!important;overflow:hidden!important;}
 }
 </style>
+
+<style id="pair-ranking-name-bias-match-final">
+/* Placed last on purpose, AND bumped to a higher specificity than every earlier
+   rule touching this element (added the "html" tag to the selector), so this wins
+   outright rather than relying on being last in a tie. ONLY the currency pair name
+   (e.g. "EURUSD") is touched -- matched to the Bullish/Bearish/Neutral bias label's
+   own existing, untouched font. The bias/bullish styling itself is NOT modified
+   anywhere in this block.
+   Also sets it on the inner .pair-name-wrap span directly, not just relying on
+   inheritance from the parent <td>, to remove any doubt. */
+html #tab-pairs .pair-table td.ccy-name,
+html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:13px!important;
+  font-weight:500!important;
+  letter-spacing:0!important;
+  text-transform:uppercase!important;
+}
+@media(max-width:700px){
+  /* Mobile bias/bullish text drops to 11.5px at this breakpoint (see the two
+     @media(max-width:700px) blocks above) -- matching the pair name to that,
+     same reasoning as the desktop match above. */
+  html #tab-pairs .pair-table td.ccy-name,
+  html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{font-size:11.5px!important;font-weight:500!important;}
+}
+</style>
