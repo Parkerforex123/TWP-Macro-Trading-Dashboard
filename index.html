@@ -5263,8 +5263,12 @@ function alignmentFor(ccy){
     totalW+=weight;
     if(dirSign!==0 && sign===dirSign) agreeW+=weight;
   }
+  // Use the SAME per-indicator signal that actually drives the score (effectiveIndicatorBias:
+  // actual-vs-forecast direction when a real surprise exists, the manual Bias label only as a
+  // fallback when actual==forecast or either is missing) -- not the raw Bias label alone, which
+  // can silently disagree with what's driving the score whenever a numeric surprise is present.
   ["growth","inflation","labour"].forEach(function(sector){
-    (d[sector]||[]).forEach(function(ind){ vote(biasVal(ind.bias), Number(ind.weight)||0); });
+    (d[sector]||[]).forEach(function(ind){ if(indicatorIsUsable(ind)) vote(effectiveIndicatorBias(ind), Number(ind.weight)||0); });
   });
   var y2s=y2Calc(ccy).score;
   // Vote weights below are kept proportional to the current composite hierarchy
@@ -5544,7 +5548,7 @@ function pairAlignmentFor(base, quote, score){
     if(sign===dir) agree += Number(weight);
   }
   function indicatorSign(ind){
-    return ind && ind.bias==='Bullish' ? 1 : ind && ind.bias==='Bearish' ? -1 : 0;
+    return effectiveIndicatorBias(ind);
   }
   function pairIndicatorSign(ccy, ind){
     var sign=indicatorSign(ind);
@@ -5557,6 +5561,7 @@ function pairAlignmentFor(base, quote, score){
     var d=DATA[ccy]||{};
     ['growth','inflation','labour'].forEach(function(group){
       (d[group]||[]).forEach(function(ind){
+        if(!indicatorIsUsable(ind)) return;
         var w=Math.abs(Number(ind.weight)||0), sign=pairIndicatorSign(ccy,ind);
         if(!w || !sign) return;
         fundWeightSum += w;
