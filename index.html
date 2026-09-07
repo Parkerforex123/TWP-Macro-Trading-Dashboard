@@ -8446,7 +8446,7 @@ function renderPairs(){
     renderPairs();
     var saved=await saveDataNow();
     updateStatus(saved
-      ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history unchanged'))
+      ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history refreshed'))
       : (isFirstSignal ? ('Signal calculated · local copy queued for cloud save') : ('Live recalculated · cloud save queued')),
       saved ? (isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)') : 'var(--amber)');
   }; }
