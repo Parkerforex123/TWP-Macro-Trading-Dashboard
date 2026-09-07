@@ -7863,7 +7863,7 @@ function sparkline(pair){
     var v=Number(vals[i]);
     var isLive=i===liveIdx;
     var label=(isLive?'Live (today)':String(dt))+" · Score "+fmt(v)+" · "+pairBandLabel(v);
-    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+    return '<circle class="pair-trend-hit-pt" cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join("");
   var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="2.6" fill="var(--panel)" stroke="'+col+'" stroke-width="1.6" pointer-events="none"/>' : '';
   return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
@@ -7921,7 +7921,10 @@ function updatePairTrendCrosshair(svg, idx){
   var pad=svg.classList.contains('pair-big-trend')?30:3;
   var x=pad+(idx/(days.length-1))*(vbW-2*pad);
   // Use the actual point's rendered screen position so the dot sits exactly on the plotted curve.
-  var hit=svg.querySelectorAll('circle:not(.pair-trend-hover-dot)');
+  // Query the per-day hit-circles specifically -- the live "today" ring is also an unclassed
+  // circle drawn earlier in the SVG, so a broad ":not(.hover-dot)" selector used to pick it up
+  // as an extra entry and shift every day's index off by one.
+  var hit=svg.querySelectorAll('.pair-trend-hit-pt');
   if(hit[idx]){
     x=parseFloat(hit[idx].getAttribute('cx'))||x;
     var y=parseFloat(hit[idx].getAttribute('cy'))||0;
@@ -7976,7 +7979,7 @@ function bindBigPairTrendHover(){
       // inside the viewBox, so using the full element width was shifting the picked
       // date away from wherever the mouse visually sat on the line (worst near the
       // edges -- e.g. hovering the 30th would pick the 29th).
-      var hit=el.querySelectorAll('circle:not(.pair-trend-hover-dot)');
+      var hit=el.querySelectorAll('.pair-trend-hit-pt');
       var ratio;
       if(hit.length>=2){
         var vb=el.viewBox && el.viewBox.baseVal ? el.viewBox.baseVal : {width:620};
@@ -8047,7 +8050,7 @@ function bigChart(pair, rangeSel){
   var hitPts=days.map(function(dt,i){
     var v=Number(vals[i]);
     var label=(i===liveIdx?'Live (today)':String(dt))+' · Score '+fmt(v)+' · '+pairBandLabel(v);
-    return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
+    return '<circle class="pair-trend-hit-pt" cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join('');
   // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
   // "today, live" rather than another logged day.
