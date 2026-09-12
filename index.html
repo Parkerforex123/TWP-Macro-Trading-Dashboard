@@ -12,30 +12,30 @@
 :root{
   --bg:#eef0f3; --panel:#ffffff; --panel2:#f4f5f7; --panel3:#e9ebef; --border:#d7dae0;
   --text:#181b22; --text-dim:#565e6d; --text-faint:#8991a0;
-  --bullish:#089981; --bullish-strong:#089981; --bearish:#f23645; --bearish-strong:#f23645;
-  --bullish-lean:#78b995; --bearish-lean:#b87980;
-  --bullish-mild:#067765; --bearish-mild:#bd2a36; --pill-neutral-bg:#e2e4e8;
+  --bullish:#22c98b; --bullish-strong:#22c98b; --bearish:#f04455; --bearish-strong:#f04455;
+  --bullish-lean:#60ab8a; --bearish-lean:#af545f;
+  --bullish-mild:#16815a; --bearish-mild:#7c1e27; --pill-neutral-bg:#e2e4e8;
   --neutral:#89919d; --amber:#c69a3a; --radius:8px;
 }
 body.ash, html.ash{
-  --bg:#151817; --panel:#1c211f; --panel2:#232925; --panel3:#2a302c; --border:#343c37;
+  --bg:#171717; --panel:#1f1f1f; --panel2:#262626; --panel3:#2d2d2d; --border:#343c37;
   --text:#e9ebf1; --text-dim:#8b93a8; --text-faint:#5c6478;
-  --bullish:#089981; --bullish-strong:#089981; --bearish:#f23645; --bearish-strong:#f23645;
-  --bullish-lean:#5d8d73; --bearish-lean:#8f5b62;
-  --bullish-mild:#04493e; --bearish-mild:#741a21; --pill-neutral-bg:#242925;
-  --neutral:#6f7772; --amber:#c85b16;
+  --bullish:#22c98b; --bullish-strong:#22c98b; --bearish:#f04455; --bearish-strong:#f04455;
+  --bullish-lean:#60ab8a; --bearish-lean:#af545f;
+  --bullish-mild:#16815a; --bearish-mild:#7c1e27; --pill-neutral-bg:#262626;
+  --neutral:#6f7772; --amber:#fa660f;
 }
 body.black, html.black{
-  --bg:#080a08; --panel:#10130f; --panel2:#151815; --panel3:#1b1f19; --border:#2b322a;
+  --bg:#090909; --panel:#111111; --panel2:#161616; --panel3:#1c1c1c; --border:#2b322a;
   --text:#eef2ee; --text-dim:#aeb7b0; --text-faint:#707a74;
-  --bullish:#089981; --bullish-strong:#089981; --bearish:#f23645; --bearish-strong:#f23645;
-  --bullish-lean:#5d8d73; --bearish-lean:#8f5b62;
-  --bullish-mild:#04493e; --bearish-mild:#741a21; --pill-neutral-bg:#1a1e18;
-  --neutral:#6f7772; --amber:#c85b16;
+  --bullish:#22c98b; --bullish-strong:#22c98b; --bearish:#f04455; --bearish-strong:#f04455;
+  --bullish-lean:#60ab8a; --bearish-lean:#af545f;
+  --bullish-mild:#16815a; --bearish-mild:#7c1e27; --pill-neutral-bg:#1b1b1b;
+  --neutral:#6f7772; --amber:#fa660f;
 }
 body.ash, body.black, html.ash, html.black{ --dark:1; }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100%;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-variant-numeric:tabular-nums;}
 html{min-height:100vh;min-height:100dvh;}
 body{min-height:100vh;min-height:100dvh;transition:background .15s;overscroll-behavior-y:none;}
 .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
@@ -128,16 +128,16 @@ body.ash tr.rowhover:hover td, body.black tr.rowhover:hover td{filter:brightness
 .ccy-name{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.5px;}
 .legend-line{font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.5;}
 
-.chip{display:inline-block;padding:5px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.3px;}
-.chip-bull{background:rgba(53,185,106,.14);color:var(--bullish-strong);}
-.chip-bull.strong{background:var(--bullish);color:#fff;}
+.chip{display:inline-block;padding:4px 11px;border-radius:6px;font-size:11px;font-weight:800;letter-spacing:.3px;background:color-mix(in srgb, currentColor 10%, transparent);border:1.5px solid color-mix(in srgb, currentColor 50%, transparent);}
+.chip-bull{color:var(--bullish-strong);}
+.chip-bull.strong{color:var(--bullish-strong);font-weight:900;background:color-mix(in srgb, currentColor 16%, transparent);}
 .chip-bull.lean{background:rgba(53,185,106,.10);color:var(--text-dim);border:1px solid rgba(70,170,95,.32);}
-.chip-bear{background:rgba(217,87,87,.13);color:var(--bearish-strong);}
-.chip-bear.strong{background:var(--bearish);color:#fff;}
+.chip-bear{color:var(--bearish-strong);}
+.chip-bear.strong{color:var(--bearish-strong);font-weight:900;background:color-mix(in srgb, currentColor 16%, transparent);}
 .chip-bear.lean{background:rgba(217,87,87,.10);color:var(--text-dim);border:1px solid rgba(224,69,63,.3);}
-.chip-neu{background:rgba(139,147,163,.18);color:var(--text-dim);}
-body.ash .chip-bull.strong, body.black .chip-bull.strong{background:rgba(129,199,132,.22);color:var(--bullish-strong);box-shadow:0 0 0 1px rgba(53,185,106,.4) inset;}
-body.ash .chip-bear.strong, body.black .chip-bear.strong{background:rgba(217,83,95,.22);color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(217,87,87,.4) inset;}
+.chip-neu{background:rgba(139,147,163,.10);color:var(--text-dim);border-color:var(--border);}
+body.ash .chip-bull.strong, body.black .chip-bull.strong{color:var(--bullish-strong);background:color-mix(in srgb, currentColor 16%, transparent);}
+body.ash .chip-bear.strong, body.black .chip-bear.strong{color:var(--bearish-strong);background:color-mix(in srgb, currentColor 16%, transparent);}
 body.ash .chip-bull.lean, body.black .chip-bull.lean{background:rgba(53,185,106,.08);color:var(--text-dim);border-color:rgba(53,185,106,.3);}
 body.ash .chip-bear.lean, body.black .chip-bear.lean{background:rgba(217,87,87,.08);color:var(--text-dim);border-color:rgba(217,87,87,.3);}
 
@@ -145,7 +145,7 @@ body.ash .chip-bear.lean, body.black .chip-bear.lean{background:rgba(217,87,87,.
 .cell-strong{background:rgba(47,127,224,.28);color:var(--bullish-strong);font-weight:600;}
 .cell-neutral{background:transparent;color:var(--text-dim);}
 body.ash .cell-neutral, body.black .cell-neutral{background:rgba(255,255,255,.022);}
-.cell-weak{background:rgba(217,83,95,.28);color:var(--bearish-strong);font-weight:600;}
+.cell-weak{background:rgba(240,68,85,.28);color:var(--bearish-strong);font-weight:600;}
 .cell-vweak{background:var(--bearish);color:#fff;font-weight:700;}
 body.ash .cell-vstrong, body.black .cell-vstrong{color:#06131f;}
 body.ash .cell-vweak, body.black .cell-vweak{color:#2a060a;}
@@ -173,7 +173,7 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .rate-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .rate-line input, .rate-line select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
 .move-select.HIKE{color:var(--bullish-strong);background:rgba(47,127,224,.12);border-color:var(--bullish);}
-.move-select.CUT{color:var(--bearish-strong);background:rgba(217,83,95,.12);border-color:var(--bearish);}
+.move-select.CUT{color:var(--bearish-strong);background:rgba(240,68,85,.12);border-color:var(--bearish);}
 .move-select.HOLD{color:var(--text-dim);}
 .conv-select.High{color:var(--amber);font-weight:700;}
 .conv-select.Medium{color:var(--text-dim);}
@@ -317,10 +317,10 @@ th{font-size:12px;}
 #tab-pairs .pair-row.pair-lean-bull td{background:rgba(129,199,132,.12);color:var(--text);}
 #tab-pairs .pair-row.pair-neutral-pos td{background:rgba(129,199,132,.05);color:var(--text);}
 #tab-pairs .pair-row.pair-neutral-zero td{background:rgba(129,199,132,.022);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-neg td{background:rgba(217,83,95,.05);color:var(--text);}
-#tab-pairs .pair-row.pair-lean-bear td{background:rgba(217,83,95,.12);color:var(--text);}
-#tab-pairs .pair-row.pair-bear td{background:rgba(217,83,95,.20);color:var(--text);}
-#tab-pairs .pair-row.pair-vbear td{background:rgba(217,83,95,.28);color:var(--text);}
+#tab-pairs .pair-row.pair-neutral-neg td{background:rgba(240,68,85,.05);color:var(--text);}
+#tab-pairs .pair-row.pair-lean-bear td{background:rgba(240,68,85,.12);color:var(--text);}
+#tab-pairs .pair-row.pair-bear td{background:rgba(240,68,85,.20);color:var(--text);}
+#tab-pairs .pair-row.pair-vbear td{background:rgba(240,68,85,.28);color:var(--text);}
 
 #tab-pairs .pair-row.pair-vbull td,#tab-pairs .pair-row.pair-bull td,#tab-pairs .pair-row.pair-lean-bull td,#tab-pairs .pair-row.pair-neutral-pos td,#tab-pairs .pair-row.pair-neutral-zero td,#tab-pairs .pair-row.pair-neutral-neg td,#tab-pairs .pair-row.pair-lean-bear td,#tab-pairs .pair-row.pair-bear td,#tab-pairs .pair-row.pair-vbear td{background:transparent;color:var(--text);}
 /* Keep the rank, score and trend readable over the heatmap. */
@@ -357,6 +357,12 @@ th{font-size:12px;}
 .range-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .range-btn:hover{color:var(--text);}
 .range-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+/* Trade Scanner's filter row reuses the same .range-btn markup as Pair Ranking's
+   filter row, but had no scanner-scoped override, so it fell back to the solid
+   global .active fill above. Give it the same transparent/ghost active state
+   Pair Ranking already has, instead of a solid block. */
+#tab-scanner .range-btn{background:rgba(0,0,0,.18);border:1px solid color-mix(in srgb, var(--amber) 40%, transparent);color:var(--text-dim);border-radius:7px;padding:4px 10px;}
+#tab-scanner .range-btn.active{background:color-mix(in srgb, var(--amber) 16%, transparent);border-color:var(--amber);color:var(--amber);}
 .srange-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .srange-btn:hover{color:var(--text);}
 .srange-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
@@ -435,8 +441,8 @@ th{font-size:12px;}
 #tab-pairs .yield-vbull{background:rgba(129,199,132,.16);color:var(--bullish-strong);}
 #tab-pairs .yield-bull{background:rgba(129,199,132,.09);color:var(--bullish-strong);}
 #tab-pairs .yield-neutral{background:rgba(255,255,255,.035);color:var(--text-dim);}
-#tab-pairs .yield-bear{background:rgba(217,83,95,.09);color:var(--bearish-strong);}
-#tab-pairs .yield-vbear{background:rgba(217,83,95,.16);color:var(--bearish-strong);}
+#tab-pairs .yield-bear{background:rgba(240,68,85,.09);color:var(--bearish-strong);}
+#tab-pairs .yield-vbear{background:rgba(240,68,85,.16);color:var(--bearish-strong);}
 #tab-pairs .pair-factor{font-family:'IBM Plex Mono',monospace;font-weight:700;}
 #tab-pairs .table-scroll table{min-width:1080px;}
 
@@ -447,9 +453,9 @@ th{font-size:12px;}
 
 /* V13 visual tightening */
 body.ash .brand, body.black .brand, html.ash .brand, html.black .brand{border-color:#c85b16;}
-body.ash .tab-btn.active, body.black .tab-btn.active{border-left-color:#c85b16;background:#171b16;}
-body.ash .ccy-pill.active, body.black .ccy-pill.active{border-color:#c85b16;background:#171b16;}
-body.ash .guidance-box, body.black .guidance-box{background:#10130f;}
+body.ash .tab-btn.active, body.black .tab-btn.active{border-left-color:#c85b16;background:#181818;}
+body.ash .ccy-pill.active, body.black .ccy-pill.active{border-color:#c85b16;background:#181818;}
+body.ash .guidance-box, body.black .guidance-box{background:#111111;}
 body.ash .sector-block table td, body.black .sector-block table td{padding-top:2px;padding-bottom:2px;}
 body.ash .sector-title, body.black .sector-title{margin-bottom:4px;}
 </style>
@@ -607,16 +613,16 @@ td{padding:6px 8px;}
 <style id="v19-scanner-compact">
 /* V19: dense scanner treatment — preserve readable typography, compress only geometry. */
 body.black, html.black{
-  --bg:#090a09; --panel:#10110f; --panel2:#151614; --panel3:#1b1c19; --border:#292a27;
+  --bg:#090909; --panel:#101010; --panel2:#151515; --panel3:#1b1b1b; --border:#292929;
   --text:#eef1ee; --text-dim:#a5aba6; --text-faint:#6f756f;
-  --bullish:#28c978; --bullish-strong:#42df91; --bearish:#e4515d; --bearish-strong:#ff717b;
-  --bullish-lean:#69a884; --bearish-lean:#a0646a; --neutral:#747b76; --amber:#b94e12;
+  --bullish:#22c98b; --bullish-strong:#38e3a5; --bearish:#f04455; --bearish-strong:#ff707d;
+  --bullish-lean:#60ab8a; --bearish-lean:#af545f; --neutral:#747b76; --amber:#fa660f;
 }
 body.ash, html.ash{
-  --bg:#0d0f0e; --panel:#141615; --panel2:#191b1a; --panel3:#202220; --border:#2b2e2c;
+  --bg:#0e0e0e; --panel:#151515; --panel2:#1a1a1a; --panel3:#212121; --border:#2c2c2c;
   --text:#eef1ee; --text-dim:#a0a7a1; --text-faint:#6d746e;
-  --bullish:#28c978; --bullish-strong:#42df91; --bearish:#e4515d; --bearish-strong:#ff717b;
-  --bullish-lean:#69a884; --bearish-lean:#a0646a; --neutral:#747b76; --amber:#b94e12;
+  --bullish:#22c98b; --bullish-strong:#38e3a5; --bearish:#f04455; --bearish-strong:#ff707d;
+  --bullish-lean:#60ab8a; --bearish-lean:#af545f; --neutral:#747b76; --amber:#fa660f;
 }
 .content{padding:12px 16px 24px;max-width:1540px;}
 .card{padding:8px 10px;margin-bottom:6px;border-radius:7px;}
@@ -634,7 +640,8 @@ td{padding:4px 7px;}
 #tab-pairs .chip-bull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull{color:var(--bullish-strong);}
 #tab-pairs .chip-bear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear{color:var(--bearish-strong);}
 #tab-pairs .chip-neu,#tab-pairs .yield-neutral{color:var(--text-dim);}
-#tab-pairs .yield-bias-chip{min-width:0!important;padding:0!important;border:none!important;border-radius:0!important;background:transparent!important;font-size:14px;font-weight:800;display:inline!important;}
+#tab-pairs .yield-bias-chip{border:1.5px solid currentColor!important;border-radius:6px!important;background:color-mix(in srgb, currentColor 10%, transparent)!important;padding:3px 9px!important;font-size:13px;font-weight:800;display:inline-flex!important;align-items:center;justify-content:center;min-width:64px!important;}
+#tab-pairs .yield-vbull,#tab-pairs .yield-vbear{font-weight:900!important;background:color-mix(in srgb, currentColor 16%, transparent)!important;}
 #tab-pairs .pair-factor{font-size:14px;font-weight:800;}
 #tab-pairs .trend-cell{gap:6px;min-height:31px;}
 #tab-pairs .trend-cell .trend-spark{width:104px;flex:0 0 104px;}
@@ -644,8 +651,8 @@ td{padding:4px 7px;}
 #tab-pairs .pair-trend-arrow{font-size:12px;}
 #tab-pairs .pair-row td:nth-child(3){font-weight:800;font-family:'IBM Plex Mono',monospace;}
 #tab-pairs .pair-row td:nth-child(3) .mono{color:var(--amber)!important;}
-#tab-pairs .range-btn{background:rgba(185,78,18,.10);border:1px solid rgba(185,78,18,.55);color:#e07a3f;padding:5px 9px;font-size:11.5px;border-radius:4px;}
-#tab-pairs .range-btn.active{background:rgba(185,78,18,.18);border-color:#b94e12;color:#f08b50;}
+#tab-pairs .range-btn{background:color-mix(in srgb, var(--amber) 10%, transparent);border:1px solid color-mix(in srgb, var(--amber) 55%, transparent);color:var(--amber);padding:5px 9px;font-size:11.5px;border-radius:4px;}
+#tab-pairs .range-btn.active{background:color-mix(in srgb, var(--amber) 18%, transparent);border-color:var(--amber);color:var(--amber);}
 #tab-pairs table{table-layout:fixed;min-width:1080px!important;}
 #tab-pairs th,#tab-pairs td{vertical-align:middle;}
 #tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
@@ -692,7 +699,12 @@ td{padding:4px 7px;}
 <style id="v21-scanner-polish">
 /* V21: tighter scanner presentation, readable typography, deep charcoal/orange accent. */
 :root{--scanner-orange:#c85b16;}
-body.ash,html.ash,body.black,html.black{--amber:var(--scanner-orange);}
+/* Removed: body.ash/black used to overwrite --amber (#fa660f) with the duller
+   --scanner-orange above -- specifically in the dark themes people actually
+   use -- which is why amber-based elements kept rendering washed out no
+   matter what value was set elsewhere. --amber now keeps its real value from
+   :root/body.ash/body.black; --scanner-orange stays available on its own for
+   the few rules below that intentionally want the muted accent. */
 #tab-pairs .pair-row td{padding-left:6px;padding-right:6px;padding-top:5px;padding-bottom:5px;}
 #tab-pairs th,#tab-pairs td{vertical-align:middle;}
 #tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;text-align:center;}
@@ -720,8 +732,8 @@ body.ash,html.ash,body.black,html.black{--amber:var(--scanner-orange);}
 #tab-pairs .yield-bull{color:var(--bullish-strong);} #tab-pairs .yield-bear{color:var(--bearish-strong);}
 #tab-pairs .yield-vbull{color:var(--bullish-strong);} #tab-pairs .yield-vbear{color:var(--bearish-strong);} #tab-pairs .yield-neutral{color:var(--text-dim);}
 #tab-pairs .pair-selection-label{font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
-#tab-pairs .range-btn{border-color:rgba(200,91,22,.32);background:rgba(0,0,0,.18);color:var(--text-dim);}
-#tab-pairs .range-btn.active{border-color:var(--scanner-orange);background:rgba(200,91,22,.16);color:#e5a15f;}
+#tab-pairs .range-btn{border-color:color-mix(in srgb, var(--amber) 40%, transparent);background:rgba(0,0,0,.18);color:var(--text-dim);}
+#tab-pairs .range-btn.active{border-color:var(--amber);background:color-mix(in srgb, var(--amber) 16%, transparent);color:var(--amber);}
 #tab-pairs .range-switch{gap:3px;}
 #tab-pairs .trend-cell{gap:10px;align-items:center;}
 #tab-pairs .trend-spark svg{width:96px;height:24px;}
@@ -792,7 +804,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-overview .strength-row:last-child{border-bottom:none;}
 #tab-overview .strength-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);text-align:right;}
 #tab-overview .strength-ccy{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
-#tab-overview .strength-bar{height:7px;background:#0b0d0b;position:relative;overflow:hidden;border-radius:2px;}
+#tab-overview .strength-bar{height:7px;background:#0c0c0c;position:relative;overflow:hidden;border-radius:2px;}
 #tab-overview .strength-bar i{position:absolute;top:0;bottom:0;border-radius:1px;}
 #tab-overview .strength-score{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:800;text-align:right;}
 #tab-overview .strength-bias{font-size:10.5px;font-weight:700;text-align:right;white-space:nowrap;}
@@ -857,7 +869,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-raw .ss-leg-dir.up{color:var(--bullish-strong);}
 #tab-raw .ss-leg-dir.down{color:var(--bearish-strong);}
 #tab-raw .ss-leg-dir.flat{color:var(--text-faint);}
-#tab-raw .ss-chart{padding:4px 9px 8px;background:#0b0d0b;position:relative;}
+#tab-raw .ss-chart{padding:4px 9px 8px;background:#0c0c0c;position:relative;}
 #tab-raw .ss-chart svg{display:block;width:100%;height:auto;min-height:340px;}
 #tab-raw .ss-hover-area{cursor:crosshair;}
 #tab-raw .ss-vline{display:none;stroke:var(--text-faint);stroke-width:1;stroke-dasharray:4 4;opacity:.85;vector-effect:non-scaling-stroke;}
@@ -978,9 +990,25 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-pairs .pair-bias-single.bull{color:var(--bullish-strong)!important;}
 #tab-pairs .pair-bias-single.bear{color:var(--bearish-strong)!important;}
 #tab-pairs .pair-bias-single.neutral{color:var(--text-dim)!important;}
+/* Sentiment pills — ghost/outline style using currentColor, so the border and fill
+   always match this file's own bullish/bearish variables, never a separately
+   hardcoded color. "Very" states get a slightly deeper fill and bolder weight only
+   -- not a thicker border -- to keep the distinction small. */
+#tab-pairs .pair-bias-single,#tab-pairs .pair-bias-stack{
+  display:inline-flex;align-items:baseline;gap:4px;
+  padding:3px 10px;border-radius:6px;
+  background:color-mix(in srgb, currentColor 8%, transparent);
+  border:1.5px solid color-mix(in srgb, currentColor 45%, transparent);
+}
+#tab-pairs .pair-bias-single.neutral{border-color:var(--border);background:rgba(255,255,255,.03);}
+#tab-pairs .pair-bias-single.pair-bias-compact-vbull,
+#tab-pairs .pair-bias-vbull,
+#tab-pairs .pair-bias-single.pair-bias-compact-vbear,
+#tab-pairs .pair-bias-vbear{
+  font-weight:900;background:color-mix(in srgb, currentColor 14%, transparent);
+}
 #tab-pairs .pair-factor,
-#tab-pairs .chip,
-#tab-pairs .yield-bias-chip{
+#tab-pairs .chip{
   background:transparent!important;
   border:none!important;
   box-shadow:none!important;
@@ -1204,7 +1232,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-risk .risk-favors{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
 #tab-risk .risk-favor-chip{padding:5px 8px;border:1px solid var(--border);border-radius:5px;background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:800;}
 #tab-risk .risk-favor-chip.on{color:var(--bullish-strong);border-color:rgba(129,199,132,.28);}
-#tab-risk .risk-favor-chip.off{color:var(--bearish-strong);border-color:rgba(217,83,95,.28);}
+#tab-risk .risk-favor-chip.off{color:var(--bearish-strong);border-color:rgba(240,68,85,.28);}
 #tab-risk .risk-favor-chip.neu{color:var(--text-dim);}
 #tab-risk .risk-input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 #tab-risk .risk-input-box{padding:10px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;}
@@ -1239,7 +1267,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 .risk-inline-favors{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
 .risk-mini-chip{display:inline-flex;align-items:center;padding:3px 6px;border-radius:4px;background:var(--panel2);border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:800;}
 .risk-mini-chip.on{color:var(--bullish-strong);border-color:rgba(129,199,132,.25);}
-.risk-mini-chip.off{color:var(--bearish-strong);border-color:rgba(217,83,95,.25);}
+.risk-mini-chip.off{color:var(--bearish-strong);border-color:rgba(240,68,85,.25);}
 .risk-mini-chip.neu{color:var(--text-dim);}
 @media(max-width:600px){.risk-inline{grid-template-columns:1fr 1fr;}.risk-inline-favors{grid-column:1/-1;}}
 </style>
@@ -1263,7 +1291,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-risk .strength-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);text-align:right;}
 #tab-risk .strength-ccy{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
 #tab-risk .strength-ccy img{width:18px;height:13px;border-radius:2px;object-fit:cover;}
-#tab-risk .strength-bar{height:6px;background:#0b0d0b;position:relative;overflow:hidden;border-radius:2px;}
+#tab-risk .strength-bar{height:6px;background:#0c0c0c;position:relative;overflow:hidden;border-radius:2px;}
 #tab-risk .strength-bar i{position:absolute;top:0;bottom:0;border-radius:2px;}
 #tab-risk .strength-score{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:800;text-align:right;}
 #tab-risk .strength-score.strength-pos{color:var(--bullish-strong);}
@@ -1303,7 +1331,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 .risk-scale-wrap{display:grid;grid-template-columns:62px 1fr 62px;align-items:center;gap:8px;margin:4px 0 10px;}
 .risk-scale-label{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:800;letter-spacing:.5px;color:var(--text-faint);}
 .risk-scale-label.right{text-align:right;}
-.risk-scale{height:10px;background:linear-gradient(90deg,rgba(217,83,95,.24) 0%,rgba(217,83,95,.08) 38%,rgba(255,255,255,.03) 50%,rgba(129,199,132,.08) 62%,rgba(129,199,132,.24) 100%);border:1px solid var(--border);border-radius:999px;position:relative;overflow:visible;}
+.risk-scale{height:10px;background:linear-gradient(90deg,rgba(240,68,85,.24) 0%,rgba(240,68,85,.08) 38%,rgba(255,255,255,.03) 50%,rgba(129,199,132,.08) 62%,rgba(129,199,132,.24) 100%);border:1px solid var(--border);border-radius:999px;position:relative;overflow:visible;}
 .risk-scale-mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--border);}
 .risk-scale i{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 3px var(--panel);}
 .risk-page-note{font-size:10px;color:var(--text-faint);padding:0 2px 8px;}
@@ -1423,10 +1451,10 @@ body.black .card,body.ash .card{box-shadow:none;}
    table (plain and Very both) so there's no variable-resolution ambiguity left to drift. */
 #tab-pairs .pair-table .pair-bias-single.bull,
 #tab-pairs .pair-table .pair-bias-vbull .lean-word,
-#tab-pairs .pair-table .pair-bias-vbull strong{color:#42df91!important;}
+#tab-pairs .pair-table .pair-bias-vbull strong{color:#38e3a5!important;}
 #tab-pairs .pair-table .pair-bias-single.bear,
 #tab-pairs .pair-table .pair-bias-vbear .lean-word,
-#tab-pairs .pair-table .pair-bias-vbear strong{color:#ff717b!important;}
+#tab-pairs .pair-table .pair-bias-vbear strong{color:#ff707d!important;}
 /* FOUND BUG #2: columns 8-11 were force-centered by an older rule (`#tab-pairs th:nth-child(8..11){text-align:center}`).
    Centering pulls each value toward the middle of its own column -- i.e. toward the shared
    border with its neighbor -- so two adjacent centered values (e.g. Net Position "VERY BULLISH"
@@ -1577,7 +1605,7 @@ body:not(.ash):not(.black)
 #tab-yield2y .hist-spread-sub{font-size:10px;}
 #tab-yield2y .hist-spread-select{font-size:11px;font-weight:500;}
 #tab-yield2y .hist-range button{font-size:10.5px;font-weight:500;padding:6px 9px;}
-#tab-yield2y .hist-range button.active{background:rgba(45,187,120,.13);border-color:var(--bullish-strong);color:var(--bullish-strong);}
+#tab-yield2y .hist-range button.active{background:rgba(34,201,139,.13);border-color:var(--bullish-strong);color:var(--bullish-strong);}
 </style>
 
 <style id="v28-scanner-typography-system">
@@ -1602,14 +1630,14 @@ table,th,td,.card,.tab-btn,.chip,.ccy-pill,
 /* Match the scanner's stronger polarity colors rather than the muted V27 palette. */
 body.ash, html.ash,
 body.black, html.black{
-  --bullish:#2dbb78;
-  --bullish-strong:#45d792;
-  --bearish:#d9535f;
-  --bearish-strong:#ff6b76;
-  --bullish-lean:#5d8d73;
-  --bearish-lean:#8f5b62;
+  --bullish:#22c98b;
+  --bullish-strong:#38e3a5;
+  --bearish:#f04455;
+  --bearish-strong:#ff707d;
+  --bullish-lean:#60ab8a;
+  --bearish-lean:#af545f;
   --neutral:#747b76;
-  --amber:#f26a21;
+  --amber:#fa660f;
 }
 
 /* Page and navigation typography. */
@@ -1802,7 +1830,7 @@ body.black, html.black{
 </style>
 
 <style id="v29-definitive-reference-colors">
-:root{--ref-green:#22d883;--ref-green-lean:#5d8d73;--ref-red:#d9535f;--ref-red-lean:#8f5b62;--ref-ash:#747b76;--bullish:#22d883;--bullish-strong:#22d883;--bullish-lean:#5d8d73;--bearish:#d9535f;--bearish-strong:#d9535f;--bearish-lean:#8f5b62;--neutral:#747b76;}
+:root{--ref-green:#22c98b;--ref-green-lean:#60ab8a;--ref-red:#f04455;--ref-red-lean:#af545f;--ref-ash:#747b76;--bullish:#22c98b;--bullish-strong:#22c98b;--bullish-lean:#60ab8a;--bearish:#f04455;--bearish-strong:#f04455;--bearish-lean:#af545f;--neutral:#747b76;}
 /* Muted red requested for Pair Ranking only — scoped to #tab-pairs so every
    other tab (Overview, Surprise Index, Risk Sentiment, Currency Detail, COT)
    keeps the original, brighter --ref-red it had before. */
@@ -1827,10 +1855,10 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 /* Final cleanup: keep Currency Detail untouched; correct only the remaining views. */
 
 /* Leaning states: visibly lighter/more muted than their full bullish/bearish colors. */
-#tab-overview .strength-lean-pos,#tab-pairs .score-lean-bull,#tab-pairs .pair-bias-lean-bull,#tab-pairs .pair-bias-lean-bull strong,#tab-pairs .pair-bias-lean-bull .lean-word,#tab-risk .strength-lean-pos{color:#5d8d73!important;}
-#tab-overview .strength-lean-neg,#tab-pairs .score-lean-bear,#tab-pairs .pair-bias-lean-bear,#tab-pairs .pair-bias-lean-bear strong,#tab-pairs .pair-bias-lean-bear .lean-word,#tab-risk .strength-lean-neg{color:#8f5b62!important;}
-#tab-pairs .pair-score.score-lean-bull{color:#5d8d73!important;}
-#tab-pairs .pair-score.score-lean-bear{color:#8f5b62!important;}
+#tab-overview .strength-lean-pos,#tab-pairs .score-lean-bull,#tab-pairs .pair-bias-lean-bull,#tab-pairs .pair-bias-lean-bull strong,#tab-pairs .pair-bias-lean-bull .lean-word,#tab-risk .strength-lean-pos{color:#60ab8a!important;}
+#tab-overview .strength-lean-neg,#tab-pairs .score-lean-bear,#tab-pairs .pair-bias-lean-bear,#tab-pairs .pair-bias-lean-bear strong,#tab-pairs .pair-bias-lean-bear .lean-word,#tab-risk .strength-lean-neg{color:#af545f!important;}
+#tab-pairs .pair-score.score-lean-bull{color:#60ab8a!important;}
+#tab-pairs .pair-score.score-lean-bear{color:#af545f!important;}
 
 /* 2Y Yield View table: visible horizontal + vertical separators so the layout reads as a table. */
 #tab-yield2y .y2-score-table{border:1px solid var(--border)!important;}
@@ -2143,7 +2171,7 @@ body:not(.editing) #tab-detail .sector-block table th:nth-child(6),body:not(.edi
 #tab-risk .risk-page,#tab-risk .strength-card{max-width:620px!important;}
 #tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:26px 66px 150px 46px 88px!important;gap:6px!important;}
 #tab-risk .strength-bar{width:150px!important;}
-.brand-mark{color:#42df91!important;font-weight:800!important;letter-spacing:.8px!important;text-shadow:0 0 10px rgba(66,223,145,.16),0 1px 0 rgba(0,0,0,.35);}
+.brand-mark{color:#38e3a5!important;font-weight:800!important;letter-spacing:.8px!important;text-shadow:0 0 10px rgba(56,227,165,.16),0 1px 0 rgba(0,0,0,.35);}
 .lock-box button.lock-eye{background:var(--panel2)!important;border:1px solid var(--border)!important;color:var(--text-dim)!important;border-radius:4px!important;}
 .lock-box button.lock-eye:hover{border-color:var(--amber)!important;color:var(--text)!important;}
 #tab-detail .detail-grid{grid-template-columns:245px minmax(0,1fr)!important;max-width:100%!important;justify-content:stretch!important;}
@@ -2200,10 +2228,10 @@ body:not(.editing) #tab-detail .sector-block table td:nth-child(6){width:15%!imp
 /* TWP is a small brand mark, so give it a subtle terminal-like lift rather than
    changing the established green. */
 .brand-mark{
-  color:#42df91!important;
+  color:#38e3a5!important;
   font-weight:800!important;
   letter-spacing:1px!important;
-  text-shadow:0 0 8px rgba(66,223,145,.22),0 1px 0 rgba(0,0,0,.42)!important;
+  text-shadow:0 0 8px rgba(56,227,165,.22),0 1px 0 rgba(0,0,0,.42)!important;
   filter:saturate(1.06);
 }
 
@@ -2220,7 +2248,7 @@ body:not(.editing) #tab-detail .sector-block table td:nth-child(6){width:15%!imp
 <style id="v37-lock-visibility">
 body.black .lock-box button.lock-eye,html.black .lock-box button.lock-eye,
 body.ash .lock-box button.lock-eye,html.ash .lock-box button.lock-eye{
-  background:#151614!important;
+  background:#151515!important;
   border:1px solid #4a514b!important;
   color:#aeb7b0!important;
   box-shadow:0 0 0 1px rgba(255,255,255,.025) inset!important;
@@ -2256,7 +2284,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
   color:#b65310!important;
 }
 #tab-detail .guidance-box{
-  background:#0c0f0d!important;
+  background:#0d0d0d!important;
   color:#c45a12!important;
   border:1px solid #8f3f08!important;
   box-shadow:inset 0 0 0 1px rgba(182,83,16,.10), inset 0 1px 0 rgba(255,255,255,.018), 0 0 0 1px rgba(0,0,0,.25)!important;
@@ -2314,7 +2342,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 
 /* Forward guidance: keep the field open and use a deep orange scanner tone. */
 #tab-detail .guidance-box{
-  background:#0d100e!important;
+  background:#0e0e0e!important;
   color:#d06216!important;
   border:1px solid #9a430a!important;
   padding:16px 18px!important;
@@ -2406,7 +2434,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 .policy-bull,.policy-match{color:var(--bullish-strong);}
 .policy-bear,.policy-diverge{color:var(--bearish-strong);}
 .policy-neutral,.policy-watch{color:var(--text-dim);}
-.policy-diverge{border-color:rgba(217,83,95,.35)!important;}
+.policy-diverge{border-color:rgba(240,68,85,.35)!important;}
 .policy-relation{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--text-faint);}
 .policy-relation strong{font-family:'Space Grotesk',sans-serif;font-size:11px;text-align:right;}
 .policy-relation.policy-match strong{color:var(--bullish-strong);}
@@ -2918,7 +2946,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-trend{font-size:11px;font-weight:700;text-align:right;}
 #tab-overview .ov-risk-scale{display:grid;grid-template-columns:58px 1fr 58px;gap:8px;align-items:center;padding:11px 12px 7px;font-size:8.5px;color:var(--text-faint);}
 #tab-overview .ov-risk-scale span:last-child{text-align:right;}
-#tab-overview .ov-risk-scale>div{height:7px;border-radius:3px;background:linear-gradient(90deg,rgba(255,113,123,.18),var(--panel3),rgba(66,223,145,.18));position:relative;}
+#tab-overview .ov-risk-scale>div{height:7px;border-radius:3px;background:linear-gradient(90deg,rgba(255,112,125,.18),var(--panel3),rgba(56,227,165,.18));position:relative;}
 #tab-overview .ov-risk-scale i{position:absolute;top:-2px;width:11px;height:11px;border-radius:50%;transform:translateX(-50%);border:2px solid var(--panel);box-shadow:0 0 0 1px rgba(255,255,255,.12);}
 #tab-overview .ov-risk-list-head,#tab-overview .ov-risk-row{display:grid;grid-template-columns:72px 1fr 52px;gap:8px;align-items:center;}
 #tab-overview .ov-risk-list-head{padding:6px 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:8.5px;text-transform:uppercase;letter-spacing:.55px;color:var(--text-faint);}
@@ -2969,7 +2997,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-yield2y .hist-spread-select{padding:6px 8px!important;font-size:10.5px!important;background:var(--panel2)!important;}
 #tab-yield2y .hist-range{gap:3px!important;}
 #tab-yield2y .hist-range button{padding:6px 8px!important;font-size:9.5px!important;background:var(--panel2)!important;border-color:var(--border)!important;}
-#tab-yield2y .hist-range button.active{background:rgba(45,187,120,.12)!important;border-color:var(--bullish-strong)!important;color:var(--bullish-strong)!important;}
+#tab-yield2y .hist-range button.active{background:rgba(34,201,139,.12)!important;border-color:var(--bullish-strong)!important;color:var(--bullish-strong)!important;}
 #tab-yield2y .hist-spread-chart{height:335px!important;min-height:335px!important;margin-top:0!important;border:none!important;border-radius:0 0 8px 8px!important;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.018),transparent 55%),var(--panel2)!important;}
 #tab-yield2y .hist-spread-chart:after{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);opacity:.8;pointer-events:none;}
 #tab-yield2y .hist-spread-chart canvas{width:100%!important;height:100%!important;}
@@ -3016,7 +3044,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-pro-risk-market b{font-family:'IBM Plex Mono',monospace;font-size:13px;}
 #tab-overview .ov-pro-risk-meter{display:grid;grid-template-columns:65px 1fr 65px;align-items:center;gap:8px;padding:9px 14px 8px;color:var(--text-faint);font-size:9px;}
 #tab-overview .ov-pro-risk-meter span:last-child{text-align:right;}
-#tab-overview .ov-pro-risk-meter>div{height:8px;background:linear-gradient(90deg,rgba(228,81,93,.22),var(--panel3),rgba(66,223,145,.22));border-radius:4px;position:relative;}
+#tab-overview .ov-pro-risk-meter>div{height:8px;background:linear-gradient(90deg,rgba(240,68,85,.22),var(--panel3),rgba(56,227,165,.22));border-radius:4px;position:relative;}
 #tab-overview .ov-pro-risk-meter i{position:absolute;top:-2px;width:12px;height:12px;border:2px solid var(--panel);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 0 1px rgba(255,255,255,.15);}
 #tab-overview .ov-pro-risk-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,minmax(0,1fr));border-top:1px solid var(--border);min-height:0;flex:1;}
 #tab-overview .ov-pro-risk-grid .ov-risk-row{display:grid;grid-template-columns:62px 1fr 46px;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);font-size:12px;min-width:0;cursor:pointer;}
@@ -3062,7 +3090,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-leg-ccy{font-weight:800;display:flex;align-items:center;gap:4px;}
 #tab-overview .ov-csi-leg-ccy img{width:16px;height:11px;border-radius:1px;object-fit:cover;}
 #tab-overview .ov-csi-leg-dir{font-size:9px;font-weight:800;margin-left:1px;}
-#tab-overview .ov-csi-chart{flex:1;min-height:0;padding:4px 9px 0;background:#0b0d0b;}
+#tab-overview .ov-csi-chart{flex:1;min-height:0;padding:4px 9px 0;background:#0c0c0c;}
 #tab-overview .ov-csi-chart svg{display:block;width:100%;height:100%;min-height:170px;}
 #tab-overview .ov-csi-foot{font-size:9.5px;color:var(--text-faint);line-height:1.3;padding:7px 12px 8px;border-top:1px solid var(--border);}
 #tab-overview .ov-csi-empty{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;font-size:12px;color:var(--text-faint);text-align:center;}
@@ -3162,7 +3190,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-swatch{width:13px;height:3px;}
 #tab-overview .ov-csi-leg-ccy{font-weight:800;}
 #tab-overview .ov-csi-leg-ccy img{width:16px;height:11px;}
-#tab-overview .ov-csi-chart{background:#0b0d0b!important;flex:1;min-height:0;padding:4px 9px 0;}
+#tab-overview .ov-csi-chart{background:#0c0c0c!important;flex:1;min-height:0;padding:4px 9px 0;}
 #tab-overview .ov-csi-chart svg{width:100%;height:100%;min-height:170px;}
 #tab-overview .ov-csi-foot{font-size:9.5px;padding:6px 12px 7px;line-height:1.25;}
 
@@ -3311,7 +3339,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-head-note{font-size:10.5px!important;}
 #tab-overview .ov-csi-legend-row{display:flex!important;flex-wrap:wrap!important;gap:5px 13px!important;padding:7px 11px 4px!important;}
 #tab-overview .ov-csi-legend{font-family:var(--ui-font)!important;font-size:11px!important;}
-#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:3px 8px 4px!important;background:#0b0d0b!important;}
+#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:3px 8px 4px!important;background:#0c0c0c!important;}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:210px!important;}
 #tab-overview .ov-csi-vline{stroke:var(--text-faint)!important;stroke-width:1!important;stroke-dasharray:4 4!important;opacity:.9!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
@@ -3485,7 +3513,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-swatch{width:17px!important;height:3px!important;}
 #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
 #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-#tab-overview .ov-csi-chart{background:#0b0d0b!important;padding:4px 10px 6px!important;}
+#tab-overview .ov-csi-chart{background:#0c0c0c!important;padding:4px 10px 6px!important;}
 #tab-overview .ov-csi-chart svg{width:100%!important;height:100%!important;min-height:0!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.70)!important;stroke-width:1.15!important;stroke-dasharray:4 4!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
@@ -3506,12 +3534,12 @@ body{font-size:var(--twp-body-size);}
 .session-wrap{position:relative;display:inline-flex;align-items:center;z-index:120;}
 .session-trigger{appearance:none;border:1px solid #3a171b;background:#14090b;color:#ecefec;border-radius:7px;display:inline-flex;align-items:center;gap:7px;padding:6px 9px;cursor:pointer;font-family:var(--ui-font)!important;font-size:12px!important;font-weight:700!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
 .session-trigger:hover{border-color:#6a222a;background:#190b0e;}
-.session-dot{width:6px;height:6px;border-radius:50%;background:#42df91;box-shadow:0 0 0 2px rgba(66,223,145,.08);flex:0 0 auto;}
+.session-dot{width:6px;height:6px;border-radius:50%;background:#38e3a5;box-shadow:0 0 0 2px rgba(56,227,165,.08);flex:0 0 auto;}
 .session-gh{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;letter-spacing:.4px;}
 .session-gh-date{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--text-dim);margin-right:4px;}
 #ghClock{font-family:'IBM Plex Mono',monospace;font-size:12px!important;font-weight:700;color:#d7ddd8!important;white-space:nowrap;}
 .session-chevron{color:#8e9892;font-size:12px;line-height:1;transform:translateY(-1px);}
-.session-popover{position:absolute;top:calc(100% + 8px);right:0;width:360px;background:#111311;border:1px solid #3b171b;border-radius:9px;box-shadow:0 16px 34px rgba(0,0,0,.42);overflow:hidden;}
+.session-popover{position:absolute;top:calc(100% + 8px);right:0;width:360px;background:#121212;border:1px solid #3b171b;border-radius:9px;box-shadow:0 16px 34px rgba(0,0,0,.42);overflow:hidden;}
 .session-popover[hidden]{display:none;}
 .session-pop-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:#16090b;}
 .session-pop-title{font-size:12px;font-weight:800;letter-spacing:.5px;}
@@ -3522,7 +3550,7 @@ body{font-size:var(--twp-body-size);}
 .session-local{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#d7ddd8;}
 .session-hours{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#7f8882;}
 .session-state{font-size:11px;text-align:right;font-weight:700;}
-.session-state.open{color:#42df91;}.session-state.closed{color:#a9b0aa;}.session-state.soon{color:#e5a15f;}
+.session-state.open{color:#38e3a5;}.session-state.closed{color:#a9b0aa;}.session-state.soon{color:#e5a15f;}
 .session-state strong{color:inherit;font-size:11.5px;}
 @media(max-width:1149px){
   #tab-overview{height:auto!important;overflow:visible!important;}
@@ -3553,7 +3581,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-currency-row{font-size:14px!important;min-height:41px!important;padding:6px 12px!important;}
 #tab-overview .ov-rank{font-size:11px!important;}
 #tab-overview .ov-ccy{font-size:14px!important;font-weight:800!important;}
-#tab-overview .ov-bar{height:8px!important;background:#1a1e1b!important;border-radius:3px!important;}
+#tab-overview .ov-bar{height:8px!important;background:#1c1c1c!important;border-radius:3px!important;}
 #tab-overview .ov-bar .ov-zero{position:absolute;left:50%;top:-1px;bottom:-1px;width:1px;background:rgba(238,242,238,.28);z-index:2;}
 #tab-overview .ov-bar i{z-index:1!important;min-width:2px!important;border-radius:3px!important;}
 #tab-overview .ov-score{font-family:'IBM Plex Mono',monospace!important;font-size:14px!important;font-weight:800!important;text-align:right!important;}
@@ -3565,7 +3593,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-head .ov-headline{font-size:19px!important;font-weight:800!important;}
 #tab-overview .ov-csi-legend-row{min-height:42px!important;display:flex!important;align-items:center!important;gap:7px 15px!important;padding:7px 12px!important;}
 #tab-overview .ov-csi-legend{font-size:12px!important;font-weight:700!important;}
-#tab-overview .ov-csi-chart{padding:6px 8px 8px!important;background:#0b0d0b!important;}
+#tab-overview .ov-csi-chart{padding:6px 8px 8px!important;background:#0c0c0c!important;}
 #tab-overview .ov-csi-chart svg{shape-rendering:geometricPrecision!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;}
 #tab-overview .ov-csi-hover-dot{r:4.4;stroke:var(--panel)!important;stroke-width:1.7!important;}
@@ -3649,7 +3677,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-swatch{width:16px!important;height:3px!important;}
 #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
 #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:5px 8px 6px!important;background:#0b0d0b!important;overflow:hidden!important;}
+#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:5px 8px 6px!important;background:#0c0c0c!important;overflow:hidden!important;}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;shape-rendering:geometricPrecision!important;overflow:visible!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{stroke:var(--panel)!important;stroke-width:1.7!important;vector-effect:non-scaling-stroke!important;}
@@ -4065,7 +4093,7 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-table th:nth-child(5),#tab-scanner .scanner-table td:nth-child(5){width:74px;min-width:74px;max-width:74px;left:256px;box-shadow:2px 0 4px -2px rgba(0,0,0,.35);}
 
 .scanner-star-td{width:20px;padding-left:8px!important;}
-.scanner-star{cursor:pointer;font-size:12px;color:var(--text-faint);user-select:none;}
+.scanner-star{cursor:pointer;font-size:14px;color:var(--text-faint);user-select:none;}
 .scanner-star.active{color:var(--amber);}
 
 /* Side: plain colored text — no pill, no border, no background box, ever. */
@@ -4135,14 +4163,14 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-sub,#tab-scanner .scanner-sorted,#tab-scanner .scanner-count{display:none!important;}
 #tab-scanner .scanner-driver-wrap{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
 #tab-scanner .scanner-driver-box{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--panel2);font-size:10.5px;font-weight:700;line-height:1;color:var(--text-dim);}
-#tab-scanner .scanner-driver-box.pos{color:var(--bullish-strong);border-color:rgba(66,223,145,.28);}
-#tab-scanner .scanner-driver-box.neg{color:var(--bearish-strong);border-color:rgba(255,113,123,.28);}
+#tab-scanner .scanner-driver-box.pos{color:var(--bullish-strong);border-color:rgba(56,227,165,.28);}
+#tab-scanner .scanner-driver-box.neg{color:var(--bearish-strong);border-color:rgba(255,112,125,.28);}
 .scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;max-width:430px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.38);font-family:'Inter',system-ui,sans-serif;font-size:11.5px;line-height:1.45;color:var(--text);white-space:normal;}
 .scanner-hover-tooltip.show{display:block;}
 .scanner-hover-tooltip b{font-family:'IBM Plex Mono',monospace;}
 .scanner-tip-driver-grid{display:flex;gap:7px;align-items:stretch;flex-wrap:wrap;max-width:760px;}
 .scanner-tip-driver{min-width:150px;flex:1 1 150px;padding:6px 7px;border:1px solid var(--border);border-radius:5px;background:var(--panel2);}
-.scanner-tip-driver.pos{border-color:rgba(66,223,145,.28);}.scanner-tip-driver.neg{border-color:rgba(255,113,123,.28);}
+.scanner-tip-driver.pos{border-color:rgba(56,227,165,.28);}.scanner-tip-driver.neg{border-color:rgba(255,112,125,.28);}
 .scanner-tip-driver-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:3px;}
 .scanner-tip-driver-head b{font-family:'Inter',system-ui,sans-serif;font-size:11px!important;}
 .scanner-tip-driver-head span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:800;}
@@ -4177,8 +4205,8 @@ body{font-size:var(--twp-body-size);}
 <style id="v9-hover-square-and-score-gauge">
 /* Scanner hover notes: charcoal black, visibly distinct from the main black surface. */
 .scanner-hover-tooltip{
-  background:#262624!important;
-  border:1px solid #3a3a38!important;
+  background:#252525!important;
+  border:1px solid #393939!important;
   box-shadow:0 10px 28px rgba(0,0,0,.42)!important;
   color:#eef1ee!important;
   transition:left .05s linear,top .05s linear!important;
@@ -4201,7 +4229,7 @@ body{font-size:var(--twp-body-size);}
   max-width:340px!important;
   min-height:0!important;
 }
-.scanner-hover-tooltip .stt-driver{background:#1b1f1d!important;border:1px solid #313733!important;border-radius:5px!important;padding:7px 8px!important;margin:0 0 6px!important;}
+.scanner-hover-tooltip .stt-driver{background:#1d1d1d!important;border:1px solid #343434!important;border-radius:5px!important;padding:7px 8px!important;margin:0 0 6px!important;}
 .scanner-hover-tooltip.scanner-pair-hover .stt-driver{min-width:150px!important;}
 .scanner-hover-tooltip .stt-driver:last-child{margin-bottom:0!important;}
 /* The visible score gauge uses the full theoretical pair-score range: -100..+100. */
@@ -7257,8 +7285,8 @@ function histSpreadDraw(animate){
   var styles=getComputedStyle(document.body);
   var textDim=styles.getPropertyValue("--text-dim").trim()||"#565e6d";
   var textFaint=styles.getPropertyValue("--text-faint").trim()||"#8991a0";
-  var bullish=styles.getPropertyValue("--bullish").trim()||"#2dbb78";
-  var bearish=styles.getPropertyValue("--bearish").trim()||"#d9535f";
+  var bullish=styles.getPropertyValue("--bullish").trim()||"#22c98b";
+  var bearish=styles.getPropertyValue("--bearish").trim()||"#f04455";
 
   var lineColor=vals[vals.length-1]>=vals[0]?bullish:bearish;
   var lastX=X(rows.length-1), lastY=Y(vals[vals.length-1]);
@@ -7351,7 +7379,7 @@ function histSpreadDraw(animate){
     var p=HIST_SPREAD_PAIRS.find(function(x){return x[0]===code;});
     liveMeta.textContent=(p?p[1]+" / "+p[2]:code)+" · "+rows[rows.length-1].date;
   var liveChange=document.getElementById("histSpreadLiveChange");
-  if(liveChange){ liveChange.innerHTML="Change <span>"+histSpreadFmt(change)+"</span>"; var __chgStyles=getComputedStyle(document.body); liveChange.style.color=change>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#2dbb78"):(change<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#d9535f"):"var(--text-dim)"); }
+  if(liveChange){ liveChange.innerHTML="Change <span>"+histSpreadFmt(change)+"</span>"; var __chgStyles=getComputedStyle(document.body); liveChange.style.color=change>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#22c98b"):(change<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#f04455"):"var(--text-dim)"); }
   }
   if(stats) stats.innerHTML="";
 
@@ -8011,14 +8039,14 @@ function needleArrowPoints(cx,cy,tx,ty){
 }
 // Diverging colour ramp shared by the gauge track and the rank table's heat chips.
 // Pulls its red/green directly from the same --bearish-strong / --bullish-strong hex
-// values (#f23645 / #089981) that already color the "Crowded Long/Short" chips on the
+// values (#f04455 / #22c98b) that already color the "Crowded Long/Short" chips on the
 // COT tab -- not an invented palette. Anything below 30% or above 70% renders as the
 // full, undiluted brand colour (matches how the COT chip looks -- solid, not washed
 // out); only the 30-70 band blends through a neutral grey so the gauge still reads as
 // a gradient rather than a hard flip.
 function pctDivergingRgbArr(pct){
   var t=Math.max(0,Math.min(100,pct))/100;
-  var lo=[242,54,69], mid=[150,150,156], hi=[8,153,129];
+  var lo=[240,68,85], mid=[150,150,156], hi=[34,201,139];
   if(t<=0.3) return lo;
   if(t>=0.7) return hi;
   var a,b,k;
@@ -9812,7 +9840,7 @@ function cotDrawChart(ccy){
   function X(i){return pad.l+(i/(rows.length-1))*pw;}
   function Y(v){return pad.t+(max-v)/(max-min)*ph;}
   var styles=getComputedStyle(document.body), td=styles.getPropertyValue('--text-dim').trim()||'#8b93a8', tf=styles.getPropertyValue('--text-faint').trim()||'#5c6478';
-  var bull=styles.getPropertyValue('--bullish-strong').trim()||'#45d792', bear=styles.getPropertyValue('--bearish-strong').trim()||'#ff6b76';
+  var bull=styles.getPropertyValue('--bullish-strong').trim()||'#38e3a5', bear=styles.getPropertyValue('--bearish-strong').trim()||'#ff707d';
   var grid=styles.getPropertyValue('--border').trim()||'#343c37';
   var amber=styles.getPropertyValue('--amber').trim()||'#caa35c';
   var panel=styles.getPropertyValue('--panel').trim()||'#111';
@@ -9848,7 +9876,7 @@ function cotDrawChart(ccy){
     var fill=zoneTone==='warn'?bear:bull;
     ctx.save();
     /* Soft side-zone only: no outline, no guide lines, no stripes. */
-    var rgb=zoneTone==='warn'?'rgba(217,83,95,1)':'rgba(45,187,120,1)';
+    var rgb=zoneTone==='warn'?'rgba(240,68,85,1)':'rgba(34,201,139,1)';
     var gx=ctx.createRadialGradient(W-pad.r,(top+bot)/2,0,W-pad.r,(top+bot)/2,Math.max(zoneW,h)*0.95);
     gx.addColorStop(0,rgb.replace(',1)',',0.23)'));
     gx.addColorStop(0.52,rgb.replace(',1)',',0.12)'));
@@ -10593,7 +10621,7 @@ init();
 /* Pair Ranking: one strong green, one strong red, plus a visibly lighter/less-saturated
    "leaning" tier of each — leaning bullish/bearish should read as a step down, not
    identical to bullish/very bullish or bearish/very bearish. */
-#tab-pairs{--pair-green:#42df91;--pair-green-lean:#5d8d73;--pair-red:#ff717b;--pair-red-lean:#8f5b62;--pair-neutral:#747b76;}
+#tab-pairs{--pair-green:#38e3a5;--pair-green-lean:#60ab8a;--pair-red:#ff707d;--pair-red-lean:#af545f;--pair-neutral:#747b76;}
 #tab-pairs .score-bull,#tab-pairs .score-vbull,#tab-pairs .pair-bias-single.bull,#tab-pairs .pair-bias-single.very-bull,#tab-pairs .pair-bias-vbull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull{color:var(--pair-green)!important;}
 #tab-pairs .score-lean-bull,#tab-pairs .pair-bias-lean-bull,#tab-pairs .pair-bias-lean-bull strong,#tab-pairs .pair-bias-lean-bull .lean-word{color:var(--pair-green-lean)!important;}
 #tab-pairs .score-bear,#tab-pairs .score-vbear,#tab-pairs .pair-bias-single.bear,#tab-pairs .pair-bias-single.very-bear,#tab-pairs .pair-bias-vbear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear{color:var(--pair-red)!important;}
@@ -10880,10 +10908,10 @@ body.black .rail, body.ash .rail{
 .brand-mark{
   position:relative;
   display:inline-block;
-  color:#42df91!important;
+  color:#38e3a5!important;
   font-weight:850!important;
   letter-spacing:1.6px!important;
-  background:linear-gradient(180deg,#59e99e 0%,#42df91 48%,#2fbc76 100%);
+  background:linear-gradient(180deg,#59e99e 0%,#38e3a5 48%,#2fbc76 100%);
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
   text-shadow:0 1px 0 rgba(0,0,0,.45);
@@ -10894,7 +10922,7 @@ body.black .rail, body.ash .rail{
   position:absolute;
   left:1px; right:1px; bottom:-5px;
   height:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(66,223,145,.22) 18%,rgba(66,223,145,.75) 50%,rgba(66,223,145,.22) 82%,transparent 100%);
+  background:linear-gradient(90deg,transparent 0%,rgba(56,227,165,.22) 18%,rgba(56,227,165,.75) 50%,rgba(56,227,165,.22) 82%,transparent 100%);
 }
 .brand-mark:after{
   content:"";
@@ -10971,12 +10999,12 @@ body.black .rail, body.ash .rail{
   border-radius:50%;
   background:var(--panel);
   border:2px solid var(--bullish-strong);
-  box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 7px rgba(66,223,145,.16);
+  box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 7px rgba(56,227,165,.16);
   pointer-events:none;
   display:none;
   z-index:3;
 }
-#tab-yield2y .hist-spread-hover-dot.bear{border-color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 7px rgba(255,113,123,.13);}
+#tab-yield2y .hist-spread-hover-dot.bear{border-color:var(--bearish-strong);box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 7px rgba(255,112,125,.13);}
 #tab-yield2y .hist-spread-trace-tip{
   position:absolute;
   z-index:4;
@@ -11397,7 +11425,7 @@ body.black .rail, body.ash .rail{
    active theme, and the fixes above (day-count label, 100-base label moved
    off the clipped right edge, added left/bottom axis lines). Nothing else
    on the page touched. */
-#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#050604!important;background-image:none!important;}
+#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#050505!important;background-image:none!important;}
 </style>
 
 <style id="v48-pair-table-single-line">
@@ -11484,7 +11512,7 @@ body.black .rail, body.ash .rail{
 </style>
 
 <style id="v46-csi-contrast-fix">
-/* The chart panel had been pushed to a near-pure-black (#050604) background
+/* The chart panel had been pushed to a near-pure-black (#050505) background
    that's darker than the rest of the theme, so the axis grid lines and the
    "100 base" reference label (both drawn in low-opacity border/faint colors)
    were nearly invisible against it. Bring the panel back in line with the
@@ -11496,16 +11524,16 @@ body.black .rail, body.ash .rail{
 <style id="twp-final-premium-v1">
 /* Premium deep-black / violet treatment + calmer WatchTower-inspired overview. */
 :root{
-  --twp-bg:#090a09;
-  --twp-panel:#10110f;
-  --twp-panel2:#151614;
-  --twp-panel3:#1b1c19;
-  --twp-border:#292a27;
-  --twp-bg-ash:#101210;
-  --twp-panel-ash:#161815;
-  --twp-panel2-ash:#1b1d1a;
-  --twp-panel3-ash:#202220;
-  --twp-border-ash:#2f322d;
+  --twp-bg:#0a0a0c;
+  --twp-panel:#121216;
+  --twp-panel2:#191920;
+  --twp-panel3:#202027;
+  --twp-border:rgba(255,255,255,.12);
+  --twp-bg-ash:#101014;
+  --twp-panel-ash:#17171d;
+  --twp-panel2-ash:#1e1e25;
+  --twp-panel3-ash:#26262d;
+  --twp-border-ash:rgba(255,255,255,.14);
 }
 body.black,html.black{
   --bg:var(--twp-bg);
@@ -11513,17 +11541,17 @@ body.black,html.black{
   --panel2:var(--twp-panel2);
   --panel3:var(--twp-panel3);
   --border:var(--twp-border);
-  --text:#eef1ee;
-  --text-dim:#a5aba6;
-  --text-faint:#6f756f;
-  --bullish:#28c978;
-  --bullish-strong:#42df91;
-  --bearish:#e4515d;
-  --bearish-strong:#ff717b;
-  --bullish-lean:#69a884;
-  --bearish-lean:#a0646a;
+  --text:#f2f3f5;
+  --text-dim:rgba(255,255,255,.62);
+  --text-faint:rgba(255,255,255,.47);
+  --bullish:#22c98b;
+  --bullish-strong:#38e3a5;
+  --bearish:#f04455;
+  --bearish-strong:#ff707d;
+  --bullish-lean:#60ab8a;
+  --bearish-lean:#af545f;
   --neutral:#747b76;
-  --amber:#b94e12;
+  --amber:#fa660f;
 }
 body.ash,html.ash{
   --bg:var(--twp-bg-ash);
@@ -11531,19 +11559,24 @@ body.ash,html.ash{
   --panel2:var(--twp-panel2-ash);
   --panel3:var(--twp-panel3-ash);
   --border:var(--twp-border-ash);
-  --text:#eef1ee;
-  --text-dim:#a5aba6;
-  --text-faint:#6f756f;
-  --bullish:#28c978;
-  --bullish-strong:#42df91;
-  --bearish:#e4515d;
-  --bearish-strong:#ff717b;
-  --bullish-lean:#69a884;
-  --bearish-lean:#a0646a;
+  --text:#f2f3f5;
+  --text-dim:rgba(255,255,255,.62);
+  --text-faint:rgba(255,255,255,.47);
+  --bullish:#22c98b;
+  --bullish-strong:#38e3a5;
+  --bearish:#f04455;
+  --bearish-strong:#ff707d;
+  --bullish-lean:#60ab8a;
+  --bearish-lean:#af545f;
   --neutral:#747b76;
-  --amber:#b94e12;
+  --amber:#fa660f;
 }
 body,html{background:var(--bg);}
+*{scrollbar-width:thin;scrollbar-color:var(--panel3) transparent;}
+*::-webkit-scrollbar{width:8px;height:8px;}
+*::-webkit-scrollbar-corner{background:transparent;}
+*::-webkit-scrollbar-thumb{background:var(--panel3);border-radius:4px;}
+*::-webkit-scrollbar-track{background:transparent;}
 .page-head{background:var(--panel)!important;backdrop-filter:blur(10px);border-bottom-color:var(--border)!important;}
 .theme-btn.active{box-shadow:none;}
 
@@ -11616,7 +11649,7 @@ body,html{background:var(--bg);}
 }
 #tab-overview .ov-ccy{font-size:13.5px!important;}
 #tab-overview .ov-ccy img{width:22px!important;height:16px!important;image-rendering:auto!important;}
-#tab-overview .ov-bar{height:7px!important;background:#1b1c19!important;}
+#tab-overview .ov-bar{height:7px!important;background:#1b1b1b!important;}
 #tab-overview .ov-score{font-size:13px!important;}
 #tab-overview .ov-state{font-size:11.5px!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;}
 #tab-overview .ov-trend{font-size:11.5px!important;}
@@ -11715,7 +11748,7 @@ body,html{background:var(--bg);}
   #tab-overview .ov-csi-swatch{width:17px!important;height:3px!important;border-radius:2px!important;}
   #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
   #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-  #tab-overview .ov-csi-chart{flex:1 1 auto!important;min-height:0!important;padding:7px 9px 7px!important;background:#10110f!important;overflow:hidden!important;}
+  #tab-overview .ov-csi-chart{flex:1 1 auto!important;min-height:0!important;padding:7px 9px 7px!important;background:#101010!important;overflow:hidden!important;}
   #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;overflow:visible!important;shape-rendering:geometricPrecision!important;}
   #tab-overview .ov-csi-chart text{font-size:12px!important;}
 
@@ -12423,8 +12456,8 @@ body,html{background:var(--bg);}
 <style id="scanner-hover-ash-final">
 /* Compact hover diagnostics: deliberately ash so they separate from the black scanner surface. */
 .scanner-hover-tooltip{
-  background:#171a18!important;
-  border:1px solid #343a36!important;
+  background:#181818!important;
+  border:1px solid #373737!important;
   color:#eef1ee!important;
   box-shadow:0 8px 22px rgba(0,0,0,.48)!important;
   max-width:320px!important;
@@ -12496,8 +12529,8 @@ body,html{background:var(--bg);}
 <style id="scanner-hover-final-black-ash">
 /* Final hover treatment: black-ash, clearly lighter than the main scanner surface. */
 .scanner-hover-tooltip{
-  background:#171a18!important;
-  border:1px solid #343a36!important;
+  background:#181818!important;
+  border:1px solid #373737!important;
   color:#e9ede9!important;
   max-width:340px!important;
   padding:7px 9px!important;
@@ -12533,7 +12566,7 @@ body,html{background:var(--bg);}
 .scanner-hover-tooltip .stt-drivers{
   margin-top:4px!important;
   padding-top:4px!important;
-  border-top:1px solid #303631!important;
+  border-top:1px solid #323232!important;
 }
 .scanner-hover-tooltip .stt-driver{
   margin:3px 0 0!important;
@@ -13006,7 +13039,7 @@ html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
 }
 #tab-raw .ss-legend{flex:0 0 calc(25% - 10px)!important;font-size:12px!important;font-weight:700!important;}
 #tab-raw .ss-chart{
-  background:#0b0d0b!important;
+  background:#0c0c0c!important;
   flex:0 0 auto!important;
   display:block!important;
   padding:6px 10px 8px!important;
@@ -13045,7 +13078,7 @@ html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
 #twpNameGate .twp-name-gate-brand{color:var(--bullish);font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:13px;letter-spacing:.14em;margin-bottom:10px;}
 #twpNameGate .twp-name-gate-title{color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;}
 #twpNameGate .twp-name-gate-sub{color:var(--text-dim);font-size:12.5px;margin-bottom:16px;}
-#twpNameGate .twp-name-gate-input{width:100%;box-sizing:border-box;background:#0b0d0b;border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:Inter,system-ui,sans-serif;}
+#twpNameGate .twp-name-gate-input{width:100%;box-sizing:border-box;background:#0c0c0c;border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:Inter,system-ui,sans-serif;}
 #twpNameGate .twp-name-gate-input:focus{outline:none;border-color:var(--bullish);}
 #twpNameGate .twp-name-gate-btn{width:100%;background:var(--bullish);color:#06110b;border:none;padding:10px 12px;font-weight:800;font-size:13.5px;letter-spacing:.02em;cursor:pointer;font-family:Inter,system-ui,sans-serif;}
 #twpNameGate .twp-name-gate-btn:hover{filter:brightness(1.08);}
