@@ -6283,13 +6283,28 @@ function scannerPairTooltipHtml(base,quote,score){
   var pair=base+'/'+quote, live=pairCompositeFor(base,quote), band=pairBandLabel(live);
   var dir=live>0?1:live<0?-1:0;
   var drivers=scannerLedByDrivers(base,quote,dir);
-  var scoreStr=esc(scannerScorePrecise(live)), deltaStr=esc(scannerScorePrecise(live));
+  var scoreStr=esc(scannerScorePrecise(live));
+  // Was: a second line that always read "<same score> from neutral" -- deltaStr was
+  // computed from the exact same live score as the line right above it, so it was pure
+  // duplication with no real information, and worse, it read like a genuine regime
+  // transition ("came from neutral") when every pair showed the identical wording
+  // regardless of where it actually started. Replaced with the real 90-day move: the
+  // actual point change plus the actual prior band, so it only says "was neutral" when
+  // the pair genuinely was neutral 90 days ago -- otherwise it says whatever band it
+  // really came from (or that it's held the same band the whole window).
+  var trend=pairTrend30d(pair), transitionHtml='';
+  if(trend.delta!=null){
+    var prevScore=live-trend.delta, prevBand=pairBandLabel(prevScore), deltaTxt=(trend.delta>0?'+':'')+trend.delta;
+    transitionHtml='<div class="stt-note">'+(prevBand===band
+      ? deltaTxt+' pts vs '+TREND_WINDOW_DAYS+'d ago &middot; held '+esc(band.toLowerCase())+' the whole window'
+      : 'was '+esc(prevBand.toLowerCase())+' '+TREND_WINDOW_DAYS+'d ago, now '+esc(band.toLowerCase())+' ('+deltaTxt+' pts)')+'</div>';
+  }
   var leadHtml=drivers.length ? drivers.map(function(d){
     return '<div class="stt-driver">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+' pts &mdash; '+esc(scannerDriverExplanation(base,quote,d))+'</div>';
   }).join('') : '<div class="stt-note stt-muted">No clear leading driver.</div>';
   return '<div class="stt-title">'+esc(pair)+'</div>'+
     '<div class="stt-note">composite '+scoreStr+' &middot; '+esc(band.toLowerCase())+'</div>'+
-    '<div class="stt-note">'+deltaStr+' from neutral</div>'+
+    transitionHtml+
     '<div class="stt-drivers"><div class="stt-plain-label">led by</div>'+leadHtml+'</div>';
 }
 
@@ -13100,13 +13115,30 @@ function twpSessionLine(session){
   ];
   return lines[Math.floor(Math.random()*lines.length)];
 }
+// Markets are shut Sat/Sun, so "It's London session" reads as a bug on a weekend --
+// nothing is actually trading. Accra local time == UTC (no DST), so the UTC day-of-week
+// doubles directly as the Ghana-time day-of-week, same trick the hour buckets above rely on.
+function twpIsWeekend(){
+  var d=new Date().getUTCDay();
+  return d===0||d===6;
+}
+function twpWeekendLine(){
+  var lines=[
+    "How's your weekend going?",
+    "Any premarket analysis for Monday yet?",
+    "Markets are shut for the weekend — caught up on the news?",
+    "Good time to review the week's charts before Monday.",
+    "Weekend prep: got your levels marked up for the open?"
+  ];
+  return lines[Math.floor(Math.random()*lines.length)];
+}
 // Returns the two lines separately now, instead of one joined string, so they render as
-// two stacked lines: line1 is the time-of-day greeting, line2 is the session comment.
+// two stacked lines: line1 is the time-of-day greeting, line2 is the session comment
+// Monday-Friday, or a weekend-appropriate line on Saturday/Sunday (no session exists then).
 function twpBuildGreeting(name){
   var hour=twpAccraHour();
   var line1=twpGreetingPrefix(twpDayBucket(hour),name);
-  var session=twpSessionTag(hour);
-  var line2=twpSessionLine(session);
+  var line2=twpIsWeekend() ? twpWeekendLine() : twpSessionLine(twpSessionTag(hour));
   return {line1:line1,line2:line2};
 }
 var twpGreetingName=null, twpGreetingState={hour:null};
