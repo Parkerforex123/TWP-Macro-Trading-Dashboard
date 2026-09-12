@@ -211,7 +211,6 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
 .pair-table .day-delta-up{color:var(--bullish-strong)!important;}
 .pair-table .day-delta-down{color:var(--bearish-strong)!important;}
 .pair-table .day-delta-flat{color:var(--text-faint)!important;}
-#tab-pairs .day-delta-cell{text-align:center;}
 
 .pair-search-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex:0 0 auto;}
 .pair-search-wrap>div{display:flex;align-items:center;background:var(--panel2);border:1.5px solid var(--amber);border-radius:7px;padding:0 10px;transition:border-color .15s,box-shadow .15s;min-width:198px;}
@@ -267,65 +266,17 @@ th{font-size:12px;}
 .recalc-log-body{padding:8px 12px;}
 .pair-bar{height:6px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden;width:120px;}
 .pair-bar i{position:absolute;top:0;bottom:0;border-radius:4px;}
-
-/* Pair Ranking heatmap — intentionally scoped to the Pair Ranking table only.
-   The full row carries the same bias color so the ranking reads as a heatmap. */
-
-#tab-pairs table{table-layout:fixed;}
-#tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;}
-#tab-pairs .yield-bias-chip{display:inline-flex;align-items:center;justify-content:center;min-width:84px;border-radius:5px;padding:5px 8px;white-space:nowrap;}
-#tab-pairs .trend-cell{display:flex;align-items:center;gap:8px;min-height:34px;white-space:nowrap;}
-#tab-pairs .trend-cell .trend-spark{width:92px;flex:0 0 92px;display:flex;align-items:center;}
-#tab-pairs .trend-cell .pair-trend-marker{min-width:58px;justify-content:flex-start;}
-#tab-pairs .trend-cell svg{display:block;width:92px;height:26px;}
-#tab-pairs .pair-name-wrap{display:flex;align-items:center;gap:5px;white-space:nowrap;}
-#tab-pairs .pair-trend-marker{display:inline-flex;align-items:center;gap:3px;min-width:43px;}
-#tab-pairs .pair-trend-arrow{font-family:'Inter',system-ui,sans-serif;font-size:11.5px;font-weight:800;line-height:1;width:12px;text-align:center;display:inline-block;}
-#tab-pairs .pair-trend-arrow.trend-up{color:var(--bullish-strong);}
-#tab-pairs .pair-trend-arrow.trend-down{color:var(--bearish-strong);}
-#tab-pairs .pair-trend-arrow.trend-flat{color:var(--text-faint);font-size:11px;}
 #tab-overview .trend-up{color:var(--bullish-strong);font-weight:700;}
 #tab-overview .trend-down{color:var(--bearish-strong);font-weight:700;}
 #tab-overview .trend-flat{color:var(--text-faint);font-size:12px;}
 .trend-panel .trend-up{color:var(--bullish-strong);}
 .trend-panel .trend-down{color:var(--bearish-strong);}
 .trend-panel .trend-flat{color:var(--text-faint);}
-#tab-pairs .pair-trend-delta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;line-height:1;}
-#tab-pairs .pair-trend-delta.delta-up{color:var(--bullish-strong);}
-#tab-pairs .pair-trend-delta.delta-down{color:var(--bearish-strong);}
-#tab-pairs .pair-trend-delta.delta-flat{color:var(--text-faint);}
 .pair-score-tooltip{position:fixed;z-index:10000;display:none;pointer-events:none;min-width:118px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.28);font-family:'Inter',system-ui,sans-serif;font-size:11px;line-height:1.35;color:var(--text);white-space:nowrap;}
 .pair-score-tooltip .tt-date{color:var(--text-faint);font-family:'IBM Plex Mono',monospace;font-size:10px;}
 .pair-score-tooltip .tt-score{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:800;margin-top:2px;}
 .pair-score-tooltip .tt-regime{font-weight:700;margin-top:2px;}
 .pair-trend-hit{cursor:crosshair;}
-
-
-/* Cross-theme heatmap tuning: strong enough to read on white, ash and black. */
-#tab-pairs .pair-row.pair-vbull td{background:rgba(129,199,132,.28);color:var(--text);}
-#tab-pairs .pair-row.pair-bull td{background:rgba(129,199,132,.20);color:var(--text);}
-#tab-pairs .pair-row.pair-lean-bull td{background:rgba(129,199,132,.12);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-pos td{background:rgba(129,199,132,.05);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-zero td{background:rgba(129,199,132,.022);color:var(--text);}
-#tab-pairs .pair-row.pair-neutral-neg td{background:rgba(240,68,85,.05);color:var(--text);}
-#tab-pairs .pair-row.pair-lean-bear td{background:rgba(240,68,85,.12);color:var(--text);}
-#tab-pairs .pair-row.pair-bear td{background:rgba(240,68,85,.20);color:var(--text);}
-#tab-pairs .pair-row.pair-vbear td{background:rgba(240,68,85,.28);color:var(--text);}
-
-#tab-pairs .pair-row.pair-vbull td,#tab-pairs .pair-row.pair-bull td,#tab-pairs .pair-row.pair-lean-bull td,#tab-pairs .pair-row.pair-neutral-pos td,#tab-pairs .pair-row.pair-neutral-zero td,#tab-pairs .pair-row.pair-neutral-neg td,#tab-pairs .pair-row.pair-lean-bear td,#tab-pairs .pair-row.pair-bear td,#tab-pairs .pair-row.pair-vbear td{background:transparent;color:var(--text);}
-/* Keep the rank, score and trend readable over the heatmap. */
-#tab-pairs .pair-row td:first-child{color:var(--text-dim);}
-#tab-pairs .pair-row:hover td{filter:brightness(1.08);}
 
 .recalc-btn{background:var(--amber);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;}
 .recalc-btn:hover{filter:brightness(1.08);}
@@ -339,15 +290,6 @@ th{font-size:12px;}
 .recalc-details[open] summary::before{content:'▾';}
 .recalc-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);}
 .recalc-log-body{padding:6px 10px 10px;border-top:1px solid var(--border);}
-#tab-pairs .pair-trend-marker{display:inline-flex;align-items:center;gap:5px;min-width:58px;justify-content:flex-start;}
-#tab-pairs .pair-trend-delta{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:800;}
-#tab-pairs .yield-bias-chip{display:inline-block;padding:5px 9px;border:1px solid currentColor;border-radius:4px;font-size:14px;font-weight:800;line-height:1;background:transparent;}
-#tab-pairs .yield-bull{color:var(--bullish-strong);background:rgba(53,185,106,.10);}
-#tab-pairs .yield-bear{color:var(--bearish-strong);background:rgba(217,87,87,.10);}
-#tab-pairs .yield-vbull{color:#fff;background:var(--bullish);}
-#tab-pairs .yield-vbear{color:#fff;background:var(--bearish);}
-#tab-pairs .yield-neutral{color:var(--text-dim);background:transparent;}
-#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
 .bigchart{margin-top:6px;padding:16px;background:var(--panel2);border-radius:8px;}
 .bigchart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px;color:var(--text-dim);}
 .bigchart-head b{color:var(--text);font-family:'Space Grotesk',sans-serif;}
@@ -434,17 +376,6 @@ th{font-size:12px;}
 .y2-actions{gap:6px;margin-top:8px;}
 .hist-spread-card{margin-top:10px;}
 .pair-bar{height:5px;}
-#tab-pairs .pair-row td{padding-top:6px;padding-bottom:6px;}
-#tab-pairs .pair-row td{background:transparent !important;}
-#tab-pairs .pair-row:hover td{background:var(--panel2) !important;}
-#tab-pairs .yield-bias-chip{display:inline-block;min-width:54px;text-align:center;padding:3px 6px;border-radius:5px;font-size:12px;font-weight:700;}
-#tab-pairs .yield-vbull{background:rgba(129,199,132,.16);color:var(--bullish-strong);}
-#tab-pairs .yield-bull{background:rgba(129,199,132,.09);color:var(--bullish-strong);}
-#tab-pairs .yield-neutral{background:rgba(255,255,255,.035);color:var(--text-dim);}
-#tab-pairs .yield-bear{background:rgba(240,68,85,.09);color:var(--bearish-strong);}
-#tab-pairs .yield-vbear{background:rgba(240,68,85,.16);color:var(--bearish-strong);}
-#tab-pairs .pair-factor{font-family:'IBM Plex Mono',monospace;font-weight:700;}
-#tab-pairs .table-scroll table{min-width:1080px;}
 
 #tab-detail .cot-net-item{grid-column:1;}
 #tab-detail .cot-change-item{grid-column:1;}
@@ -608,7 +539,6 @@ td{padding:6px 8px;}
 @media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
 </style>
 
-<style>#tab-pairs .pair-row td{background:transparent !important;}</style>
 
 <style id="v19-scanner-compact">
 /* V19: dense scanner treatment — preserve readable typography, compress only geometry. */
@@ -633,38 +563,6 @@ table{font-size:14.5px;}
 th{font-size:11.5px;padding:5px 7px;}
 td{padding:4px 7px;}
 .ccy-name{font-size:14.5px;}
-/* Pair Ranking — text-first, no pill/box UI for contributor states. */
-#tab-pairs .pair-row td{padding-top:5px;padding-bottom:5px;background:transparent!important;}
-#tab-pairs .pair-row:hover td{background:var(--panel2)!important;}
-#tab-pairs .chip{background:transparent!important;border:none!important;padding:0!important;border-radius:0!important;font-size:14px;font-weight:800;}
-#tab-pairs .chip-bull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull{color:var(--bullish-strong);}
-#tab-pairs .chip-bear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear{color:var(--bearish-strong);}
-#tab-pairs .chip-neu,#tab-pairs .yield-neutral{color:var(--text-dim);}
-#tab-pairs .yield-bias-chip{border:1.5px solid currentColor!important;border-radius:6px!important;background:color-mix(in srgb, currentColor 10%, transparent)!important;padding:3px 9px!important;font-size:13px;font-weight:800;display:inline-flex!important;align-items:center;justify-content:center;min-width:64px!important;}
-#tab-pairs .yield-vbull,#tab-pairs .yield-vbear{font-weight:900!important;background:color-mix(in srgb, currentColor 16%, transparent)!important;}
-#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
-#tab-pairs .trend-cell{gap:6px;min-height:31px;}
-#tab-pairs .trend-cell .trend-spark{width:104px;flex:0 0 104px;}
-#tab-pairs .trend-cell svg{width:104px;height:25px;}
-#tab-pairs .pair-trend-marker{min-width:50px!important;gap:4px;}
-#tab-pairs .pair-trend-delta{font-size:13px;font-weight:800;}
-#tab-pairs .pair-trend-arrow{font-size:12px;}
-#tab-pairs .pair-row td:nth-child(3){font-weight:800;font-family:'IBM Plex Mono',monospace;}
-#tab-pairs .pair-row td:nth-child(3) .mono{color:var(--amber)!important;}
-#tab-pairs .range-btn{background:color-mix(in srgb, var(--amber) 10%, transparent);border:1px solid color-mix(in srgb, var(--amber) 55%, transparent);color:var(--amber);padding:5px 9px;font-size:11.5px;border-radius:4px;}
-#tab-pairs .range-btn.active{background:color-mix(in srgb, var(--amber) 18%, transparent);border-color:var(--amber);color:var(--amber);}
-#tab-pairs table{table-layout:fixed;min-width:1080px!important;}
-#tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;}
 /* tighter non-pair sections */
 .sector-block{margin-bottom:5px;}
 .sector-title{margin-bottom:3px;}
@@ -680,88 +578,13 @@ td{padding:4px 7px;}
 .recalc-details{margin-top:6px;margin-bottom:7px;}
 .recalc-details summary{padding:7px 10px;font-size:12px;}
 </style>
-<style id="v19-pair-widths">
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;}
-</style><style id="v19-filter-counts">
-#tab-pairs .pair-counts{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
-#tab-pairs .range-switch{gap:4px;flex-wrap:wrap;}
-#tab-pairs .range-btn{padding:4px 8px;}
-</style>
 <style id="v21-scanner-polish">
 /* V21: tighter scanner presentation, readable typography, deep charcoal/orange accent. */
 :root{--scanner-orange:#c85b16;}
-/* Removed: body.ash/black used to overwrite --amber (#fa660f) with the duller
-   --scanner-orange above -- specifically in the dark themes people actually
-   use -- which is why amber-based elements kept rendering washed out no
-   matter what value was set elsewhere. --amber now keeps its real value from
-   :root/body.ash/body.black; --scanner-orange stays available on its own for
-   the few rules below that intentionally want the muted accent. */
-#tab-pairs .pair-row td{padding-left:6px;padding-right:6px;padding-top:5px;padding-bottom:5px;}
-#tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:6%;text-align:center;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:13%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:7%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:10%;text-align:left;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:11%;text-align:left;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:9%;text-align:left;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:11%;text-align:left;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;text-align:left;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:13%;text-align:left;}
-/* Seasonality (and its neighbor) get a wrap safety net so the header text can
-   never bleed past the table edge again, no matter how tight the viewport gets. */
-#tab-pairs th:nth-child(9),#tab-pairs th:nth-child(10){white-space:normal;line-height:1.15;}
-#tab-pairs thead th:nth-child(3){color:var(--scanner-orange);}
-#tab-pairs .pair-score{font-size:15px;font-weight:800;}
-#tab-pairs .score-bull{color:var(--bullish-strong);}
-#tab-pairs .score-bear{color:var(--bearish-strong);}
-#tab-pairs .score-lean-bull{color:#7fc99f;}
-#tab-pairs .score-lean-bear{color:#d98a90;}
-#tab-pairs .score-neutral{color:var(--text-dim);}
-#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
-#tab-pairs .yield-bias-text{background:transparent!important;border:none!important;padding:0!important;min-width:0!important;}
-#tab-pairs .yield-bull{color:var(--bullish-strong);} #tab-pairs .yield-bear{color:var(--bearish-strong);}
-#tab-pairs .yield-vbull{color:var(--bullish-strong);} #tab-pairs .yield-vbear{color:var(--bearish-strong);} #tab-pairs .yield-neutral{color:var(--text-dim);}
-#tab-pairs .pair-selection-label{font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
-#tab-pairs .range-btn{border-color:color-mix(in srgb, var(--amber) 40%, transparent);background:rgba(0,0,0,.18);color:var(--text-dim);}
-#tab-pairs .range-btn.active{border-color:var(--amber);background:color-mix(in srgb, var(--amber) 16%, transparent);color:var(--amber);}
-#tab-pairs .range-switch{gap:3px;}
-#tab-pairs .trend-cell{gap:10px;align-items:center;}
-#tab-pairs .trend-spark svg{width:96px;height:24px;}
-#tab-pairs .pair-trend-delta{font-size:12.5px;font-weight:800;}
-#tab-pairs .pair-factor + .pair-factor{margin-left:0;}
 body.black .card,body.ash .card{box-shadow:none;}
 
 </style>
 <style id="v23-layout-polish">
-/* Pair Ranking: explicitly size all 11 columns so contributor states never collide. */
-#tab-pairs table{table-layout:fixed;min-width:1120px!important;}
-#tab-pairs th,#tab-pairs td{vertical-align:middle;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:5%;text-align:center;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:12%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:8%;text-align:center;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:9%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:10%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:10%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:10%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:8%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:9%;}
-#tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){width:9%;}
-#tab-pairs th:nth-child(n+5),#tab-pairs td:nth-child(n+5){padding-left:7px;padding-right:7px;}
-#tab-pairs th:nth-child(n+6){white-space:normal;line-height:1.1;}
-#tab-pairs td:nth-child(n+6){white-space:nowrap;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8),#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9),#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10),#tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){text-align:center;}
-#tab-pairs .pair-factor{display:inline-block;max-width:100%;}
 
 /* Risk Sentiment: compact the reading area so the card hugs its useful content. */
 #tab-risk .risk-page{max-width:720px;}
@@ -969,54 +792,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-overview .strength-v{font-size:19px;}
 .ccy-flag{width:20px;height:15px;object-fit:cover;display:inline-block;vertical-align:-2px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.08);}
 #tab-overview .strength-ccy .ccy-flag{margin-right:1px;}
-#tab-pairs .pair-score{font-size:16px;font-weight:900!important;}
-/* Pair Score is classified from the numeric score itself: positive/negative outside
-   the neutral band, with muted colors for the two leaning zones. */
-#tab-pairs .pair-score.score-bull{color:var(--bullish-strong)!important;}
-#tab-pairs .pair-score.score-lean-bull{color:var(--bullish-lean)!important;}
-#tab-pairs .pair-score.score-bear{color:var(--bearish-strong)!important;}
-#tab-pairs .pair-score.score-lean-bear{color:var(--bearish-lean)!important;}
-#tab-pairs .pair-score.score-neutral{color:var(--text-dim)!important;}
-/* Leaning labels stack vertically so the scanner reads: Leaning / Bullish (or Bearish).
-   Both lines use the muted "lean" color so the whole label reads lighter than a full Bullish/Bearish entry. */
-#tab-pairs .pair-bias-stack{display:inline-flex;flex-direction:row;align-items:baseline;justify-content:flex-start;gap:4px;line-height:1.05;white-space:nowrap;}
-#tab-pairs .pair-bias-stack .lean-word{font-size:10.5px;font-weight:700;letter-spacing:.1px;}
-#tab-pairs .pair-bias-stack strong{font-size:14px;font-weight:900;line-height:1;}
-#tab-pairs .pair-bias-lean-bull .lean-word{color:var(--bullish-lean)!important;}
-#tab-pairs .pair-bias-lean-bull strong{color:var(--bullish-lean)!important;}
-#tab-pairs .pair-bias-lean-bear .lean-word{color:var(--bearish-lean)!important;}
-#tab-pairs .pair-bias-lean-bear strong{color:var(--bearish-lean)!important;}
-#tab-pairs .pair-bias-single{display:inline-block;font-size:14px;font-weight:900;line-height:1.05;white-space:nowrap;}
-#tab-pairs .pair-bias-single.bull{color:var(--bullish-strong)!important;}
-#tab-pairs .pair-bias-single.bear{color:var(--bearish-strong)!important;}
-#tab-pairs .pair-bias-single.neutral{color:var(--text-dim)!important;}
-/* Sentiment pills — ghost/outline style using currentColor, so the border and fill
-   always match this file's own bullish/bearish variables, never a separately
-   hardcoded color. "Very" states get a slightly deeper fill and bolder weight only
-   -- not a thicker border -- to keep the distinction small. */
-#tab-pairs .pair-bias-single,#tab-pairs .pair-bias-stack{
-  display:inline-flex;align-items:baseline;gap:4px;
-  padding:3px 10px;border-radius:6px;
-  background:color-mix(in srgb, currentColor 8%, transparent);
-  border:1.5px solid color-mix(in srgb, currentColor 45%, transparent);
-}
-#tab-pairs .pair-bias-single.neutral{border-color:var(--border);background:rgba(255,255,255,.03);}
-#tab-pairs .pair-bias-single.pair-bias-compact-vbull,
-#tab-pairs .pair-bias-vbull,
-#tab-pairs .pair-bias-single.pair-bias-compact-vbear,
-#tab-pairs .pair-bias-vbear{
-  font-weight:900;background:color-mix(in srgb, currentColor 14%, transparent);
-}
-#tab-pairs .pair-factor,
-#tab-pairs .chip{
-  background:transparent!important;
-  border:none!important;
-  box-shadow:none!important;
-  padding-left:0!important;
-  padding-right:0!important;
-}
-#tab-pairs .chip{font-size:14px;font-weight:800;}
-#tab-pairs .pair-factor{font-size:14px;font-weight:800;}
 #tab-detail .seasonality-avg-input,.seasonality-avg-input{width:78px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
 .seasonality-avg-input:focus,.seasonality-month-input:focus{outline:none;border-color:var(--amber);}
 .seasonality-month-input{width:118px;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;}
@@ -1033,39 +808,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-detail .cot-change-item select,
 #tab-detail .cot-net-item select{
   cursor:pointer;
-}
-
-/* Mobile — the table previously forced a 1180px minimum width no matter the
-   screen, guaranteeing a horizontal swipe on every phone. Drop that floor,
-   hide the sparkline graphic (keep the arrow+delta), and let every column's
-   text wrap onto two lines instead of forcing extra column width, so all
-   9 columns including Seasonality sit inside the screen with no swipe. */
-@media(max-width:700px){
-  #tab-pairs .table-scroll{overflow-x:visible;}
-  #tab-pairs .table-scroll table.pair-table{min-width:0!important;width:100%;table-layout:auto;border-collapse:separate;border-spacing:0 10px;}
-  #tab-pairs .pair-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
-  #tab-pairs .pair-table tbody{display:block;}
-  #tab-pairs .pair-table tr{display:flex;flex-wrap:wrap;background:var(--panel2,var(--panel3));border:1px solid var(--border);border-radius:10px;padding:10px 12px 6px;margin-bottom:0;}
-  #tab-pairs .pair-table td{display:flex;align-items:center;padding:6px 0!important;border:none!important;box-sizing:border-box;white-space:normal!important;word-break:break-word;}
-  #tab-pairs .pair-table td.ccy-name{order:1;width:58%;font-size:15px!important;font-weight:800;padding-bottom:10px!important;}
-  #tab-pairs .pair-table td.pair-score{order:2;width:42%;justify-content:flex-end;font-size:16px!important;font-weight:800;padding-bottom:10px!important;}
-  #tab-pairs .pair-table td[data-label="Trend"]{order:3;width:100%;border-top:1px solid var(--border)!important;padding-top:10px!important;}
-  #tab-pairs .pair-table td[data-label="Bias"]{order:4;width:100%;}
-  #tab-pairs .pair-table td[data-label="Fundamentals"]{order:5;width:50%;}
-  #tab-pairs .pair-table td[data-label="Yield Bias"]{order:6;width:50%;}
-  #tab-pairs .pair-table td[data-label="CB Stance"]{order:7;width:100%;}
-  #tab-pairs .pair-table td[data-label="Net Positioning"]{order:8;width:50%;}
-  #tab-pairs .pair-table td[data-label="Δ WoW"]{order:9;width:50%;}
-  #tab-pairs .pair-table td[data-label="Seasonality"]{order:10;width:100%;}
-  #tab-pairs .pair-table td[data-label]:not(.ccy-name):not(.pair-score)::before{
-    content:attr(data-label);flex-shrink:0;margin-right:7px;
-    font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);font-weight:700;
-  }
-  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .pair-bias-single,
-  #tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,
-  #tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:11.5px!important;}
-  #tab-pairs .trend-cell .trend-spark,#tab-pairs .trend-cell svg{display:inline-flex!important;}
-  #tab-pairs .trend-cell{gap:8px;min-height:auto;white-space:normal;width:100%;}
 }
 
 </style>
@@ -1093,46 +835,6 @@ body.black .card,body.ash .card{box-shadow:none;}
   .updated{font-size:10px!important;}
   .card{padding:9px 10px;margin-bottom:7px;}
   .card h3{font-size:11.5px;margin-bottom:7px;}
-
-  /* Pair ranking: one clean card per pair. */
-  #tab-pairs .table-scroll{overflow:visible;}
-  #tab-pairs .table-scroll table.pair-table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:separate!important;border-spacing:0 8px!important;}
-  #tab-pairs .pair-table thead{display:none!important;}
-  #tab-pairs .pair-table tbody{display:block!important;width:100%;}
-  #tab-pairs .pair-table tr{display:grid!important;grid-template-columns:1fr 1fr;grid-template-areas:
-    "delta delta"
-    "pair score"
-    "trend trend"
-    "bias bias"
-    "fund yield"
-    "cb cb"
-    "cot wow"
-    "season season";
-    width:100%;margin:0 0 8px;padding:10px 10px 8px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);}
-  #tab-pairs .pair-table td{width:auto!important;display:flex!important;min-width:0;align-items:center;padding:5px 0!important;border:0!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere;}
-  #tab-pairs .pair-table td.day-delta-cell{grid-area:delta;order:initial;justify-content:flex-start;padding-bottom:4px!important;text-align:left!important;}
-  #tab-pairs .pair-table td.ccy-name{grid-area:pair;order:initial;font-size:15px!important;padding-bottom:7px!important;}
-  #tab-pairs .pair-table td.pair-score{grid-area:score;order:initial;justify-content:flex-end;font-size:17px!important;padding-bottom:7px!important;}
-  #tab-pairs .pair-table td[data-label="Trend"]{grid-area:trend;order:initial;border-top:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important;padding:8px 0!important;}
-  #tab-pairs .pair-table td[data-label="Bias"]{grid-area:bias;order:initial;padding-top:7px!important;}
-  #tab-pairs .pair-table td[data-label="Fundamentals"]{grid-area:fund;order:initial;padding-right:8px!important;}
-  #tab-pairs .pair-table td[data-label="Yield Bias"]{grid-area:yield;order:initial;padding-left:8px!important;}
-  #tab-pairs .pair-table td[data-label="CB Stance"]{grid-area:cb;order:initial;padding-top:7px!important;}
-  #tab-pairs .pair-table td[data-label="Net Positioning"]{grid-area:cot;order:initial;padding-right:8px!important;}
-  #tab-pairs .pair-table td[data-label="Δ WoW"]{grid-area:wow;order:initial;padding-left:8px!important;}
-  #tab-pairs .pair-table td[data-label="Seasonality"]{grid-area:season;order:initial;padding-top:7px!important;}
-  #tab-pairs .pair-table td[data-label]:not(.ccy-name):not(.pair-score)::before{content:attr(data-label);display:block;min-width:0;flex:0 0 auto;margin-right:6px;font-size:8.5px;line-height:1.1;letter-spacing:.04em;color:var(--text-faint);font-weight:700;text-transform:uppercase;}
-  #tab-pairs .pair-table td[data-label="Bias"]::before{min-width:36px;}
-  #tab-pairs .pair-table td[data-label="Trend"]::before{min-width:36px;}
-  #tab-pairs .pair-table .mono,#tab-pairs .pair-table .pair-bias-single,#tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,#tab-pairs .pair-table .pair-factor,#tab-pairs .chip{font-size:11.5px!important;line-height:1.2;}
-  #tab-pairs .trend-cell{width:100%!important;gap:8px;min-height:32px;overflow:hidden;}
-  #tab-pairs .trend-cell .trend-spark{width:min(210px,58vw)!important;flex:1 1 auto!important;min-width:0;}
-  #tab-pairs .trend-cell svg{width:100%!important;height:28px!important;display:block!important;}
-  #tab-pairs .pair-trend-marker{min-width:48px!important;flex:0 0 auto;}
-  #tab-pairs .pair-trend-delta{font-size:11.5px!important;}
-  #tab-pairs .pair-selection-label{white-space:normal;line-height:1.2;}
-  #tab-pairs .range-switch{gap:3px;flex-wrap:wrap;}
-  #tab-pairs .range-btn{font-size:10.5px;padding:4px 7px;}
 
   /* Overview cards/tables stay readable rather than shrinking into collisions. */
   #tab-overview .strength-wrap{grid-template-columns:1fr;}
@@ -1200,18 +902,10 @@ body.black .card,body.ash .card{box-shadow:none;}
   .tab-btn{font-size:10.5px;padding:7px 5px;}
   .page-head{display:block;}
   .page-head>div:last-child{margin-top:6px;justify-content:space-between;}
-  #tab-pairs .pair-table tr{grid-template-columns:1fr 1fr;padding-left:8px;padding-right:8px;}
-  #tab-pairs .trend-cell .trend-spark{width:min(185px,54vw)!important;}
-  #tab-pairs .pair-table td[data-label="Fundamentals"],#tab-pairs .pair-table td[data-label="Yield Bias"],#tab-pairs .pair-table td[data-label="Net Positioning"],#tab-pairs .pair-table td[data-label="Δ WoW"]{min-width:0;}
   #tab-overview .strength-summary{grid-template-columns:1fr 1fr;}
   #tab-detail .info-grid{grid-template-columns:1fr 1fr;}
   .hist-spread-controls{grid-template-columns:1fr;}
   .hist-range{justify-content:flex-start;}
-}
-
-@media(min-width:701px) and (max-width:1100px){
-  #tab-pairs .table-scroll{overflow-x:auto;}
-  #tab-pairs .table-scroll table{min-width:900px;}
 }
 </style>
 <style id="risk-sentiment-css">
@@ -1341,35 +1035,8 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-detail .risk-detail-item .v{white-space:nowrap;}
 .risk-detail-regime{font-size:9.5px;color:var(--text-faint);margin-left:4px;}
 </style>
-<style id="risk-public-final-overrides">
-</style>
 <style id="tab-pairs-widths">
 #tab-detail .risk-detail-item .v{font-size:12px;font-weight:800;}
-#tab-pairs table.pair-table{min-width:1180px!important;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:5%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:12%;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:6%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-#tab-pairs th:nth-child(5),#tab-pairs td:nth-child(5){width:9%;}
-#tab-pairs th:nth-child(6),#tab-pairs td:nth-child(6){width:10%;}
-#tab-pairs th:nth-child(7),#tab-pairs td:nth-child(7){width:8%;}
-#tab-pairs th:nth-child(8),#tab-pairs td:nth-child(8){width:9%;}
-#tab-pairs th:nth-child(9),#tab-pairs td:nth-child(9){width:7%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:9%;}
-#tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){width:14%;text-align:left;}
-@media(max-width:700px){
-  #tab-pairs .pair-table tr{grid-template-areas:
-    "delta delta"
-    "pair score"
-    "trend trend"
-    "bias bias"
-    "fund yield"
-    "cb cb"
-    "cot wow"
-    "season risk";
-  }
-  #tab-pairs .pair-table td[data-label="Risk Sentiment"]{grid-area:risk;order:initial;padding-top:7px!important;}
-}
 </style>
 <style id="v24-risk-y2-polish">
 /* 2Y Yield View: only the information the trader actually reads. */
@@ -1407,70 +1074,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-risk .risk-inline-field>span{font-size:9px;}
 #tab-risk .risk-inline-input{width:104px;flex-basis:104px;font-size:12px;padding:6px 7px;}
 #tab-risk .risk-inline-note{font-size:9.5px;}
-
-/* Pair Ranking: keep the left edge compact and bring Pair closer to Score. */
-#tab-pairs .pair-table{min-width:1080px!important;}
-#tab-pairs th:nth-child(1),#tab-pairs td:nth-child(1){width:5%;}
-#tab-pairs th:nth-child(2),#tab-pairs td:nth-child(2){width:9.5%;padding-right:3px;}
-#tab-pairs th:nth-child(3),#tab-pairs td:nth-child(3){width:6.5%;padding-left:3px;}
-#tab-pairs th:nth-child(11),#tab-pairs td:nth-child(11){width:8%;}
-#tab-pairs th:nth-child(10),#tab-pairs td:nth-child(10){width:9%;}
-#tab-pairs th:nth-child(4),#tab-pairs td:nth-child(4){width:11%;}
-
-/* FOUND BUG: the six blocks above (and others earlier in this file) each redefined this same
-   table's column widths at a different point in its history -- 10 columns, then 11, then 12 --
-   and none of them was ever cleaned up after the next one was added. Risk Sentiment (column 12)
-   never got a width rule at all in any of them, and several columns had conflicting percentages
-   fighting each other in the cascade. That's what produced uneven gaps in some spots and
-   overlapping/crushed text in others. This single block is now the authoritative one -- it
-   covers all 12 columns, sums cleanly to 100%, and !important guarantees it wins over every
-   older duplicate above regardless of source order, so those don't need to be hunted down and
-   deleted one by one for this to render correctly today. */
-#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:5%!important;}
-#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:11%!important;}
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:7%!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:11%!important;}
-#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:8%!important;padding-right:9px!important;}
-#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:9%!important;padding-left:9px!important;}
-#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:8%!important;padding-left:9px!important;}
-#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:9%!important;padding-left:9px!important;}
-#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:8%!important;padding-left:9px!important;}
-#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8%!important;}
-#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:8%!important;padding-right:9px!important;}
-#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:8%!important;padding-left:9px!important;}
-/* "Very Bullish/Bearish" got its own class (pair-bias-vbull/vbear) instead of reusing
-   pair-bias-lean-bull/bear -- the lean-* classes are pinned to a deliberately muted color
-   elsewhere in this file (they mean "Leaning", a weak signal). Very is the strongest signal,
-   so it gets full-strength green/red here, same intensity as the plain Bullish/Bearish cells. */
-/* FOUND BUG #3: this file has three separate green variables (--bullish-strong, --ref-green,
-   --pair-green) and three separate red variables (--bearish-strong, --ref-red, --pair-red),
-   each redefined multiple times at different points in the cascade, and different rules for
-   plain Bullish/Bearish vs Very Bullish/Bearish happened to reference different ones -- so they
-   were never guaranteed to be the same shade even though they're supposed to mean the same
-   thing at different strength. Hardcoding one exact color for every bull/bear state in this
-   table (plain and Very both) so there's no variable-resolution ambiguity left to drift. */
-#tab-pairs .pair-table .pair-bias-single.bull,
-#tab-pairs .pair-table .pair-bias-vbull .lean-word,
-#tab-pairs .pair-table .pair-bias-vbull strong{color:#38e3a5!important;}
-#tab-pairs .pair-table .pair-bias-single.bear,
-#tab-pairs .pair-table .pair-bias-vbear .lean-word,
-#tab-pairs .pair-table .pair-bias-vbear strong{color:#ff707d!important;}
-/* FOUND BUG #2: columns 8-11 were force-centered by an older rule (`#tab-pairs th:nth-child(8..11){text-align:center}`).
-   Centering pulls each value toward the middle of its own column -- i.e. toward the shared
-   border with its neighbor -- so two adjacent centered values (e.g. Net Position "VERY BULLISH"
-   and WoW Δ "VERY BULLISH") drift toward each other and visually touch. Left-aligning pins every
-   value to its own column's left edge instead, away from the neighbor, which is what actually
-   creates separation -- the padding tweaks above only helped at the margins. */
-#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5),
-#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6),
-#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7),
-#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8),
-#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9),
-#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10),
-#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11),
-#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){
-  text-align:left!important;justify-content:flex-start!important;
-}
 
 /* Currency Detail: direct, colour-coded risk language. */
 #tab-detail .risk-detail-item .v .risk-bull{color:var(--bullish-strong)!important;}
@@ -1537,13 +1140,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-detail .info-item .k{font-size:11.5px;}
 #tab-detail .info-item .v{font-size:13.5px;}
 
-/* Pair expanded detail: make the two non-core contributors explicit. */
-#tab-pairs .pair-detail-diagnostics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
-#tab-pairs .pair-detail-diagnostics>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 9px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;}
-#tab-pairs .pair-detail-diagnostics span{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.55px;}
-#tab-pairs .pair-detail-diagnostics b{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;text-align:right;}
-@media(max-width:600px){#tab-pairs .pair-detail-diagnostics{grid-template-columns:1fr;}}
-
 #tab-yield2y .y2-ccy-cell{display:flex;align-items:center;gap:5px;}
 #tab-yield2y .y2-ccy-cell .ccy-flag{margin:0;}
 #tab-yield2y .y2-usd-spread{font-size:14px;font-weight:900;}
@@ -1567,24 +1163,6 @@ body.black .card,body.ash .card{box-shadow:none;}
 </style>
 
 <style id="v25-final-visual-system">
-/* Final visual system: restrained typography, clearer 2Y spread hierarchy.
-   (Color variables intentionally left alone here — the base theme blocks
-   already define a correct 3-tier bullish/lean/bearish ramp; an earlier
-   patch was flattening it to one flat color per side and has been removed.) */
-#tab-pairs .pair-table td,#tab-pairs .pair-table td span,#tab-pairs .pair-table td b,
-#tab-pairs .pair-table .pair-factor,#tab-pairs .pair-table .pair-score,
-#tab-pairs .pair-table .pair-bias-single,#tab-pairs .pair-table .pair-bias-stack strong,
-#tab-pairs .pair-table .pair-bias-stack .lean-word{
-  font-weight:500!important;
-  letter-spacing:.05px!important;
-  text-transform:uppercase!important;
-}
-#tab-pairs .pair-table .pair-score{font-family:'IBM Plex Mono',monospace;font-size:13.5px!important;}
-#tab-pairs .pair-table .pair-factor{font-family:'Inter',system-ui,sans-serif!important;font-size:13px!important;}
-#tab-pairs .pair-table .ccy-name{font-weight:600!important;font-size:13.5px!important;}
-#tab-pairs .pair-table td{padding-top:7px!important;padding-bottom:7px!important;}
-#tab-pairs .pair-table th{font-size:10.5px!important;font-weight:600!important;letter-spacing:.55px!important;}
-#tab-pairs .day-delta{font-weight:500!important;font-size:12.5px!important;}
 
 /* 2Y top readout: current is the headline, change is secondary. */
 #tab-yield2y .hist-spread-live{display:flex;align-items:flex-end;gap:16px;}
@@ -1623,7 +1201,7 @@ body:not(.ash):not(.black)
 html,body,
 button,input,select,textarea,
 table,th,td,.card,.tab-btn,.chip,.ccy-pill,
-#tab-overview,#tab-raw,#tab-detail,#tab-pairs,#tab-yield2y,#tab-risk{
+#tab-overview,#tab-raw,#tab-detail,#tab-yield2y,#tab-risk{
   font-family:var(--ui-font)!important;
 }
 
@@ -1654,18 +1232,15 @@ body.black, html.black{
 .sector-title span.label{font-size:12px!important;letter-spacing:.65px!important;}
 
 /* Common dashboard data text: 14px everywhere, with weight carrying the hierarchy. */
-#tab-overview,#tab-raw,#tab-detail,#tab-pairs,#tab-yield2y,#tab-risk{font-size:var(--ui-size)!important;}
-#tab-overview table,#tab-raw table,#tab-detail table,#tab-pairs table,#tab-yield2y table,#tab-risk table{
+#tab-overview,#tab-raw,#tab-detail,#tab-yield2y,#tab-risk{font-size:var(--ui-size)!important;}
+#tab-overview table,#tab-raw table,#tab-detail table,#tab-yield2y table,#tab-risk table{
   font-size:var(--ui-size)!important;
 }
-#tab-overview td,#tab-raw td,#tab-detail td,#tab-pairs td,#tab-yield2y td,#tab-risk td,
+#tab-overview td,#tab-raw td,#tab-detail td,#tab-yield2y td,#tab-risk td,
 #tab-overview .strength-ccy,#tab-overview .strength-score,#tab-overview .strength-bias,
 #tab-risk .strength-ccy,#tab-risk .strength-score,#tab-risk .strength-bias,
 #tab-detail .info-item .v,
 #tab-raw .ind-link,#tab-raw .ind-name,#tab-raw .ind-num,#tab-raw .ind-txt,#tab-raw .surprise,#tab-raw .bias-select,#tab-raw .bias-chip-text,
-#tab-pairs .pair-table .pair-score,#tab-pairs .pair-table .pair-factor,#tab-pairs .pair-table .pair-bias-single,
-#tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word,#tab-pairs .pair-table .ccy-name,
-#tab-pairs .pair-table .day-delta,
 #tab-yield2y .y2-score-table td,
 #tab-yield2y .y2-ccy-cell,#tab-yield2y .y2-usd-spread,#tab-yield2y .y2-direction-view,#tab-yield2y .y2-score-view .y2-score,
 #tab-risk .strength-ccy,#tab-risk .strength-score,#tab-risk .strength-bias{
@@ -1682,7 +1257,7 @@ body.black, html.black{
 }
 
 /* Table headers are the same size across all views; only weight/letter-spacing differentiates them. */
-#tab-overview th,#tab-raw th,#tab-pairs th,#tab-yield2y th,#tab-risk th{
+#tab-overview th,#tab-raw th,#tab-yield2y th,#tab-risk th{
   font-family:var(--ui-font)!important;
   font-size:var(--ui-head-size)!important;
   font-weight:700!important;
@@ -1723,7 +1298,6 @@ body.black, html.black{
 
 /* Use typography like the reference scanner: no monospace data text in the main boards. */
 #tab-overview .strength-rank,#tab-risk .strength-rank,
-#tab-pairs .pair-score,#tab-pairs .day-delta,
 #tab-yield2y .y2-score,#tab-yield2y .y2-usd-spread,
 #tab-yield2y .hist-live-value,#tab-yield2y .hist-live-change,
 #tab-risk .risk-inline-v,#tab-risk .risk-mini-chip,
@@ -1734,36 +1308,17 @@ body.black, html.black{
 
 /* Polarity: use the same vivid green / red language throughout. */
 #tab-overview .trend-up,#tab-overview .strength-pos,#tab-overview .strength-lean-pos,
-#tab-pairs .score-bull,#tab-pairs .score-lean-bull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull,
-#tab-pairs .pair-factor.bull,#tab-pairs .pair-factor.Bullish,
 #tab-risk .strength-pos,#tab-risk .strength-lean-pos,#tab-risk .trend-up,
 .chip-bull,.chip-bull.strong,.chip-bull.lean{
   color:var(--bullish-strong)!important;
 }
 #tab-overview .trend-down,#tab-overview .strength-neg,#tab-overview .strength-lean-neg,
-#tab-pairs .score-bear,#tab-pairs .score-lean-bear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear,
-#tab-pairs .pair-factor.bear,#tab-pairs .pair-factor.Bearish,
 #tab-risk .strength-neg,#tab-risk .strength-lean-neg,#tab-risk .trend-down,
 .chip-bear,.chip-bear.strong,.chip-bear.lean{
   color:var(--bearish-strong)!important;
 }
 #tab-overview .strength-neu,#tab-risk .strength-neu,
-#tab-pairs .score-neutral,#tab-pairs .pair-bias-single.neutral,
 #tab-yield2y .y2-neutral{color:var(--text-dim)!important;}
-
-/* Pair Ranking: one scanner-like text system rather than a separate font regime. */
-#tab-pairs .pair-table td,#tab-pairs .pair-table td span,#tab-pairs .pair-table td b{
-  font-family:var(--ui-font)!important;
-  font-size:14px!important;
-  font-weight:600!important;
-  letter-spacing:0!important;
-}
-#tab-pairs .pair-table th{font-family:var(--ui-font)!important;font-size:11px!important;font-weight:700!important;}
-#tab-pairs .pair-table .ccy-name{font-size:14px!important;font-weight:700!important;}
-#tab-pairs .pair-table .pair-score{font-size:14px!important;font-weight:700!important;}
-#tab-pairs .pair-table .day-delta{font-size:13.5px!important;font-weight:600!important;}
-#tab-pairs .pair-table .pair-factor{font-size:14px!important;font-weight:600!important;}
-#tab-pairs .pair-table .pair-bias-single,#tab-pairs .pair-table .pair-bias-stack strong,#tab-pairs .pair-table .pair-bias-stack .lean-word{font-size:14px!important;font-weight:600!important;}
 
 /* 2Y Yield View: separate score, regime, bp spread and visual position cleanly. */
 
@@ -1819,32 +1374,16 @@ body.black, html.black{
 /* The left navigation and top controls use the same UI family; keep the brand itself distinctive. */
 .brand-mark{font-family:'Space Grotesk',var(--ui-font)!important;font-weight:700!important;}
 .theme-btn,.recalc-btn,#manualSaveBtn{font-family:var(--ui-font)!important;}
-
-@media(max-width:1050px){
-  
-  
-}
-@media(max-width:700px){
-  
-}
 </style>
 
 <style id="v29-definitive-reference-colors">
 :root{--ref-green:#22c98b;--ref-green-lean:#60ab8a;--ref-red:#f04455;--ref-red-lean:#af545f;--ref-ash:#747b76;--bullish:#22c98b;--bullish-strong:#22c98b;--bullish-lean:#60ab8a;--bearish:#f04455;--bearish-strong:#f04455;--bearish-lean:#af545f;--neutral:#747b76;}
-/* Muted red requested for Pair Ranking only — scoped to #tab-pairs so every
-   other tab (Overview, Surprise Index, Risk Sentiment, Currency Detail, COT)
-   keeps the original, brighter --ref-red it had before. */
-#tab-pairs{--ref-red:#b8515a;--ref-red-lean:#835458;--bearish:#b8515a;--bearish-strong:#b8515a;--bearish-lean:#835458;}
 body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-strong:var(--ref-green);--bullish-lean:var(--ref-green-lean);--bearish:var(--ref-red);--bearish-strong:var(--ref-red);--bearish-lean:var(--ref-red-lean);--neutral:var(--ref-ash);}
 .brand-mark{color:var(--ref-green)!important;}
 #tab-overview .trend-up,#tab-overview .strength-pos,#tab-risk .strength-pos,#tab-risk .trend-up,.trend-panel .trend-up,#tab-detail .trend-up,.chip-bull,.chip-bull.strong{color:var(--ref-green)!important;}
 #tab-overview .trend-down,#tab-overview .strength-neg,#tab-risk .strength-neg,#tab-risk .trend-down,.trend-panel .trend-down,#tab-detail .trend-down,.chip-bear,.chip-bear.strong{color:var(--ref-red)!important;}
-#tab-overview .strength-lean-pos,#tab-pairs .score-lean-bull,#tab-pairs .pair-bias-lean-bull,#tab-pairs .pair-bias-lean-bull strong,#tab-pairs .pair-bias-lean-bull .lean-word,#tab-risk .strength-lean-pos{color:var(--ref-green-lean)!important;}
-#tab-overview .strength-lean-neg,#tab-pairs .score-lean-bear,#tab-pairs .pair-bias-lean-bear,#tab-pairs .pair-bias-lean-bear strong,#tab-pairs .pair-bias-lean-bear .lean-word,#tab-risk .strength-lean-neg{color:var(--ref-red-lean)!important;}
-#tab-pairs .score-bull,#tab-pairs .score-vbull,#tab-pairs .pair-bias-single.bull,#tab-pairs .pair-bias-single.very-bull,#tab-pairs .pair-bias-vbull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull,#tab-pairs .pair-factor.bull,#tab-pairs .pair-factor.Bullish{color:var(--ref-green)!important;}
-#tab-pairs .score-bear,#tab-pairs .score-vbear,#tab-pairs .pair-bias-single.bear,#tab-pairs .pair-bias-single.very-bear,#tab-pairs .pair-bias-vbear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear,#tab-pairs .pair-factor.bear,#tab-pairs .pair-factor.Bearish{color:var(--ref-red)!important;}
-#tab-pairs .score-neutral,#tab-pairs .pair-bias-single.neutral,#tab-pairs .pair-bias-neutral,#tab-pairs .yield-neutral{color:var(--ref-ash)!important;}
-#tab-pairs .pair-score.score-lean-bull{color:var(--ref-green-lean)!important;}#tab-pairs .pair-score.score-lean-bear{color:var(--ref-red-lean)!important;}
+#tab-overview .strength-lean-pos,#tab-risk .strength-lean-pos{color:var(--ref-green-lean)!important;}
+#tab-overview .strength-lean-neg,#tab-risk .strength-lean-neg{color:var(--ref-red-lean)!important;}
 #tab-detail .trend-panel .trend-score.trend-up,#tab-detail .trend-panel .trend-delta.trend-up{color:var(--ref-green)!important;}#tab-detail .trend-panel .trend-score.trend-down,#tab-detail .trend-panel .trend-delta.trend-down{color:var(--ref-red)!important;}
 #tab-detail .detail-grid{grid-template-columns:270px minmax(0,1040px)!important;justify-content:start!important;gap:14px!important;}#tab-detail .right-col{min-width:0;}#tab-detail .info-grid{grid-template-columns:repeat(3,minmax(145px,1fr))!important;}
 #tab-raw .surprise-list-head,#tab-raw .surprise-row{grid-template-columns:28px 72px 1fr 64px 92px 105px 155px!important;}#tab-raw .surprise-count{font-family:var(--ui-font)!important;font-size:14px!important;font-weight:600!important;color:var(--text-dim)!important;white-space:nowrap;}#tab-raw .surprise-summary .surprise-v{font-family:var(--ui-font)!important;font-size:17px!important;font-weight:700!important;}
@@ -1855,10 +1394,8 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 /* Final cleanup: keep Currency Detail untouched; correct only the remaining views. */
 
 /* Leaning states: visibly lighter/more muted than their full bullish/bearish colors. */
-#tab-overview .strength-lean-pos,#tab-pairs .score-lean-bull,#tab-pairs .pair-bias-lean-bull,#tab-pairs .pair-bias-lean-bull strong,#tab-pairs .pair-bias-lean-bull .lean-word,#tab-risk .strength-lean-pos{color:#60ab8a!important;}
-#tab-overview .strength-lean-neg,#tab-pairs .score-lean-bear,#tab-pairs .pair-bias-lean-bear,#tab-pairs .pair-bias-lean-bear strong,#tab-pairs .pair-bias-lean-bear .lean-word,#tab-risk .strength-lean-neg{color:#af545f!important;}
-#tab-pairs .pair-score.score-lean-bull{color:#60ab8a!important;}
-#tab-pairs .pair-score.score-lean-bear{color:#af545f!important;}
+#tab-overview .strength-lean-pos,#tab-risk .strength-lean-pos{color:#60ab8a!important;}
+#tab-overview .strength-lean-neg,#tab-risk .strength-lean-neg{color:#af545f!important;}
 
 /* 2Y Yield View table: visible horizontal + vertical separators so the layout reads as a table. */
 #tab-yield2y .y2-score-table{border:1px solid var(--border)!important;}
@@ -1875,10 +1412,6 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 
 /* Simple Surprise Index header: release count and average only. */
 #tab-raw .surprise-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-
-@media(max-width:700px){
-  
-}
 </style>
 
 <style id="cot-regime-v1">
@@ -2151,9 +1684,6 @@ body:not(.editing) #tab-detail .sector-block table th:nth-child(1),body:not(.edi
 body:not(.editing) #tab-detail .sector-block table th:nth-child(3),body:not(.editing) #tab-detail .sector-block table td:nth-child(3),body:not(.editing) #tab-detail .sector-block table th:nth-child(4),body:not(.editing) #tab-detail .sector-block table td:nth-child(4){width:15%!important;}
 body:not(.editing) #tab-detail .sector-block table th:nth-child(5),body:not(.editing) #tab-detail .sector-block table td:nth-child(5){width:15%!important;}
 body:not(.editing) #tab-detail .sector-block table th:nth-child(6),body:not(.editing) #tab-detail .sector-block table td:nth-child(6){width:19%!important;}
-#tab-pairs .bigchart{width:760px!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;padding:11px 12px!important;}
-#tab-pairs .pair-big-trend{max-height:128px!important;}
-#tab-pairs .bigchart-head{margin-bottom:7px!important;}
 .pair-macro-summary{margin:0 0 9px;padding:9px 11px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;line-height:1.45;}
 .pair-macro-summary-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.65px;font-size:10px;color:var(--text-faint);}
 .pair-macro-summary-head b{font-size:11px;}
@@ -2298,25 +1828,6 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
   outline:none!important;
   box-shadow:inset 0 0 0 1px rgba(182,83,16,.16),0 0 0 2px rgba(182,83,16,.08)!important;
 }
-
-/* Macro read: exactly three compact trader lines, with less repetition and more data. */
-#tab-pairs .pair-macro-summary{
-  padding:10px 13px!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.014),transparent 72%),var(--panel2)!important;
-}
-#tab-pairs .pair-macro-lead,
-#tab-pairs .pair-macro-line,
-#tab-pairs .pair-macro-verdict{
-  font-size:11.25px!important;
-  line-height:1.5!important;
-}
-#tab-pairs .pair-macro-line:before{display:none!important;}
-#tab-pairs .pair-macro-line{padding-left:0!important;margin-top:4px!important;}
-#tab-pairs .pair-macro-verdict{
-  padding-left:0!important;
-  margin-top:6px!important;
-  padding-top:6px!important;
-}
 </style>
 
 <style id="v42-visible-green-and-expanded-macro-read">
@@ -2333,12 +1844,6 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 .brand-mark:before{
   background:linear-gradient(90deg,transparent 0%,rgba(53,214,129,.24) 18%,rgba(53,214,129,.72) 50%,rgba(53,214,129,.24) 82%,transparent 100%)!important;
 }
-
-/* Macro read: ten readable, pair-specific sentences. */
-#tab-pairs .pair-macro-summary{padding:11px 14px!important;}
-#tab-pairs .pair-macro-line{font-size:11.25px!important;line-height:1.5!important;margin-top:4px!important;color:var(--text-dim)!important;}
-#tab-pairs .pair-macro-line.macro-line-0{color:var(--text)!important;font-weight:700!important;}
-#tab-pairs .pair-macro-line.macro-line-9{color:var(--text)!important;font-weight:650!important;padding-top:4px!important;margin-top:6px!important;border-top:1px solid var(--border)!important;}
 
 /* Forward guidance: keep the field open and use a deep orange scanner tone. */
 #tab-detail .guidance-box{
@@ -2406,15 +1911,6 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-cot .cot-scanner-note{padding:5px 6px 8px!important;}
 </style>
 
-<style id="macro-analyst-read-v2">
-#tab-pairs .pair-macro-summary{padding:13px 15px!important;}
-#tab-pairs .pair-macro-summary-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px!important;}
-#tab-pairs .pair-macro-lead{font-size:12px!important;line-height:1.58!important;font-weight:700!important;color:var(--text)!important;margin:0 0 7px 0!important;}
-#tab-pairs .pair-macro-line{font-size:11.4px!important;line-height:1.58!important;color:var(--text-dim)!important;padding:0!important;margin:6px 0 0 0!important;}
-#tab-pairs .pair-macro-line:before{display:none!important;}
-#tab-pairs .pair-macro-verdict{font-size:11.5px!important;line-height:1.6!important;color:var(--text)!important;margin-top:9px!important;padding:9px 0 0 0!important;border-top:1px solid var(--border)!important;font-weight:650!important;}
-#tab-pairs .pair-macro-summary:before{background:linear-gradient(180deg,var(--amber),var(--border))!important;}
-</style>
 
 <style id="policy-monitor-ui">
 /* Policy monitor is a primary top-right diagnostic, beside Composite Trend. */
@@ -2867,16 +2363,6 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
     margin-top:-8px!important;
     border-bottom:1px solid var(--border)!important;
   }
-
-  /* Pair Ranking only: pin the column labels underneath the live header.
-     Do NOT change the pair table dimensions or the overview layout. */
-  #tab-pairs .pair-table thead th{
-    position:sticky!important;
-    top:49px!important;
-    z-index:50!important;
-    background:var(--panel2)!important;
-    box-shadow:0 1px 0 var(--border)!important;
-  }
 }
 
 /* On smaller screens the header remains visible too, without changing the
@@ -3229,8 +2715,8 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 :root{--overview-standard:14px;}
 /* Consistent readable trader typography across TWP views. */
 .page-title{font-size:21px!important}.page-sub{font-size:12px!important}.tab-btn{font-size:14px!important;}
-#tab-overview,#tab-raw,#tab-detail,#tab-pairs,#tab-yield2y,#tab-risk,#tab-cot{font-size:14px!important;font-family:var(--ui-font)!important;}
-#tab-detail td,#tab-pairs td,#tab-yield2y td,#tab-risk td{font-size:14px!important;}
+#tab-overview,#tab-raw,#tab-detail,#tab-yield2y,#tab-risk,#tab-cot{font-size:14px!important;font-family:var(--ui-font)!important;}
+#tab-detail td,#tab-yield2y td,#tab-risk td{font-size:14px!important;}
 /* Full-screen Overview board. */
 #tab-overview{height:calc(100vh - 82px)!important;overflow:hidden!important;}
 #tab-overview .ov-pro-board{height:100%!important;min-height:0!important;max-height:none!important;display:grid!important;grid-template-rows:185px minmax(0,1fr)!important;gap:10px!important;}
@@ -3468,14 +2954,12 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 body{font-size:var(--twp-body-size);}
 .tab-panel{font-family:var(--ui-font)!important;font-size:var(--twp-body-size)!important;}
 .tab-panel table,.tab-panel td,.tab-panel input,.tab-panel select,.tab-panel button{font-family:var(--ui-font)!important;}
-#tab-detail,#tab-pairs,#tab-yield2y,#tab-risk,#tab-cot,#tab-raw{font-size:14px!important;}
+#tab-detail,#tab-yield2y,#tab-risk,#tab-cot,#tab-raw{font-size:14px!important;}
 #tab-detail td,#tab-detail .ind-link,#tab-detail .ind-name,#tab-detail .ind-num,#tab-detail .ind-txt,#tab-detail .surprise{font-size:14px!important;}
 #tab-raw .surprise-row,#tab-raw .surprise-row *{font-size:14px!important;}
 #tab-cot td,#tab-cot th{font-size:14px!important;}
 #tab-cot th{font-size:11.5px!important;}
 #tab-yield2y td{font-size:14px!important;}
-#tab-pairs .pair-table td,#tab-pairs .pair-table td span,#tab-pairs .pair-table td b{font-size:14px!important;}
-#tab-pairs .pair-table th{font-size:11.5px!important;}
 #tab-yield2y .y2-score-table td{font-size:14px!important;}
 #tab-risk .strength-row{font-size:14px!important;}
 #tab-overview{height:calc(100dvh - 84px)!important;overflow:hidden!important;font-size:14px!important;}
@@ -3531,14 +3015,13 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-pair-name{font-size:13.5px!important;}
 #tab-overview .ov-pair-score,#tab-overview .ov-pair-bias,#tab-overview .ov-pair-trend{font-size:12px!important;}
 /* Session control: deep red-black market-status chip. */
-.session-wrap{position:relative;display:inline-flex;align-items:center;z-index:120;}
-.session-trigger{appearance:none;border:1px solid #3a171b;background:#14090b;color:#ecefec;border-radius:7px;display:inline-flex;align-items:center;gap:7px;padding:6px 9px;cursor:pointer;font-family:var(--ui-font)!important;font-size:12px!important;font-weight:700!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
-.session-trigger:hover{border-color:#6a222a;background:#190b0e;}
+.session-wrap{position:relative;display:inline-flex;align-items:center;z-index:120;background:none!important;border:none!important;box-shadow:none!important;}
+.session-trigger{appearance:none!important;border:none!important;background:transparent!important;box-shadow:none!important;color:#ecefec;border-radius:7px;display:inline-flex;align-items:center;gap:7px;padding:6px 9px;cursor:pointer;font-family:'Inter',system-ui,sans-serif!important;font-size:13px!important;font-weight:600!important;}
 .session-dot{width:6px;height:6px;border-radius:50%;background:#38e3a5;box-shadow:0 0 0 2px rgba(56,227,165,.08);flex:0 0 auto;}
-.session-gh{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;letter-spacing:.4px;}
-.session-gh-date{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--text-dim);margin-right:4px;}
-#ghClock{font-family:'IBM Plex Mono',monospace;font-size:12px!important;font-weight:700;color:#d7ddd8!important;white-space:nowrap;}
+.session-gh{font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:600;letter-spacing:.2px;}
+#ghClock{font-family:'Inter',system-ui,sans-serif!important;font-size:13px!important;font-weight:600;color:#d7ddd8!important;white-space:nowrap;background:none!important;border:none!important;box-shadow:none!important;}
 .session-chevron{color:#8e9892;font-size:12px;line-height:1;transform:translateY(-1px);}
+.session-trigger:hover{background:rgba(255,255,255,.06);}
 .session-popover{position:absolute;top:calc(100% + 8px);right:0;width:360px;background:#121212;border:1px solid #3b171b;border-radius:9px;box-shadow:0 16px 34px rgba(0,0,0,.42);overflow:hidden;}
 .session-popover[hidden]{display:none;}
 .session-pop-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:#16090b;}
@@ -3844,82 +3327,6 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-pro-kpis .ov-spread-positive{color:var(--bullish-strong)!important;}
 </style>
 
-<style id="pair-ranking-v53-alignment">
-/* V53: Pair Ranking alignment column + rebalanced 13-column scanner.
-   Alignment is a descriptive percentage only; it does not alter the pair score. */
-#tab-pairs .pair-table .pair-alignment{
-  font-family:'IBM Plex Mono',monospace!important;
-  font-size:12.5px!important;
-  font-weight:900!important;
-  text-align:center!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:clip!important;
-  padding-left:4px!important;
-  padding-right:4px!important;
-}
-#tab-pairs .pair-alignment.align-bull-strong{color:var(--bullish-strong)!important;}
-#tab-pairs .pair-alignment.align-bear-strong{color:var(--bearish-strong)!important;}
-#tab-pairs .pair-alignment.align-bull{color:var(--bullish-lean)!important;}
-#tab-pairs .pair-alignment.align-bear{color:var(--bearish-lean)!important;}
-#tab-pairs .pair-alignment.align-neutral{color:var(--text-dim)!important;}
-
-#tab-pairs .table-scroll{overflow-x:hidden!important;}
-#tab-pairs table.pair-table{
-  width:100%!important;
-  min-width:0!important;
-  table-layout:fixed!important;
-}
-/* 13 columns = 100%. The longer descriptive fields each retain enough width to stay
-   on one line; the compact score/delta/alignment fields give the space back. */
-#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:4%!important;}
-#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:8%!important;}
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:4%!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:6%!important;}
-#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:8%!important;}
-#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:8.75%!important;}
-#tab-pairs table.pair-table th:nth-child(13),#tab-pairs table.pair-table td:nth-child(13){width:8.75%!important;}
-#tab-pairs table.pair-table th{
-  white-space:nowrap!important;
-  word-break:normal!important;
-  line-height:1.15!important;
-  padding-left:5px!important;
-  padding-right:5px!important;
-}
-#tab-pairs table.pair-table td{
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  padding-left:5px!important;
-  padding-right:5px!important;
-}
-#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1),
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3),
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){text-align:center!important;}
-#tab-pairs table.pair-table th:nth-child(n+5),#tab-pairs table.pair-table td:nth-child(n+5){text-align:left!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){padding-left:2px!important;padding-right:2px!important;}
-
-@media(max-width:700px){
-  /* Mobile remains a stacked card: alignment sits directly under Score, matching desktop order. */
-  #tab-pairs .pair-table td[data-label="ALIGN..."]{order:3;width:100%;justify-content:flex-end;padding-top:0!important;padding-bottom:7px!important;}
-  #tab-pairs .pair-table td[data-label="Trend"]{order:4;}
-  #tab-pairs .pair-table td[data-label="Bias"]{order:5;}
-  #tab-pairs .pair-table td[data-label="Fundamentals"]{order:6;}
-  #tab-pairs .pair-table td[data-label="Yield Bias"]{order:7;}
-  #tab-pairs .pair-table td[data-label="CB Stance"]{order:8;}
-  #tab-pairs .pair-table td[data-label="Net Positioning"]{order:9;}
-  #tab-pairs .pair-table td[data-label="Δ WoW"]{order:10;}
-  #tab-pairs .pair-table td[data-label="Seasonality"]{order:11;}
-  #tab-pairs .pair-table td[data-label="Risk Sentiment"]{order:12;width:100%;}
-  #tab-pairs .pair-table td[data-label="ALIGN..."]::before{content:'ALIGN...';}
-}
-</style>
 
 <style id="v51-pair-ranking-final-fit">
 /* Final Pair Ranking fit: reclaim a little horizontal room from the left rail,
@@ -3931,75 +3338,9 @@ body{font-size:var(--twp-body-size);}
   .rail{width:210px!important;flex-basis:210px!important;}
   .content{padding-left:12px!important;padding-right:12px!important;}
 }
-#tab-pairs .table-scroll{overflow-x:hidden!important;}
-#tab-pairs table.pair-table{
-  width:100%!important;
-  min-width:0!important;
-  table-layout:fixed!important;
-}
-/* 13 columns, sum = exactly 100%. */
-#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:5.5%!important;}
-#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:8.5%!important;}
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:4%!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:5%!important;}
-#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:9.5%!important;}
-#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:7.5%!important;}
-#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:8.5%!important;}
-#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:8%!important;}
-#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:8.5%!important;}
-#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8%!important;}
-#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:7.5%!important;}
-#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:9%!important;}
-#tab-pairs table.pair-table th:nth-child(13),#tab-pairs table.pair-table td:nth-child(13){width:10.5%!important;}
-
-#tab-pairs table.pair-table th{
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:clip!important;
-  word-break:normal!important;
-  line-height:1.15!important;
-  padding-left:6px!important;
-  padding-right:6px!important;
-}
-#tab-pairs table.pair-table td{
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:clip!important;
-  padding-left:6px!important;
-  padding-right:6px!important;
-}
-#tab-pairs table.pair-table td:nth-child(2){overflow:visible!important;}
-#tab-pairs .pair-name-wrap{white-space:nowrap!important;overflow:visible!important;}
-#tab-pairs .pair-flags{margin-right:5px!important;}
-#tab-pairs .pair-bias-stack,
-#tab-pairs .pair-bias-single,
-#tab-pairs .pair-factor{
-  display:inline-flex!important;
-  align-items:center!important;
-  white-space:nowrap!important;
-  max-width:100%!important;
-  overflow:visible!important;
-  text-overflow:clip!important;
-}
-#tab-pairs .pair-bias-stack .lean-word{margin-right:3px!important;}
-#tab-pairs .pair-alignment{
-  text-align:center!important;
-  white-space:nowrap!important;
-  overflow:visible!important;
-  padding-left:3px!important;
-  padding-right:3px!important;
-}
-#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1),
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3),
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){text-align:center!important;}
-#tab-pairs table.pair-table th:nth-child(n+5),#tab-pairs table.pair-table td:nth-child(n+5){text-align:left!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){text-align:center!important;}
 
 @media(max-width:700px){
   .rail{width:100%!important;flex-basis:auto!important;}
-  #tab-pairs table.pair-table{table-layout:auto!important;width:100%!important;min-width:0!important;}
-  #tab-pairs table.pair-table th,#tab-pairs table.pair-table td{white-space:normal!important;}
-  #tab-pairs .pair-bias-stack,#tab-pairs .pair-bias-single,#tab-pairs .pair-factor{display:inline-flex!important;white-space:normal!important;}
 }
 </style>
 <style id="scanner-styles">
@@ -4197,7 +3538,6 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-expanded-trend-note{margin-top:5px;font-size:10.5px;color:var(--text-faint);}
 #tab-scanner .scanner-expanded-rate{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:7px;padding:7px 9px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text-faint);}
 #tab-scanner .scanner-expanded-rate b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
-#tab-pairs{display:none!important;} .tab-btn[data-tab="pairs"]{display:none!important;}
 @media(max-width:900px){#tab-scanner .scanner-expanded-grid{grid-template-columns:1fr;}}
 </style>
 </style>
@@ -4265,7 +3605,7 @@ body{font-size:var(--twp-body-size);}
         <span class="updated" id="updatedTag" style="transition: color 0.3s; font-family:'IBM Plex Mono',monospace; font-size: 11.5px; color: var(--text-faint);">Ready</span>
         <div class="session-wrap" id="sessionWrap">
   <button class="session-trigger" id="sessionTrigger" type="button" aria-expanded="false" aria-haspopup="true">
-    <span class="session-dot" aria-hidden="true"></span><span class="session-gh">GH</span><span id="ghDate" class="session-gh-date">-- --- --</span><span id="ghClock">--:--:--</span><span class="session-chevron">⌄</span>
+    <span class="session-dot" aria-hidden="true"></span><span class="session-gh">GH</span><span id="ghClock">--:--</span><span class="session-chevron">⌄</span>
   </button>
   <div class="session-popover" id="sessionPopover" hidden></div>
 </div>
@@ -4275,7 +3615,6 @@ body{font-size:var(--twp-body-size);}
     <section class="tab-panel active" id="tab-overview"></section>
     <section class="tab-panel" id="tab-raw"></section>
     <section class="tab-panel" id="tab-detail"></section>
-    <section class="tab-panel" id="tab-pairs"></section>
     <section class="tab-panel" id="tab-scanner"></section>
     <section class="tab-panel" id="tab-yield2y"></section>
     <section class="tab-panel" id="tab-risk"></section>
@@ -4612,7 +3951,7 @@ function withLiveToday(days, vals, liveVal, maxLen){
 var y2DateTouchedThisSession = false; // true once the user actually changes the yield date picker themselves
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
-var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=false, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
+var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=true, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
 var scannerFilters=["All"], scannerFavorites=[], scannerExpandedPair=null;
 try{
   var __savedScannerFav=JSON.parse(localStorage.getItem('twp_scanner_favorites')||'[]');
@@ -6456,7 +5795,12 @@ function renderScanner(animateTrend){
     var active=scannerFilters.indexOf(fb[0])!==-1;
     return '<button class="range-btn'+(active?" active":"")+'" data-sfilter="'+fb[0]+'">'+fb[1]+'</button>';
   }).join("");
-  var html='<div class="card"><div class="scanner-head">'+
+  var recalcRow = (unlockedLocally ? ('<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
+    '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
+      '<button class="recalc-btn" id="exportTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Export trend history</button>'+
+      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button>'+
+      '<button class="recalc-btn" id="clearPairTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear pair trend only</button></div>'+'</div>') : '');
+  var html=recalcRow+'<div class="card"><div class="scanner-head">'+
     '<div class="scanner-head-left"><h3 class="scanner-title" style="margin:0;">Trade Scanner</h3></div>'+
     '<div class="scanner-head-right"><div class="range-switch">'+filterBtns+'</div></div>'+
     '</div>'+
@@ -6468,6 +5812,75 @@ function renderScanner(animateTrend){
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
   document.getElementById("tab-scanner").innerHTML=html;
   if(animateTrend) animateScannerTrends();
+
+  var recalcBtn=document.getElementById("recalcBtn");
+  if(recalcBtn){ recalcBtn.onclick=async function(){
+    var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
+    for(var k=0;k<pr.length;k++){ snap[pr[k].pair]=pr[k].score; }
+    for(var ci=0;ci<CCYS.length;ci++){
+      var cc=CCYS[ci], ff=fundFor(cc);
+      snap[cc]=sc[cc];                                   // composite (used by Desk Board trend arrow)
+      snap["FUND_"+cc]=ff.max?(100*ff.raw/ff.max):0;      // fundamentals %, own key so it doesn't collide with pair scores
+      snap["COT_"+cc]=getCotScore(cc);
+      snap["SURPRISE_"+cc]=Math.round(surpriseDataForCurrency(cc).avg*10)/10; // Surprise Index snapshot, own key too
+    }
+    var nowTs=new Date().toISOString();
+    var isFirstSignal=!SIGNAL_LOG[todayKey];
+    // DAILY should always reflect the latest same-day numbers; only SIGNAL_LOG (used purely to
+    // dedupe the bullish/bearish LOG entries below) needs to be "first time today" gated.
+    DAILY[todayKey]=snap;
+    if(isFirstSignal){ SIGNAL_LOG[todayKey]={ts:nowTs}; }
+    var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
+    var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
+      && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
+    if(sameAsTop){
+      // Result hasn't changed since the last log entry — just refresh its timestamp instead of stacking a duplicate row.
+      LOG[0].ts = nowTs;
+    } else {
+      LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
+    }
+    if(LOG.length>50) LOG=LOG.slice(0,50);
+    // Re-render before awaiting cloud persistence. The score, trend arrow and sparkline
+    // are live UI state and must respond immediately to Recalculate; saving must never
+    // block the visual update.
+    renderScanner();
+    var saved=await saveDataNow();
+    updateStatus(saved
+      ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history refreshed'))
+      : (isFirstSignal ? ('Signal calculated · local copy queued for cloud save') : ('Live recalculated · cloud save queued')),
+      saved ? (isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)') : 'var(--amber)');
+  }; }
+  var exportTrendBtn=document.getElementById("exportTrendBtn");
+  if(exportTrendBtn){ exportTrendBtn.onclick=dailyExportCsv; }
+  var clearHistBtn=document.getElementById("clearHistBtn");
+  if(clearHistBtn){ clearHistBtn.onclick=function(){
+    if(!confirm("Clear all trend history and the recalculation log? This wipes every logged day so the trend chart starts fresh from your next recalculate. This can't be undone.")) return;
+    DAILY={}; LOG=[]; SIGNAL_LOG={}; expandedPair=null;
+    saveDataNow();
+    renderScanner();
+  }; }
+  var clearPairTrendBtn=document.getElementById("clearPairTrendBtn");
+  if(clearPairTrendBtn){ clearPairTrendBtn.onclick=function(){
+    if(!confirm("Clear ONLY the pair trend history (the numbers from before the scoring fix)? Currency composite scores, Fundamentals, COT, and Surprise Index history are all left untouched. This can't be undone.")) return;
+    // A pair key is exactly two currency codes from CCYS concatenated back-to-back (e.g. "EURUSD").
+    // Composite/FUND_/COT_/SURPRISE_ keys never match this shape, so this only ever removes
+    // pair-score entries -- everything else logged in DAILY is left exactly as it was.
+    function isPairKey(key){
+      if(typeof key!=="string" || key.length!==6) return false;
+      var base=key.slice(0,3), quote=key.slice(3);
+      return base!==quote && CCYS.indexOf(base)!==-1 && CCYS.indexOf(quote)!==-1;
+    }
+    Object.keys(DAILY).forEach(function(dt){
+      var day=DAILY[dt]; if(!day) return;
+      Object.keys(day).forEach(function(k){ if(isPairKey(k)) delete day[k]; });
+    });
+    // LOG only ever stores mostBullish/mostBearish PAIR scores, so it's entirely pair-derived
+    // and gets wiped alongside the pair trend. SIGNAL_LOG (dedupe timestamps only, no scores)
+    // is left alone so today's recalculate behaves normally.
+    LOG=[]; expandedPair=null;
+    saveDataNow();
+    renderScanner();
+  }; }
 
   var sBtns=document.querySelectorAll("[data-sfilter]");
   for(var si=0;si<sBtns.length;si++){ sBtns[si].onclick=function(){
@@ -6703,7 +6116,6 @@ var TAB_META={
   overview:{title:"Overview",sub:"Macro breadth, currency strength, pair radar and risk sentiment"},
   raw:{title:"Economic Surprise Index",sub:""},
   detail:{title:"Currency Detail",sub:""},
-  pairs:{title:"Pair Ranking",sub:""},
   scanner:{title:"Trade Scanner",sub:""},
   yield2y:{title:"Bond Yield Spread",sub:""},
   risk:{title:"Risk Sentiment",sub:"S&P 500 + VIX market-risk regime"},
@@ -6718,7 +6130,6 @@ function switchTab(tab){
   if(tab==="overview"){ renderOverview(true); }
   else if(tab==="raw"){ renderRaw(true); }
   else if(tab==="detail"){ renderDetail(); }
-  else if(tab==="pairs"){ renderPairs(); }
   else if(tab==="scanner"){ renderScanner(true); }
   else if(tab==="yield2y"){ renderYield2Y(); }
   else if(tab==="risk"){ renderRiskSentiment(); }
@@ -9243,7 +8654,7 @@ function hidePairTrendCrosshair(svg){
   if(cross) cross.setAttribute('opacity','0');
 }
 function bindPairTrendHover(){
-  var svgs=document.querySelectorAll('#tab-pairs .pair-trend-spark,#tab-overview .pair-trend-spark,#tab-scanner .pair-trend-spark');
+  var svgs=document.querySelectorAll('#tab-overview .pair-trend-spark,#tab-scanner .pair-trend-spark');
   for(var i=0;i<svgs.length;i++){
     var svg=svgs[i];
     if(svg.__pairHoverBound) continue;
@@ -9267,7 +8678,7 @@ function bindPairTrendHover(){
   }
 }
 function bindBigPairTrendHover(){
-  var svgs=document.querySelectorAll('#tab-pairs .pair-big-trend,#tab-scanner .pair-big-trend');
+  var svgs=document.querySelectorAll('#tab-scanner .pair-big-trend');
   for(var i=0;i<svgs.length;i++){
     var svg=svgs[i];
     if(svg.__pairBigHoverBound) continue;
@@ -9540,274 +8951,6 @@ function pairMacroSummaryHtml(pair, score){
   '</div>';
 }
 
-function renderPairs(){
-  if(!DATA) return;
-  var scores=allScores(), pairsAll=buildPairs(scores);
-  var pairs=pairsAll.filter(function(p){ return pairPassesFilter(p.bias); });
-  if(pairFilters.indexOf("Extremes")!==-1) pairs=sortExtremePairs(pairs);
-  var normalizedSearch=(pairSearchTerm||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
-  if(normalizedSearch){
-    pairs=pairs.filter(function(p){
-      var pairNorm=String(p.pair||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
-      var baseNorm=String(p.base||"").toUpperCase();
-      var quoteNorm=String(p.quote||"").toUpperCase();
-      return pairNorm.indexOf(normalizedSearch)!==-1 ||
-             baseNorm.indexOf(normalizedSearch)!==-1 ||
-             quoteNorm.indexOf(normalizedSearch)!==-1;
-    });
-  }
-  var maxAbs=Math.max.apply(null, pairsAll.map(function(p){ return Math.abs(p.score); })) || 1;
-  var rows="";
-  if(!pairs.length){
-    rows='<tr><td colspan="13" style="text-align:center;color:var(--text-faint);padding:18px 0;">'+
-      (pairSearchTerm ? 'No pairs match &quot;'+esc(pairSearchTerm)+'&quot; with the current filter.' : 'No pairs match this filter right now.')+
-      '</td></tr>';
-  }
-  for(var i=0;i<pairs.length;i++){
-    var p=pairs[i], pct=Math.abs(p.score)/maxAbs*50, barColor=p.score>=0?"var(--bullish)":"var(--bearish)", barLeft=p.score>=0?"50%":(50-pct)+"%";
-    var heatClass = p.bias==="Very Bullish" ? "pair-vbull" :
-      p.bias==="Bullish" ? "pair-bull" :
-      p.bias==="Leaning Bullish" ? "pair-lean-bull" :
-      p.bias==="Leaning Bearish" ? "pair-lean-bear" :
-      p.bias==="Bearish" ? "pair-bear" :
-      p.bias==="Very Bearish" ? "pair-vbear" :
-      (p.score>0 ? "pair-neutral-pos" : (p.score<0 ? "pair-neutral-neg" : "pair-neutral-zero"));
-    var pt=pairTrend30d(p.pair);
-    var yb = p.yieldScore==null ? 'Neutral' : (p.yieldScore>=7?'Very Bullish':p.yieldScore>=3?'Bullish':p.yieldScore<=-7?'Very Bearish':p.yieldScore<=-3?'Bearish':'Neutral');
-    var ybc = yb==='Very Bullish'?'yield-vbull':yb==='Bullish'?'yield-bull':yb==='Very Bearish'?'yield-vbear':yb==='Bearish'?'yield-bear':'yield-neutral';
-    var fb = fundFor(p.base), fq = fundFor(p.quote);
-    var fundRel = (fb.max?(100*fb.raw/fb.max):0) - (fq.max?(100*fq.raw/fq.max):0);
-    var fundBias=pillarBias(fundRel), fundBiasClass=pillarBiasClass(fundBias);
-    var cotPair=cotPairRegime(p.base,p.quote);
-    var cotDxNote=(p.base==='USD'||p.quote==='USD')?' title="USD leg uses ICE Dollar Index (DX) COT data as a proxy — not a pure single-currency future."':'';
-    var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
-    rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
-      '<td class="day-delta-cell" data-label="7D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
-      '<td class="ccy-name" data-label="Pair"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
-      '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
-      '<td class="pair-alignment '+pairAlignmentClass(p.score,p.alignment)+'" data-label="ALIGN...">'+(p.alignment==null?'—':Math.round(p.alignment)+'%')+'</td>'+
-      '<td data-label="Trend"><div class="trend-cell"><span class="trend-spark">'+sparkline(p.pair)+'</span></div></td>'+
-      '<td data-label="Bias">'+pairRankingBiasMarkup(p.bias)+'</td>'+
-      '<td data-label="Fundamentals">'+pairRankingBiasMarkup(fundBias)+'</td>'+
-      '<td data-label="Yield Bias">'+pairRankingBiasMarkup(yb)+'</td>'+
-      '<td data-label="CB Stance">'+pairRankingBiasMarkup(pairCbStanceLabel(p.base,p.quote))+'</td>'+
-      '<td data-label="Net Positioning"'+cotDxNote+'>'+pairRankingBiasMarkup(cotPair.posLabel)+'</td>'+
-      '<td data-label="&Delta; WoW"'+cotDxNote+'>'+pairRankingBiasMarkup(cotPair.flowLabel)+'</td>'+
-      '<td data-label="Seasonality">'+pairRankingBiasMarkup(seasonalityPairText(p.base,p.quote))+'</td>'+
-      '<td data-label="Risk Sentiment">'+pairRankingBiasMarkup(riskPairState(p.base,p.quote))+'</td>'+
-      '</tr>';
-  }
-  var logRows="";
-  for(var j=0;j<Math.min(LOG.length,8);j++){
-    var l=LOG[j], dt=new Date(l.ts);
-    logRows += '<tr><td class="mono">'+dt.toLocaleDateString()+' &middot; '+dt.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</td>'+
-      '<td class="mono">'+l.mostBullish.pair+' '+fmt(l.mostBullish.score)+'</td><td class="mono">'+l.mostBearish.pair+' '+fmt(l.mostBearish.score)+'</td></tr>';
-  }
-  var expandedHtml="";
-  if(expandedPair){
-    var rangeBtns = ["1M","3M","1Y","ALL"].map(function(r){
-      return '<button class="range-btn'+(expandedRange===r?" active":"")+'" data-range="'+r+'">'+r+'</button>';
-    }).join("");
-    var epBase=expandedPair.slice(0,3), epQuote=expandedPair.slice(3,6);
-    var epSeas=seasonalityPairSpread(epBase,epQuote);
-    var epSeasLabel=seasonalityPairLabelFromSpread(epSeas);
-    var epRisk=100*0.03*(riskTermFor(epBase)-riskTermFor(epQuote));
-    var epRiskState=riskPairState(epBase,epQuote);
-    var epCot=cotPairRegime(epBase,epQuote);
-    var epCotWhy = epCot.insufficient ? 'Not enough shared history yet' :
-      ('Position: '+(epCot.positionAdvantage?epCot.positionAdvantage+' advantage':'roughly even')+' ('+(epCot.posScore>0?'+':'')+epCot.posScore+' pts vs own 52W range)'+
-       ' · Flow: '+(epCot.flowAdvantage?epCot.flowAdvantage+' advantage':'roughly even')+' ('+(epCot.flowScore>0?'+':'')+epCot.flowScore+' pts)');
-    var epCotDxNote=(epBase==='USD'||epQuote==='USD')?' <span style="color:var(--text-faint);">· USD leg = DX index proxy</span>':'';
-    // Explanatory only — shows the Net/Open-Interest normalization the pair-level COT
-    // score is actually built from. Does not change cotPairRegime's math or weight.
-    var epBaseD=cotLatest(epBase), epQuoteD=cotLatest(epQuote);
-    var epBaseNormPct=(epBaseD.oi!=null&&epBaseD.net!=null&&epBaseD.oi)?100*epBaseD.net/epBaseD.oi:null;
-    var epQuoteNormPct=(epQuoteD.oi!=null&&epQuoteD.net!=null&&epQuoteD.oi)?100*epQuoteD.net/epQuoteD.oi:null;
-    var epOiBreakdown = (epBaseNormPct==null||epQuoteNormPct==null) ? '' :
-      '<div style="padding:0 14px 12px;font-size:11px;color:var(--text-dim);line-height:1.7;">'+
-        '<b style="color:var(--text-bright);">Why this COT reading:</b> raw net contracts aren\'t directly comparable across currencies (different market sizes), so each leg is normalized by its own Open Interest first.<br>'+
-        esc(epBase)+' — Net '+cotFormat(epBaseD.net)+' ÷ OI '+(epBaseD.oi!=null?Math.round(epBaseD.oi).toLocaleString():'—')+' = <b>'+cotPercent(epBaseNormPct)+'</b><br>'+
-        esc(epQuote)+' — Net '+cotFormat(epQuoteD.net)+' ÷ OI '+(epQuoteD.oi!=null?Math.round(epQuoteD.oi).toLocaleString():'—')+' = <b>'+cotPercent(epQuoteNormPct)+'</b><br>'+
-        'Relative: '+esc(epBase)+' ('+cotPercent(epBaseNormPct)+') vs '+esc(epQuote)+' ('+cotPercent(epQuoteNormPct)+') → <b class="'+pillarBiasClass(epCot.posLabel)+'">'+epCot.posLabel+'</b>'+
-      '</div>';
-    expandedHtml = '<div class="card"><div class="bigchart"><div class="bigchart-head"><span>Trend — <b>'+expandedPair+'</b></span>'+
-      '<div style="display:flex;align-items:center;gap:12px;"><div class="range-switch">'+rangeBtns+'</div>'+
-      '<span class="close-x" id="closeChart">&times; close</span></div></div>'+
-      pairMacroSummaryHtml(expandedPair, pairCompositeFor(epBase,epQuote))+
-      bigChart(expandedPair, expandedRange)+'</div></div>';
-  }
-  var filterBtns = [["All","All"],["Extremes","Extremes"],["Very Bullish","Very Bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very Bearish"]].map(function(fb){
-    var active=pairFilters.indexOf(fb[0])!==-1;
-    return '<button class="range-btn'+(active?" active":"")+'" data-filter="'+fb[0]+'">'+fb[1]+'</button>';
-  }).join("");
-  var selectionLabel = pairFilters.indexOf("All")!==-1 ? "All pairs" : (pairFilters.length?pairFilters.join(" + "):"All pairs");
-  var html = (unlockedLocally ? ('<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
-    '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
-      '<button class="recalc-btn" id="exportTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Export trend history</button>'+
-      '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button>'+
-      '<button class="recalc-btn" id="clearPairTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear pair trend only</button></div>'+'</div>') : '')+
-    expandedHtml+
-    '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;"><h3 style="margin:0;">Pair Ranking</h3>'+
-    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
-      '<div class="pair-search-wrap"><div style="position:relative;flex:1;min-width:0;"><span class="pair-search-icon">⌕</span><input id="pairSearchInput" class="pair-search" type="search" autocomplete="off" spellcheck="false" value="'+esc(pairSearchTerm)+'" placeholder="Search pair e.g. GBPUSD" aria-label="Search pair"><button id="pairSearchClear" class="pair-search-clear" type="button" aria-label="Clear pair search">&times;</button></div><span id="pairSearchCount" class="pair-search-count"></span></div>'+
-      '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>7D &Delta;</th><th>Pair</th><th>Score</th><th>ALIGN...</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
-    '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
-    '';
-  document.getElementById("tab-pairs").innerHTML=html;
-  bindPairTrendHover();
-  bindBigPairTrendHover();
-
-  var searchInput=document.getElementById("pairSearchInput");
-  var searchClear=document.getElementById("pairSearchClear");
-  var searchCount=document.getElementById("pairSearchCount");
-  function applyPairSearch(){
-    if(!searchInput) return;
-    pairSearchTerm=searchInput.value;
-    var term=(pairSearchTerm||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
-    var visible=0, total=0;
-    var rowsEl=document.querySelectorAll("#pairRows .pair-row");
-    for(var si=0;si<rowsEl.length;si++){
-      total++;
-      var rowPair=String(rowsEl[si].dataset.pair||"").replace(/[\s\/\\_-]/g,"").toUpperCase();
-      var show=!term || rowPair.indexOf(term)!==-1;
-      rowsEl[si].style.display=show ? "" : "none";
-      if(show) visible++;
-    }
-    if(searchClear) searchClear.style.display=pairSearchTerm ? "inline-block" : "none";
-    if(searchCount) searchCount.textContent=pairSearchTerm ? (visible+" / "+total) : "";
-    var emptySearch=document.getElementById("pairSearchEmpty");
-    if(term && visible===0){
-      if(!emptySearch){
-        var tbody=document.getElementById("pairRows");
-        if(tbody){
-          emptySearch=document.createElement("tr");
-          emptySearch.id="pairSearchEmpty";
-          emptySearch.innerHTML='<td colspan="13" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pair matches "'+
-            String(pairSearchTerm).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")+
-            '" with the current filter.</td>';
-          tbody.appendChild(emptySearch);
-        }
-      } else {
-        emptySearch.style.display="";
-      }
-    } else if(emptySearch){
-      emptySearch.remove();
-    }
-  }
-  if(searchInput){
-    searchInput.addEventListener("input", applyPairSearch);
-    searchInput.addEventListener("keydown", function(e){
-      if(e.key==="Escape"){
-        searchInput.value="";
-        applyPairSearch();
-      }
-    });
-    applyPairSearch();
-  }
-  if(searchClear){
-    searchClear.onclick=function(){
-      if(!searchInput) return;
-      searchInput.value="";
-      searchInput.focus();
-      applyPairSearch();
-    };
-  }
-
-  var btn=document.getElementById("recalcBtn");
-  if(btn){ btn.onclick=async function(){
-    var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
-    for(var k=0;k<pr.length;k++){ snap[pr[k].pair]=pr[k].score; }
-    for(var ci=0;ci<CCYS.length;ci++){
-      var cc=CCYS[ci], ff=fundFor(cc);
-      snap[cc]=sc[cc];                                   // composite (used by Desk Board trend arrow)
-      snap["FUND_"+cc]=ff.max?(100*ff.raw/ff.max):0;      // fundamentals %, own key so it doesn't collide with pair scores
-      snap["COT_"+cc]=getCotScore(cc);
-      snap["SURPRISE_"+cc]=Math.round(surpriseDataForCurrency(cc).avg*10)/10; // Surprise Index snapshot, own key too
-    }
-    var nowTs=new Date().toISOString();
-    var isFirstSignal=!SIGNAL_LOG[todayKey];
-    // FOUND BUG: this used to be `if(isFirstSignal){ DAILY[todayKey]=snap; SIGNAL_LOG...}` --
-    // meaning DAILY[todayKey] (the snapshot every trend chart on the dashboard reads, including
-    // the Surprise Index) only got written on the FIRST Recalculate of the day. Editing
-    // fundamentals later that day and hitting Recalculate again recomputed `snap` correctly but
-    // never saved it, so every trend line looked frozen no matter how many times you recalculated.
-    // DAILY should always reflect the latest same-day numbers; only SIGNAL_LOG (used purely to
-    // dedupe the bullish/bearish LOG entries below) needs to be "first time today" gated.
-    DAILY[todayKey]=snap;
-    if(isFirstSignal){ SIGNAL_LOG[todayKey]={ts:nowTs}; }
-    var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
-    var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
-      && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
-    if(sameAsTop){
-      // Result hasn't changed since the last log entry — just refresh its timestamp instead of stacking a duplicate row.
-      LOG[0].ts = nowTs;
-    } else {
-      LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
-    }
-    if(LOG.length>50) LOG=LOG.slice(0,50);
-    // Re-render before awaiting cloud persistence. The score, trend arrow and sparkline
-    // are live UI state and must respond immediately to Recalculate; saving must never
-    // block the visual update.
-    renderPairs();
-    var saved=await saveDataNow();
-    updateStatus(saved
-      ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history refreshed'))
-      : (isFirstSignal ? ('Signal calculated · local copy queued for cloud save') : ('Live recalculated · cloud save queued')),
-      saved ? (isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)') : 'var(--amber)');
-  }; }
-  var exportTrendBtn=document.getElementById("exportTrendBtn");
-  if(exportTrendBtn){ exportTrendBtn.onclick=dailyExportCsv; }
-  var clearBtn=document.getElementById("clearHistBtn");
-  if(clearBtn){ clearBtn.onclick=function(){
-    if(!confirm("Clear all trend history and the recalculation log? This wipes every logged day so the trend chart starts fresh from your next recalculate. This can't be undone.")) return;
-    DAILY={}; LOG=[]; SIGNAL_LOG={}; expandedPair=null;
-    saveDataNow();
-    renderPairs();
-  }; }
-  var clearPairTrendBtn=document.getElementById("clearPairTrendBtn");
-  if(clearPairTrendBtn){ clearPairTrendBtn.onclick=function(){
-    if(!confirm("Clear ONLY the pair trend history (the numbers from before the scoring fix)? Currency composite scores, Fundamentals, COT, and Surprise Index history are all left untouched. This can't be undone.")) return;
-    // A pair key is exactly two currency codes from CCYS concatenated back-to-back (e.g. "EURUSD").
-    // Composite/FUND_/COT_/SURPRISE_ keys never match this shape, so this only ever removes
-    // pair-score entries -- everything else logged in DAILY is left exactly as it was.
-    function isPairKey(key){
-      if(typeof key!=="string" || key.length!==6) return false;
-      var base=key.slice(0,3), quote=key.slice(3);
-      return base!==quote && CCYS.indexOf(base)!==-1 && CCYS.indexOf(quote)!==-1;
-    }
-    Object.keys(DAILY).forEach(function(dt){
-      var day=DAILY[dt]; if(!day) return;
-      Object.keys(day).forEach(function(k){ if(isPairKey(k)) delete day[k]; });
-    });
-    // LOG only ever stores mostBullish/mostBearish PAIR scores, so it's entirely pair-derived
-    // and gets wiped alongside the pair trend. SIGNAL_LOG (dedupe timestamps only, no scores)
-    // is left alone so today's recalculate behaves normally.
-    LOG=[]; expandedPair=null;
-    saveDataNow();
-    renderPairs();
-  }; }
-  var prows=document.querySelectorAll(".pair-row");
-  for(var q=0;q<prows.length;q++){ prows[q].onclick=function(){ expandedPair = (expandedPair===this.dataset.pair)? null : this.dataset.pair; renderPairs(); }; }
-  var closeX=document.getElementById("closeChart");
-  if(closeX){ closeX.onclick=function(){ expandedPair=null; renderPairs(); }; }
-  var rangeBtnsEl=document.querySelectorAll(".range-btn");
-  for(var rI=0;rI<rangeBtnsEl.length;rI++){ rangeBtnsEl[rI].onclick=function(e){
-    e.stopPropagation();
-    if(this.dataset.filter){
-      var f=this.dataset.filter;
-      if(f==="All"){ pairFilters=["All"]; }
-      else {
-        if(pairFilters.indexOf("All")!==-1) pairFilters=[];
-        var ix=pairFilters.indexOf(f);
-        if(ix>=0) pairFilters.splice(ix,1); else pairFilters.push(f);
-        if(!pairFilters.length) pairFilters=["All"];
-      }
-      renderPairs(); return;
-    }
-    expandedRange=this.dataset.range; renderPairs();
-  }; }
-}
 
 
 var activeCotCcy="ALL";
@@ -10321,7 +9464,6 @@ function updateComputed(){
   var crEl=document.getElementById("cotRegimeTxt-"+c);
   if(crEl){ var cr3=cotCrowding(c); crEl.textContent=cr3.label; crEl.style.color=cr3.tone==='bull'?"var(--bullish-strong)":cr3.tone==='bear'?"var(--bearish-strong)":"var(--text-dim)"; }
   
-  if(document.getElementById("tab-pairs")) renderPairs();
   if(document.getElementById("tab-scanner") && activeTab==="scanner") renderScanner();
   // Do not rebuild the entire Risk Sentiment form while an input event is in progress.
   // The live preview updates in-place; a full render here would replace the active input
@@ -10329,7 +9471,7 @@ function updateComputed(){
   if(document.getElementById("tab-risk") && !isTyping) renderRiskSentiment();
 }
 
-function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderScanner(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
+function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderScanner(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 
 async function init(){
@@ -10573,35 +9715,19 @@ init();
 
 <style id="v27-uniform-visual-system">
 /* Uniform main-page typography. Currency Detail remains intentionally unchanged. */
-#tab-overview, #tab-pairs, #tab-yield2y, #tab-risk, #tab-macro {
+#tab-overview, #tab-yield2y, #tab-risk, #tab-macro {
   --ui-size:14px;
 }
-#tab-overview table, #tab-pairs table, #tab-yield2y table, #tab-risk table, #tab-macro table {font-size:var(--ui-size)!important;}
-#tab-overview td, #tab-pairs td, #tab-yield2y td, #tab-risk td, #tab-macro td {font-size:var(--ui-size)!important;}
+#tab-overview table, #tab-yield2y table, #tab-risk table, #tab-macro table {font-size:var(--ui-size)!important;}
+#tab-overview td, #tab-yield2y td, #tab-risk td, #tab-macro td {font-size:var(--ui-size)!important;}
 #tab-overview .strength-ccy, #tab-overview .strength-score, #tab-overview .strength-bias,
 #tab-risk .strength-ccy, #tab-risk .strength-score, #tab-risk .strength-bias {font-size:var(--ui-size)!important; font-weight:500!important;}
-#tab-overview .strength-rank, #tab-risk .strength-rank {font-size:12px!important; font-weight:400!important;}
-#tab-pairs .pair-table .pair-score, #tab-pairs .pair-table .pair-factor, #tab-pairs .pair-table .pair-bias-single,
-#tab-pairs .pair-table .pair-bias-stack strong, #tab-pairs .pair-table .pair-bias-stack .lean-word,
-#tab-pairs .pair-table .ccy-name, #tab-pairs .pair-table .day-delta {
-  font-size:13px!important; font-weight:500!important; font-family:'Inter',system-ui,sans-serif!important;
-  letter-spacing:0!important; text-transform:uppercase!important;
-}
-#tab-pairs .pair-table .pair-bias-stack{gap:4px;line-height:1.1;}
-#tab-pairs .pair-table th, #tab-overview th, #tab-yield2y th, #tab-risk th, #tab-macro th {font-size:11px!important;font-weight:500!important;}
-#tab-pairs .pair-table td span, #tab-pairs .pair-table td b {font-weight:500!important;}
+#tab-overview .strength-rank, #tab-risk .strength-rank {font-size:12px!important; font-weight:400!important;} #tab-overview th, #tab-yield2y th, #tab-risk th, #tab-macro th {font-size:11px!important;font-weight:500!important;}
 #tab-yield2y .y2-score-table td {font-size:13px!important;font-weight:500!important;}
 #tab-yield2y .y2-ccy-cell, #tab-yield2y .y2-usd-spread, #tab-yield2y .y2-direction-view, #tab-yield2y .y2-score-view .y2-score {font-size:13px!important;font-weight:500!important;}
 #tab-yield2y .hist-live-value, #tab-yield2y .hist-live-change {font-size:14px!important;font-weight:500!important;}
 #tab-yield2y .hist-live-label {font-size:10px!important;font-weight:500!important;}
 #tab-risk .risk-inline-regime, #tab-risk .risk-inline-v, #tab-risk .risk-mini-chip {font-size:13px!important;font-weight:500!important;}
-/* Sentiment polarity: bullish green, bearish red, neutral ash — leaning states use the
-   theme's lighter/less-saturated lean variant so they read as a step down, not identical. */
-#tab-pairs .score-bear, #tab-pairs .pair-bias-single.bear, #tab-pairs .pair-bias-lean-bear strong {color:var(--bearish-strong)!important;}
-#tab-pairs .score-lean-bear, #tab-pairs .pair-bias-lean-bear .lean-word {color:var(--bearish-lean)!important;}
-#tab-pairs .score-neutral, #tab-pairs .pair-bias-single.neutral {color:var(--text-dim)!important;}
-#tab-pairs .score-bull, #tab-pairs .pair-bias-single.bull, #tab-pairs .pair-bias-lean-bull strong {color:var(--bullish-strong)!important;}
-#tab-pairs .score-lean-bull, #tab-pairs .pair-bias-lean-bull .lean-word {color:var(--bullish-lean)!important;}
 #tab-risk .strength-neg, #tab-risk .trend-down {color:var(--bearish-strong)!important;}
 #tab-risk .strength-lean-neg {color:var(--bearish-lean)!important;}
 #tab-risk .strength-neu {color:var(--text-dim)!important;}
@@ -10614,26 +9740,8 @@ init();
 #tab-yield2y .hist-spread-chart canvas{height:100%!important;}
 #tab-yield2y .hist-spread-stats{display:none!important;}
 #tab-yield2y .hist-spread-note{display:none!important;}
-@media(max-width:700px){ }
 </style>
 
-<style id="pair-ranking-single-polarity-colors">
-/* Pair Ranking: one strong green, one strong red, plus a visibly lighter/less-saturated
-   "leaning" tier of each — leaning bullish/bearish should read as a step down, not
-   identical to bullish/very bullish or bearish/very bearish. */
-#tab-pairs{--pair-green:#38e3a5;--pair-green-lean:#60ab8a;--pair-red:#ff707d;--pair-red-lean:#af545f;--pair-neutral:#747b76;}
-#tab-pairs .score-bull,#tab-pairs .score-vbull,#tab-pairs .pair-bias-single.bull,#tab-pairs .pair-bias-single.very-bull,#tab-pairs .pair-bias-vbull,#tab-pairs .yield-bull,#tab-pairs .yield-vbull{color:var(--pair-green)!important;}
-#tab-pairs .score-lean-bull,#tab-pairs .pair-bias-lean-bull,#tab-pairs .pair-bias-lean-bull strong,#tab-pairs .pair-bias-lean-bull .lean-word{color:var(--pair-green-lean)!important;}
-#tab-pairs .score-bear,#tab-pairs .score-vbear,#tab-pairs .pair-bias-single.bear,#tab-pairs .pair-bias-single.very-bear,#tab-pairs .pair-bias-vbear,#tab-pairs .yield-bear,#tab-pairs .yield-vbear{color:var(--pair-red)!important;}
-#tab-pairs .score-lean-bear,#tab-pairs .pair-bias-lean-bear,#tab-pairs .pair-bias-lean-bear strong,#tab-pairs .pair-bias-lean-bear .lean-word{color:var(--pair-red-lean)!important;}
-#tab-pairs .score-neutral,#tab-pairs .score-lean-neutral,#tab-pairs .pair-bias-single.neutral,#tab-pairs .pair-bias-single.lean-neutral,#tab-pairs .pair-bias-neutral,#tab-pairs .yield-neutral{color:var(--pair-neutral)!important;}
-#tab-pairs .pair-score.score-bull,#tab-pairs .day-delta-up,#tab-pairs .pair-trend-arrow.trend-up,#tab-pairs .pair-trend-delta.delta-up{color:var(--pair-green)!important;}
-#tab-pairs .pair-score.score-lean-bull{color:var(--pair-green-lean)!important;}
-#tab-pairs .pair-score.score-bear,#tab-pairs .day-delta-down,#tab-pairs .pair-trend-arrow.trend-down,#tab-pairs .pair-trend-delta.delta-down{color:var(--pair-red)!important;}
-#tab-pairs .pair-score.score-lean-bear{color:var(--pair-red-lean)!important;}
-#tab-pairs .day-delta-flat,#tab-pairs .pair-trend-arrow.trend-flat,#tab-pairs .pair-trend-delta.delta-flat{color:var(--pair-neutral)!important;}
-#tab-pairs .yield-bull,#tab-pairs .yield-vbull,#tab-pairs .yield-bear,#tab-pairs .yield-vbear{background:transparent!important;}
-</style>
 
 <style id="v27-yield2y-diagnostics-rebuild">
 /* Rate Differential Monitor: 5-column layout (Currency, 2Y Score, Direction, 2Y vs USD, Spread). */
@@ -10935,60 +10043,10 @@ body.black .rail, body.ash .rail{
 /* Overview trend: one moving point, no cluttered crosshair. */
 #tab-overview .pair-trend-spark,
 #tab-overview .pair-trend-hit{cursor:crosshair;}
-#tab-overview .pair-trend-hover-dot,
-#tab-pairs .pair-trend-hover-dot{
+#tab-overview .pair-trend-hover-dot{
   filter:drop-shadow(0 0 3px rgba(255,255,255,.10));
 }
 #tab-overview .strength-spark svg{overflow:visible;}
-
-/* Pair macro read: compact trader note rather than repeated boilerplate. */
-#tab-pairs .pair-macro-summary{
-  position:relative;
-  background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 72%),var(--panel2);
-  border-color:rgba(255,255,255,.07);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
-}
-#tab-pairs .pair-macro-summary:before{
-  content:"";
-  position:absolute;
-  left:0; top:0; bottom:0;
-  width:2px;
-  background:var(--border);
-  border-radius:7px 0 0 7px;
-}
-#tab-pairs .pair-macro-summary-head{
-  padding-left:3px;
-  margin-bottom:7px;
-}
-#tab-pairs .pair-macro-lead{
-  font-size:11.5px;
-  font-weight:700;
-  color:var(--text);
-  line-height:1.45;
-  margin-bottom:4px;
-}
-#tab-pairs .pair-macro-line{
-  font-size:11px;
-  line-height:1.48;
-  color:var(--text-dim);
-  padding-left:10px;
-  position:relative;
-}
-#tab-pairs .pair-macro-line:before{
-  content:"·";
-  position:absolute;
-  left:3px;
-  color:var(--text-faint);
-}
-#tab-pairs .pair-macro-verdict{
-  margin-top:7px;
-  padding:7px 0 0 10px;
-  font-size:10.8px;
-  line-height:1.45;
-  color:var(--text);
-  border-top:1px solid var(--border);
-}
-#tab-pairs .pair-macro-summary-head b{font-size:10.5px;}
 
 /* Bond Yield Spread tracing: the dot follows the cursor's nearest observation. */
 #tab-yield2y .hist-spread-chart{position:relative;}
@@ -11087,11 +10145,8 @@ body.black .rail, body.ash .rail{
   }
   function updateGHClock(){
     var now=new Date(), el=document.getElementById('ghClock'), dateEl=document.getElementById('ghDate');
-    if(el){var p=parts(now,'Africa/Accra');el.textContent=pad(p.hour)+':'+pad(p.minute)+':'+pad(p.second);}
-    if(dateEl){
-      try{ dateEl.textContent=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',weekday:'short',day:'2-digit',month:'short'}).format(now); }
-      catch(e){ dateEl.textContent=''; }
-    }
+    if(el){var p=parts(now,'Africa/Accra');el.textContent=pad(p.hour)+':'+pad(p.minute);}
+    if(dateEl){ dateEl.textContent=''; }
     renderSessions(now);
   }
   function renderSessions(now){
@@ -11112,95 +10167,12 @@ body.black .rail, body.ash .rail{
 })();
 </script>
 
-<style id="pair-ranking-sticky-v2">
-/* FIX: Pair Ranking header was inside .table-scroll. Because that wrapper has
-   overflow-x:auto, it becomes the sticky containing block and the header stops
-   sticking when the PAGE scrolls. On normal desktop widths there is no reason
-   for this table to be its own vertical scroll container, so remove that
-   containing block and let the <th> cells stick to the viewport. */
-@media (min-width:1101px){
-  #tab-pairs .table-scroll{
-    overflow-x:clip!important;
-    overflow-y:visible!important;
-  }
-  #tab-pairs .pair-table{
-    overflow:visible!important;
-  }
-  #tab-pairs .pair-table thead{
-    position:relative!important;
-    z-index:40!important;
-  }
-  #tab-pairs .pair-table thead th{
-    position:sticky!important;
-    top:56px!important;
-    z-index:45!important;
-    background:var(--panel2)!important;
-    box-shadow:0 1px 0 var(--border),0 3px 8px rgba(0,0,0,.12)!important;
-  }
-}
-
-/* Medium desktop/tablet: keep the existing horizontal table behavior, but
-   make the header sticky inside the page rather than losing it immediately. */
-@media (min-width:701px) and (max-width:1100px){
-  #tab-pairs .pair-table thead th{
-    position:sticky!important;
-    top:56px!important;
-    z-index:45!important;
-    background:var(--panel2)!important;
-    box-shadow:0 1px 0 var(--border)!important;
-  }
-}
-</style>
 
 <style id="pair-ranking-sticky-v3-cover">
 /* Pair Ranking sticky header: cover the entire table width, not just the <th>
    boxes, and derive the offset from the real sticky page header height. */
 @media (min-width:701px){
   .content{--twp-header-offset:56px;}
-  #tab-pairs .table-scroll{
-    overflow-x:clip!important;
-    overflow-y:visible!important;
-    position:relative!important;
-  }
-  #tab-pairs .pair-table{
-    border-collapse:separate!important;
-    border-spacing:0!important;
-  }
-  #tab-pairs .pair-table thead{
-    position:sticky!important;
-    top:var(--twp-header-offset)!important;
-    z-index:70!important;
-    background:var(--panel2)!important;
-  }
-  #tab-pairs .pair-table thead tr{
-    position:sticky!important;
-    top:var(--twp-header-offset)!important;
-    z-index:71!important;
-    background:var(--panel2)!important;
-  }
-  #tab-pairs .pair-table thead th{
-    position:sticky!important;
-    top:var(--twp-header-offset)!important;
-    z-index:72!important;
-    background:var(--panel2)!important;
-    background-clip:padding-box!important;
-    box-shadow:inset 0 -1px 0 var(--border)!important;
-  }
-  /* Paint an opaque strip behind the full header width so no pair row can
-     peek through gaps between columns or around the header edges. */
-  #tab-pairs .pair-table thead:after{
-    content:"";
-    position:absolute;
-    left:0; right:0; top:0; bottom:0;
-    background:var(--panel2);
-    z-index:-1;
-    pointer-events:none;
-  }
-}
-
-@media (max-width:700px){
-  /* Mobile pair cards intentionally do not have a column header. */
-  #tab-pairs .pair-table thead{display:none!important;}
 }
 </style>
 <script>
@@ -11221,47 +10193,6 @@ body.black .rail, body.ash .rail{
 })();
 </script>
 
-<style id="pair-ranking-sticky-v4-solid-strip">
-/* FINAL PAIR RANKING STICKY HEADER
-   The previous fixes pinned individual <th> cells. That can leave tiny seams
-   between the cells and can expose the scrolling rows underneath. Pin the
-   entire <thead> as one opaque slab instead. */
-@media (min-width:701px){
-  #tab-pairs .pair-table thead{
-    position:sticky!important;
-    top:var(--twp-header-offset,49px)!important;
-    z-index:200!important;
-    background:var(--panel2)!important;
-    isolation:isolate!important;
-  }
-  #tab-pairs .pair-table thead:before{
-    content:"";
-    position:absolute!important;
-    left:-2px!important;
-    right:-2px!important;
-    top:-2px!important;
-    bottom:-2px!important;
-    background:var(--panel2)!important;
-    z-index:-1!important;
-    box-shadow:0 1px 0 var(--border),0 4px 10px rgba(0,0,0,.16)!important;
-    pointer-events:none!important;
-  }
-  #tab-pairs .pair-table thead tr{
-    position:static!important;
-    background:transparent!important;
-  }
-  #tab-pairs .pair-table thead th{
-    position:static!important;
-    background:var(--panel2)!important;
-    background-clip:padding-box!important;
-    box-shadow:none!important;
-    border-bottom:1px solid var(--border)!important;
-  }
-  /* Eliminate the tiny visual gap between the sticky page header and the
-     sticky Pair Ranking slab. */
-  #tab-pairs .pair-table thead{margin-top:-1px!important;}
-}
-</style>
 
 <style id="overview-interaction-fix">
 /* Overview usability fixes: risk panel must show the complete currency universe. */
@@ -11370,12 +10301,7 @@ body.black .rail, body.ash .rail{
    regardless of direction. --- */
 #tab-overview .ov-csi-leg-dir.up{color:var(--bullish-strong)!important;}
 #tab-overview .ov-csi-leg-dir.down{color:var(--bearish-strong)!important;}
-#tab-overview .ov-csi-leg-dir.flat{color:var(--text-faint)!important;}
-
-/* --- 4: color the Top Bullish / Top Bearish rows in Pair Radar. These
-   classes were only ever colored under #tab-pairs — Overview had no
-   matching rule, so the labels rendered in plain text color. --- */
-#tab-overview .ov-pair-score.score-bull,#tab-overview .ov-pair-bias.score-bull{color:var(--bullish-strong)!important;}
+#tab-overview .ov-csi-leg-dir.flat{color:var(--text-faint)!important;}#tab-overview .ov-pair-bias.score-bull{color:var(--bullish-strong)!important;}
 #tab-overview .ov-pair-score.score-lean-bull,#tab-overview .ov-pair-bias.score-lean-bull{color:var(--bullish-lean)!important;}
 #tab-overview .ov-pair-score.score-bear,#tab-overview .ov-pair-bias.score-bear{color:var(--bearish-strong)!important;}
 #tab-overview .ov-pair-score.score-lean-bear,#tab-overview .ov-pair-bias.score-lean-bear{color:var(--bearish-lean)!important;}
@@ -11428,53 +10354,6 @@ body.black .rail, body.ash .rail{
 #tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#050505!important;background-image:none!important;}
 </style>
 
-<style id="v48-pair-table-single-line">
-/* Pair Ranking: "Leaning Bullish" / "Very Bearish" etc. were rendered as
-   two stacked words (a deliberate flex-direction:column in the markup —
-   not a wrapping bug), while plain "Bullish"/"Bearish" rendered on one
-   line. That's the inconsistent "word / word-below-it" look. The stack was
-   switched to a single row above; this block gives those columns enough
-   width to actually fit "LEANING BULLISH" etc. on that one line. */
-/* v49: the fixed px widths above used to force the table to 1620px wide
-   no matter the window, guaranteeing a horizontal swipe any time the
-   browser was narrower than that. Switched to % widths that always sum
-   to 100%, so the table fills the available space and never needs to
-   scroll on desktop. Header labels are allowed to wrap to two lines
-   ("RISK" / "SENTIMENT") when a column gets tight; value cells stay
-   single-line with an ellipsis as a fallback instead of forcing scroll. */
-#tab-pairs table.pair-table{width:100%!important;min-width:0!important;table-layout:fixed!important;}
-#tab-pairs table.pair-table th:nth-child(1),#tab-pairs table.pair-table td:nth-child(1){width:3.7%!important;}
-#tab-pairs table.pair-table th:nth-child(2),#tab-pairs table.pair-table td:nth-child(2){width:9.2%!important;}
-#tab-pairs table.pair-table th:nth-child(3),#tab-pairs table.pair-table td:nth-child(3){width:3.4%!important;}
-#tab-pairs table.pair-table th:nth-child(4),#tab-pairs table.pair-table td:nth-child(4){width:4.5%!important;}
-/* Columns 5-12 (Bias, Fundamentals, Yield Bias, CB Stance, Net Position, WoW Δ, Seasonality,
-   Risk Sentiment) all render via pairBiasMarkup(), so any of them can show the two-word
-   "Very Bullish"/"Very Bearish" stack -- widened by 0.5% each, borrowed from Score/Trend above,
-   so that stack stops clipping under text-overflow:ellipsis. */
-#tab-pairs table.pair-table th:nth-child(5),#tab-pairs table.pair-table td:nth-child(5){width:10.5%!important;}
-#tab-pairs table.pair-table th:nth-child(6),#tab-pairs table.pair-table td:nth-child(6){width:10.5%!important;}
-#tab-pairs table.pair-table th:nth-child(7),#tab-pairs table.pair-table td:nth-child(7){width:9.9%!important;}
-#tab-pairs table.pair-table th:nth-child(8),#tab-pairs table.pair-table td:nth-child(8){width:9.9%!important;}
-#tab-pairs table.pair-table th:nth-child(9),#tab-pairs table.pair-table td:nth-child(9){width:10.5%!important;}
-#tab-pairs table.pair-table th:nth-child(10),#tab-pairs table.pair-table td:nth-child(10){width:8%!important;}
-#tab-pairs table.pair-table th:nth-child(11),#tab-pairs table.pair-table td:nth-child(11){width:9.9%!important;}
-#tab-pairs table.pair-table th:nth-child(12),#tab-pairs table.pair-table td:nth-child(12){width:9.9%!important;}
-#tab-pairs table.pair-table td{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;padding-left:8px!important;padding-right:8px!important;}
-#tab-pairs table.pair-table th{white-space:normal!important;line-height:1.25!important;padding-left:8px!important;padding-right:8px!important;word-break:normal!important;}
-/* Give each value a touch more breathing room from its neighbor's border,
-   on top of the left-align fix already in place further up. */
-#tab-pairs .pair-bias-stack,#tab-pairs .pair-bias-single,#tab-pairs .pair-factor{max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;}
-/* Note: .table-scroll's overflow-x is intentionally left as "clip" (set
-   further up, for the sticky header) rather than forced to "visible" here —
-   clip avoids turning this element into its own scroll container, which
-   would break the header's page-level sticky behavior. With the table now
-   always sized to 100% via the % widths above, nothing is left to clip. */
-@media(max-width:700px){
-  /* Mobile card view intentionally wraps and stacks — leave it alone. */
-  #tab-pairs table.pair-table{table-layout:auto!important;}
-  #tab-pairs table.pair-table td{white-space:normal!important;}
-}
-</style>
 
 <style id="v47-overview-fit-viewport">
 /* Overview was forced into full-page scrolling on laptop-height screens
@@ -12633,31 +11512,6 @@ body,html{background:var(--bg);}
 }
 </style>
 
-<style id="pair-ranking-name-bias-match-final">
-/* Placed last on purpose, AND bumped to a higher specificity than every earlier
-   rule touching this element (added the "html" tag to the selector), so this wins
-   outright rather than relying on being last in a tie. ONLY the currency pair name
-   (e.g. "EURUSD") is touched -- matched to the Bullish/Bearish/Neutral bias label's
-   own existing, untouched font. The bias/bullish styling itself is NOT modified
-   anywhere in this block.
-   Also sets it on the inner .pair-name-wrap span directly, not just relying on
-   inheritance from the parent <td>, to remove any doubt. */
-html #tab-pairs .pair-table td.ccy-name,
-html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
-  font-family:'Inter',system-ui,sans-serif!important;
-  font-size:13px!important;
-  font-weight:500!important;
-  letter-spacing:0!important;
-  text-transform:uppercase!important;
-}
-@media(max-width:700px){
-  /* Mobile bias/bullish text drops to 11.5px at this breakpoint (see the two
-     @media(max-width:700px) blocks above) -- matching the pair name to that,
-     same reasoning as the desktop match above. */
-  html #tab-pairs .pair-table td.ccy-name,
-  html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{font-size:11.5px!important;font-weight:500!important;}
-}
-</style>
 
 <style id="cot-table-restore-readable-size">
 /* The "COT Positioning" table (left card on the COT tab) had already been bumped to a
@@ -12674,16 +11528,6 @@ html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
 #tab-cot .cot-crowd{font-size:12px!important;}
 </style>
 
-<style id="v50-pair-ranking-regime-labels">
-/* Pair Ranking Bias column only: compact regime labels; scoring and classification remain unchanged. */
-/* v1 deepen (#4cc48a/#c25e66) landed too close to the full Bullish/Bearish shades.
-   Pulled back to the midpoint between the original pale lean tone and that first
-   deepen -- a moderate step up, not halfway to full strength. */
-#tab-pairs .pair-bias-compact-lean-bull{color:#5bb687!important;}
-#tab-pairs .pair-bias-compact-lean-bear{color:#a3595f!important;}
-#tab-pairs .pair-bias-compact-vbull{color:var(--bullish-strong)!important;}
-#tab-pairs .pair-bias-compact-vbear{color:var(--pair-red)!important;}
-</style>
 
 <style id="scanner-v4-ui-final">
 #tab-scanner .scanner-driver-box,#tab-scanner .scanner-driver-box.pos,#tab-scanner .scanner-driver-box.neg{display:inline!important;font-size:13px!important;font-weight:500!important;line-height:1.1!important;color:var(--text-dim)!important;padding:0!important;border:0!important;background:transparent!important;border-radius:0!important;}
