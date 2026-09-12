@@ -12,22 +12,25 @@
 :root{
   --bg:#eef0f3; --panel:#ffffff; --panel2:#f4f5f7; --panel3:#e9ebef; --border:#d7dae0;
   --text:#181b22; --text-dim:#565e6d; --text-faint:#8991a0;
-  --bullish:#2dbb78; --bullish-strong:#35d08a; --bearish:#d9535f; --bearish-strong:#ff6b76;
+  --bullish:#089981; --bullish-strong:#089981; --bearish:#f23645; --bearish-strong:#f23645;
   --bullish-lean:#78b995; --bearish-lean:#b87980;
+  --bullish-mild:#067765; --bearish-mild:#bd2a36; --pill-neutral-bg:#e2e4e8;
   --neutral:#89919d; --amber:#c69a3a; --radius:8px;
 }
 body.ash, html.ash{
   --bg:#151817; --panel:#1c211f; --panel2:#232925; --panel3:#2a302c; --border:#343c37;
   --text:#e9ebf1; --text-dim:#8b93a8; --text-faint:#5c6478;
-  --bullish:#2dbb78; --bullish-strong:#45d792; --bearish:#d9535f; --bearish-strong:#ff6b76;
+  --bullish:#089981; --bullish-strong:#089981; --bearish:#f23645; --bearish-strong:#f23645;
   --bullish-lean:#5d8d73; --bearish-lean:#8f5b62;
+  --bullish-mild:#04493e; --bearish-mild:#741a21; --pill-neutral-bg:#242925;
   --neutral:#6f7772; --amber:#c85b16;
 }
 body.black, html.black{
   --bg:#080a08; --panel:#10130f; --panel2:#151815; --panel3:#1b1f19; --border:#2b322a;
   --text:#eef2ee; --text-dim:#aeb7b0; --text-faint:#707a74;
-  --bullish:#2dbb78; --bullish-strong:#45d792; --bearish:#d9535f; --bearish-strong:#ff6b76;
+  --bullish:#089981; --bullish-strong:#089981; --bearish:#f23645; --bearish-strong:#f23645;
   --bullish-lean:#5d8d73; --bearish-lean:#8f5b62;
+  --bullish-mild:#04493e; --bearish-mild:#741a21; --pill-neutral-bg:#1a1e18;
   --neutral:#6f7772; --amber:#c85b16;
 }
 body.ash, body.black, html.ash, html.black{ --dark:1; }
@@ -202,7 +205,7 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
 .pair-table .trend-cell{min-height:26px!important;}
 .pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-family:'Space Grotesk',sans-serif!important;text-transform:uppercase!important;letter-spacing:.3px;}
 .pair-table th:nth-child(10),.pair-table td:nth-child(10){text-align:center!important;}
-/* 14D Δ column -- its own cell, sized to match the Score column font so it
+/* 7D Δ column -- its own cell, sized to match the Score column font so it
    never reads as a second, smaller number crammed onto the pair name line. */
 .pair-table .day-delta{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
 .pair-table .day-delta-up{color:var(--bullish-strong)!important;}
@@ -815,8 +818,57 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-detail .bias-select{font-size:14.5px;font-weight:800;background:transparent;border-color:transparent;padding-left:2px;padding-right:2px;}
 #tab-detail .bias-chip-text{font-size:14.5px;font-weight:800;}
 #tab-detail .static-chip{background:transparent;border-color:transparent;font-size:13px;}
-#tab-raw .surprise-wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:10px;}
+#tab-raw .surprise-wrap{display:grid;grid-template-columns:1fr;gap:10px;}
 #tab-raw .surprise-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+#tab-raw .surprise-gauge-card{background:var(--panel);border:1px solid var(--border);border-radius:0!important;margin-bottom:14px;padding:14px 16px;}
+#tab-raw .surprise-gauge-body{display:flex;gap:18px;align-items:stretch;flex-wrap:wrap;}
+#tab-raw .surprise-gauge-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;flex:1 1 560px;}
+#tab-raw .surprise-gauge{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:13px 10px 11px;display:flex;flex-direction:column;align-items:center;}
+#tab-raw .surprise-gauge-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+#tab-raw .surprise-gauge-head .ccy-flag{width:17px;height:12px;border-radius:1px;object-fit:cover;}
+#tab-raw .surprise-gauge-ccy{font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:800;color:var(--text);}
+#tab-raw .surprise-gauge-svg{width:100%;height:auto;display:block;}
+#tab-raw .surprise-gauge-val{font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:var(--text);margin-top:-6px;}
+#tab-raw .surprise-gauge-chip{margin-top:5px;font-size:10.5px;padding:3px 8px;}
+#tab-raw .surprise-rank-table{flex:0 0 220px;border:1px solid var(--border);border-radius:0!important;overflow:hidden;align-self:flex-start;}
+#tab-raw .surprise-rank-head{display:grid;grid-template-columns:1fr 70px;padding:7px 10px;font-size:11px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;background:var(--panel2);border-bottom:1px solid var(--border);}
+#tab-raw .surprise-rank-row{display:grid;grid-template-columns:1fr 70px;padding:6px 10px;font-size:12.5px;font-weight:600;border-bottom:1px solid var(--border);}
+#tab-raw .surprise-rank-row:last-child{border-bottom:none;}
+#tab-raw .surprise-rank-row span:last-child{text-align:right;}
+#tab-raw .surprise-rank-row .heat-chip{display:inline-block;min-width:52px;padding:2px 8px;border-radius:4px;font-weight:800;text-align:center;}
+@media(max-width:700px){
+  #tab-raw .surprise-gauge-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #tab-raw .surprise-rank-table{flex:1 1 100%;}
+}
+#tab-raw .ss-card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 72%),var(--panel);border:1px solid var(--border);border-radius:9px!important;overflow:hidden;padding:0!important;position:relative;max-width:600px;margin:0 auto;}
+@media(max-width:700px){#tab-raw .ss-card{max-width:100%;}}
+#tab-raw .ss-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:13px 15px 11px;border-bottom:1px solid var(--border);}
+#tab-raw .ss-eyebrow{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--text-faint);}
+#tab-raw .ss-headline{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;margin-top:2px;}
+#tab-raw .ss-note,#tab-raw .ss-muted{font-size:10px;color:var(--text-faint);white-space:nowrap;}
+#tab-raw .ss-legend-row{display:flex;flex-wrap:wrap;gap:3px 12px;padding:8px 12px 5px;border-bottom:1px solid var(--border);}
+#tab-raw .ss-legend{border:0;background:transparent;display:inline-flex;align-items:center;gap:5px;padding:2px 0;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif;color:var(--text);}
+#tab-raw .ss-legend.off{opacity:.28;}
+#tab-raw .ss-legend.is-focus{opacity:1;}
+#tab-raw .ss-swatch{width:13px;height:3px;border-radius:3px;display:inline-block;}
+#tab-raw .ss-leg-ccy{font-weight:800;display:flex;align-items:center;gap:4px;}
+#tab-raw .ss-leg-ccy img{width:16px;height:11px;border-radius:1px;object-fit:cover;}
+#tab-raw .ss-leg-dir{font-size:9px;font-weight:800;margin-left:1px;}
+#tab-raw .ss-leg-dir.up{color:var(--bullish-strong);}
+#tab-raw .ss-leg-dir.down{color:var(--bearish-strong);}
+#tab-raw .ss-leg-dir.flat{color:var(--text-faint);}
+#tab-raw .ss-chart{padding:4px 9px 8px;background:#0b0d0b;position:relative;}
+#tab-raw .ss-chart svg{display:block;width:100%;height:auto;min-height:340px;}
+#tab-raw .ss-hover-area{cursor:crosshair;}
+#tab-raw .ss-vline{display:none;stroke:var(--text-faint);stroke-width:1;stroke-dasharray:4 4;opacity:.85;vector-effect:non-scaling-stroke;}
+#tab-raw .ss-hover-dot{display:none;stroke:var(--panel);stroke-width:1.6;vector-effect:non-scaling-stroke;}
+#tab-raw .ss-tooltip{display:none;position:absolute;z-index:20;min-width:150px;padding:8px 9px;border:1px solid var(--border);border-radius:7px;background:rgba(16,19,15,.96);box-shadow:0 8px 24px rgba(0,0,0,.32);font-size:11px;pointer-events:none;}
+#tab-raw .ss-tooltip strong{display:block;font-size:11px;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+#tab-raw .ss-tooltip div{display:grid;grid-template-columns:8px 1fr auto;gap:6px;align-items:center;line-height:1.45;}
+#tab-raw .ss-tooltip i{display:block;width:7px;height:2px;border-radius:2px;}
+#tab-raw .ss-tooltip b,#tab-raw .ss-tooltip span{font-size:10.5px;}
+#tab-raw .ss-tooltip span{color:var(--text-dim);}
+#tab-raw .ss-empty{padding:24px;font-size:12px;color:var(--text-faint);text-align:center;}
 #tab-raw .surprise-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--border);}
 #tab-raw .surprise-stat{padding:10px 12px;border-right:1px solid var(--border);}
 #tab-raw .surprise-stat:last-child{border-right:none;}
@@ -3456,6 +3508,7 @@ body{font-size:var(--twp-body-size);}
 .session-trigger:hover{border-color:#6a222a;background:#190b0e;}
 .session-dot{width:6px;height:6px;border-radius:50%;background:#42df91;box-shadow:0 0 0 2px rgba(66,223,145,.08);flex:0 0 auto;}
 .session-gh{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;letter-spacing:.4px;}
+.session-gh-date{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--text-dim);margin-right:4px;}
 #ghClock{font-family:'IBM Plex Mono',monospace;font-size:12px!important;font-weight:700;color:#d7ddd8!important;white-space:nowrap;}
 .session-chevron{color:#8e9892;font-size:12px;line-height:1;transform:translateY(-1px);}
 .session-popover{position:absolute;top:calc(100% + 8px);right:0;width:360px;background:#111311;border:1px solid #3b171b;border-radius:9px;box-shadow:0 16px 34px rgba(0,0,0,.42);overflow:hidden;}
@@ -3921,6 +3974,241 @@ body{font-size:var(--twp-body-size);}
   #tab-pairs .pair-bias-stack,#tab-pairs .pair-bias-single,#tab-pairs .pair-factor{display:inline-flex!important;white-space:normal!important;}
 }
 </style>
+<style id="scanner-styles">
+/* Trade Scanner — a fully self-contained design. The table below carries only the
+   .scanner-table class (not .pair-table), so none of the older Pair Ranking font-size/
+   font-weight overrides bleed in here; every rule needed is defined in this block. */
+.scanner-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px;}
+.scanner-head-left{display:flex;flex-direction:column;gap:4px;}
+.scanner-sub{color:var(--text-faint);font-weight:500;font-size:12.5px;}
+.scanner-sorted{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.5px;color:var(--text-faint);}
+.scanner-head-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+.scanner-count{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-dim);white-space:nowrap;}
+
+/* The wrapper needs overflow-x:auto for the frozen left columns to work, but that
+   quietly forces overflow-y to auto as well (that's just how the CSS overflow
+   property works when only one axis is set) -- which makes THIS box the scrolling
+   container instead of the page. A sticky header positioned against the page (e.g.
+   top:56px) never sticks in that case, because from this box's own point of view it
+   never scrolls. So instead we deliberately give it a real height and its own
+   vertical scrollbar, and stick the header to the TOP OF THIS BOX (top:0) rather
+   than to the page -- that's what actually keeps Side/Pair/Score/14D/Trend and the
+   header labels on screen while scrolling through the row list. */
+#tab-scanner .table-scroll{max-height:72vh;overflow-y:auto;overflow-x:auto;}
+/* FIX: the block above traps the table in a fixed 72vh box with its own internal
+   scrollbar so the sticky header has something to stick against. That's the same
+   root cause that was already diagnosed and fixed for Pair Ranking (see the
+   "pair-ranking-sticky" blocks further down this file): overflow-x:auto on this
+   wrapper quietly forces overflow-y to auto too, which makes the WRAPPER itself the
+   sticky containing block instead of the page -- so a plain top:0 sticky only sticks
+   to the top of this small box. Boxing it in was one way to make that work, but it
+   compresses how many rows are visible at once and leaves dead space on the page
+   below the box instead of the table filling the page the way it used to.
+   The real fix, same as Pair Ranking: stop this wrapper from being its own scroll
+   container on desktop widths, so the header sticks to the PAGE and the table keeps
+   its natural full height again. */
+@media(min-width:1101px){
+  #tab-scanner .table-scroll{
+    max-height:none!important;
+    overflow-x:clip!important;
+    overflow-y:visible!important;
+  }
+}
+#tab-scanner table.scanner-table{width:100%;border-collapse:collapse;}
+#tab-scanner .scanner-table th{
+  white-space:nowrap;text-align:center;font-family:'Inter',system-ui,sans-serif!important;
+  font-size:11px!important;font-weight:700!important;letter-spacing:.3px;text-transform:uppercase;
+  color:var(--text-faint)!important;background:var(--panel2);padding:8px 6px;border-bottom:1px solid var(--border);
+  /* Header row stays on screen while scrolling down through the row list, so the
+     column labels never disappear behind the data. Offset by the real page header
+     height (same --twp-header-offset var Pair Ranking uses) instead of a bare top:0,
+     so the sticky header parks just under the "Trade Scanner" title bar rather than
+     the very top edge of the browser window. */
+  position:sticky;top:var(--twp-header-offset,56px);z-index:5;
+}
+#tab-scanner .scanner-table th:nth-child(2),#tab-scanner .scanner-table th:nth-child(3){text-align:left;}
+/* SCORE header called out in the deep/burnt-orange accent, same tone as the Score column values. */
+#tab-scanner .scanner-table th:nth-child(4){color:var(--amber)!important;}
+/* Agree / Carry / Led by: equal padding on both sides of each of these three columns
+   so the visual gap before Carry matches the gap before Led by exactly. Led by's header
+   is left-aligned to match its (left-aligned) body cells -- otherwise the header text
+   floats centered in that column's wider auto-width and reads as a much bigger gap. */
+#tab-scanner .scanner-table th:nth-child(14),#tab-scanner .scanner-table td:nth-child(14){padding-right:16px;}
+#tab-scanner .scanner-table th:nth-child(15),#tab-scanner .scanner-table td:nth-child(15){padding-left:16px;padding-right:16px;}
+#tab-scanner .scanner-table th:nth-child(16),#tab-scanner .scanner-table td:nth-child(16){padding-left:16px;}
+#tab-scanner .scanner-table th:nth-child(16){text-align:left;}
+#tab-scanner .scanner-table td{
+  text-align:center;padding:7px 6px;border-bottom:1px solid var(--border);
+  font-family:'Inter',system-ui,sans-serif;font-size:12.5px;font-weight:500;vertical-align:middle;
+}
+#tab-scanner .scanner-table td.scanner-pair-td,#tab-scanner .scanner-table td[data-label="Side"],#tab-scanner .scanner-table td.scanner-ledby{text-align:left;}
+#tab-scanner .scanner-row:hover td{background:var(--panel2);}
+
+/* Frozen columns: Side / Pair / Score / 14D stay on screen while scrolling right to
+   the pillar strip, Agree, Carry and Led by. Widths are fixed so each sticky column's
+   left offset lines up exactly with the one before it (auto widths would drift), and
+   are wide enough for a full 6-letter pair code (e.g. USDCHF) plus its flags -- nothing
+   truncates. */
+#tab-scanner .scanner-table th:nth-child(2),#tab-scanner .scanner-table td:nth-child(2),
+#tab-scanner .scanner-table th:nth-child(3),#tab-scanner .scanner-table td:nth-child(3),
+#tab-scanner .scanner-table th:nth-child(4),#tab-scanner .scanner-table td:nth-child(4),
+#tab-scanner .scanner-table th:nth-child(5),#tab-scanner .scanner-table td:nth-child(5){
+  position:sticky;background:var(--panel);z-index:2;
+}
+#tab-scanner .scanner-table th:nth-child(2),#tab-scanner .scanner-table th:nth-child(3),
+#tab-scanner .scanner-table th:nth-child(4),#tab-scanner .scanner-table th:nth-child(5){background:var(--panel2);z-index:6;}
+#tab-scanner .scanner-row:hover td:nth-child(2),#tab-scanner .scanner-row:hover td:nth-child(3),
+#tab-scanner .scanner-row:hover td:nth-child(4),#tab-scanner .scanner-row:hover td:nth-child(5){background:var(--panel2);}
+#tab-scanner .scanner-table th:nth-child(2),#tab-scanner .scanner-table td:nth-child(2){width:68px;min-width:68px;max-width:68px;left:0;}
+#tab-scanner .scanner-table th:nth-child(3),#tab-scanner .scanner-table td:nth-child(3){width:128px;min-width:128px;max-width:128px;left:68px;}
+#tab-scanner .scanner-table th:nth-child(4),#tab-scanner .scanner-table td:nth-child(4){width:60px;min-width:60px;max-width:60px;left:196px;}
+#tab-scanner .scanner-table th:nth-child(5),#tab-scanner .scanner-table td:nth-child(5){width:74px;min-width:74px;max-width:74px;left:256px;box-shadow:2px 0 4px -2px rgba(0,0,0,.35);}
+
+.scanner-star-td{width:20px;padding-left:8px!important;}
+.scanner-star{cursor:pointer;font-size:12px;color:var(--text-faint);user-select:none;}
+.scanner-star.active{color:var(--amber);}
+
+/* Side: plain colored text — no pill, no border, no background box, ever. */
+.scanner-side{font-family:'Inter',system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:none!important;border:none!important;padding:0!important;border-radius:0!important;}
+.scanner-side-short{color:var(--bearish-strong);}
+.scanner-side-long{color:var(--bullish-strong);}
+.scanner-side-neutral{color:var(--text-faint);}
+
+/* Pair name + flags: normal weight, small and tidy — not bold. */
+.scanner-pair-td{white-space:nowrap;}
+.scanner-pair-wrap{display:inline-flex;align-items:center;gap:6px;}
+.scanner-pair-code{font-family:'Inter',system-ui,sans-serif;font-size:12.5px;font-weight:600;color:var(--text);letter-spacing:0;}
+
+/* Score + small left/right conviction gauge underneath it. Score is a touch bigger
+   than the row text (it's the headline number) but nowhere near display-size. */
+.scanner-score-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.scanner-score{font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:700;line-height:1;}
+.scanner-score.score-bull{color:var(--bullish-strong);}
+.scanner-score.score-lean-bull{color:var(--bullish-lean);}
+.scanner-score.score-bear{color:var(--bearish-strong);}
+.scanner-score.score-lean-bear{color:var(--bearish-lean);}
+.scanner-score.score-neutral{color:var(--text-dim);}
+/* Conviction gauge — a real, visible left/right bar, not a hairline. */
+.scanner-gauge{position:relative;width:46px;height:5px;background:var(--panel2);border:1px solid var(--border);border-radius:3px;}
+.scanner-gauge::before{content:'';position:absolute;left:50%;top:-2px;width:1px;height:9px;background:var(--border);transform:translateX(-.5px);}
+.scanner-gauge-fill{position:absolute;top:0;height:100%;border-radius:3px;}
+
+/* 14D delta arrow — small, colored only when it actually moved. */
+#tab-scanner .day-delta{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;font-family:'Inter',system-ui,sans-serif;font-size:11px;font-weight:500;}
+#tab-scanner .day-delta-up{color:var(--bullish-strong);}
+#tab-scanner .day-delta-down{color:var(--bearish-strong);}
+#tab-scanner .day-delta-flat{color:var(--text-faint);}
+
+/* Trend: compact, straight-segment line rather than a long smooth curve. */
+.scanner-trend-cell{display:flex;align-items:center;justify-content:center;}
+.scanner-trend-cell svg{display:block;}
+
+.scanner-pill-td{padding-left:3px!important;padding-right:3px!important;}
+.scanner-pill{display:inline-block;width:32px;height:20px;border-radius:2px;background:var(--panel3);border:1px solid rgba(255,255,255,.06);}
+/* Pill strip uses its own fixed palette (independent of the site-wide accent vars)
+   so it matches the reference exactly: deep solid tone for a mild reading, vivid
+   solid tone for a strong/"very" reading -- never an opacity wash of one color --
+   and neutral sits almost flush with the row background so it reads as a hairline. */
+.scanner-pill-bull{background:#18644b;}
+.scanner-pill-bull.strong{background:#22c98b;}
+.scanner-pill-bear{background:#752832;}
+.scanner-pill-bear.strong{background:#f04455;}
+.scanner-pill-neu{background:#191920;}
+
+.scanner-agree,.scanner-carry{font-family:'Inter',system-ui,sans-serif;font-size:13.5px;font-weight:700;color:var(--text-dim);white-space:nowrap;}
+.scanner-ledby{font-size:13px!important;color:var(--text-dim);white-space:nowrap;font-weight:500!important;}
+.scanner-row{cursor:pointer;}
+
+/* Long / Neutral / Short section dividers — this is what keeps rows grouped by side
+   (Long, then Neutral, then Short) instead of interleaved by raw score. Just a small
+   label, no card/box around the group. */
+.scanner-group-row td{padding:6px 6px 4px!important;border-bottom:none!important;background:transparent!important;}
+.scanner-group-label{font-family:'Inter',system-ui,sans-serif;font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text-faint);}
+.scanner-group-label.long{color:var(--bullish-lean);}
+.scanner-group-label.short{color:var(--bearish-lean);}
+
+@media(max-width:900px){
+  .scanner-ledby{white-space:normal;}
+}
+<style id="scanner-v2-fixes">
+#tab-scanner .scanner-title{color:var(--amber)!important;font-family:'Space Grotesk',sans-serif!important;font-size:20px!important;font-weight:700!important;letter-spacing:.1px!important;}
+#tab-scanner .scanner-sub,#tab-scanner .scanner-sorted,#tab-scanner .scanner-count{display:none!important;}
+#tab-scanner .scanner-driver-wrap{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+#tab-scanner .scanner-driver-box{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--panel2);font-size:10.5px;font-weight:700;line-height:1;color:var(--text-dim);}
+#tab-scanner .scanner-driver-box.pos{color:var(--bullish-strong);border-color:rgba(66,223,145,.28);}
+#tab-scanner .scanner-driver-box.neg{color:var(--bearish-strong);border-color:rgba(255,113,123,.28);}
+.scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;max-width:430px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.38);font-family:'Inter',system-ui,sans-serif;font-size:11.5px;line-height:1.45;color:var(--text);white-space:normal;}
+.scanner-hover-tooltip.show{display:block;}
+.scanner-hover-tooltip b{font-family:'IBM Plex Mono',monospace;}
+.scanner-tip-driver-grid{display:flex;gap:7px;align-items:stretch;flex-wrap:wrap;max-width:760px;}
+.scanner-tip-driver{min-width:150px;flex:1 1 150px;padding:6px 7px;border:1px solid var(--border);border-radius:5px;background:var(--panel2);}
+.scanner-tip-driver.pos{border-color:rgba(66,223,145,.28);}.scanner-tip-driver.neg{border-color:rgba(255,113,123,.28);}
+.scanner-tip-driver-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:3px;}
+.scanner-tip-driver-head b{font-family:'Inter',system-ui,sans-serif;font-size:11px!important;}
+.scanner-tip-driver-head span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:800;}
+.scanner-tip-driver.pos .scanner-tip-driver-head span{color:var(--bullish-strong);}.scanner-tip-driver.neg .scanner-tip-driver-head span{color:var(--bearish-strong);}
+.scanner-tip-driver-body{font-size:10.5px;line-height:1.35;color:var(--text-dim);}
+#tab-scanner .scanner-table td.scanner-ledby,#tab-scanner .scanner-table td.scanner-carry,#tab-scanner .scanner-table .scanner-pill{cursor:help;}
+</style>
+<style id="scanner-expanded-fixes">
+#tab-scanner .scanner-expanded-row td{padding:0 6px 8px!important;border-bottom:1px solid var(--border);background:var(--panel)!important;}
+#tab-scanner .scanner-expanded-panel{padding:10px 12px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);}
+#tab-scanner .scanner-expanded-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+#tab-scanner .scanner-expanded-pair{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;}
+#tab-scanner .scanner-expanded-score{margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;}
+#tab-scanner .scanner-expanded-score.pos{color:var(--bullish-strong);}.scanner-expanded-score.neg{color:var(--bearish-strong);}.scanner-expanded-score.neu{color:var(--text-dim);}
+#tab-scanner .scanner-expanded-close{border:1px solid var(--border);background:transparent;color:var(--text-faint);border-radius:4px;padding:2px 7px;cursor:pointer;font-size:14px;}
+#tab-scanner .scanner-expanded-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:10px;align-items:start;}
+#tab-scanner .scanner-expanded-trend,#tab-scanner .scanner-expanded-macro{min-width:0;}
+#tab-scanner .scanner-expanded-label{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#tab-scanner .scanner-expanded-label .range-switch{display:flex;gap:5px;text-transform:none;letter-spacing:normal;}
+#tab-scanner .scanner-trend-range-btn{padding:3px 8px;font-size:10px;}
+#tab-scanner .scanner-expanded-trend-wrap{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:7px 9px;}
+#tab-scanner .scanner-expanded-trend-wrap .bigchart{margin-top:0;padding:0;background:transparent;}
+#tab-scanner .scanner-expanded-trend-wrap .bigchart-head{display:none;}
+#tab-scanner .scanner-expanded-trend-note{margin-top:5px;font-size:10.5px;color:var(--text-faint);}
+#tab-scanner .scanner-expanded-rate{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:7px;padding:7px 9px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text-faint);}
+#tab-scanner .scanner-expanded-rate b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+#tab-pairs{display:none!important;} .tab-btn[data-tab="pairs"]{display:none!important;}
+@media(max-width:900px){#tab-scanner .scanner-expanded-grid{grid-template-columns:1fr;}}
+</style>
+</style>
+
+<style id="v9-hover-square-and-score-gauge">
+/* Scanner hover notes: charcoal black, visibly distinct from the main black surface. */
+.scanner-hover-tooltip{
+  background:#262624!important;
+  border:1px solid #3a3a38!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.42)!important;
+  color:#eef1ee!important;
+  transition:left .05s linear,top .05s linear!important;
+}
+/* Individual pillar explanations are intentionally square rather than wide cards. */
+.scanner-hover-tooltip:not(.scanner-pair-hover){
+  width:176px!important;
+  min-width:176px!important;
+  max-width:176px!important;
+  min-height:176px!important;
+  box-sizing:border-box!important;
+  padding:10px!important;
+}
+.scanner-hover-tooltip:not(.scanner-pair-hover) .stt-title{font-size:11.5px!important;font-weight:700!important;line-height:1.25!important;}
+.scanner-hover-tooltip:not(.scanner-pair-hover) .stt-note{font-size:10.5px!important;line-height:1.4!important;}
+/* Pair-level hover remains compact because it contains composite + two drivers. */
+.scanner-hover-tooltip.scanner-pair-hover{
+  width:max-content!important;
+  min-width:250px!important;
+  max-width:340px!important;
+  min-height:0!important;
+}
+.scanner-hover-tooltip .stt-driver{background:#1b1f1d!important;border:1px solid #313733!important;border-radius:5px!important;padding:7px 8px!important;margin:0 0 6px!important;}
+.scanner-hover-tooltip.scanner-pair-hover .stt-driver{min-width:150px!important;}
+.scanner-hover-tooltip .stt-driver:last-child{margin-bottom:0!important;}
+/* The visible score gauge uses the full theoretical pair-score range: -100..+100. */
+#tab-scanner .scanner-score-wrap{gap:4px!important;}
+#tab-scanner .scanner-gauge{width:46px!important;height:5px!important;}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -3934,10 +4222,10 @@ body{font-size:var(--twp-body-size);}
     <nav class="tabs">
       <button class="tab-btn active" data-tab="overview">Overview</button>
       <button class="tab-btn" data-tab="detail">Currency Detail</button>
-      <button class="tab-btn" data-tab="pairs">Pair Ranking</button>
+      <button class="tab-btn" data-tab="scanner">Trade Scanner</button>
       <button class="tab-btn" data-tab="yield2y">Bond Yield Spread</button>
       <button class="tab-btn" data-tab="cot" id="cotTabBtn">COT Regime</button>
-      <button class="tab-btn" data-tab="raw">Surprise Index</button>
+      <button class="tab-btn" data-tab="raw">Economic Surprise Index</button>
       <button class="tab-btn" data-tab="risk" id="riskTabBtn">Risk Sentiment</button>
     </nav>
     <div class="lock-box" id="lockBox"></div>
@@ -3949,7 +4237,7 @@ body{font-size:var(--twp-body-size);}
         <span class="updated" id="updatedTag" style="transition: color 0.3s; font-family:'IBM Plex Mono',monospace; font-size: 11.5px; color: var(--text-faint);">Ready</span>
         <div class="session-wrap" id="sessionWrap">
   <button class="session-trigger" id="sessionTrigger" type="button" aria-expanded="false" aria-haspopup="true">
-    <span class="session-dot" aria-hidden="true"></span><span class="session-gh">GH</span><span id="ghClock">--:--:--</span><span class="session-chevron">⌄</span>
+    <span class="session-dot" aria-hidden="true"></span><span class="session-gh">GH</span><span id="ghDate" class="session-gh-date">-- --- --</span><span id="ghClock">--:--:--</span><span class="session-chevron">⌄</span>
   </button>
   <div class="session-popover" id="sessionPopover" hidden></div>
 </div>
@@ -3960,6 +4248,7 @@ body{font-size:var(--twp-body-size);}
     <section class="tab-panel" id="tab-raw"></section>
     <section class="tab-panel" id="tab-detail"></section>
     <section class="tab-panel" id="tab-pairs"></section>
+    <section class="tab-panel" id="tab-scanner"></section>
     <section class="tab-panel" id="tab-yield2y"></section>
     <section class="tab-panel" id="tab-risk"></section>
     <section class="tab-panel" id="tab-cot"></section>
@@ -4296,6 +4585,14 @@ var y2DateTouchedThisSession = false; // true once the user actually changes the
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=false, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
+var scannerFilters=["All"], scannerFavorites=[], scannerExpandedPair=null;
+try{
+  var __savedScannerFav=JSON.parse(localStorage.getItem('twp_scanner_favorites')||'[]');
+  if(Array.isArray(__savedScannerFav)) scannerFavorites=__savedScannerFav;
+}catch(e){}
+function saveScannerFavorites(){
+  try{ localStorage.setItem('twp_scanner_favorites', JSON.stringify(scannerFavorites)); }catch(e){}
+}
 var ECON_CALENDAR=[], ECON_CALENDAR_ACTIVITY={}, calendarEditorOpen=false, calendarEditingId=null, calendarDraft=null;
 
 var ECON_CALENDAR_DEFAULT_RECENT=[
@@ -5319,6 +5616,12 @@ function regimeColorClass(label){
   return "strength-neu";
 }
 function pairScoreClass(score){
+  // Bands match pairBandLabel() exactly, so the Score column's color always agrees
+  // with the pair's actual Bullish/Bearish/Neutral bias: +/-7 is genuinely Neutral
+  // and stays ash gray (not tinted green or red), 8-19 is the lighter "Leaning"
+  // shade, 20+ is full strength. (Previously this had no neutral cutoff at all --
+  // any nonzero score got tinted, so a score of 2 or 3 showed up leaning green/red
+  // even though it's well inside the neutral zone.)
   var s=Math.round(Number(score)||0);
   if(s>=20) return "score-bull";
   if(s>=8) return "score-lean-bull";
@@ -5600,6 +5903,569 @@ function buildPairs(scores){
   pairs.sort(function(a,b){ return b.score-a.score; });
   return pairs;
 }
+
+// ===== Trade Scanner =====
+// Same weighted terms as pairCompositeFor(), just kept separate instead of summed,
+// so "Led by" can point at whichever pillar is actually doing the work on a given
+// pair. Any change to pairCompositeFor's weights/formula must be mirrored here.
+function pairCompositeBreakdown(base, quote){
+  var db=DATA[base], dq=DATA[quote];
+  var fb=fundFor(base), fq=fundFor(quote);
+  var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
+  var y=pairYieldCalc(base,quote).score;
+  var yieldTerm=(y==null?0:y/10);
+  var cotTerm=cotPairRegime(base,quote).combined/100;
+  var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
+  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
+  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
+  var fundPair=(fundBase-fundQuote)/2;
+  var cbPair=(cbBase-cbQuote)/2;
+  var riskPair=(riskBase-riskQuote)/2;
+  var seasPair=(seasBase-seasQuote)/2;
+  var terms=[
+    {name:"Fundamentals",pts:100*0.55*fundPair},
+    {name:"Yield",pts:100*0.20*yieldTerm},
+    {name:"CB stance",pts:100*0.10*cbPair},
+    {name:"COT flow",pts:100*0.08*cotTerm},
+    {name:"Risk sentiment",pts:100*0.05*riskPair},
+    {name:"Seasonality",pts:100*0.02*seasPair}
+  ];
+  return {total:terms.reduce(function(s,t){return s+t.pts;},0), terms:terms};
+}
+// "Led by" should only name drivers actually pushing the pair the way its score
+// says it's going -- not just whichever two terms happen to have the biggest raw
+// point value regardless of which side they're on. It only considers terms whose
+// sign agrees with the pair's overall direction, same idea as the Agree column.
+//
+// Within those agreeing terms, rank by each pillar's OWN signal strength (Very
+// Bullish/Bearish > plain Bullish/Bearish > Leaning > Neutral) before falling back
+// to raw point size as a tiebreaker -- not by raw weighted points alone. Points
+// alone is misleading here: a pillar like CB stance only carries 10% of the
+// composite weight vs Yield's 20%, so even a maxed-out "Very Bearish" CB reading
+// can never out-POINT a merely middling Yield reading, and Led by would name
+// Yield as a driver while skipping right past a pillar sitting at its own most
+// extreme reading. Ranking by each pillar's own strength first keeps Led by
+// consistent with what the colored driver strip actually shows -- if Fundamentals
+// and CB stance are both showing "Very Bearish" on the strip, those are the two
+// names that should show up here, not whichever has the bigger raw number.
+function pillarStrengthTier(label){
+  if(!label) return 0;
+  if(label.indexOf("Very")!==-1) return 2;
+  if(label.indexOf("Leaning")!==-1) return 0.5;
+  if(label.indexOf("Bullish")!==-1||label.indexOf("Bearish")!==-1) return 1;
+  return 0;
+}
+function scannerDriverBreakdown(base,quote){
+  var db=DATA[base], dq=DATA[quote];
+  var fb=fundFor(base), fq=fundFor(quote);
+  var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
+  var y=pairYieldCalc(base,quote);
+  var yScore=y.score;
+  var cot=cotPairRegime(base,quote);
+  var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
+  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
+  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
+
+  // These are the exact seven evidence columns shown in the scanner:
+  // Fundamentals, Yield, CB stance, Position, WoW, Seasonality, Risk.
+  // Their contribution is expressed in composite-score points, preserving the
+  // model's existing 55/20/10/8/2/5 hierarchy while splitting the COT 8% into
+  // its existing 75% position / 25% WoW components.
+  var fundPts=55*((fundBase-fundQuote)/2);
+  var yieldPts=yScore==null?0:2*yScore;
+  var cbPts=10*((cbBase-cbQuote)/2);
+  var posPts=cot.insufficient?0:0.06*cot.posScore;
+  var flowPts=cot.insufficient?0:0.02*cot.flowScore;
+  var riskPts=5*((riskBase-riskQuote)/2);
+  var seasPts=2*((seasBase-seasQuote)/2);
+
+  function push(list,name,pts,label){
+    var n=Number(pts)||0;
+    if(Math.abs(n)<0.5) return;
+    list.push({name:name,pts:n,label:label||''});
+  }
+  var out=[];
+  push(out,'Fundamentals',fundPts,pillarBias((fundBase-fundQuote)*100));
+  push(out,'Yield',yieldPts,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
+  push(out,'CB stance',cbPts,pairCbStanceLabel(base,quote));
+  push(out,'Position',posPts,cot.posLabel);
+  push(out,'WoW',flowPts,cot.flowLabel);
+  push(out,'Seasonality',seasPts,seasonalityPairText(base,quote));
+  push(out,'Risk sentiment',riskPts,riskPairState(base,quote));
+  return out;
+}
+function scannerDriverExplanation(base,quote,driver){
+  var leader=driver.pts>0?base:quote;
+  var other=driver.pts>0?quote:base;
+  var direction='favours';
+  var templates={
+    'Fundamentals':'Relative growth, inflation and labour evidence '+direction+' '+leader+' versus '+other+'.',
+    'Yield':'The 2Y yield differential '+direction+' '+leader+' relative to '+other+'.',
+    'CB stance':'The central-bank stance '+direction+' '+leader+' versus '+other+'.',
+    'Position':'Net positioning '+direction+' '+leader+' relative to '+other+'.',
+    'WoW':'This week\'s positioning change '+direction+' '+leader+' relative to '+other+'.',
+    'Seasonality':'Current seasonality '+direction+' '+leader+' relative to '+other+'.',
+    'Risk sentiment':'The current risk regime '+direction+' '+leader+' relative to '+other+'.'
+  };
+  return templates[driver.name]||('This driver '+direction+' '+leader+' versus '+other+'.');
+}
+function scannerDriverBreakdown(base,quote){
+  var db=DATA[base], dq=DATA[quote];
+  var fb=fundFor(base), fq=fundFor(quote);
+  var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
+  var yScore=pairYieldCalc(base,quote).score;
+  var cot=cotPairRegime(base,quote);
+  var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
+  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
+  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
+  var out=[];
+  function push(name,pts,label){out.push({name:name,pts:Number(pts)||0,label:label||'Neutral'});}
+  push('Fundamentals',55*((fundBase-fundQuote)/2),pillarBias((fundBase-fundQuote)*100));
+  push('Yield',yScore==null?0:2*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
+  push('CB stance',10*((cbBase-cbQuote)/2),pairCbStanceLabel(base,quote));
+  push('Position',cot.insufficient?0:0.06*cot.posScore,cot.posLabel);
+  push('WoW',cot.insufficient?0:0.02*cot.flowScore,cot.flowLabel);
+  push('Seasonality',2*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
+  push('Risk sentiment',5*((riskBase-riskQuote)/2),riskPairState(base,quote));
+  return out;
+}
+function scannerLedByDrivers(base,quote,dir){
+  if(!dir) return [];
+  var drivers=scannerDriverBreakdown(base,quote).filter(function(d){return Math.sign(d.pts)===dir && Math.abs(d.pts)>=0.5;});
+  drivers.sort(function(a,b){return Math.abs(b.pts)-Math.abs(a.pts);});
+  return drivers.slice(0,2);
+}
+function scannerLedByText(base,quote,dir){
+  if(!dir) return '—';
+  var top=scannerLedByDrivers(base,quote,dir);
+  return top.length?top.map(function(d){return d.name+' '+(d.pts>0?'+':'')+Math.round(d.pts);}).join(' · '):'—';
+}
+function scannerLedByBoxes(base,quote,dir){
+  if(!dir) return '—';
+  var top=scannerLedByDrivers(base,quote,dir);
+  if(!top.length) return '—';
+  return top.map(function(d){
+    return '<span class="scanner-driver-box">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';
+  }).join(' <span class="scanner-driver-sep">·</span> ');
+}
+function scannerAgreeTooltip(base,quote,dir){
+  if(!dir) return '<div class="stt-kicker">Agree</div><div class="stt-note">Composite is inside the neutral band. There is no side for a driver to agree with.</div>';
+  var fb=fundFor(base), fq=fundFor(quote), y=pairYieldCalc(base,quote).score, cot=cotPairRegime(base,quote);
+  var labels={
+    'Fundamentals':pillarBias((fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0)),
+    'Yield':y==null?'Neutral':(y>=7?'Very Bullish':y>=3?'Bullish':y<=-7?'Very Bearish':y<=-3?'Bearish':'Neutral'),
+    'CB stance':pairCbStanceLabel(base,quote),
+    'Position':cot.posLabel,'WoW':cot.flowLabel,
+    'Seasonality':seasonalityPairText(base,quote),'Risk sentiment':riskPairState(base,quote)
+  };
+  var names=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'], agree=0,disagree=0,neutral=0;
+  names.forEach(function(name){var sg=pillarSign(labels[name]); if(sg===dir) agree++; else if(sg===0) neutral++; else disagree++;});
+  var side=dir>0?'LONG':'SHORT';
+  return '<div class="stt-kicker">Agree</div><div class="stt-title">'+agree+' of 7 drivers agree with '+side+'</div><div class="stt-note">'+agree+' agree · '+disagree+' disagree · '+neutral+' take no side</div>';
+}
+function scannerPillarExplanation(base,quote,name,label){
+  return '<div class="stt-pill-row"><b>'+esc(name)+': '+esc(label||'Neutral')+'</b></div>';
+}
+function scannerDriverTooltip(base,quote,dir){
+  if(!dir) return '<div class="stt-kicker">Led by</div><div class="stt-note">Composite is inside the neutral band. There is no side for a driver to agree with.</div>';
+  var drivers=scannerLedByDrivers(base,quote,dir);
+  if(!drivers.length) return '<div class="stt-kicker">Led by</div><div class="stt-note">No clear main driver at the moment.</div>';
+  return '<div class="stt-kicker">Led by</div>'+drivers.map(function(d){
+    return '<div class="stt-driver"><span class="stt-driver-name">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+' pts</span><span>'+esc(scannerDriverExplanation(base,quote,d))+'</span></div>';
+  }).join('');
+}
+// Carry = the actual central bank interest rate differential between the two
+// currencies (base rate minus quote rate) -- e.g. AUDCHF with AUD at 4.35% and CHF
+// at 0% carries +4.35%. This reads live off each currency's "Interest rate" field
+// on Currency Detail (DATA[ccy].interestRate) on every render, so editing a rate
+// there automatically updates every pair's Carry here -- no separate number stored.
+// (Previously this used the live 2Y bond yield differential instead, which tracks
+// a related but different thing and doesn't match the actual policy rate gap.)
+function scannerCarryPct(base,quote){
+  var b=DATA&&DATA[base]?parseNum(DATA[base].interestRate):null;
+  var q=DATA&&DATA[quote]?parseNum(DATA[quote].interestRate):null;
+  if(!b||!q) return null;
+  return b.num-q.num;
+}
+function pillarSign(label){
+  if(!label) return 0;
+  if(label.indexOf("Bullish")!==-1) return 1;
+  if(label.indexOf("Bearish")!==-1) return -1;
+  return 0;
+}
+// Score bands the Trade Scanner filters and colors by. These read directly off the
+// live composite score (not the 7-tier Pair Ranking bias label), matching the ranges
+// actually in use: |score|>=35 is Very Bullish/Bearish, |score|>=20 is Bullish/Bearish,
+// everything inside +/-20 is Neutral for filtering purposes.
+function scannerBucket(score){
+  var s=Math.round(Number(score)||0);
+  if(s>=35) return "Very Bullish";
+  if(s>=20) return "Bullish";
+  if(s<=-35) return "Very Bearish";
+  if(s<=-20) return "Bearish";
+  return "Neutral";
+}
+function scannerPillCell(label, tip){
+  var sign=pillarSign(label);
+  var strong=label && label.indexOf("Very")!==-1;
+  var cls=sign>0?"scanner-pill-bull":(sign<0?"scanner-pill-bear":"scanner-pill-neu");
+  return '<span class="scanner-pill '+cls+(strong?' strong':'')+'" data-scanner-tip="'+esc(tip||'')+'"></span>';
+}
+function scannerSideBadge(bias, score){
+  if(bias==="Neutral") return '<span class="scanner-side scanner-side-neutral">NEUTRAL</span>';
+  return score>0 ? '<span class="scanner-side scanner-side-long">LONG</span>' : '<span class="scanner-side scanner-side-short">SHORT</span>';
+}
+// Groups rows the same way the Side column labels them: Long first, Neutral in the
+// middle, Short last -- never interleaved.
+function scannerSideGroup(p){
+  if(p.bias==="Neutral") return 1;
+  return p.score>0 ? 0 : 2;
+}
+// Small left/right gauge under the score -- fill length is proportional to conviction
+// (scaled against the full -100 to +100 composite-score range), colored to match the score band,
+// and points right for longs, left for shorts.
+function scannerGaugeBar(score, cls){
+  var s=Number(score)||0;
+  var half=23;
+  var pct=Math.max(0,Math.min(1,Math.abs(s)/100));
+  var fillW=Math.round(pct*half);
+  if(fillW<=0) return '<div class="scanner-gauge"></div>';
+  var color = cls==="score-bull"?"var(--bullish-strong)":cls==="score-lean-bull"?"var(--bullish-lean)":
+    cls==="score-bear"?"var(--bearish-strong)":cls==="score-lean-bear"?"var(--bearish-lean)":"var(--text-faint)";
+  var side = s>0 ? "left:50%;" : "right:50%;";
+  return '<div class="scanner-gauge"><div class="scanner-gauge-fill" style="'+side+'width:'+fillW+'px;background:'+color+';"></div></div>';
+}
+// A tighter, straight-segment trend line (no bezier smoothing) so 14 days of history
+// reads as a compact zigzag instead of a long smooth snake.
+function scannerTrendSpark(pair,animate){
+  var w=92,h=25,pad=3;
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
+  if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:11px;">&mdash;</span>';
+  var loggedDays=trendDaysForKey(pair);
+  var loggedVals=loggedDays.map(function(dt){ return DAILY[dt][pair]; });
+  var live=liveValueForTrendKey(pair);
+  var merged=live==null?{days:loggedDays,vals:loggedVals,liveIdx:-1}:withLiveToday(loggedDays,loggedVals,live,TREND_WINDOW_DAYS);
+  var days=merged.days, vals=merged.vals, liveIdx=merged.liveIdx;
+  if(vals.length<2) return '<span style="color:var(--text-faint);font-size:11px;">&mdash;</span>';
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){min-=5;max+=5;}
+  var range=max-min;
+  var pts=vals.map(function(v,i){var x=pad+(i/(vals.length-1))*(w-2*pad),y=h-pad-((v-min)/range)*(h-2*pad);return [x,y];});
+  var score=live==null?vals[vals.length-1]:live;
+  var col=score>=8?'var(--bullish)':score<=-8?'var(--bearish)':'var(--text-faint)';
+  var lineD=smoothPath(pts);
+  var baseY=(h-pad).toFixed(1);
+  var areaD=lineD+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  var lineLen=0;
+  for(var li=1;li<pts.length;li++){ var dx=pts[li][0]-pts[li-1][0], dy=pts[li][1]-pts[li-1][1]; lineLen+=Math.sqrt(dx*dx+dy*dy); }
+  var lenStr=(lineLen*1.2).toFixed(1);
+  var hitPts=days.map(function(dt,i){
+    var v=Number(vals[i]);
+    var label=(i===liveIdx?'Live (today)':String(dt))+' · Score '+fmt(v)+' · '+pairBandLabel(v);
+    return '<circle class="pair-trend-hit-pt" cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"></circle>';
+  }).join('');
+  var liveDot='';
+  return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
+    '<path d="'+areaD+'" fill="'+col+'" fill-opacity="0.08" stroke="none" pointer-events="none"/>'+
+    '<path class="pair-trend-line" d="'+lineD+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
+    liveDot+
+    '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="3.2" fill="var(--panel)" stroke="'+col+'" stroke-width="1.5"/></g>'+hitPts+
+    '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-trend-hit"/></svg>';
+}
+function animateScannerTrends(){
+  var lines=document.querySelectorAll('#tab-scanner .pair-trend-line');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
+function animateSurpriseStrengthChart(){
+  var lines=document.querySelectorAll('#tab-raw .ss-series');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
+function animateOverviewCsi(){
+  var lines=document.querySelectorAll('#tab-overview .ov-csi-series');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
+function animateOverviewMacroTrends(){
+  var lines=document.querySelectorAll('#tab-overview .ov-macro-trend-line');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
+function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,dir); }
+function scannerGroupRow(label, cls){
+  return '<tr class="scanner-group-row"><td colspan="16"><span class="scanner-group-label '+cls+'">'+label+'</span></td></tr>';
+}
+var scannerHoverTooltip=null;
+function ensureScannerHoverTooltip(){
+  if(scannerHoverTooltip) return scannerHoverTooltip;
+  scannerHoverTooltip=document.createElement('div');
+  scannerHoverTooltip.className='scanner-hover-tooltip';
+  document.body.appendChild(scannerHoverTooltip);
+  return scannerHoverTooltip;
+}
+function positionScannerHoverTooltip(elOrEvt){
+  var tt=ensureScannerHoverTooltip();
+  var tr=tt.getBoundingClientRect();
+  var cx, cy;
+  if(elOrEvt && typeof elOrEvt.clientX==='number'){
+    // Follow the actual cursor position, not the hovered cell's corner -- anchoring
+    // to the cell made the tooltip jump row-to-row in fixed steps as the mouse moved,
+    // instead of gliding continuously with it.
+    cx=elOrEvt.clientX; cy=elOrEvt.clientY;
+  } else {
+    var er=elOrEvt.getBoundingClientRect();
+    cx=er.left; cy=er.bottom;
+  }
+  var x=cx+14, y=cy+16;
+  if(x+tr.width>window.innerWidth-8) x=window.innerWidth-tr.width-8;
+  if(y+tr.height>window.innerHeight-8) y=cy-tr.height-14;
+  tt.style.left=Math.max(8,x)+'px';
+  tt.style.top=Math.max(8,y)+'px';
+}
+var scannerTipHideTimer=null;
+function bindScannerHoverTooltips(){
+  var els=document.querySelectorAll('#tab-scanner [data-scanner-tip]:not([data-scanner-tip=""])');
+  for(var i=0;i<els.length;i++){
+    var el=els[i];
+    if(el.__scannerTipBound) continue;
+    el.__scannerTipBound=true;
+    var enter=function(ev){
+      var e=ev.currentTarget, txt=e.getAttribute('data-scanner-tip')||'';
+      if(!txt) return;
+      if(scannerTipHideTimer){ clearTimeout(scannerTipHideTimer); scannerTipHideTimer=null; }
+      var tt=ensureScannerHoverTooltip();
+      tt.innerHTML=txt;
+      tt.classList.toggle('scanner-pair-hover', e.classList.contains('scanner-pair-td'));
+      tt.classList.add('show');
+      positionScannerHoverTooltip(ev);
+    };
+    var move=function(ev){
+      var tt=ensureScannerHoverTooltip();
+      if(tt.classList.contains('show')) positionScannerHoverTooltip(ev);
+    };
+    var leave=function(){
+      // Don't hide the instant the cursor crosses into the next row -- that's what
+      // caused the flicker. Give the next pointerenter a brief window to cancel this
+      // and swap the content in place instead, so hopping pair-to-pair stays smooth
+      // and it only actually disappears once the cursor truly leaves the table.
+      if(scannerTipHideTimer) clearTimeout(scannerTipHideTimer);
+      scannerTipHideTimer=setTimeout(function(){
+        if(scannerHoverTooltip) scannerHoverTooltip.classList.remove('show');
+        scannerTipHideTimer=null;
+      },60);
+    };
+    el.addEventListener('pointerenter',enter);
+    el.addEventListener('pointermove',move);
+    el.addEventListener('pointerleave',leave);
+  }
+}
+function scannerScorePrecise(score){
+  var n=Number(score)||0;
+  return (n>0?'+':'')+n.toFixed(1);
+}
+function scannerScoreCompact(score){
+  var n=Math.round(Number(score)||0);
+  return (n>0?'+':'')+n;
+}
+function scannerPairTooltipHtml(base,quote,score){
+  var pair=base+'/'+quote, live=pairCompositeFor(base,quote), band=pairBandLabel(live);
+  var dir=live>0?1:live<0?-1:0;
+  var drivers=scannerLedByDrivers(base,quote,dir);
+  var scoreStr=esc(scannerScorePrecise(live)), deltaStr=esc(scannerScorePrecise(live));
+  var leadHtml=drivers.length ? drivers.map(function(d){
+    return '<div class="stt-driver">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+' pts &mdash; '+esc(scannerDriverExplanation(base,quote,d))+'</div>';
+  }).join('') : '<div class="stt-note stt-muted">No clear leading driver.</div>';
+  return '<div class="stt-title">'+esc(pair)+'</div>'+
+    '<div class="stt-note">composite '+scoreStr+' &middot; '+esc(band.toLowerCase())+'</div>'+
+    '<div class="stt-note">'+deltaStr+' from neutral</div>'+
+    '<div class="stt-drivers"><div class="stt-plain-label">led by</div>'+leadHtml+'</div>';
+}
+
+function scannerPairExpandedHtml(pair){
+  var base=pair.slice(0,3), quote=pair.slice(3,6);
+  var score=pairCompositeFor(base,quote);
+  var t=pairTrend30d(pair);
+  var y=pairYieldCalc(base,quote);
+  var carry=scannerCarryPct(base,quote);
+  var carryText=carry==null?'—':((carry>0?'+':'')+carry.toFixed(2)+'%');
+  return '<tr class="scanner-expanded-row"><td colspan="16">'+
+    '<div class="scanner-expanded-panel">'+
+      '<div class="scanner-expanded-head"><div><span class="scanner-expanded-pair">'+esc(pair)+'</span><span class="scanner-expanded-score '+(score>0?'pos':score<0?'neg':'neu')+'">'+fmt(score)+' · '+esc(pairBandLabel(score))+'</span></div><button type="button" class="scanner-expanded-close" data-scanner-close="'+esc(pair)+'">&times;</button></div>'+
+      '<div class="scanner-expanded-grid">'+
+        '<div class="scanner-expanded-trend"><div class="scanner-expanded-label"><span>Overall trend</span><div class="range-switch">'+["1M","3M","1Y","ALL"].map(function(r){
+        return '<button type="button" class="range-btn scanner-trend-range-btn'+(expandedRange===r?" active":"")+'" data-scanner-range="'+r+'">'+r+'</button>';
+      }).join("")+'</div></div><div class="scanner-expanded-trend-wrap">'+bigChart(pair,expandedRange)+'</div><div class="scanner-expanded-trend-note">'+esc(t.label)+(t.delta==null?'':' · change '+(t.delta>0?'+':'')+t.delta+' points')+'</div></div>'+
+        '<div class="scanner-expanded-macro">'+pairMacroSummaryHtml(pair,score)+'<div class="scanner-expanded-rate"><span>Carry</span><b>'+esc(carryText)+'</b><span>2Y spread</span><b>'+(y.current==null?'—':((y.current>0?'+':'')+Math.round(y.current)+'bp'))+'</b></div></div>'+
+      '</div>'+
+    '</div></td></tr>';
+}
+function scanner7dTooltip(base,quote,live){
+  var d7=last7DayDelta(base+quote,live);
+  if(d7.delta==null) return '<div class="stt-kicker">7D</div><div class="stt-note">No logged score at least 7 calendar days back yet.</div>';
+  var prior=live-d7.delta;
+  var direction=d7.delta>0?'strengthened':d7.delta<0?'weakened':'was unchanged';
+  return '<div class="stt-kicker">7D</div><div class="stt-title">Score now '+esc(scannerScorePrecise(live))+' · prior '+esc(scannerScorePrecise(prior))+'</div><div class="stt-note">The '+(live>0?'LONG':live<0?'SHORT':'COMPOSITE')+' bias '+direction+' by '+(d7.delta>0?'+':'')+d7.delta+' points versus '+esc(d7.day)+'.</div>';
+}
+function scannerTrendTooltip(base,quote,live){
+  var t=pairTrend30d(base+quote), band=pairBandLabel(live), fromNeutral=Math.abs(live)>7?Math.abs(live)-7:0;
+  return '<div class="stt-kicker">Trend</div><div class="stt-title">Historical composite</div><div class="stt-note">Current '+esc(scannerScorePrecise(live))+' '+esc(band)+' · '+esc(fromNeutral?((live>0?'+':'-')+fromNeutral.toFixed(1)+' pts from neutral'):'inside neutral band')+(t.delta==null?'': ' · '+(t.delta>0?'+':'')+t.delta+' pts across the stored trend window.')+'</div>';
+}
+
+function renderScanner(animateTrend){
+  if(!DATA) return;
+  var pairsAll=buildPairs(allScores());
+  var pairs=pairsAll.filter(function(p){
+    if(scannerFilters.indexOf("All")!==-1) return true;
+    return scannerFilters.indexOf(scannerBucket(p.score))!==-1;
+  });
+  // Grouped Long -> Neutral -> Short (never mixed), ranked by conviction within each group.
+  // Within each Long/Neutral/Short group, always rank highest score to lowest.
+  // (The Short group used to sort the OTHER way -- most negative first -- which
+  // put Very Bearish at the TOP of the Short section and worked its way UP toward
+  // Neutral by the bottom. That breaks the natural flow of conviction: it should
+  // read Very Bullish -> Bullish -> Leaning Bullish -> Neutral -> Leaning Bearish
+  // -> Bearish -> Very Bearish top to bottom, continuously, which just means every
+  // group sorts the same way -- descending by the actual signed score.)
+  pairs=pairs.slice().sort(function(a,b){
+    var ga=scannerSideGroup(a), gb=scannerSideGroup(b);
+    if(ga!==gb) return ga-gb;
+    return b.score-a.score;
+  });
+
+  var rows="";
+  if(!pairs.length){
+    rows='<tr><td colspan="16" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
+  }
+  var lastGroup=null;
+  var groupMeta={0:["Long","long"],1:["Neutral","neutral"],2:["Short","short"]};
+  for(var i=0;i<pairs.length;i++){
+    var p=pairs[i];
+    var grp=scannerSideGroup(p);
+    if(grp!==lastGroup){
+      rows += scannerGroupRow(groupMeta[grp][0], groupMeta[grp][1]);
+      lastGroup=grp;
+    }
+    var fb=fundFor(p.base), fq=fundFor(p.quote);
+    var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
+    var fundBias=pillarBias(fundRel);
+    var yb=p.yieldScore==null?"Neutral":(p.yieldScore>=7?"Very Bullish":p.yieldScore>=3?"Bullish":p.yieldScore<=-7?"Very Bearish":p.yieldScore<=-3?"Bearish":"Neutral");
+    var cbLbl=pairCbStanceLabel(p.base,p.quote);
+    var cotPair=cotPairRegime(p.base,p.quote);
+    var seasLbl=seasonalityPairText(p.base,p.quote);
+    var riskLbl=riskPairState(p.base,p.quote);
+    // Neutral is a true no-side state for the scanner. Agree stays a literal dash,
+    // but hovering it explains why there is no agreement count. Led by stays a literal
+    // dash with no tooltip because there is no directional driver to name.
+    var isNeutral=p.bias==="Neutral";
+    var dir=isNeutral?0:(p.score>0?1:-1);
+    var agreeTxt="—", agreeStyle="", agreeTip=scannerAgreeTooltip(p.base,p.quote,dir);
+    if(!isNeutral){
+      var agreeLabels=[fundBias,yb,cbLbl,cotPair.posLabel,cotPair.flowLabel,seasLbl,riskLbl];
+      var agree=agreeLabels.filter(function(lbl){return pillarSign(lbl)===dir;}).length;
+      agreeTxt=agree+"/7";
+      agreeStyle=agree>=4?"color:var(--text);":"";
+    }
+    var ledByTxt=isNeutral?"—":scannerLedByText(p.base,p.quote,dir);
+    var ledByTip=scannerDriverTooltip(p.base,p.quote,dir);
+    var carry=scannerCarryPct(p.base,p.quote);
+    var carryTxt=carry==null?"—":((carry>0?"+":"")+carry.toFixed(2)+"%");
+    var carryStyle=carry==null?"color:var(--text-dim);":(carry>0?"color:var(--bullish-strong);":(carry<0?"color:var(--bearish-strong);":"color:var(--text-dim);"));
+    var carryTip=carry==null?"Policy-rate carry is unavailable because one of the two Currency Detail policy rates is missing.":
+      (carry>0 ? CCY_NAME[p.base]+' pays '+Math.abs(carry).toFixed(2)+' percentage points more in policy-rate carry than '+CCY_NAME[p.quote]+'.' :
+       carry<0 ? CCY_NAME[p.quote]+' pays '+Math.abs(carry).toFixed(2)+' percentage points more in policy-rate carry than '+CCY_NAME[p.base]+'.' :
+       ((DATA[p.base]&&parseNum(DATA[p.base].interestRate)&&parseNum(DATA[p.base].interestRate).num>0) ? 'Both currencies pay '+Math.abs(carry).toFixed(2)+'% to hold, so neither has a carry advantage.' : 'Both policy rates are 0%, so neither currency pays a carry premium to hold.'));
+    var isFav=scannerFavorites.indexOf(p.pair)!==-1;
+    var scoreCls=pairScoreClass(p.score);
+    rows += '<tr class="rowhover scanner-row" data-pair="'+p.pair+'">'+
+      '<td class="scanner-star-td" data-label="Fav"><span class="scanner-star'+(isFav?' active':'')+'" data-star="'+p.pair+'">'+(isFav?'★':'☆')+'</span></td>'+
+      '<td data-label="Side">'+scannerSideBadge(p.bias,p.score)+'</td>'+
+      '<td class="scanner-pair-td" data-label="Pair" data-scanner-tip="'+esc(scannerPairTooltipHtml(p.base,p.quote,p.score))+'"><span class="scanner-pair-wrap">'+flagPair(p.base,p.quote)+'<span class="scanner-pair-code">'+p.pair+'</span></span></td>'+
+      '<td data-label="Score"><div class="scanner-score-wrap"><span class="scanner-score '+scoreCls+'">'+scannerScoreCompact(p.score)+'</span>'+scannerGaugeBar(p.score,scoreCls)+'</div></td>'+
+      '<td class="day-delta-cell" data-label="7D &Delta;" data-scanner-tip="'+esc(scanner7dTooltip(p.base,p.quote,p.score))+'">'+dailyChangeCell(p.pair,p.score)+'</td>'+
+      '<td data-label="Trend"><div class="scanner-trend-cell">'+scannerTrendSpark(p.pair,animateTrend)+'</div></td>'+
+      '<td class="scanner-pill-td" data-label="FND">'+scannerPillCell(fundBias,scannerPillarExplanation(p.base,p.quote,"Fundamentals",fundBias))+'</td>'+
+      '<td class="scanner-pill-td" data-label="YLD">'+scannerPillCell(yb,scannerPillarExplanation(p.base,p.quote,"Yield",yb))+'</td>'+
+      '<td class="scanner-pill-td" data-label="CB">'+scannerPillCell(cbLbl,scannerPillarExplanation(p.base,p.quote,"CB stance",cbLbl))+'</td>'+
+      '<td class="scanner-pill-td" data-label="POS">'+scannerPillCell(cotPair.posLabel,scannerPillarExplanation(p.base,p.quote,"Net Positioning",cotPair.posLabel))+'</td>'+
+      '<td class="scanner-pill-td" data-label="WOW">'+scannerPillCell(cotPair.flowLabel,scannerPillarExplanation(p.base,p.quote,"COT WoW",cotPair.flowLabel))+'</td>'+
+      '<td class="scanner-pill-td" data-label="SSN">'+scannerPillCell(seasLbl,scannerPillarExplanation(p.base,p.quote,"Seasonality",seasLbl))+'</td>'+
+      '<td class="scanner-pill-td" data-label="RSK">'+scannerPillCell(riskLbl,scannerPillarExplanation(p.base,p.quote,"Risk Sentiment",riskLbl))+'</td>'+
+      '<td class="scanner-agree" data-label="Agree" style="'+agreeStyle+'"'+(agreeTip?' data-scanner-tip="'+esc(agreeTip)+'"':'')+'>'+agreeTxt+'</td>'+
+      '<td class="scanner-carry" data-label="Carry" style="'+carryStyle+'" data-scanner-tip="'+esc(carryTip)+'">'+carryTxt+'</td>'+
+      '<td class="scanner-ledby" data-label="Led by"'+(ledByTip?' data-scanner-tip="'+esc(ledByTip)+'"':'')+'><span class="scanner-driver-wrap">'+(isNeutral?'—':scannerLedByBoxes(p.base,p.quote,dir))+'</span></td>'+
+      '</tr>';
+    if(scannerExpandedPair===p.pair){ rows += scannerPairExpandedHtml(p.pair); }
+  }
+  var filterDefs=[["Very Bullish","Very bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very bearish"]];
+  var filterBtns=filterDefs.map(function(fb){
+    var active=scannerFilters.indexOf(fb[0])!==-1;
+    return '<button class="range-btn'+(active?" active":"")+'" data-sfilter="'+fb[0]+'">'+fb[1]+'</button>';
+  }).join("");
+  var html='<div class="card"><div class="scanner-head">'+
+    '<div class="scanner-head-left"><h3 class="scanner-title" style="margin:0;">Trade Scanner</h3></div>'+
+    '<div class="scanner-head-right"><div class="range-switch">'+filterBtns+'</div></div>'+
+    '</div>'+
+    '<div class="table-scroll"><table class="scanner-table"><thead><tr>'+
+    '<th></th><th>Idea</th><th>Pair</th><th>Score</th><th>7D &Delta;</th><th>Trend</th>'+
+    '<th title="Fundamentals">FND</th><th title="Yield">YLD</th><th title="CB Stance">CB</th>'+
+    '<th title="Net Positioning">POS</th><th title="COT WoW">WOW</th><th title="Seasonality">SSN</th>'+
+    '<th title="Risk Sentiment">RSK</th><th>Agree</th><th>Carry</th><th>Led by</th>'+
+    '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
+  document.getElementById("tab-scanner").innerHTML=html;
+  if(animateTrend) animateScannerTrends();
+
+  var sBtns=document.querySelectorAll("[data-sfilter]");
+  for(var si=0;si<sBtns.length;si++){ sBtns[si].onclick=function(){
+    var f=this.dataset.sfilter;
+    if(scannerFilters.indexOf("All")!==-1) scannerFilters=[];
+    var ix=scannerFilters.indexOf(f);
+    if(ix>=0) scannerFilters.splice(ix,1); else scannerFilters.push(f);
+    if(!scannerFilters.length) scannerFilters=["All"];
+    renderScanner();
+  }; }
+  var stars=document.querySelectorAll("[data-star]");
+  for(var st=0;st<stars.length;st++){ stars[st].onclick=function(e){
+    e.stopPropagation();
+    // A star only tags a pair as a favorite -- it never changes row order.
+    var pr=this.dataset.star, ix=scannerFavorites.indexOf(pr);
+    if(ix>=0) scannerFavorites.splice(ix,1); else scannerFavorites.push(pr);
+    saveScannerFavorites();
+    renderScanner();
+  }; }
+  bindScannerHoverTooltips();
+  bindPairTrendHover();
+  bindBigPairTrendHover();
+  var srows=document.querySelectorAll(".scanner-row");
+  for(var sr=0;sr<srows.length;sr++){ srows[sr].onclick=function(e){
+    if(e.target && e.target.closest && e.target.closest('[data-star]')) return;
+    var pairCell=e.target && e.target.closest ? e.target.closest('.scanner-pair-td') : null;
+    if(!pairCell) return;
+    var pr=this.dataset.pair;
+    scannerExpandedPair=(scannerExpandedPair===pr)?null:pr;
+    renderScanner();
+  }; }
+  var closeBtns=document.querySelectorAll('[data-scanner-close]');
+  for(var cb=0;cb<closeBtns.length;cb++){ closeBtns[cb].onclick=function(){ scannerExpandedPair=null; renderScanner(); }; }
+  var scannerRangeBtns=document.querySelectorAll('.scanner-trend-range-btn');
+  for(var srb=0;srb<scannerRangeBtns.length;srb++){ scannerRangeBtns[srb].onclick=function(e){
+    e.stopPropagation();
+    expandedRange=this.dataset.scannerRange;
+    renderScanner();
+  }; }
+}
+
 function fmt(n){ return (n>0?"+":"") + Math.round(n); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 
@@ -5792,9 +6658,10 @@ function renderLockBox(){
 
 var TAB_META={
   overview:{title:"Overview",sub:"Macro breadth, currency strength, pair radar and risk sentiment"},
-  raw:{title:"Surprise Index",sub:""},
+  raw:{title:"Economic Surprise Index",sub:""},
   detail:{title:"Currency Detail",sub:""},
   pairs:{title:"Pair Ranking",sub:""},
+  scanner:{title:"Trade Scanner",sub:""},
   yield2y:{title:"Bond Yield Spread",sub:""},
   risk:{title:"Risk Sentiment",sub:"S&P 500 + VIX market-risk regime"},
   cot:{title:"COT Regime",sub:"Institutional positioning, flow and crowding"}
@@ -5805,10 +6672,11 @@ function switchTab(tab){
   var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
   document.getElementById("pageTitle").textContent=TAB_META[tab].title;
   document.getElementById("pageSub").textContent=TAB_META[tab].sub;
-  if(tab==="overview"){ renderOverview(); }
-  else if(tab==="raw"){ renderRaw(); }
+  if(tab==="overview"){ renderOverview(true); }
+  else if(tab==="raw"){ renderRaw(true); }
   else if(tab==="detail"){ renderDetail(); }
   else if(tab==="pairs"){ renderPairs(); }
+  else if(tab==="scanner"){ renderScanner(true); }
   else if(tab==="yield2y"){ renderYield2Y(); }
   else if(tab==="risk"){ renderRiskSentiment(); }
   else if(tab==="cot"){ renderCotRegime(); }
@@ -6292,6 +7160,7 @@ for(var hpi=0;hpi<CCY_ORDER.length;hpi++){
 }
 var HIST_SPREAD_RANGE = 63;
 var HIST_SPREAD_ACTIVE = "EURUSD";
+var HIST_SPREAD_ANIM_ID = null;
 
 function histSpreadLabel(code){
   var x=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
@@ -6306,7 +7175,8 @@ function histSpreadFmt(v){
   if(v==null || !Number.isFinite(v)) return "—";
   return (v>0?"+":"")+v.toFixed(1)+" bp";
 }
-function histSpreadDraw(){
+function histSpreadDraw(animate){
+  if(HIST_SPREAD_ANIM_ID){ cancelAnimationFrame(HIST_SPREAD_ANIM_ID); HIST_SPREAD_ANIM_ID=null; }
   var canvas=document.getElementById("histSpreadCanvas"), empty=document.getElementById("histSpreadEmpty");
   var stats=document.getElementById("histSpreadStats"), select=document.getElementById("histSpreadPair");
   if(!canvas || !select) return;
@@ -6375,22 +7245,8 @@ function histSpreadDraw(){
   var bullish=styles.getPropertyValue("--bullish").trim()||"#2dbb78";
   var bearish=styles.getPropertyValue("--bearish").trim()||"#d9535f";
 
-  /* Clean plotting field: no grid, no positive/negative shading, no zero-axis line. */
-  ctx.font=compact?"10px Inter, sans-serif":"11px Inter, sans-serif";
-  ctx.textBaseline="middle";
-  ctx.textAlign="right";
-  var axisSteps=compact?3:4;
-  for(var a=0;a<=axisSteps;a++){
-    var av=min+(max-min)*(a/axisSteps), ay=Y(av);
-    ctx.fillStyle=textDim;
-    ctx.fillText(av.toFixed(0)+" bp",pad.l-7,ay);
-  }
-
   var lineColor=vals[vals.length-1]>=vals[0]?bullish:bearish;
-  ctx.strokeStyle=lineColor;ctx.lineWidth=compact?1.2:1.3;ctx.lineJoin="miter";ctx.lineCap="butt";
-  ctx.beginPath();
-  rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
-  ctx.stroke();
+  var lastX=X(rows.length-1), lastY=Y(vals[vals.length-1]);
 
   /* Date labels are deliberately sparse and use a short human-readable format.
      The first and last labels are edge-aligned so neither can be clipped. */
@@ -6407,19 +7263,65 @@ function histSpreadDraw(){
     var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return Number(parts[2])+" "+(months[Number(parts[1])-1]||parts[1])+" '"+String(parts[0]).slice(2);
   }
-  ctx.fillStyle=textFaint;ctx.textBaseline="top";
-  ctx.font=compact?"10px IBM Plex Mono, monospace":"10.5px IBM Plex Mono, monospace";
-  for(var di=0;di<labelIndexes.length;di++){
-    var idx=labelIndexes[di], xx=X(idx), label=shortDate(rows[idx].date);
-    if(idx===0) ctx.textAlign="left";
-    else if(idx===rows.length-1) ctx.textAlign="right";
-    else ctx.textAlign="center";
-    ctx.fillText(label,xx,H-pad.b+12);
+  // Paints the whole frame; `reveal` (0..1) is how far across the plot width the
+  // spread line has been traced so far. Axis/date labels stay fully drawn the whole
+  // time -- only the line (and its latest-value dot, which only appears once the
+  // line has reached it) sweeps in. At reveal=1 this is identical to a plain static
+  // draw of the chart.
+  function paintChart(reveal){
+    ctx.clearRect(0,0,W,H);
+
+    /* Clean plotting field: no grid, no positive/negative shading, no zero-axis line. */
+    ctx.font=compact?"10px Inter, sans-serif":"11px Inter, sans-serif";
+    ctx.textBaseline="middle";
+    ctx.textAlign="right";
+    var axisSteps=compact?3:4;
+    for(var a=0;a<=axisSteps;a++){
+      var av=min+(max-min)*(a/axisSteps), ay=Y(av);
+      ctx.fillStyle=textDim;
+      ctx.fillText(av.toFixed(0)+" bp",pad.l-7,ay);
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(pad.l,0,Math.max(0,pw*reveal),H);
+    ctx.clip();
+    ctx.strokeStyle=lineColor;ctx.lineWidth=compact?1.2:1.3;ctx.lineJoin="miter";ctx.lineCap="butt";
+    ctx.beginPath();
+    rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle=textFaint;ctx.textBaseline="top";
+    ctx.font=compact?"10px IBM Plex Mono, monospace":"10.5px IBM Plex Mono, monospace";
+    for(var di=0;di<labelIndexes.length;di++){
+      var idx=labelIndexes[di], xx=X(idx), label=shortDate(rows[idx].date);
+      if(idx===0) ctx.textAlign="left";
+      else if(idx===rows.length-1) ctx.textAlign="right";
+      else ctx.textAlign="center";
+      ctx.fillText(label,xx,H-pad.b+12);
+    }
+
+    /* Always emphasize the latest observation without cluttering the plot -- but
+       only once the sweeping line has actually reached it. */
+    if(reveal>=0.999){
+      ctx.fillStyle=lineColor;ctx.beginPath();ctx.arc(lastX,lastY,compact?3:3.2,0,Math.PI*2);ctx.fill();
+    }
   }
 
-  /* Always emphasize the latest observation without cluttering the plot. */
-  var lastX=X(rows.length-1), lastY=Y(vals[vals.length-1]);
-  ctx.fillStyle=lineColor;ctx.beginPath();ctx.arc(lastX,lastY,compact?3:3.2,0,Math.PI*2);ctx.fill();
+  if(animate){
+    paintChart(0);
+    var animStart=null, animDur=650;
+    HIST_SPREAD_ANIM_ID=requestAnimationFrame(function step(ts){
+      if(animStart===null) animStart=ts;
+      var t=Math.min(1,(ts-animStart)/animDur), eased=1-Math.pow(1-t,3);
+      paintChart(eased);
+      if(t<1){ HIST_SPREAD_ANIM_ID=requestAnimationFrame(step); }
+      else { HIST_SPREAD_ANIM_ID=null; }
+    });
+  } else {
+    paintChart(1);
+  }
 
   var current=vals[vals.length-1], first=vals[0], high=Math.max.apply(null,vals), low=Math.min.apply(null,vals);
   var change=current-first;
@@ -6489,7 +7391,7 @@ function initHistoricalSpreadPanel(){
     var label=p[1]+"/"+p[2];
     return '<option value="'+p[0]+'" '+(p[0]===HIST_SPREAD_ACTIVE?'selected':'')+'>'+label+'</option>';
   }).join("");
-  select.onchange=function(){HIST_SPREAD_ACTIVE=this.value;histSpreadDraw();};
+  select.onchange=function(){HIST_SPREAD_ACTIVE=this.value;histSpreadDraw(true);};
   if(ranges){
     var btns=ranges.querySelectorAll("button");
     for(var i=0;i<btns.length;i++){
@@ -6498,7 +7400,7 @@ function initHistoricalSpreadPanel(){
         HIST_SPREAD_RANGE=Number(this.dataset.range)||63;
         var all=ranges.querySelectorAll("button");
         for(var j=0;j<all.length;j++) all[j].classList.toggle("active",all[j]===this);
-        histSpreadDraw();
+        histSpreadDraw(true);
       };
     }
   }
@@ -6563,7 +7465,7 @@ function overviewCsiSparkline(ccy,vals,color){
   });
   return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" class="ov-csi-spark" aria-hidden="true"><polyline fill="none" stroke="'+color+'" stroke-width="1.6" points="'+pts.join(' ')+'"/></svg>';
 }
-function renderOverviewCsi(scores){
+function renderOverviewCsi(scores,animate){
   var data=overviewCsiHistory(scores), days=data.days;
   var flags={}; CCYS.forEach(function(c){flags[c]=flagImg(c);});
   var all=[]; CCYS.forEach(function(c){(data.series[c]||[]).forEach(function(v){if(v!=null)all.push(v);});});
@@ -6656,7 +7558,12 @@ function renderOverviewCsi(scores){
     var visible=!OV_CSI_HIDDEN[c] && xy.length>=2;
     if(visible){
       var points=xy.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
-      seriesSvg+='<polyline class="ov-csi-series" data-csi-series="'+c+'" fill="none" stroke="'+OV_CSI_COLORS[c]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="'+points+'" opacity="1"/>';
+      // Same draw-in mechanic as the Trade Scanner's trend sparklines: measure the line's own
+      // length, start it fully dashed-out, then animateOverviewCsi() flips the dashoffset to 0
+      // on a CSS transition once this markup is in the DOM.
+      var lineLen=0; for(var li=1;li<xy.length;li++){ var dx=xy[li][0]-xy[li-1][0], dy=xy[li][1]-xy[li-1][1]; lineLen+=Math.sqrt(dx*dx+dy*dy); }
+      var lenStr=(lineLen*1.2).toFixed(1);
+      seriesSvg+='<polyline class="ov-csi-series" data-csi-series="'+c+'" fill="none" stroke="'+OV_CSI_COLORS[c]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="'+points+'" opacity="1"'+(animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .8s ease;"':'')+'/>';
       seriesSvg+='<polyline class="ov-csi-hit" data-csi-hover="'+c+'" fill="none" stroke="transparent" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="'+points+'"/>';
     }
     var good=vals.filter(function(v){return v!=null;});
@@ -6742,7 +7649,24 @@ function calendarFriendlyDay(dateStr){
 }
 function calendarDefaultDraft(){return {id:"",date:calendarLocalDate(0),time:"09:00",ccy:"USD",name:"",previous:"",forecast:"",actual:"",impact:"Medium"};}
 function calendarDraftFrom(e){return e?{id:e.id||"",date:e.date||calendarLocalDate(0),time:e.time||"09:00",ccy:e.ccy||"USD",name:e.name||"",previous:e.previous||"",forecast:e.forecast||"",actual:e.actual||"",impact:e.impact||"Medium"}:calendarDefaultDraft();}
-function calendarVisibleEvents(){ensureEconomicCalendarSeed();var now=Date.now(),cutoff=now-7*24*3600*1000;var recent=ECON_CALENDAR.filter(function(e){var t=calendarDateTime(e);return t!==Infinity&&t<=now&&t>=cutoff;}).sort(function(a,b){return calendarDateTime(b)-calendarDateTime(a);});var groups={},order=[];recent.forEach(function(e){var day=e.date||"";if(!groups[day]){groups[day]=[];order.push(day);}groups[day].push(e);});return {recent:recent,groups:groups,order:order};}
+// The "Recent Releases" week is anchored to Sunday 21:00 UTC (Africa/Accra clock == UTC,
+// so this reads as "Sunday evening, GH time") -- the same moment the FX week itself rolls
+// over (Sydney open). That's the boundary the panel resets on, not a sliding 168-hour
+// window: Monday-Friday's releases stay visible all through the weekend, then the moment
+// the new week's Sunday-evening cutover passes, the window shifts to the new week and
+// starts empty again until you log that week's actuals. Previously this used a plain
+// `now - 7 days` cutoff, which slid continuously (e.g. on a Wednesday it showed "last
+// Wednesday through today" instead of "this week's Monday through today") and never
+// actually reset on a weekly boundary -- that's fixed here.
+function currentEconWeekStart(){
+  var now=new Date();
+  var dow=now.getUTCDay(); // 0=Sun..6=Sat
+  var d=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),21,0,0));
+  d.setUTCDate(d.getUTCDate()-dow); // walk back to this week's Sunday, still at 21:00 UTC
+  if(d.getTime()>now.getTime()) d.setUTCDate(d.getUTCDate()-7); // e.g. it's Sunday afternoon, before this week's own cutover -- still in last week's window
+  return d;
+}
+function calendarVisibleEvents(){ensureEconomicCalendarSeed();var now=Date.now();var weekStart=currentEconWeekStart().getTime(),weekEnd=weekStart+7*24*3600*1000;var recent=ECON_CALENDAR.filter(function(e){var t=calendarDateTime(e);return t!==Infinity&&t<=now&&t>=weekStart&&t<weekEnd;}).sort(function(a,b){return calendarDateTime(b)-calendarDateTime(a);});var groups={},order=[];recent.forEach(function(e){var day=e.date||"";if(!groups[day]){groups[day]=[];order.push(day);}groups[day].push(e);});return {recent:recent,groups:groups,order:order};}
 function calendarRow(e){
   var tone=calendarReleaseTone(e),actual=e.actual!==undefined&&e.actual!==""?esc(e.actual):"—",forecast=e.forecast!==undefined&&e.forecast!==""?esc(e.forecast):"—";
   return '<div class="ov-cal-row" data-cal-id="'+esc(e.id)+'">'+
@@ -6771,7 +7695,7 @@ function wireOverviewCalendar(){
   Array.prototype.forEach.call(box.querySelectorAll("[data-cal-delete]"),function(el){el.onclick=function(e){e.stopPropagation();deleteCalendarEvent(el.dataset.calDelete);};});
 }
 function calendarPanelHtml(){return '<section class="ov-pro-card ov-pro-calendar"><div class="ov-pro-head"><div><div class="ov-pro-eyebrow">ECONOMIC CALENDAR</div><div class="ov-pro-title">Recent Releases</div><div class="ov-pro-note">Auto-synced from Actual / Forecast edits</div></div><div class="ov-pro-live">LIVE</div></div>'+renderOverviewCalendar()+'</section>';}
-function renderOverview(){
+function renderOverview(animate){
   if(!DATA) return;
   var scores=allScores();
   var rows=CCYS.slice().sort(function(a,b){return scores[b]-scores[a];});
@@ -6802,7 +7726,7 @@ function renderOverview(){
   var pairBottom=pairs.filter(function(p){return Number(p.score)<=-20;}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
   function miniPair(p){
     var trend=pairTrend30d(p.pair), cls=pairScoreClass(p.score);
-    return '<div class="ov-pair-row" data-pair="'+esc(p.pair)+'" title="Open '+esc(p.pair)+' in Pair Ranking">'+
+    return '<div class="ov-pair-row" data-pair="'+esc(p.pair)+'" title="Open '+esc(p.pair)+' in Trade Scanner">'+
       '<div class="ov-pair-name">'+flagPair(p.base,p.quote)+'<strong>'+p.pair+'</strong></div>'+ 
       '<div class="ov-pair-score '+cls+'">'+signFmt(p.score)+'</div>'+ 
       '<div class="ov-pair-bias '+cls+'">'+esc(p.bias)+'</div>'+ 
@@ -6854,13 +7778,13 @@ function renderOverview(){
           '<div class="ov-macro-trend">'+
             '<span class="ov-macro-trend-label strongest">STRONGEST · '+TREND_WINDOW_DAYS+'D TREND</span>'+ 
             '<span class="ov-macro-trend-ccy">'+(flags[strongest]||'')+' '+strongest+' <b class="'+regimeColorClass(bandLabel(scores[strongest]))+'">'+signFmt(scores[strongest])+'</b></span>'+ 
-            ccySparkline90d(strongest,scores[strongest])+
+            ccySparkline90d(strongest,scores[strongest],animate)+
             '<span class="ov-macro-trend-move '+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'pos':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'neg':'neu')+'">'+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'▲':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'▼':'—')+' '+(ccyTrend30d(strongest,scores[strongest]).delta==null?'':signFmt(ccyTrend30d(strongest,scores[strongest]).delta))+'</span>'+ 
           '</div>'+ 
           '<div class="ov-macro-trend">'+
             '<span class="ov-macro-trend-label weakest">WEAKEST · '+TREND_WINDOW_DAYS+'D TREND</span>'+ 
             '<span class="ov-macro-trend-ccy">'+(flags[weakest]||'')+' '+weakest+' <b class="'+regimeColorClass(bandLabel(scores[weakest]))+'">'+signFmt(scores[weakest])+'</b></span>'+ 
-            ccySparkline90d(weakest,scores[weakest])+
+            ccySparkline90d(weakest,scores[weakest],animate)+
             '<span class="ov-macro-trend-move '+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'pos':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'neg':'neu')+'">'+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'▲':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'▼':'—')+' '+(ccyTrend30d(weakest,scores[weakest]).delta==null?'':signFmt(ccyTrend30d(weakest,scores[weakest]).delta))+'</span>'+ 
           '</div>'+ 
         '</div>'+ 
@@ -6884,11 +7808,11 @@ function renderOverview(){
         '<div class="ov-pro-table-head"><span>#</span><span>Currency</span><span>Strength</span><span>Score</span><span>State</span></div>'+ 
         '<div class="ov-pro-table-body">'+currencyRows+'</div>'+ 
       '</section>'+
-      renderOverviewCsi(scores)+
+      renderOverviewCsi(scores,animate)+
     '</div>'+
 
     '<section class="ov-pro-card ov-pro-pairs">'+
-      '<div class="ov-pro-head"><div><div class="ov-pro-eyebrow">PAIR RADAR</div><div class="ov-pro-title">Top Setups</div><div class="ov-pro-note">Ranked from the same live pair-composite engine.</div></div><button class="ov-pro-open" data-open-tab="pairs">FULL PAIR RANKING →</button></div>'+ 
+      '<div class="ov-pro-head"><div><div class="ov-pro-eyebrow">PAIR RADAR</div><div class="ov-pro-title">Top Setups</div><div class="ov-pro-note">Ranked from the same live pair-composite engine.</div></div><button class="ov-pro-open" data-open-tab="scanner">OPEN TRADE SCANNER →</button></div>'+ 
       '<div class="ov-pro-setup-columns">'+
         '<div class="ov-pro-setup"><div class="ov-pro-setup-label bull">TOP BULLISH</div>'+(pairTop.length?pairTop.map(miniPair).join(''):'<div class="ov-setup-empty">No Bullish pair meets the +21 setup threshold.</div>')+'</div>'+ 
         '<div class="ov-pro-setup"><div class="ov-pro-setup-label bear">TOP BEARISH</div>'+(pairBottom.length?pairBottom.map(miniPair).join(''):'<div class="ov-setup-empty">No Bearish pair meets the −21 setup threshold.</div>')+'</div>'+ 
@@ -6903,13 +7827,14 @@ function renderOverview(){
   var riskGotos=document.querySelectorAll('#tab-overview [data-ccy]');
   for(var j=0;j<riskGotos.length;j++)riskGotos[j].onclick=function(){activeDetailCcy=this.dataset.ccy;switchTab('detail');renderDetail();};
   var pairGotos=document.querySelectorAll('#tab-overview [data-pair]');
-  for(var k=0;k<pairGotos.length;k++)pairGotos[k].onclick=function(){expandedPair=this.dataset.pair;switchTab('pairs');renderPairs();};
+  for(var k=0;k<pairGotos.length;k++)pairGotos[k].onclick=function(){scannerExpandedPair=this.dataset.pair;switchTab('scanner');renderScanner();};
   var openBtns=document.querySelectorAll('#tab-overview [data-open-tab]');
   for(var m=0;m<openBtns.length;m++)openBtns[m].onclick=function(e){e.stopPropagation();switchTab(this.dataset.openTab);};
   var csiBtns=document.querySelectorAll('#tab-overview [data-csi-toggle]');
   for(var n=0;n<csiBtns.length;n++)csiBtns[n].onclick=function(){OV_CSI_HIDDEN[this.dataset.csiToggle]=!OV_CSI_HIDDEN[this.dataset.csiToggle];renderOverview();};
   wireOverviewCsiCrosshair();
   wireOverviewCalendar();
+  if(animate){ animateOverviewCsi(); animateOverviewMacroTrends(); }
 }
 
 
@@ -7040,6 +7965,138 @@ function surpriseLabel(score){
   if(score<=-5)return "Missing";
   return "Near Forecast";
 }
+// Surprise Index gauges now run on the exact same weighted signed-sum formula as the
+// Currency Detail sidebar's Fundamentals score -- Growth + Inflation + Labour, each
+// indicator contributing +weight (beat), -weight (miss), 0 (tie), or its manual
+// Bullish/Neutral/Bearish dropdown when there's no forecast to compare -- via the same
+// fundFor(ccy). This replaced an earlier "beat rate" version (% of releases that beat,
+// unweighted, ignoring magnitude) which could disagree with the Fundamentals score
+// because it didn't account for weight or size of beat/miss. fundFor(ccy).raw IS the
+// Fundamentals score number; it's rescaled here to a 0-100 dial position purely for the
+// gauge face (50 = neutral, 100 = every point of weight beat, 0 = every point missed) --
+// the sign and ranking behind that percentage are identical to the Fundamentals score.
+function surpriseWeightedPct(ccy){
+  var f=fundFor(ccy);
+  if(!f.max) return {pct:null,raw:f.raw,max:f.max};
+  var norm=Math.max(-1,Math.min(1, f.raw/f.max));
+  return {pct:Math.round(50+norm*50),raw:f.raw,max:f.max};
+}
+// Full-circle dial gauge (0-100%), ~270deg sweep with a gap at the bottom: a solid, fully
+// filled red(low)->grey(mid)->blue(high) diverging heat map (not a thin outline ring), with
+// a small arrow marker at the needle tip -- matching the reference dashboard style. cx/cy/r
+// sized per gauge.
+function pctGaugeAngle(cx,cy,r,v){ var angle=225-(v/100*270), rad=angle*Math.PI/180; return {x:cx+r*Math.cos(rad), y:cy-r*Math.sin(rad)}; }
+// Small arrowhead marker at the needle tip, pointing outward along the needle's own
+// direction, in place of the old large ball marker.
+function needleArrowPoints(cx,cy,tx,ty){
+  var dx=tx-cx, dy=ty-cy, len=Math.sqrt(dx*dx+dy*dy)||1, ux=dx/len, uy=dy/len, px=-uy, py=ux;
+  var apex={x:tx+ux*4,y:ty+uy*4}, base={x:tx-ux*6,y:ty-uy*6};
+  var b1={x:base.x+px*3.6,y:base.y+py*3.6}, b2={x:base.x-px*3.6,y:base.y-py*3.6};
+  return apex.x.toFixed(1)+','+apex.y.toFixed(1)+' '+b1.x.toFixed(1)+','+b1.y.toFixed(1)+' '+b2.x.toFixed(1)+','+b2.y.toFixed(1);
+}
+// Diverging colour ramp shared by the gauge track and the rank table's heat chips.
+// Pulls its red/green directly from the same --bearish-strong / --bullish-strong hex
+// values (#f23645 / #089981) that already color the "Crowded Long/Short" chips on the
+// COT tab -- not an invented palette. Anything below 30% or above 70% renders as the
+// full, undiluted brand colour (matches how the COT chip looks -- solid, not washed
+// out); only the 30-70 band blends through a neutral grey so the gauge still reads as
+// a gradient rather than a hard flip.
+function pctDivergingRgbArr(pct){
+  var t=Math.max(0,Math.min(100,pct))/100;
+  var lo=[242,54,69], mid=[150,150,156], hi=[8,153,129];
+  if(t<=0.3) return lo;
+  if(t>=0.7) return hi;
+  var a,b,k;
+  if(t<=0.5){ a=lo; b=mid; k=(t-0.3)/0.2; } else { a=mid; b=hi; k=(t-0.5)/0.2; }
+  return [Math.round(a[0]+(b[0]-a[0])*k), Math.round(a[1]+(b[1]-a[1])*k), Math.round(a[2]+(b[2]-a[2])*k)];
+}
+function pctDivergingRgb(pct,alpha){ var c=pctDivergingRgbArr(pct); return 'rgba('+c[0]+','+c[1]+','+c[2]+','+(alpha==null?1:alpha)+')'; }
+function pctGaugeArcs(cx,cy,r){
+  var N=40, out="";
+  for(var i=0;i<N;i++){
+    var v0=i*(100/N), v1=(i+1)*(100/N);
+    var p0=pctGaugeAngle(cx,cy,r,v0), p1=pctGaugeAngle(cx,cy,r,v1);
+    // Filled pie wedge from the centre out to the rim (not a thin stroked ring) so the whole
+    // dial reads as a solid heat map instead of a coloured outline around a black centre.
+    out += '<path d="M '+cx+' '+cy+' L '+p0.x.toFixed(2)+' '+p0.y.toFixed(2)+' A '+r+' '+r+' 0 0 1 '+p1.x.toFixed(2)+' '+p1.y.toFixed(2)+' Z" fill="'+pctDivergingRgb((v0+v1)/2,0.88)+'" stroke="none"/>';
+  }
+  return out;
+}
+// Minimal end-cap ticks only (no 0/20/40/60/80/100 labels) -- keeps the dial clean
+// like the reference gauge, which just shows small marks at the two extremes.
+function pctGaugeTicks(cx,cy,r){
+  var vals=[0,100], out="";
+  for(var i=0;i<vals.length;i++){
+    var v=vals[i], p1=pctGaugeAngle(cx,cy,r+2,v), p2=pctGaugeAngle(cx,cy,r+8,v);
+    out += '<line x1="'+p1.x.toFixed(2)+'" y1="'+p1.y.toFixed(2)+'" x2="'+p2.x.toFixed(2)+'" y2="'+p2.y.toFixed(2)+'" stroke="var(--text-faint)" stroke-width="1.4"/>';
+  }
+  return out;
+}
+// Heat colour for the rank table's Score chip: reads the same brand-colour value the
+// gauge track uses at that percentage (single source of truth for both), just
+// wrapped in a translucent chip background + light foreground text.
+function surpriseHeatColor(pct){
+  if(pct==null) return {bg:'rgba(255,255,255,.06)',fg:'var(--text-dim)'};
+  var c=pctDivergingRgbArr(pct), dist=Math.abs(pct-50)/50, alpha=0.22+0.55*dist;
+  var fg=pct>=50?'#bdf5e4':'#ffd6da';
+  return {bg:'rgba('+c[0]+','+c[1]+','+c[2]+','+alpha.toFixed(2)+')', fg:fg};
+}
+function surpriseGaugeSvg(ccy,pct){
+  var cx=75,cy=64,r=40, val=pct==null?50:pct;
+  var tip=pctGaugeAngle(cx,cy,r-9,val), rest=pctGaugeAngle(cx,cy,r-9,0);
+  var nx=tip.x, ny=tip.y, nx0=rest.x, ny0=rest.y;
+  // Needle+ball are drawn at their 0% rest position and swept round to the live
+  // value by animateSurpriseGauges() right after this markup lands in the DOM.
+  // Because renderRaw() rebuilds this HTML from scratch every time the Economic
+  // Surprise Index tab is (re)rendered -- including every time it's switched back
+  // into -- the sweep replays itself each time you return to the tab.
+  // Requested: currency code + percentage drawn INSIDE the dial itself (as SVG text),
+  // not as separate label/value elements sitting above and below it -- that's what
+  // let the reference gauges sit so close together, since there's nothing outside the
+  // circle taking up extra vertical space. The Beating/Missing/Near Forecast chip is
+  // dropped from the gauge entirely per the same request (it duplicates what the
+  // rank table's Score column and colour already show).
+  var svg='<svg viewBox="0 0 150 118" class="surprise-gauge-svg">'+pctGaugeArcs(cx,cy,r)+pctGaugeTicks(cx,cy,r)+
+    '<line class="surprise-needle" data-final-x="'+nx.toFixed(1)+'" data-final-y="'+ny.toFixed(1)+'" x1="'+cx+'" y1="'+cy+'" x2="'+nx0.toFixed(1)+'" y2="'+ny0.toFixed(1)+'" stroke="var(--text-dim)" stroke-width="2" stroke-linecap="round"/>'+
+    '<polygon class="surprise-needle-arrow" data-final-x="'+nx.toFixed(1)+'" data-final-y="'+ny.toFixed(1)+'" points="'+needleArrowPoints(cx,cy,nx0,ny0)+'" fill="var(--text)"/>'+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="2.6" fill="var(--text-dim)"/>'+
+    '<text x="'+cx+'" y="'+(cy-16)+'" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="800" fill="var(--text)">'+esc(ccy)+'</text>'+
+    '<text x="'+cx+'" y="'+(cy+23)+'" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="800" fill="var(--text)">'+(pct==null?'\u2014':pct+'%')+'</text>'+
+    '</svg>';
+  return '<div class="surprise-gauge">'+svg+'</div>';
+}
+// Sweeps every Surprise Index needle (line + arrowhead) from its rendered 0% rest
+// position to its real value on an eased timer. Called once after renderRaw() paints
+// the gauge markup.
+function animateSurpriseGauges(){
+  var needles=document.querySelectorAll('#tab-raw .surprise-needle');
+  var arrows=document.querySelectorAll('#tab-raw .surprise-needle-arrow');
+  if(!needles.length) return;
+  var list=[];
+  for(var i=0;i<needles.length;i++){
+    var el=needles[i], ael=arrows[i];
+    var cxp=parseFloat(el.getAttribute('x1')), cyp=parseFloat(el.getAttribute('y1'));
+    var fx=parseFloat(el.getAttribute('data-final-x')), fy=parseFloat(el.getAttribute('data-final-y'));
+    var sx=parseFloat(el.getAttribute('x2')), sy=parseFloat(el.getAttribute('y2'));
+    if(!isFinite(fx)||!isFinite(fy)) continue;
+    list.push({el:el,ael:ael,cx:cxp,cy:cyp,sx:sx,sy:sy,fx:fx,fy:fy});
+  }
+  if(!list.length) return;
+  var start=null, dur=700;
+  function step(ts){
+    if(start===null) start=ts;
+    var t=Math.min(1,(ts-start)/dur), e=1-Math.pow(1-t,3);
+    for(var i=0;i<list.length;i++){
+      var it=list[i];
+      var ix=it.sx+(it.fx-it.sx)*e, iy=it.sy+(it.fy-it.sy)*e;
+      it.el.setAttribute('x2',ix.toFixed(1));
+      it.el.setAttribute('y2',iy.toFixed(1));
+      if(it.ael) it.ael.setAttribute('points',needleArrowPoints(it.cx,it.cy,ix,iy));
+    }
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 function surpriseClass(label){
   return (label==="Strongly Beating"||label==="Beating")?"surprise-pos":
          (label==="Strongly Missing"||label==="Missing")?"surprise-neg":"surprise-neu";
@@ -7060,7 +8117,7 @@ function surpriseBigChart(ccy, rangeSel){
   var days=filterDaysByRange(allDays, rangeSel);
   if(days.length<1){
     var msg = allDays.length<1
-      ? "No saved Surprise Index history yet. Use \"Recalculate & log today\" on Pair Ranking to start the series."
+      ? "No saved Surprise Index history yet. Use \"Recalculate & log today\" on Trade Scanner to start the series."
       : "No logged data falls inside this window — try a wider range.";
     return '<div class="building">'+msg+'</div>';
   }
@@ -7157,7 +8214,178 @@ function bindSurpriseTrendHover(){
     svg.addEventListener('pointerdown',move);
   }
 }
-function renderRaw(){
+// Surprise Strength Index history: same "Composite Strength · 90D" chart language as the
+// Overview page's Currency Strength Index, plotting each currency's Fundamentals-score
+// percentage over time (DAILY[date]["FUND_"+ccy], the same 100*raw/max signed % that
+// "Recalculate & log today" already writes every day -- no separate history to backfill).
+// This used to plot the old weighted-average Surprise Index score (SURPRISE_+ccy) instead,
+// which is a different formula and could disagree with the Economic Surprise Index gauges
+// above it (gauges now run on fundFor() too, see surpriseWeightedPct) -- switched so the
+// trend line and the gauges are always telling the same story for a given currency.
+var SS_HIDDEN={};
+function surpriseStrengthHistory(stats){
+  var keys=CCYS.slice(), today=new Date(), todayKey=today.toISOString().slice(0,10), days=[];
+  for(var di=TREND_WINDOW_DAYS-1;di>=0;di--){ var d=new Date(today); d.setUTCDate(d.getUTCDate()-di); days.push(d.toISOString().slice(0,10)); }
+  // Plot on the SAME 0-100% scale the gauges above already show (surpriseWeightedPct's
+  // pct = 50 + 50*raw/max), not the raw signed +/-100 fundamentals % this used to store and
+  // plot directly. It's the same underlying fundamentals number either way -- this just
+  // converts it onto the gauge's scale, so "USD 60%" on the dial and the USD line on this
+  // chart are reading the literal same figure instead of two different scales that happened
+  // to share a data source.
+  var liveByCcy={}; keys.forEach(function(c){ liveByCcy[c]=surpriseWeightedPct(c).pct; });
+  var series={};
+  keys.forEach(function(c){
+    series[c]=days.map(function(dt){
+      if(dt===todayKey) return liveByCcy[c];
+      var v=DAILY[dt] && DAILY[dt]["FUND_"+c]; // logged as signed +/-100% -- convert to the 0-100 gauge scale
+      var n=Number(v);
+      return Number.isFinite(n)?Math.round((50+n/2)*10)/10:null;
+    });
+  });
+  return {days:days,series:series};
+}
+function renderSurpriseStrengthChart(stats,animate){
+  var data=surpriseStrengthHistory(stats), days=data.days;
+  var flags={}; CCYS.forEach(function(c){flags[c]=flagImg(c);});
+  var all=[]; CCYS.forEach(function(c){(data.series[c]||[]).forEach(function(v){if(v!=null)all.push(v);});});
+  if(all.length<1){
+    return '<div class="card ss-card"><div class="ss-head"><div><div class="ss-eyebrow">SURPRISE INDEX</div><div class="ss-headline">Surprise Strength &middot; '+TREND_WINDOW_DAYS+'D</div></div><div class="ss-muted">Waiting for logged history</div></div><div class="ss-empty">No logged history yet.</div></div>';
+  }
+  var firstActive=days.length-1,lastActive=0,found=false;
+  for(var di=0;di<days.length;di++){ for(var ci=0;ci<CCYS.length;ci++){ var vv=(data.series[CCYS[ci]]||[])[di]; if(vv!=null){firstActive=Math.min(firstActive,di);lastActive=Math.max(lastActive,di);found=true;} } }
+  if(!found){ firstActive=0; lastActive=days.length-1; }
+  var span=Math.max(1,lastActive-firstActive), padDays=Math.max(0,Math.min(3,Math.floor(span*.08)));
+  var plotFirst=Math.max(0,firstActive-padDays), plotLast=Math.min(days.length-1,lastActive+padDays), plotSpan=Math.max(1,plotLast-plotFirst);
+  // Fit the axis to the actual plotted range instead of a fixed 0-100 box -- a full 0-100 box
+  // wastes most of the chart whenever every currency is bunched near one end. The range is
+  // built symmetrically around the 50% "neutral" midpoint (same grey centre the gauges sit
+  // on) in steps of 5, so 50 always lands exactly on the middle gridline -- styled and sized
+  // identically to every other gridline, no separate bold/white treatment and no risk of a
+  // near-duplicate label (e.g. 50 and 53) sitting on top of each other.
+  var allVals=[]; CCYS.forEach(function(c){ for(var i=plotFirst;i<=plotLast;i++){ var v=(data.series[c]||[])[i]; if(v!=null) allVals.push(v); } });
+  var rawMin=Math.min.apply(null,allVals), rawMax=Math.max.apply(null,allVals);
+  var padV=Math.max(3,(rawMax-rawMin)*.12);
+  var halfSpan=Math.max(5, Math.abs(Math.min(50,rawMin)-padV-50), Math.abs(Math.max(50,rawMax)+padV-50));
+  var step=Math.min(25, Math.max(5, Math.ceil(halfSpan/2/5)*5));
+  var min=50-2*step, max=50+2*step;
+  // Wide-short proportions (matches the Overview page's Composite Strength chart) instead
+  // of the old near-square 580x520 box. That square shape was the actual reason this chart
+  // ran ~520px tall and pushed the tab past one screen -- not a padding/gap issue, the
+  // chart's own aspect ratio was just abnormally tall for a line chart. Keeping W the same
+  // (580) means the render scale stays 1:1 and nothing shrinks -- text, line weight and tick
+  // spacing are all identical to before -- only H drops, so the chart occupies far less
+  // vertical space while staying just as readable.
+  var W=580,H=300,pl=34,pr=14,pt=14,pb=30,plotW=W-pl-pr,plotH=H-pt-pb;
+  function xPos(i){return pl+((i-plotFirst)/plotSpan)*plotW;}
+  function yPos(v){return pt+(max-v)/(max-min)*plotH;}
+  var grid="", tickCount=5;
+  for(var gi=0;gi<tickCount;gi++){
+    var gv=max-(max-min)*(gi/(tickCount-1)), gy=yPos(gv);
+    grid+='<line x1="'+pl+'" y1="'+gy.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+gy.toFixed(1)+'" stroke="var(--text-faint)" stroke-width="1.2" opacity=".45" vector-effect="non-scaling-stroke"/>'+
+      '<text x="'+(pl-8)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--text-dim)" font-family="Inter,system-ui,sans-serif">'+Math.round(gv)+'%</text>';
+  }
+  var xTicks=[plotFirst,Math.round(plotFirst+plotSpan*.25),Math.round(plotFirst+plotSpan*.5),Math.round(plotFirst+plotSpan*.75),plotLast];
+  xTicks=xTicks.filter(function(v,i,a){return a.indexOf(v)===i;});
+  grid+='<line x1="'+pl+'" y1="'+pt+'" x2="'+pl+'" y2="'+(H-pb)+'" stroke="var(--text-faint)" stroke-width="1.2" opacity=".55" vector-effect="non-scaling-stroke"/>'+
+    '<line x1="'+pl+'" y1="'+(H-pb)+'" x2="'+(W-pr)+'" y2="'+(H-pb)+'" stroke="var(--text-faint)" stroke-width="1.2" opacity=".55" vector-effect="non-scaling-stroke"/>';
+  var seriesSvg="", legend="", plotSeries={};
+  CCYS.forEach(function(c){
+    var vals=data.series[c]||[], xy=[], out=new Array(vals.length).fill(null);
+    for(var i=plotFirst;i<=plotLast;i++){ var v=vals[i]; if(v==null) continue; out[i]=v; xy.push([xPos(i),yPos(v)]); }
+    plotSeries[c]=out;
+    var visible=!SS_HIDDEN[c] && xy.length>=2;
+    if(visible){
+      // Smoothed Catmull-Rom curve (same helper used by the Trade Scanner charts) instead of a
+      // straight polyline -- rounds off the flat-plateau-then-jump shape that the Surprise Index's
+      // infrequent-release data naturally produces, so it reads like the Composite Strength chart
+      // instead of a jagged staircase. Underlying values/points are unchanged, only the line style.
+      var pathD=smoothPath(xy);
+      // Same draw-in mechanic as the Trade Scanner's trend sparklines: measure the (pre-smoothing)
+      // point-to-point length, start the stroke fully dashed-out, then let animateSurpriseStrengthChart()
+      // flip the dashoffset to 0 on a CSS transition once this markup is in the DOM.
+      var lineLen=0; for(var li=1;li<xy.length;li++){ var dx=xy[li][0]-xy[li-1][0], dy=xy[li][1]-xy[li-1][1]; lineLen+=Math.sqrt(dx*dx+dy*dy); }
+      var lenStr=(lineLen*1.2).toFixed(1);
+      seriesSvg+='<path class="ss-series" data-ss-series="'+c+'" fill="none" stroke="'+OV_CSI_COLORS[c]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="'+pathD+'" opacity="1"'+(animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .8s ease;"':'')+'/>';
+      seriesSvg+='<path class="ss-hit" data-ss-hover="'+c+'" fill="none" stroke="transparent" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="'+pathD+'"/>';
+    }
+    var good=vals.filter(function(v){return v!=null;});
+    var delta=good.length>1?good[good.length-1]-good[0]:0;
+    var arrow=delta>0.15?"\u25B2":delta<-0.15?"\u25BC":"\u2014", dirCls=delta>0.15?"up":delta<-0.15?"down":"flat";
+    legend+='<button type="button" class="ss-legend '+(SS_HIDDEN[c]?'off':'')+'" data-ss-toggle="'+c+'" title="Toggle '+c+' line"><span class="ss-swatch" style="background:'+OV_CSI_COLORS[c]+'"></span><span class="ss-leg-ccy">'+(flags[c]||"")+' '+c+'</span><span class="ss-leg-dir '+dirCls+'">'+arrow+'</span></button>';
+  });
+  var datesSvg=xTicks.map(function(i,k){ var x=xPos(i), anchor=k===0?"start":k===xTicks.length-1?"end":"middle"; return '<text x="'+x.toFixed(1)+'" y="'+(H-8)+'" text-anchor="'+anchor+'" font-size="10.5" font-weight="600" fill="var(--text-dim)" font-family="Inter,system-ui,sans-serif">'+esc(formatShortDate(days[i]))+'</text>'; }).join("");
+  window.__TWP_SS={days:days.slice(),series:Object.assign({},plotSeries),plotFirst:plotFirst,plotLast:plotLast,W:W,H:H,pl:pl,pr:pr,pt:pt,pb:pb,min:min,max:max};
+  return '<div class="card ss-card" id="surpriseStrengthChart">'+
+    '<div class="ss-head"><div><div class="ss-eyebrow">SURPRISE INDEX</div><div class="ss-headline">Surprise Strength &middot; '+TREND_WINDOW_DAYS+'D</div></div><div class="ss-note">Hover a currency to isolate it &middot; click to hide</div></div>'+
+    '<div class="ss-legend-row">'+legend+'</div>'+
+    '<div class="ss-chart"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-label="Surprise strength index history">'+grid+seriesSvg+
+      '<g class="ss-crosshair" aria-hidden="true"><line class="ss-vline" x1="0" y1="'+pt+'" x2="0" y2="'+(H-pb)+'"></line>'+CCYS.map(function(c){return '<circle class="ss-hover-dot" data-ss-dot="'+c+'" cx="0" cy="0" r="3.6" fill="'+OV_CSI_COLORS[c]+'"></circle>';}).join('')+'</g>'+
+      '<rect class="ss-hover-area" x="'+pl+'" y="'+pt+'" width="'+plotW+'" height="'+plotH+'" fill="transparent"></rect>'+datesSvg+
+    '</svg><div class="ss-tooltip"></div></div>'+
+  '</div>';
+}
+function wireSurpriseStrengthCrosshair(){
+  var box=document.getElementById('surpriseStrengthChart'); if(!box) return;
+  var svg=box.querySelector('.ss-chart svg'), area=box.querySelector('.ss-hover-area'), vline=box.querySelector('.ss-vline'), tip=box.querySelector('.ss-tooltip');
+  if(!svg||!area||!vline||!tip) return;
+  var cache=window.__TWP_SS||{}, days=cache.days||[], series=cache.series||{}; if(!days.length) return;
+  var H=cache.H||170,pt=cache.pt||12,pb=cache.pb||26,pl=cache.pl||40,pr=cache.pr||16,W=cache.W||920;
+  var plotFirst=cache.plotFirst==null?0:cache.plotFirst, plotLast=cache.plotLast==null?days.length-1:cache.plotLast, plotSpan=Math.max(1,plotLast-plotFirst), colors=OV_CSI_COLORS;
+  var min=cache.min, max=cache.max;
+  if(min==null||max==null){
+    var allv=[]; CCYS.forEach(function(c){(series[c]||[]).forEach(function(v){if(v!=null)allv.push(v);});});
+    if(!allv.length) return;
+    min=Math.floor((Math.min.apply(null,allv)-.25)*2)/2;max=Math.ceil((Math.max.apply(null,allv)+.25)*2)/2;
+    if(min===max){min-=1;max+=1;}
+  }
+  function hide(){
+    tip.style.display='none';vline.style.display='none';
+    Array.prototype.forEach.call(box.querySelectorAll('.ss-hover-dot'),function(d){d.style.display='none';});
+    clearFocus();
+  }
+  function focusSeries(ccy){
+    if(!ccy) return;
+    Array.prototype.forEach.call(box.querySelectorAll('.ss-series'),function(el){
+      var on=el.getAttribute('data-ss-series')===ccy;
+      el.style.opacity=on?'1':'.14';
+    });
+    Array.prototype.forEach.call(box.querySelectorAll('.ss-legend'),function(el){
+      el.classList.toggle('is-focus',el.dataset.ssToggle===ccy);
+    });
+  }
+  function clearFocus(){
+    Array.prototype.forEach.call(box.querySelectorAll('.ss-series'),function(el){el.style.opacity='1';});
+    Array.prototype.forEach.call(box.querySelectorAll('.ss-legend'),function(el){el.classList.remove('is-focus');});
+  }
+  Array.prototype.forEach.call(box.querySelectorAll('.ss-hit'),function(el){
+    el.addEventListener('pointerenter',function(){focusSeries(el.dataset.ssHover);});
+    el.addEventListener('pointerleave',clearFocus);
+  });
+  Array.prototype.forEach.call(box.querySelectorAll('.ss-legend'),function(el){
+    el.addEventListener('pointerenter',function(){focusSeries(el.dataset.ssToggle);});
+    el.addEventListener('pointerleave',clearFocus);
+  });
+  function move(ev){
+    var r=area.getBoundingClientRect(); if(!r.width) return;
+    var rel=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width));
+    var idx=Math.max(plotFirst,Math.min(plotLast,Math.round(plotFirst+rel*plotSpan)));
+    var x=pl+((idx-plotFirst)/plotSpan)*(W-pl-pr);
+    vline.setAttribute('x1',x); vline.setAttribute('x2',x); vline.style.display='block';
+    var html='<strong>'+esc(formatShortDate(days[idx]))+'</strong>';
+    CCYS.forEach(function(c){
+      var v=(series[c]||[])[idx]; if(v==null||SS_HIDDEN[c]) return;
+      var y=pt+(max-v)/(max-min)*(H-pt-pb), dot=box.querySelector('.ss-hover-dot[data-ss-dot="'+c+'"]');
+      if(dot){ dot.setAttribute('cx',x); dot.setAttribute('cy',y); dot.style.display='block'; }
+      html+='<div><i style="background:'+colors[c]+'"></i><b>'+c+'</b><span>'+Number(v).toFixed(0)+'%</span></div>';
+    });
+    tip.innerHTML=html;
+    var tr=tip.getBoundingClientRect(), tx=Math.max(8,Math.min(box.clientWidth-tip.offsetWidth-8,ev.clientX-r.left+14)), ty=Math.max(8,ev.clientY-r.top-tip.offsetHeight-12);
+    tip.style.left=tx+'px'; tip.style.top=ty+'px'; tip.style.display='block';
+  }
+  area.addEventListener('pointermove',move); area.addEventListener('mousemove',move);
+  area.addEventListener('pointerleave',hide); area.addEventListener('mouseleave',hide);
+}
+function renderRaw(animate){
   if(!DATA)return;
   var stats=CCYS.map(function(c){return {ccy:c,data:surpriseDataForCurrency(c)};});
   stats.sort(function(a,b){return b.data.avg-a.data.avg;});
@@ -7181,19 +8409,6 @@ function renderRaw(){
       '<div class="surprise-yield-context '+combinedClass+'" title="Diagnostic only: compares Surprise Index direction with the currency\'s own-history 2Y yield score">'+y2Label+(y2==null?"":" "+(y2>0?"+":"")+y2.toFixed(1))+'</div>'+
       '</div>';
   }).join("");
-  var top=[];
-  stats.forEach(function(x){x.data.rows.slice(0,4).forEach(function(r){top.push(r);});});
-  top.sort(function(a,b){return Math.abs(b.ratio)-Math.abs(a.ratio);}); top=top.slice(0,12);
-  var right=top.map(function(r){
-    var cls=r.ratio>=2?"surprise-pos":r.ratio<=-2?"surprise-neg":"surprise-neu",sign=r.ratio>0?"+":"";
-    var meta = r.estimated
-      ? '<div class="surprise-release-meta"><span>Actual <b>'+esc(r.actual)+'</b></span><span style="color:var(--text-faint);">No forecast — from bias</span><span class="'+cls+'">'+sign+r.ratio.toFixed(1)+'%</span></div>'
-      : '<div class="surprise-release-meta"><span>Actual <b>'+esc(r.actual)+'</b></span><span>Fcst <b>'+esc(r.forecast)+'</b></span><span class="'+cls+'">'+sign+r.ratio.toFixed(1)+'%</span></div>';
-    return '<div class="surprise-release">'+
-      '<div class="surprise-release-head"><span class="surprise-release-ccy">'+(flags[r.ccy]||"")+' '+r.ccy+'</span><span class="surprise-release-cat">'+r.category+'</span></div>'+
-      '<div class="surprise-release-name">'+esc(r.name)+'</div>'+
-      meta+'</div>';
-  }).join("");
   var expandedHtml="";
   if(expandedSurpriseCcy){
     var srangeBtnsHtml = ["1M","3M","1Y","ALL"].map(function(r){
@@ -7205,17 +8420,22 @@ function renderRaw(){
       surpriseBigChart(expandedSurpriseCcy, expandedSurpriseRange)+'</div></div>';
   }
   var bestSc=Math.round(best.data.avg*10)/10, worstSc=Math.round(worst.data.avg*10)/10;
-  var html=expandedHtml+'<div class="surprise-wrap">'+
-    '<div class="surprise-card"><div class="surprise-summary">'+
-      '<div class="surprise-stat"><div class="surprise-k">Releases</div><div class="surprise-v">'+totalReleases+'</div></div>'+
-      '<div class="surprise-stat"><div class="surprise-k">Average surprise</div><div class="surprise-v '+(avgAll>0?'surprise-pos':avgAll<0?'surprise-neg':'surprise-neu')+'">'+(avgAll>0?"+":"")+avgAll.toFixed(1)+'</div></div>'+
-      '<div class="surprise-stat"><div class="surprise-k">Best</div><div class="surprise-v surprise-pos">'+(flags[best.ccy]||"")+' '+best.ccy+' '+(bestSc>0?"+":"")+bestSc.toFixed(1)+'</div></div>'+
-      '<div class="surprise-stat"><div class="surprise-k">Worst</div><div class="surprise-v surprise-neg">'+(flags[worst.ccy]||"")+' '+worst.ccy+' '+(worstSc>0?"+":"")+worstSc.toFixed(1)+'</div></div>'+
-    '</div><div class="surprise-note">This measures the current growth, inflation and labour releases for each currency.</div>'+
-    '<div class="surprise-list-head"><div>#</div><div>Currency</div><div>Surprise Strength</div><div>Index</div><div>State</div><div>Releases</div><div>2Y Yield</div></div>'+
-    '<div class="surprise-list">'+left+'</div></div>'+
-    '<div class="surprise-card"><div class="surprise-card-title">Recent Forecast Surprises</div><div class="surprise-release-list">'+right+'</div></div></div>';
+  var gaugeStats=CCYS.map(function(c){ return {ccy:c, br:surpriseWeightedPct(c)}; });
+  var gaugeRanked=gaugeStats.slice().sort(function(a,b){ var av=a.br.pct==null?-1:a.br.pct, bv=b.br.pct==null?-1:b.br.pct; return bv-av; });
+  var gaugesHtml=gaugeStats.map(function(x){ return surpriseGaugeSvg(x.ccy,x.br.pct); }).join('');
+  var rankRowsHtml=gaugeRanked.map(function(x){
+    var pct=x.br.pct, hc=surpriseHeatColor(pct);
+    return '<div class="surprise-rank-row"><span>'+esc(x.ccy)+'</span><span class="heat-chip" style="background:'+hc.bg+';color:'+hc.fg+';">'+(pct==null?'\u2014':pct+'%')+'</span></div>';
+  }).join('');
+  var gaugeSectionHtml='<div class="card surprise-gauge-card">'+
+    '<div class="surprise-gauge-body">'+
+    '<div class="surprise-gauge-grid">'+gaugesHtml+'</div>'+
+    '<div class="surprise-rank-table"><div class="surprise-rank-head"><span>Currency</span><span>Score</span></div>'+rankRowsHtml+'</div>'+
+    '</div></div>';
+  var html='<div class="surprise-fit-wrap">'+gaugeSectionHtml+expandedHtml+renderSurpriseStrengthChart(stats,animate)+'</div>';
   document.getElementById("tab-raw").innerHTML=html;
+  animateSurpriseGauges();
+  if(animate) animateSurpriseStrengthChart();
   var gotos=document.querySelectorAll("#tab-raw [data-goto]");
   for(var i=0;i<gotos.length;i++)gotos[i].onclick=function(){
     var c=this.dataset.goto;
@@ -7237,6 +8457,9 @@ function renderRaw(){
   bindSurpriseTrendHover();
   var srangeBtns=document.querySelectorAll("#tab-raw .srange-btn");
   for(var sr=0;sr<srangeBtns.length;sr++){ srangeBtns[sr].onclick=function(e){ e.stopPropagation(); expandedSurpriseRange=this.dataset.srange; renderRaw(); }; }
+  var ssBtns=document.querySelectorAll("#tab-raw [data-ss-toggle]");
+  for(var sb=0;sb<ssBtns.length;sb++){ ssBtns[sb].onclick=function(e){ e.stopPropagation(); SS_HIDDEN[this.dataset.ssToggle]=!SS_HIDDEN[this.dataset.ssToggle]; renderRaw(); }; }
+  wireSurpriseStrengthCrosshair();
 }
 function gaugeGeom(score){
   var cx=120, cy=104, r=80, s=clamp(score,-100,100), angle=180-((s+100)/200)*180, rad=angle*Math.PI/180;
@@ -7323,7 +8546,7 @@ function autoGrowGuidance(el){
 // Pulls this currency's own logged composite-score history (same DAILY[date][ccy] key the
 // Desk Board trend arrow reads from) so the Currency Detail page can show the actual line,
 // not just an arrow + delta.
-function ccySparkline90d(ccy, liveScore){
+function ccySparkline90d(ccy, liveScore, animate){
   var allDays=Object.keys(DAILY).filter(function(dt){return DAILY[dt] && DAILY[dt][ccy]!==undefined;}).sort();
   if(!allDays.length || !Number.isFinite(Number(liveScore))) return '<span class="ov-macro-trend-empty">—</span>';
   var days=trendDaysForKey(ccy), vals=days.map(function(dt){return Number(DAILY[dt][ccy]);});
@@ -7333,9 +8556,14 @@ function ccySparkline90d(ccy, liveScore){
   var pts=vals.map(function(v,i){var x=pad+(i/(vals.length-1))*(w-2*pad),y=h-pad-((v-min)/(max-min))*(h-2*pad);return [x,y];});
   var path=pts.map(function(pt,i){return (i?'L ':'M ')+pt[0].toFixed(1)+' '+pt[1].toFixed(1);}).join(' ');
   var delta=Number(vals[vals.length-1])-Number(vals[0]),col=delta>0.15?'var(--ref-green)':delta<-0.15?'var(--ref-red)':'var(--ref-ash)';
+  // Same draw-in mechanic as the other 90D charts on this page: measure the line's own
+  // length, start it fully dashed-out, then animateOverviewMacroTrends() flips the
+  // dashoffset to 0 on a CSS transition once this markup is in the DOM.
+  var lineLen=0; for(var li=1;li<pts.length;li++){ var dx=pts[li][0]-pts[li-1][0], dy=pts[li][1]-pts[li-1][1]; lineLen+=Math.sqrt(dx*dx+dy*dy); }
+  var lenStr=(lineLen*1.2).toFixed(1);
   return '<div class="ov-macro-trend-chart" data-macro-ccy="'+esc(ccy)+'">'+
     '<svg class="ov-macro-trend-spark" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-label="'+esc(ccy)+' 90-day composite strength trend">'+
-      '<path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>'+
+      '<path class="ov-macro-trend-line" d="'+path+'" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"'+(animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .8s ease;"':'')+'></path>'+
     '</svg></div>';
 }
 function ccyHistorySeries(ccy, liveScore){
@@ -7352,21 +8580,21 @@ function formatShortDate(iso){
   var mi=parseInt(parts[1],10)-1;
   return (months[mi]||parts[1])+" "+parseInt(parts[2],10);
 }
-function renderDetailTrendPanelWrap(ccy, liveScore){
-  return '<div id="trendPanelWrap-'+esc(ccy)+'">'+renderDetailTrendPanel(ccy, liveScore)+'</div>';
+function renderDetailTrendPanelWrap(ccy, liveScore, animate){
+  return '<div id="trendPanelWrap-'+esc(ccy)+'">'+renderDetailTrendPanel(ccy, liveScore, animate)+'</div>';
 }
-function renderDetailTrendPanel(ccy, liveScore){
+function renderDetailTrendPanel(ccy, liveScore, animate){
   // Always append/override today's point with the live score (see withLiveToday()) so this
   // line never looks stale after an intra-day edit, even if today's snapshot was already
   // locked in by an earlier Recalculate.
   var series=ccyHistorySeries(ccy, liveScore); // [{date,val,live}, ...] oldest -> newest, up to TREND_WINDOW_DAYS long -- the LINE stays a rolling 90-day view.
   // The delta/arrow underneath intentionally answers a different, shorter question than the
-  // 90-day line above it: "how has this moved over the last two weeks specifically" -- same
-  // 14-day comparison as Pair Ranking's "14D Δ" column, not the full 90-day span of the chart.
-  var t=last14DayDelta(ccy, liveScore);
+  // 90-day line above it: "how has this moved over the last week specifically" -- same
+  // 7-day comparison as Pair Ranking's "7D Δ" column, not the full 90-day span of the chart.
+  var t=last7DayDelta(ccy, liveScore);
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
   var cls=t.dir==="up"?"trend-up":(t.dir==="down"?"trend-down":"trend-flat");
-  var deltaTxt=t.delta==null?"Need a logged day at least 14 calendar days back to compare yet":((t.delta>0?"+":"")+t.delta+' pts / 14d');
+  var deltaTxt=t.delta==null?"Need a logged day at least 7 calendar days back to compare yet":((t.delta>0?"+":"")+t.delta+' pts / 7d');
   var spark="", dateLabels="";
   if(series.length>1){
     // Bigger canvas, thicker line, larger axis type -- matches the reference size instead
@@ -7387,6 +8615,9 @@ function renderDetailTrendPanel(ccy, liveScore){
       return [x,yPos(s.val)];
     });
     var linePts=xy.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+    var lineLen=0;
+    for(var pl=1;pl<xy.length;pl++){ var dxp=xy[pl][0]-xy[pl-1][0], dyp=xy[pl][1]-xy[pl-1][1]; lineLen+=Math.sqrt(dxp*dxp+dyp*dyp); }
+    var lineLenStr=lineLen.toFixed(1);
     var fillVar = Number(liveScore)>=15 ? "var(--bullish-strong)" : (Number(liveScore)<=-15 ? "var(--bearish-strong)" : "var(--text-faint)");
     var hitPts=series.map(function(s,i){
       var p=xy[i];
@@ -7413,7 +8644,7 @@ function renderDetailTrendPanel(ccy, liveScore){
     axisSvg+='<text x="'+(axisGutter-6)+'" y="'+(yZero+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="700" fill="#b8860b" font-family="Inter,system-ui,sans-serif">0</text>';
     spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" data-vals="'+esc(series.map(function(s){return s.val;}).join(','))+'" data-live-idx="'+liveIdx+'" data-axis-gutter="'+axisGutter+'" data-view-w="'+w+'" viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="none" style="overflow:visible;touch-action:none;cursor:crosshair;display:block;">'+
       axisSvg+zeroLine+
-      '<polyline fill="none" stroke="'+fillVar+'" stroke-width="2.4" points="'+linePts+'" pointer-events="none"/>'+
+      '<polyline class="detail-trend-line" fill="none" stroke="'+fillVar+'" stroke-width="2.4" points="'+linePts+'" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lineLenStr+';stroke-dashoffset:'+lineLenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
       liveDot+
       '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="4.6" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2"/></g>'+
       hitPts+
@@ -7426,7 +8657,7 @@ function renderDetailTrendPanel(ccy, liveScore){
       '<span>'+formatShortDate(series[midIdx].date)+'</span>'+
       '<span>'+lastLabel+'</span></div>';
   } else {
-    spark='<div style="font-size:11.5px;color:var(--text-faint);margin-top:14px;line-height:1.4;">No history logged yet — hit Recalculate on Pair Ranking a few times to start building this line.</div>';
+    spark='<div style="font-size:11.5px;color:var(--text-faint);margin-top:14px;line-height:1.4;">No history logged yet — hit Recalculate a few times to start building this line.</div>';
   }
   return '<div class="trend-panel"><div><span class="k">Composite trend ('+TREND_WINDOW_DAYS+'d)</span>'+
     '<div class="trend-score">'+fmt(liveScore)+'</div>'+
@@ -7491,8 +8722,17 @@ function renderDetail(){
   document.getElementById("detailPills").innerHTML=pillsHtml;
   var pills=document.querySelectorAll("#detailPills .ccy-pill");
   for(var p=0;p<pills.length;p++){ pills[p].onclick=function(){ activeDetailCcy=this.dataset.ccy; renderDetail(); }; }
-  renderDetailBody(activeDetailCcy);
+  renderDetailBody(activeDetailCcy, true);
   bindDetailTrendHover();
+  animateDetailTrend();
+}
+function animateDetailTrend(){
+  var lines=document.querySelectorAll('#tab-detail .detail-trend-line');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
 }
 function policyStanceInfo(ccy){
   var d=DATA[ccy]||{};
@@ -7538,7 +8778,7 @@ function updatePolicyMonitor(ccy){
   var mk=document.getElementById("policyMarket-"+ccy); if(mk){ var yTxt=x.y==null?"—":((x.y>0?"+":"")+x.y); mk.innerHTML=x.market+' <span class="policy-score">'+yTxt+'</span>'; mk.className="policy-value "+(x.y==null||Math.abs(x.y)<=1?"policy-neutral":x.y>0?"policy-bull":"policy-bear"); }
   var rel=document.getElementById("policyRelation-"+ccy); if(rel){ rel.textContent=x.relation; rel.parentElement.className="policy-relation "+x.relationCls; }
 }
-function renderDetailBody(ccy){
+function renderDetailBody(ccy, animate){
   if(!DATA || !DATA[ccy]) return;
   var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
   var sectors=[["growth","Growth",f.g],["inflation","Inflation",f.inf],["labour","Labour",f.l]];
@@ -7600,7 +8840,7 @@ function renderDetailBody(ccy){
         '<div class="info-item risk-detail-item"><span class="k">Risk sentiment</span><span class="v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
         '<div class="info-item institutional-bias-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+        '<div class="info-item latest-position-item"><span class="k">Latest Positioning Change</span><span class="v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span><span class="v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).net)+'">'+cotFormat(cotLatest(ccy).net)+'</span></div>'+        '<div class="info-item cot-change-item"><span class="k">COT WoW change</span><span class="v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).netChg)+'">'+cotFormat(cotLatest(ccy).netChg)+'</span></div>'+        '<div class="info-item"><span class="k">Long / Short</span><span class="v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotLatest(ccy);if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+        '<div class="info-item"><span class="k">COT regime</span><span class="v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+      '</div>'+
       renderPolicyMonitor(ccy)+
-      renderDetailTrendPanelWrap(ccy, sc)+
+      renderDetailTrendPanelWrap(ccy, sc, animate)+
       '</div>';
   for(var s=0;s<sectors.length;s++){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
@@ -7741,6 +8981,22 @@ function linearPath(pts){
   for(var i=1;i<pts.length;i++){ d += "L"+pts[i][0].toFixed(1)+","+pts[i][1].toFixed(1)+" "; }
   return d;
 }
+// Smooth, "flexible" trend line: a Catmull-Rom curve converted to cubic Beziers,
+// passing exactly through every data point instead of connecting them with
+// straight, zigzagging segments. Used by both the small scanner sparkline and
+// the big expanded-pair chart so the two stay visually consistent.
+function smoothPath(pts){
+  if(pts.length<2) return "";
+  if(pts.length===2) return linearPath(pts);
+  var d="M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1)+" ";
+  for(var i=0;i<pts.length-1;i++){
+    var p0=pts[i-1]||pts[i], p1=pts[i], p2=pts[i+1], p3=pts[i+2]||p2;
+    var c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+    var c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+    d+="C"+c1x.toFixed(1)+","+c1y.toFixed(1)+" "+c2x.toFixed(1)+","+c2y.toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1)+" ";
+  }
+  return d;
+}
 function filterDaysByRange(days, range){
   if(!range || range==="ALL") return days;
   var lookback = range==="1M" ? 30 : (range==="3M" ? 90 : (range==="1Y" ? 365 : null));
@@ -7749,40 +9005,40 @@ function filterDaysByRange(days, range){
   var cutoffKey = cutoff.toISOString().slice(0,10);
   return days.filter(function(d){ return d>=cutoffKey; });
 }
-// "14 calendar days ago" pulse, sitting right next to the pair name -- different from the
+// "7 calendar days ago" pulse, sitting right next to the pair name -- different from the
 // Trend column (which looks back up to 90 days) and from Delta WoW (which is COT positioning,
 // not score). This is calendar-day anchored (like the week/month lookbacks elsewhere), NOT a
-// fixed count of logged observations: it finds the 14th calendar day back from today, then
+// fixed count of logged observations: it finds the 7th calendar day back from today, then
 // compares the live score to the most recent day you actually logged on or before that date.
 // That way a gap in your logging (a skipped weekend, a missed day) never silently turns this
-// into a 12-day or 16-day comparison -- it always anchors to the real 14-day calendar mark.
-function last14DayDelta(key, liveVal){
+// into a 12-day or 16-day comparison -- it always anchors to the real 7-day calendar mark.
+function last7DayDelta(key, liveVal){
   var todayKey=new Date().toISOString().slice(0,10);
   var cutoff=new Date(todayKey+'T00:00:00Z');
-  cutoff.setUTCDate(cutoff.getUTCDate()-14);
+  cutoff.setUTCDate(cutoff.getUTCDate()-7);
   var cutoffKey=cutoff.toISOString().slice(0,10);
   var priorDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][key]!==undefined && dt!==todayKey && dt<=cutoffKey; }).sort();
   if(!priorDays.length) return {dir:"flat",delta:null,day:null};
-  var anchorDay=priorDays[priorDays.length-1]; // closest logged day on/before the 14-day-ago mark
+  var anchorDay=priorDays[priorDays.length-1]; // closest logged day on/before the 7-day-ago mark
   var delta=Math.round(liveVal-Number(DAILY[anchorDay][key]));
   if(delta>0) return {dir:"up",delta:delta,day:anchorDay};
   if(delta<0) return {dir:"down",delta:delta,day:anchorDay};
   return {dir:"flat",delta:delta,day:anchorDay};
 }
-// Standalone "14D Δ" column -- its own cell to the left of the pair flags,
+// Standalone "7D Δ" column -- its own cell to the left of the pair flags,
 // sized to match the Score column so it never reads as clutter mixed into
 // the pair name line. Shows "0" (not a dash) when the score is unchanged over
-// the 14-day window, and a plain dash only when you don't yet have a logged
-// day at least 14 calendar days back to compare against.
+// the 7-day window, and a plain dash only when you don't yet have a logged
+// day at least 7 calendar days back to compare against.
 function dailyChangeCell(key, liveVal){
-  var t=last14DayDelta(key, liveVal);
+  var t=last7DayDelta(key, liveVal);
   if(t.delta==null){
-    return '<span class="mono day-delta day-delta-flat" title="Need a logged day at least 14 calendar days back to compare yet">&mdash;</span>';
+    return '<span class="mono day-delta day-delta-flat" title="Need a logged day at least 7 calendar days back to compare yet">&mdash;</span>';
   }
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
   var cls=t.dir==="up"?"day-delta-up":(t.dir==="down"?"day-delta-down":"day-delta-flat");
   var deltaTxt=(t.delta>0?"+":"")+t.delta;
-  return '<span class="mono day-delta '+cls+'" title="Change vs score logged on '+t.day+' (14 calendar days ago)">'+symbol+' '+deltaTxt+'</span>';
+  return '<span class="mono day-delta '+cls+'" title="Change vs score logged on '+t.day+' (7 calendar days ago)">'+symbol+' '+deltaTxt+'</span>';
 }
 function pairTrend30d(pair){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
@@ -7851,8 +9107,8 @@ function sparkline(pair){
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){ min-=5; max+=5; }
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
-  // Color follows the pair's overall score, not the most recent 14-day tick (that's what
-  // the separate "14D Δ" column is for). A deeply bearish score that ticked up today should
+  // Color follows the pair's overall score, not the most recent 7-day tick (that's what
+  // the separate "7D Δ" column is for). A deeply bearish score that ticked up today should
   // still read red here, not flip green because of one day's move.
   var scoreForColor = live==null ? vals[vals.length-1] : live;
   var col = scoreForColor>=8 ? "var(--bullish)" : scoreForColor<=-8 ? "var(--bearish)" : "var(--text-faint)";
@@ -7901,11 +9157,16 @@ function showPairScoreTooltip(svg, idx, clientX, clientY){
   var isLive=idx===liveIdx;
   var tt=ensurePairScoreTooltip();
   var regime=pairBandLabel(score);
-  tt.innerHTML='<div class="tt-date">'+esc(isLive?'Live (today)':day)+' · '+esc(pair)+'</div><div class="tt-score">Score '+fmt(score)+'</div><div class="tt-regime" style="color:'+(score>0?'var(--bullish-strong)':score<0?'var(--bearish-strong)':'var(--text-dim)')+'">'+esc(regime)+'</div>';
+  var currentLive=pairCompositeFor(pair.slice(0,3),pair.slice(3,6));
+  var trend=pairTrend30d(pair);
+  tt.innerHTML='<div class="tt-date">'+esc(isLive?'Live (today)':day)+' · '+esc(pair.replace(/([A-Z]{3})([A-Z]{3})/,'$1/$2'))+'</div><div class="tt-score">'+esc(scannerScorePrecise(score))+' '+esc(regime)+'</div><div class="tt-regime">'+esc(isLive?'Current composite':'Historical composite')+'</div><div class="tt-regime">Current: '+esc(scannerScorePrecise(currentLive))+' '+esc(pairBandLabel(currentLive))+' · '+esc(trend.label)+'</div>';
   tt.style.display='block';
   var rect=tt.getBoundingClientRect();
-  var x=Math.min(clientX+12, window.innerWidth-rect.width-8);
-  var y=Math.min(clientY+12, window.innerHeight-rect.height-8);
+  var sr=svg.getBoundingClientRect();
+  var px=sr.left+(idx/Math.max(1,days.length-1))*sr.width;
+  var py=sr.top+sr.height/2;
+  var x=Math.min(px+10,window.innerWidth-rect.width-8);
+  var y=Math.min(py+10,window.innerHeight-rect.height-8);
   tt.style.left=Math.max(8,x)+'px';
   tt.style.top=Math.max(8,y)+'px';
 }
@@ -7939,7 +9200,7 @@ function hidePairTrendCrosshair(svg){
   if(cross) cross.setAttribute('opacity','0');
 }
 function bindPairTrendHover(){
-  var svgs=document.querySelectorAll('#tab-pairs .pair-trend-spark,#tab-overview .pair-trend-spark');
+  var svgs=document.querySelectorAll('#tab-pairs .pair-trend-spark,#tab-overview .pair-trend-spark,#tab-scanner .pair-trend-spark');
   for(var i=0;i<svgs.length;i++){
     var svg=svgs[i];
     if(svg.__pairHoverBound) continue;
@@ -7963,7 +9224,7 @@ function bindPairTrendHover(){
   }
 }
 function bindBigPairTrendHover(){
-  var svgs=document.querySelectorAll('#tab-pairs .pair-big-trend');
+  var svgs=document.querySelectorAll('#tab-pairs .pair-big-trend,#tab-scanner .pair-big-trend');
   for(var i=0;i<svgs.length;i++){
     var svg=svgs[i];
     if(svg.__pairBigHoverBound) continue;
@@ -8041,7 +9302,7 @@ function bigChart(pair, rangeSel){
     labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
   var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
-  var linePath=linearPath(pts);
+  var linePath=smoothPath(pts);
   var baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
   var histDots=days.map(function(dt,i){
@@ -8052,12 +9313,11 @@ function bigChart(pair, rangeSel){
     var label=(i===liveIdx?'Live (today)':String(dt))+' · Score '+fmt(v)+' · '+pairBandLabel(v);
     return '<circle class="pair-trend-hit-pt" cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="8" fill="transparent" stroke="transparent" pointer-events="all"><title>'+esc(label)+'</title></circle>';
   }).join('');
-  // The live (not-yet-locked) point gets its own hollow ring so it visually reads as
-  // "today, live" rather than another logged day.
-  var liveDot = liveIdx>=0 ? '<circle cx="'+pts[liveIdx][0].toFixed(1)+'" cy="'+pts[liveIdx][1].toFixed(1)+'" r="4.4" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="2.2" pointer-events="none"/>' : '';
+  // No persistent live-today ring: the line stays clean until the user hovers it.
+  var liveDot = '';
   return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
-      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.32"/>'+
+      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.16"/>'+
       '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
     '</linearGradient></defs>'+
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
@@ -8150,7 +9410,7 @@ function pairMacroSummaryHtml(pair, score){
   }
   function rateNarrative(){
     if(yScore==null) return 'The rate layer is incomplete, so the yield market cannot yet be used as a strong confirmation signal.';
-    var bp=Math.round(y.current*100);
+    var bp=Math.round(y.current);
     if(Math.abs(bp)<5) return 'The 2Y spread is only '+(bp>=0?'+':'')+bp+'bp. That leaves the rate story almost flat, so this pair is being decided more by data and positioning than by a clear yield advantage.';
     var winner=bp>0?base:quote;
     var reinforces=(score>0&&bp>0)||(score<0&&bp<0);
@@ -8186,7 +9446,7 @@ function pairMacroSummaryHtml(pair, score){
 
   var conflicts=[];
   if(fundRel*score<0 && Math.abs(fundRel)>=7) conflicts.push('fundamentals');
-  if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=0.10) conflicts.push('rates');
+  if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=10) conflicts.push('rates');
   if(cot.combined*score<0 && Math.abs(cot.combined)>=6) conflicts.push('positioning');
   if(riskDiff*score<0 && Math.abs(riskDiff)>=4) conflicts.push('risk');
   if(seas*score<0 && Math.abs(seas)>=0.75) conflicts.push('seasonality');
@@ -8279,7 +9539,7 @@ function renderPairs(){
     var cotDxNote=(p.base==='USD'||p.quote==='USD')?' title="USD leg uses ICE Dollar Index (DX) COT data as a proxy — not a pure single-currency future."':'';
     var seasRel=seasonalityValue(DATA[p.base])-seasonalityValue(DATA[p.quote]);
     rows += '<tr class="rowhover pair-row '+heatClass+'" data-pair="'+p.pair+'">'+
-      '<td class="day-delta-cell" data-label="14D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
+      '<td class="day-delta-cell" data-label="7D &Delta;">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td class="ccy-name" data-label="Pair"><span class="pair-name-wrap">'+flagPair(p.base,p.quote)+p.pair+'</span></td>'+
       '<td class="mono pair-score '+pairScoreClass(p.score)+'" data-label="Score">'+fmt(p.score)+'</td>'+
       '<td class="pair-alignment '+pairAlignmentClass(p.score,p.alignment)+'" data-label="ALIGN...">'+(p.alignment==null?'—':Math.round(p.alignment)+'%')+'</td>'+
@@ -8348,7 +9608,7 @@ function renderPairs(){
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">'+
       '<div class="pair-search-wrap"><div style="position:relative;flex:1;min-width:0;"><span class="pair-search-icon">⌕</span><input id="pairSearchInput" class="pair-search" type="search" autocomplete="off" spellcheck="false" value="'+esc(pairSearchTerm)+'" placeholder="Search pair e.g. GBPUSD" aria-label="Search pair"><button id="pairSearchClear" class="pair-search-clear" type="button" aria-label="Clear pair search">&times;</button></div><span id="pairSearchCount" class="pair-search-count"></span></div>'+
       '<div class="range-switch">'+filterBtns+'</div><span class="pair-selection-label">'+selectionLabel+'</span></div></div>'+
-    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>14D &Delta;</th><th>Pair</th><th>Score</th><th>ALIGN...</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
+    '<div class="table-scroll"><table class="pair-table"><thead><tr><th>7D &Delta;</th><th>Pair</th><th>Score</th><th>ALIGN...</th><th>Trend</th><th>Bias</th><th>Fundamentals</th><th>Yield Bias</th><th>CB Stance</th><th>Net Position</th><th>WoW Δ</th><th>Seasonality</th><th>Risk Sentiment</th></tr></thead>'+
     '<tbody id="pairRows">'+rows+'</tbody></table></div></div>'+
     '';
   document.getElementById("tab-pairs").innerHTML=html;
@@ -8464,7 +9724,7 @@ function renderPairs(){
   }; }
   var clearPairTrendBtn=document.getElementById("clearPairTrendBtn");
   if(clearPairTrendBtn){ clearPairTrendBtn.onclick=function(){
-    if(!confirm("Clear ONLY the Pair Ranking trend history (the numbers from before the pair-scoring fix)? Currency composite scores, Fundamentals, COT, and Surprise Index history are all left untouched. This can't be undone.")) return;
+    if(!confirm("Clear ONLY the pair trend history (the numbers from before the scoring fix)? Currency composite scores, Fundamentals, COT, and Surprise Index history are all left untouched. This can't be undone.")) return;
     // A pair key is exactly two currency codes from CCYS concatenated back-to-back (e.g. "EURUSD").
     // Composite/FUND_/COT_/SURPRISE_ keys never match this shape, so this only ever removes
     // pair-score entries -- everything else logged in DAILY is left exactly as it was.
@@ -8741,7 +10001,7 @@ function cotDetailHtml(ccy){
   var shortPct=(d.long!=null&&d.short!=null)?(d.short/(d.long+d.short)*100):null;
   var badgeClass=crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral';
   return '<div class="cot-hero">'+
-    '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net ÷ OI</span><b class="'+netCls+'">'+(d.oi!=null&&d.net!=null&&d.oi?cotPercent(100*d.net/d.oi):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">This is the normalized figure the Pair Ranking COT score actually compares against other currencies — not the raw net number above.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+Math.min(hist.length,52)+' rolling weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div><div id="cotChartZoneNote" class="cot-chart-zone-note"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
+    '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net ÷ OI</span><b class="'+netCls+'">'+(d.oi!=null&&d.net!=null&&d.oi?cotPercent(100*d.net/d.oi):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">This is the normalized figure the pair COT score actually compares against other currencies — not the raw net number above.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+Math.min(hist.length,52)+' rolling weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div><div id="cotChartZoneNote" class="cot-chart-zone-note"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
 }
 function renderCotRegime(){
   var tab=document.getElementById('tab-cot'); if(!tab||!DATA) return;
@@ -9019,13 +10279,14 @@ function updateComputed(){
   if(crEl){ var cr3=cotCrowding(c); crEl.textContent=cr3.label; crEl.style.color=cr3.tone==='bull'?"var(--bullish-strong)":cr3.tone==='bear'?"var(--bearish-strong)":"var(--text-dim)"; }
   
   if(document.getElementById("tab-pairs")) renderPairs();
+  if(document.getElementById("tab-scanner") && activeTab==="scanner") renderScanner();
   // Do not rebuild the entire Risk Sentiment form while an input event is in progress.
   // The live preview updates in-place; a full render here would replace the active input
   // DOM node and make multi-digit closes difficult or impossible to type reliably.
   if(document.getElementById("tab-risk") && !isTyping) renderRiskSentiment();
 }
 
-function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
+function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderPairs(); renderScanner(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 
 async function init(){
@@ -9782,8 +11043,12 @@ body.black .rail, body.ash .rail{
     return m+'m';
   }
   function updateGHClock(){
-    var now=new Date(), el=document.getElementById('ghClock');
+    var now=new Date(), el=document.getElementById('ghClock'), dateEl=document.getElementById('ghDate');
     if(el){var p=parts(now,'Africa/Accra');el.textContent=pad(p.hour)+':'+pad(p.minute)+':'+pad(p.second);}
+    if(dateEl){
+      try{ dateEl.textContent=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',weekday:'short',day:'2-digit',month:'short'}).format(now); }
+      catch(e){ dateEl.textContent=''; }
+    }
     renderSessions(now);
   }
   function renderSessions(now){
@@ -11121,6 +12386,17 @@ body,html{background:var(--bg);}
   #tab-overview .ov-pro-snapshot .ov-pro-kpis b{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;}
 }
 </style>
+
+<style id="scanner-pair-click-and-score-final">
+  #tab-scanner .scanner-score{font-size:18px!important;font-weight:700!important;line-height:1!important;}
+  #tab-scanner .scanner-row{cursor:default;}
+  #tab-scanner .scanner-pair-td{cursor:pointer;}
+  #tab-scanner .scanner-pair-td:hover .scanner-pair-code{color:var(--amber);}
+</style>
+
+<style id="final-score-size-fix">
+#tab-scanner .scanner-score{font-size:14px!important;font-weight:700!important;line-height:1!important;}
+</style>
 </body>
 <style id="overview-kpi-trend-arrows-final">
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow{font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:900;margin-left:5px;display:inline-block;vertical-align:middle;}
@@ -11128,7 +12404,141 @@ body,html{background:var(--bg);}
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow.down{color:var(--bearish-strong)!important;}
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow.flat{color:var(--text-faint)!important;}
 </style>
-</html>
+
+<style id="scanner-hover-ash-final">
+/* Compact hover diagnostics: deliberately ash so they separate from the black scanner surface. */
+.scanner-hover-tooltip{
+  background:#171a18!important;
+  border:1px solid #343a36!important;
+  color:#eef1ee!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.48)!important;
+  max-width:320px!important;
+  width:max-content!important;
+  min-width:0!important;
+  padding:6px 8px!important;
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:10.5px!important;
+  line-height:1.32!important;
+  border-radius:5px!important;
+}
+.scanner-hover-tooltip .stt-kicker{
+  font-size:8.5px!important;
+  letter-spacing:.65px!important;
+  color:#aeb6b0!important;
+  font-weight:700!important;
+  margin-bottom:1px!important;
+}
+.scanner-hover-tooltip .stt-title{
+  font-size:11px!important;
+  line-height:1.25!important;
+  font-weight:700!important;
+  color:#eef1ee!important;
+  margin-bottom:2px!important;
+}
+.scanner-hover-tooltip .stt-note{
+  font-size:10px!important;
+  line-height:1.32!important;
+  color:#d0d6d1!important;
+  margin-top:3px!important;
+}
+.scanner-hover-tooltip .stt-note b,
+.scanner-hover-tooltip .stt-title b,
+.scanner-hover-tooltip .stt-driver b{
+  color:#f2f4f2!important;
+  font-weight:800!important;
+}
+.scanner-hover-tooltip .stt-drivers{
+  margin-top:4px!important;
+  padding-top:4px!important;
+  border-top:1px solid #454b47!important;
+}
+.scanner-hover-tooltip .stt-section-label{
+  display:inline-block;
+  font-size:8.5px!important;
+  letter-spacing:.55px!important;
+  text-transform:uppercase!important;
+  color:#aeb6b0!important;
+  font-weight:800!important;
+}
+.scanner-hover-tooltip .stt-driver{
+  margin:3px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.scanner-hover-tooltip .stt-driver b{font-size:10.5px!important;}
+.scanner-hover-tooltip .stt-driver span{
+  display:block!important;
+  margin-top:1px!important;
+  font-size:9.5px!important;
+  line-height:1.3!important;
+  color:#c4cbc5!important;
+}
+.scanner-hover-tooltip .stt-muted{color:#aeb6b0!important;}
+#tab-scanner .scanner-pair-td[data-scanner-tip]{cursor:help!important;}
+</style>
+
+<style id="scanner-hover-final-black-ash">
+/* Final hover treatment: black-ash, clearly lighter than the main scanner surface. */
+.scanner-hover-tooltip{
+  background:#171a18!important;
+  border:1px solid #343a36!important;
+  color:#e9ede9!important;
+  max-width:340px!important;
+  padding:7px 9px!important;
+  border-radius:5px!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.48)!important;
+}
+.scanner-hover-tooltip .stt-title{
+  font-size:11px!important;
+  line-height:1.25!important;
+  font-weight:700!important;
+  color:#eef2ee!important;
+  margin:0 0 3px!important;
+}
+.scanner-hover-tooltip .stt-note{
+  font-size:10px!important;
+  line-height:1.32!important;
+  color:#cfd6d0!important;
+  margin-top:3px!important;
+}
+.scanner-hover-tooltip .stt-section-label{
+  font-size:8.5px!important;
+  letter-spacing:.55px!important;
+  text-transform:uppercase!important;
+  color:#9da69f!important;
+  font-weight:800!important;
+}
+.scanner-hover-tooltip .stt-note b,
+.scanner-hover-tooltip .stt-title b,
+.scanner-hover-tooltip .stt-driver b{
+  color:#f0f3f0!important;
+  font-weight:800!important;
+}
+.scanner-hover-tooltip .stt-drivers{
+  margin-top:4px!important;
+  padding-top:4px!important;
+  border-top:1px solid #303631!important;
+}
+.scanner-hover-tooltip .stt-driver{
+  margin:3px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.scanner-hover-tooltip .stt-driver b{
+  font-size:10px!important;
+}
+.scanner-hover-tooltip .stt-driver span{
+  display:block!important;
+  margin-top:1px!important;
+  font-size:9.5px!important;
+  line-height:1.3!important;
+  color:#bfc8c1!important;
+}
+.scanner-hover-tooltip .stt-muted{color:#9da69f!important;}
+#tab-scanner .scanner-pair-td[data-scanner-tip]{cursor:pointer!important;}
+</style>
 
 <style id="calendar-grouped-date-layout-final">
 @media(min-width:800px){
@@ -11226,3 +12636,543 @@ html #tab-pairs .pair-table td.ccy-name .pair-name-wrap{
 #tab-pairs .pair-bias-compact-vbull{color:var(--bullish-strong)!important;}
 #tab-pairs .pair-bias-compact-vbear{color:var(--pair-red)!important;}
 </style>
+
+<style id="scanner-v4-ui-final">
+#tab-scanner .scanner-driver-box,#tab-scanner .scanner-driver-box.pos,#tab-scanner .scanner-driver-box.neg{display:inline!important;font-size:13px!important;font-weight:500!important;line-height:1.1!important;color:var(--text-dim)!important;padding:0!important;border:0!important;background:transparent!important;border-radius:0!important;}
+#tab-scanner .scanner-driver-sep{color:var(--text-faint)!important;font-weight:400!important;}
+.scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;width:max-content;max-width:300px;min-width:0;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.34);font-family:'Inter',system-ui,sans-serif;font-size:12px;line-height:1.4;color:var(--text);white-space:normal;}
+.scanner-hover-tooltip.show{display:block;}
+.scanner-hover-tooltip .stt-kicker{font-size:9.5px!important;letter-spacing:.75px;text-transform:uppercase;color:var(--text-faint);margin-bottom:2px;}
+.scanner-hover-tooltip .stt-title{font-family:'Inter',system-ui,sans-serif!important;font-size:12.5px!important;font-weight:600;margin-bottom:3px;}
+.scanner-hover-tooltip .stt-row{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;margin-top:3px;}
+.scanner-hover-tooltip .stt-item{min-width:95px;flex:0 1 auto;}
+.scanner-hover-tooltip .stt-label{font-size:9.5px!important;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;}
+.scanner-hover-tooltip .stt-value{font-family:'Inter',system-ui,sans-serif!important;font-size:11.5px!important;font-weight:600;}
+.scanner-hover-tooltip .stt-note{margin-top:3px;color:var(--text-dim);font-size:11px!important;line-height:1.35;}
+.scanner-hover-tooltip .stt-good,.scanner-hover-tooltip .stt-bad{color:var(--text)!important;}
+.scanner-hover-tooltip .stt-neu{color:var(--text-dim)!important;}
+.scanner-hover-tooltip .stt-drivers{display:block;margin-top:4px;padding-top:4px;border-top:none!important;}
+.scanner-hover-tooltip .stt-plain-label{display:block;font-size:10.5px;color:var(--text-dim);margin-bottom:2px;}
+.scanner-hover-tooltip .stt-driver{display:block;margin:0 0 4px;padding:0!important;border:0!important;background:transparent!important;font-size:11px!important;font-weight:400!important;color:var(--text)!important;line-height:1.4;}
+.scanner-hover-tooltip .stt-driver:last-child{margin-bottom:0;}
+#tab-scanner .scanner-table td.scanner-ledby,#tab-scanner .scanner-table td.scanner-carry,#tab-scanner .scanner-pill,#tab-scanner [data-scanner-tip]{cursor:default!important;}
+@media(max-width:700px){.scanner-hover-tooltip{max-width:300px;font-size:11.5px;}}
+</style>
+
+
+<style id="scanner-v4-neutral-final">
+#tab-scanner .scanner-driver-box,#tab-scanner .scanner-driver-box.pos,#tab-scanner .scanner-driver-box.neg{color:var(--text-dim)!important;font-weight:500!important;background:transparent!important;border:0!important;}
+#tab-scanner .scanner-driver-sep{color:var(--text-faint)!important;}
+#tab-scanner .scanner-hover-tooltip{max-width:340px!important;width:max-content!important;min-width:0!important;}
+</style>
+
+<style id="scanner-tip-fit-content-final">
+/* Root cause of the empty space in scanner hover notes: an earlier rule,
+   ".scanner-hover-tooltip:not(.scanner-pair-hover)", locks the box to a fixed
+   176x176 square (width/min-width/max-width/min-height all 176px !important).
+   Its ":not()" selector carries a higher specificity than the plain
+   ".scanner-hover-tooltip" used by every later "final" patch in this file, so
+   none of those later max-width/width fixes ever actually reached the real
+   tooltip element -- the square kept winning regardless of how short the note
+   was (Carry, Agree, a single pillar) or how long (the Pair note: Composite +
+   Led by + Carry). Selector below matches ".scanner-hover-tooltip" twice, which
+   ties that specificity and wins on being last in the document, so the box now
+   hugs its content -- no forced minimum height, no leftover space once the
+   writing stops -- instead of being forced into a fixed square either way. */
+.scanner-hover-tooltip.scanner-hover-tooltip{
+  width:max-content!important;
+  min-width:0!important;
+  max-width:320px!important;
+  min-height:0!important;
+  height:auto!important;
+  box-sizing:border-box!important;
+  padding:8px 10px!important;
+}
+@media(max-width:700px){
+  .scanner-hover-tooltip.scanner-hover-tooltip{max-width:280px!important;}
+}
+</style>
+
+<style id="scanner-pair-tip-square-final">
+/* The fit-content fix above is correct for short single-line notes (Carry,
+   Agree, a lone pillar) but wrong for the pair hover, which always has a
+   title + composite line + two driver boxes -- letting it hug its widest
+   line stretched it into a short wide rectangle. Pinning this one to a
+   fixed width (instead of max-content) forces the driver text to wrap,
+   so height grows with the content and the box reads as square instead
+   of a thin bar. Scoped to .scanner-pair-hover only -- the short notes
+   elsewhere keep hugging their content as intended. */
+.scanner-hover-tooltip.scanner-hover-tooltip.scanner-pair-hover{
+  width:230px!important;
+  max-width:230px!important;
+  min-width:230px!important;
+  border-radius:10px!important;
+}
+.scanner-hover-tooltip b{font-family:'Inter',system-ui,sans-serif!important;font-style:normal!important;text-decoration:none!important;font-weight:700!important;}
+</style>
+
+<style id="scanner-tooltip-readable-and-consistent-final">
+/* Requested fix: the hover tooltips (pair name, Agree, Led by, and each small
+   FND/YLD/CB/POS/WOW/SSN/RSK card) were bolding a few individual numbers or
+   words inside a sentence while leaving the rest of that same sentence plain --
+   e.g. "composite +8.6" bold but "from neutral" not, or a driver's name+points
+   bold but its explanation not. That read as arbitrary. Body text now stays a
+   single consistent weight throughout; only the small section labels (kicker)
+   and the headline value (title) act as headers, same as before. Font sizes
+   are also bumped up a notch -- 8.5-10.5px was too small to read comfortably. */
+.scanner-hover-tooltip .stt-note,
+.scanner-hover-tooltip .stt-driver,
+.scanner-hover-tooltip .stt-driver span{
+  font-weight:400!important;
+}
+.scanner-hover-tooltip .stt-note b,
+.scanner-hover-tooltip .stt-title b,
+.scanner-hover-tooltip .stt-kicker b{
+  font-weight:400!important;
+  color:inherit!important;
+}
+.scanner-hover-tooltip .stt-kicker{font-size:10.5px!important;}
+.scanner-hover-tooltip .stt-title{font-size:12px!important;line-height:1.35!important;}
+.scanner-hover-tooltip .stt-note{font-size:12px!important;line-height:1.45!important;}
+.scanner-hover-tooltip .stt-driver{font-size:12px!important;line-height:1.45!important;}
+.scanner-hover-tooltip .stt-driver-name{display:block!important;color:#eef1ee!important;font-weight:700!important;}
+.scanner-hover-tooltip .stt-driver span{font-size:11.5px!important;line-height:1.4!important;}
+</style>
+
+<style id="scanner-pair-hover-compact-final">
+/* Requested: the pair-name hover box (composite / delta / led-by) was tall
+   enough to cover the table rows underneath it. Widening it slightly so the
+   "led by" lines wrap less, and tightening the line-height/margins/padding,
+   keeps the text readable at the same 12px size while using noticeably less
+   vertical space. */
+.scanner-hover-tooltip.scanner-hover-tooltip.scanner-pair-hover{
+  width:270px!important;
+  max-width:270px!important;
+  min-width:270px!important;
+  padding:7px 9px!important;
+}
+.scanner-hover-tooltip.scanner-pair-hover .stt-title{margin-bottom:2px!important;}
+.scanner-hover-tooltip.scanner-pair-hover .stt-note{margin-top:2px!important;line-height:1.3!important;}
+.scanner-hover-tooltip.scanner-pair-hover .stt-drivers{margin-top:3px!important;padding-top:3px!important;}
+.scanner-hover-tooltip.scanner-pair-hover .stt-driver{margin-top:2px!important;line-height:1.3!important;}
+.scanner-hover-tooltip.scanner-pair-hover .stt-driver:first-child{margin-top:0!important;}
+.scanner-hover-tooltip .stt-pill-row{font-size:12px!important;line-height:1.3!important;color:var(--text-faint)!important;white-space:nowrap!important;}
+.scanner-hover-tooltip .stt-pill-row b{color:#eef1ee!important;font-weight:700!important;}
+</style>
+<style id="v51-economic-surprise-index-fit-screen">
+/* Requested: (1) drop the colored heat-map pill behind the rank table's Score
+   column -- plain bold white text instead, matching the currency column next to
+   it. (2) get the whole Economic Surprise Index tab (gauges + rank table + trend
+   chart) to fit inside one screen with no scrolling, on desktop-width viewports. */
+#tab-raw .surprise-rank-row .surprise-rank-score{
+  color:var(--text)!important;
+  font-weight:800!important;
+  font-family:'IBM Plex Mono',monospace!important;
+  background:none!important;
+  padding:0!important;
+  min-width:0!important;
+  border-radius:0!important;
+}
+#tab-raw .surprise-rank-row span:first-child{color:var(--text)!important;font-weight:700!important;}
+
+#tab-raw{height:calc(100dvh - var(--twp-header-offset,84px))!important;overflow:hidden!important;}
+#tab-raw .surprise-fit-wrap{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;}
+#tab-raw .surprise-gauge-card{flex:0 0 auto;margin-bottom:0!important;padding:10px 12px!important;}
+#tab-raw .surprise-gauge-body{flex-wrap:nowrap!important;align-items:stretch;}
+#tab-raw .surprise-gauge-grid{grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:7px!important;flex:1 1 auto!important;}
+#tab-raw .surprise-gauge{padding:8px 5px 7px!important;}
+#tab-raw .surprise-gauge-ccy{font-size:11.5px!important;}
+#tab-raw .surprise-gauge-val{font-size:15px!important;margin-top:-3px!important;}
+#tab-raw .surprise-gauge-chip{font-size:8.5px!important;padding:2px 5px!important;margin-top:3px!important;}
+#tab-raw .surprise-rank-table{flex:0 0 190px!important;}
+#tab-raw .surprise-rank-head,#tab-raw .surprise-rank-row{padding:5px 9px!important;}
+@media(max-width:1100px){
+  #tab-raw{height:auto!important;overflow:visible!important;}
+  #tab-raw .surprise-fit-wrap{height:auto!important;}
+  #tab-raw .surprise-gauge-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #tab-raw .surprise-gauge-body{flex-wrap:wrap!important;}
+}
+</style>
+<style id="v52-economic-surprise-index-banded-score-and-composite-match">
+/* Requested: color the rank table's Score number itself (not a pill/background)
+   using the same red/neutral/green bands the gauges below already use for their
+   Beating/Near Forecast/Missing chip (<=35 red, >=60 green, otherwise neutral
+   white) -- so e.g. CAD 71% reads green and GBP 22% reads red at a glance. */
+#tab-raw .surprise-rank-score.surprise-rank-score-pos{color:var(--bullish-strong)!important;}
+#tab-raw .surprise-rank-score.surprise-rank-score-neg{color:var(--bearish-strong)!important;}
+
+/* Requested: make the Surprise Strength trend chart match the Overview page's
+   Composite Strength · 90D card exactly -- same fixed size instead of stretching
+   to fill the tab, and the currency legend wrapping into two rows of four
+   (top/bottom) instead of a lopsided 6-then-2. */
+#tab-raw{height:auto!important;overflow:visible!important;}
+#tab-raw .surprise-fit-wrap{height:auto!important;min-height:0;}
+</style>
+<style id="v53-economic-surprise-index-circular-heatmap-gauges">
+/* Requested: restyle the Surprise Index gauges as flat full-circle dials (red-grey-blue
+   diverging track, needle+ball marker, no individual card border/background) and bring
+   back a colour-coded heat-map pill on the rank table's Score column -- reusing the
+   original unused .heat-chip styling from way earlier in the file instead of the plain
+   green/red text bands v52 introduced. Matches the reference dashboard screenshot he
+   provided. Layered last on purpose so it wins over v51/v52's competing !important rules
+   on this same tab without editing those blocks. */
+#tab-raw .surprise-gauge{background:none!important;border:none!important;padding:8px 6px 6px!important;}
+#tab-raw .surprise-gauge-val{margin-top:-2px!important;}
+/* Requested: 4-across / 2-row layout (four gauges above, four below) instead of the
+   cramped 8-in-a-row grid v51 forced to make everything fit one screen -- that
+   screen-fit height constraint was already undone by v52, so nothing needs 8 columns
+   anymore. Sizing scaled back up to match. */
+#tab-raw .surprise-gauge-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px 12px!important;}
+#tab-raw .surprise-gauge-ccy{font-size:15px!important;}
+#tab-raw .surprise-gauge-val{font-size:23px!important;}
+#tab-raw .surprise-gauge-chip{font-size:11.5px!important;padding:3px 9px!important;margin-top:6px!important;}
+#tab-raw .surprise-gauge-head .ccy-flag{width:20px!important;height:14px!important;}
+@media(max-width:900px){
+  #tab-raw .surprise-gauge-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+#tab-raw .surprise-rank-row .heat-chip{
+  min-width:56px!important;
+  padding:3px 9px!important;
+  border-radius:5px!important;
+  font-family:'IBM Plex Mono',monospace!important;
+  font-weight:800!important;
+  font-size:12.5px!important;
+}
+#tab-raw .surprise-rank-row span:first-child{color:var(--text)!important;font-weight:700!important;}
+</style>
+<style id="v54-economic-surprise-index-fit-screen-tight">
+/* Requested: get the whole tab (gauges + rank table + trend chart) to fit one screen
+   again with no scrolling by default, and pack everything tight -- no dead gaps
+   between the gauge cards. v52 had reverted #tab-raw back to height:auto/overflow:
+   visible (to fix the trend chart), which is what let the section grow past one
+   screen again. Restoring the fixed-viewport-height wrapper here, but keeping this
+   version's bigger 4x2 gauge grid and letting the trend chart flex to fill whatever
+   height is left over instead of forcing 8-across tiny gauges like the old v51 did. */
+#tab-raw{height:calc(100dvh - var(--twp-header-offset,84px))!important;overflow:hidden!important;}
+#tab-raw .surprise-fit-wrap{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:6px!important;}
+#tab-raw .surprise-gauge-card{flex:0 0 auto!important;margin-bottom:0!important;padding:8px 10px!important;}
+#tab-raw .surprise-gauge-body{flex-wrap:nowrap!important;align-items:stretch!important;gap:10px!important;}
+#tab-raw .surprise-gauge-grid{gap:6px 8px!important;}
+#tab-raw .surprise-gauge{padding:5px 4px 4px!important;}
+#tab-raw .surprise-gauge-ccy{font-size:13.5px!important;}
+#tab-raw .surprise-gauge-val{font-size:20px!important;}
+#tab-raw .surprise-rank-table{flex:0 0 180px!important;}
+#tab-raw .surprise-rank-head,#tab-raw .surprise-rank-row{padding:4px 9px!important;}
+@media(max-width:1100px){
+  #tab-raw{height:auto!important;overflow:visible!important;}
+  #tab-raw .surprise-fit-wrap{height:auto!important;}
+  #tab-raw .surprise-gauge-body{flex-wrap:wrap!important;}
+  #tab-raw .surprise-gauge-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+</style>
+<style id="v55-economic-surprise-index-compress-and-chart-visible">
+/* Requested: still too much dead space between the gauges, and the trend line chart
+   underneath was getting squeezed too short to read clearly. Capping the gauge card's
+   height and shrinking its internal padding/gaps so the 8 dials sit close together
+   (matching how tight the reference screenshot's grid is), which frees up real height
+   for the chart -- given a guaranteed minimum height below so the line itself always
+   stays legible instead of flexing down to almost nothing when the window is short. */
+#tab-raw .surprise-gauge-card{max-height:220px!important;padding:6px 10px!important;}
+#tab-raw .surprise-gauge-body{gap:8px!important;}
+#tab-raw .surprise-gauge-grid{gap:4px 6px!important;}
+#tab-raw .surprise-gauge{padding:4px 3px 3px!important;}
+#tab-raw .surprise-gauge-ccy{font-size:12.5px!important;}
+#tab-raw .surprise-gauge-val{font-size:18px!important;margin-top:-2px!important;}
+#tab-raw .surprise-gauge-chip{margin-top:4px!important;}
+#tab-raw .surprise-rank-table{flex:0 0 170px!important;}
+#tab-raw .surprise-rank-head,#tab-raw .surprise-rank-row{padding:3px 8px!important;}
+@media(max-width:1100px){
+  #tab-raw .surprise-gauge-card{max-height:none!important;}
+}
+</style>
+<style id="v56-economic-surprise-index-fix-overflow-squeeze">
+/* Bug fix: the previous pass capped .surprise-gauge-card at max-height:220px, which is
+   nowhere near enough room for a 4-across/2-row grid of these bigger circular gauges
+   (each gauge, with its currency label + value + chip, needs roughly 190-210px of real
+   height -- two rows of that is 400px+). With the card's height hard-capped below its
+   actual content height, the second row was overflowing/getting clipped -- that's the
+   "squeezed second row" bug, not a spacing preference. Removing the cap so the gauge
+   card takes exactly the height its content needs, and letting the whole tab scroll
+   (instead of hard-clipping via overflow:hidden) as a safety net on shorter screens, so
+   nothing ever gets visually squeezed or chopped off again -- fitting one screen is a
+   nice-to-have, never at the cost of clipping the gauges or the trend line. */
+#tab-raw{overflow-y:auto!important;overflow-x:hidden!important;}
+#tab-raw .surprise-gauge-card{max-height:none!important;}
+</style>
+<style id="v57-economic-surprise-index-cap-gauge-size">
+/* Real root cause of the "huge gauges / everything squeezed" screenshot he sent: the
+   gauge SVG was set to width:100% with no cap, so each dial stretched to fill its
+   entire grid column -- and on his actual (wide) dashboard content area, one quarter
+   of that width is enormous, nothing like the compact ~150px dials in the reference
+   image. Because the SVG's height scales with its width (fixed aspect ratio), that
+   also blew up the gauge section's total height, which is what pushed the page past
+   one screen and left the trend chart cramped at the bottom -- one bug, two visible
+   symptoms. Capping each dial to a fixed compact width (matching the reference's
+   proportions) fixes both: the gauges go back to a sane size, and the whole section
+   shrinks back down so the chart underneath gets its room back. */
+#tab-raw .surprise-gauge-svg{max-width:148px!important;margin:0 auto!important;}
+#tab-raw .surprise-gauge-val{font-size:22px!important;}
+#tab-raw .surprise-gauge-ccy{font-size:14px!important;}
+</style>
+<style id="v58-economic-surprise-index-tight-pack-inline-labels">
+/* Follow-up now that ccy/pct are drawn inside the SVG and the chip is dropped: the
+   gauge div is just a bare circle now, so it can sit much closer to its neighbours
+   than when it had a label above and a value+chip stacked below eating vertical
+   room. Tightening the grid gap and the gauge's own padding so they pack in close,
+   matching the reference. */
+#tab-raw .surprise-gauge{padding:2px!important;}
+#tab-raw .surprise-gauge-grid{gap:4px 18px!important;}
+#tab-raw .surprise-gauge-card{padding:10px 14px!important;}
+</style>
+<style id="v59-economic-surprise-index-bigger-fixed-size-no-dead-gaps">
+/* The gauge grid was still set to grid-template-columns:1fr each (stretch to fill the
+   row), so on his actual wide dashboard each column was much wider than the 148px-
+   capped circle sitting inside it -- that's the "tiny dots floating in a big dark
+   background" he's seeing: empty column background on every side of every gauge, not
+   a gap problem. Switching to fixed-width columns sized to the gauge itself removes
+   that per-gauge dead space entirely (the column IS the gauge, no slack), and bumping
+   the size up means they're comfortably sized rather than tiny -- while staying
+   packed close together as one solid block instead of stretching to fill whatever
+   width happens to be available. */
+#tab-raw .surprise-gauge-grid{grid-template-columns:repeat(4,200px)!important;justify-content:flex-start!important;flex:0 0 auto!important;gap:2px 16px!important;}
+#tab-raw .surprise-gauge-svg{max-width:200px!important;}
+@media(max-width:1100px){
+  #tab-raw .surprise-gauge-grid{grid-template-columns:repeat(2,minmax(140px,200px))!important;}
+}
+</style>
+<style id="v60-economic-surprise-index-closer-gauges-smaller-chart">
+/* Requested: pack the gauges closer still, and shrink the trend chart card -- both
+   the header text and the plotted area were bigger than they need to be relative to
+   the (now much more compact) gauge section above it. */
+#tab-raw .surprise-gauge-grid{gap:2px 6px!important;}
+</style>
+<style id="v65-economic-surprise-index-final-clean-layout">
+/* CLEANUP: v51 through v64 each re-declared .ss-card/.ss-head/.ss-legend-row/.ss-chart/
+   .ss-chart svg with competing !important values (fixed heights, flex:1 vs flex:0,
+   width:100% vs width:auto, an aspect-ratio lock with margin:auto centering, etc).
+   That last combination -- aspect-ratio:580/520 + width:auto + margin:auto inside a
+   flex:1 container -- is what caused the chart to render far narrower than its card
+   and centered, leaving big dead gutters on both sides (only one side was visible in
+   the cropped screenshot). Rather than layer a 15th override, removing every ss-*
+   rule from v51-v64 above and replacing them all with this single block so there is
+   exactly one place that controls this chart's size -- predictable, no more hidden
+   interactions between a dozen old passes. Behavior: card sits flush top-left (no
+   centering), full width of its container, normal card chrome (border + panel
+   background on head/legend, matching Composite Strength), SVG always fills 100% of
+   the card's own width with no aspect-ratio lock and no auto-margins. */
+#tab-raw .ss-card{
+  background:linear-gradient(180deg,rgba(255,255,255,.026),transparent 74%),var(--panel)!important;
+  border:1px solid var(--border)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  border-radius:9px!important;
+  max-width:600px!important;
+  width:100%!important;
+  margin:0!important;
+  flex:0 0 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+#tab-raw .ss-head{
+  background:transparent!important;
+  border-bottom:1px solid var(--border)!important;
+  flex:0 0 auto!important;
+  padding:13px 15px 11px!important;
+}
+#tab-raw .ss-legend-row{
+  background:transparent!important;
+  border-bottom:1px solid var(--border)!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:5px 13px!important;
+  flex:0 0 auto!important;
+  padding:7px 12px 5px!important;
+}
+#tab-raw .ss-legend{flex:0 0 calc(25% - 10px)!important;font-size:12px!important;font-weight:700!important;}
+#tab-raw .ss-chart{
+  background:#0b0d0b!important;
+  flex:0 0 auto!important;
+  display:block!important;
+  padding:6px 10px 8px!important;
+  border-radius:0 0 8px 8px;
+}
+#tab-raw .ss-chart svg{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  flex:0 0 auto!important;
+}
+@media(max-width:820px){#tab-raw .ss-legend{flex:0 0 calc(50% - 8px)!important;}}
+</style>
+<style id="v66-economic-surprise-index-rank-table-far-right">
+/* Round 1: pushed the rank table flush to the row's true right edge with margin-left:auto.
+   On an actual wide screen that put a big gap between it and the gauges (JPY/CHF), reading as
+   disconnected rather than "part of the same panel". Round 2 (this rule): a modest fixed gap
+   instead of auto -- keeps the table pulled visibly away from the last gauge column (so it
+   still reads as its own block, the original ask) without stranding it off at the far edge of
+   a wide browser window. */
+#tab-raw .surprise-rank-table{margin-left:28px!important;}
+</style>
+<style id="v67-name-gate-and-greeting">
+/* Lightweight "who's watching" gate, requested separately from the Team email/password
+   unlock system above -- this has nothing to do with edit permissions, it's just a one-time
+   "what's your name" so the dashboard can greet whoever's looking at it. Stored in
+   localStorage per browser, so it only asks again if that storage gets cleared (or a
+   different browser/device opens the dashboard) -- not on every page refresh. */
+#twpNameGate{position:fixed;inset:0;z-index:9999;background:rgba(6,7,6,.86);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+#twpNameGate .twp-name-gate-card{background:var(--panel);border:1px solid var(--border);padding:28px 30px;width:min(340px,86vw);text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+#twpNameGate .twp-name-gate-brand{color:var(--bullish);font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:13px;letter-spacing:.14em;margin-bottom:10px;}
+#twpNameGate .twp-name-gate-title{color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;}
+#twpNameGate .twp-name-gate-sub{color:var(--text-dim);font-size:12.5px;margin-bottom:16px;}
+#twpNameGate .twp-name-gate-input{width:100%;box-sizing:border-box;background:#0b0d0b;border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:Inter,system-ui,sans-serif;}
+#twpNameGate .twp-name-gate-input:focus{outline:none;border-color:var(--bullish);}
+#twpNameGate .twp-name-gate-btn{width:100%;background:var(--bullish);color:#06110b;border:none;padding:10px 12px;font-weight:800;font-size:13.5px;letter-spacing:.02em;cursor:pointer;font-family:Inter,system-ui,sans-serif;}
+#twpNameGate .twp-name-gate-btn:hover{filter:brightness(1.08);}
+/* A real third flex child of .page-head, sitting centered between the title block and the
+   GH clock block in that same sticky header bar -- not a separate row, not an overlay. It
+   takes flex:1 so it's always exactly centered in the remaining space regardless of how
+   wide the title or clock area are. Shown as two stacked lines (greeting, then session
+   line) rather than one long horizontal line. */
+.twp-greeting-banner{flex:1 1 auto;min-width:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px 8px;font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:12px;color:var(--amber);text-align:center;line-height:1.35;}
+.twp-greeting-banner .twp-greeting-line1,.twp-greeting-banner .twp-greeting-line2{transition:opacity .3s ease;max-width:100%;}
+.twp-greeting-banner .twp-greeting-line1.fade,.twp-greeting-banner .twp-greeting-line2.fade{opacity:0;}
+.twp-greeting-banner .twp-greeting-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--bullish);margin-right:6px;vertical-align:middle;animation:twpPulseDot 2.4s ease-in-out infinite;}
+@keyframes twpPulseDot{0%,100%{opacity:1;}50%{opacity:.35;}}
+@media (max-width:700px){ .twp-greeting-banner{display:none;} } /* header stacks to block layout on mobile -- see .page-head{display:block} above; skip rather than misplace it there */
+</style>
+<script id="v67-name-gate-and-greeting-js">
+// One-time "what's your name" gate + a PERSISTENT, self-updating time-of-day/session
+// greeting. Independent of the Team email/password unlock box (that's still for who's
+// allowed to EDIT) -- this is just so the dashboard can greet whoever's watching it.
+// It's inserted as a real third flex child of .page-head -- the same sticky header bar
+// that already holds the page title on the left and the GH clock on the right -- sitting
+// centered in the space between them, shown as two stacked lines. Because it's flex:1 in
+// normal layout (not an overlay), it can never cover the tabs, tables, or anything else on
+// screen.
+// Uses the same Africa/Accra clock (= UTC, so it doubles as the FX session clock) that the
+// header's GH time already runs on. The name is stored in localStorage so it only asks
+// once per browser, not on every refresh. It re-renders on an interval so its wording
+// always matches the current hour/session, and swaps to a fresh line periodically so it
+// doesn't feel static while it sits there.
+function twpAccraHour(){
+  try{
+    var fmt=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',hour:'2-digit',hour12:false});
+    return parseInt(fmt.format(new Date()),10);
+  }catch(e){ return new Date().getHours(); }
+}
+function twpDayBucket(hour){
+  return (hour>=5&&hour<12)?'morning':(hour>=12&&hour<17)?'afternoon':(hour>=17&&hour<21)?'evening':'night';
+}
+// Accra local time == UTC, so these hour ranges double directly as standard FX session hours.
+function twpSessionTag(hour){
+  var sydney=(hour>=21||hour<6), tokyo=(hour>=0&&hour<9), london=(hour>=7&&hour<16), ny=(hour>=12&&hour<21);
+  if(london&&ny) return 'the London/New York overlap';
+  if(tokyo&&london) return 'the Tokyo/London overlap';
+  if(sydney&&tokyo) return 'the Sydney/Tokyo overlap';
+  if(ny) return 'New York session';
+  if(london) return 'London session';
+  if(tokyo) return 'Tokyo session';
+  if(sydney) return 'Sydney session';
+  return 'the lull between sessions';
+}
+function twpGreetingPrefix(bucket,name){
+  var pools={
+    morning:['Good morning, '+name,'Morning, '+name,'Rise and grind, '+name],
+    afternoon:['Good afternoon, '+name,'Afternoon, '+name,"What's up, "+name],
+    evening:['Good evening, '+name,'Evening, '+name,"What's up, "+name],
+    night:["It's late, "+name,'Still up, '+name+'?','Burning the midnight oil, '+name+'?']
+  };
+  var list=pools[bucket];
+  return list[Math.floor(Math.random()*list.length)];
+}
+function twpSessionLine(session){
+  var lines=[
+    "It's "+session+" — any trade on your radar?",
+    "We're in "+session+" right now.",
+    session.charAt(0).toUpperCase()+session.slice(1)+" is live — worth a scan of the dashboard.",
+    "Currently "+session+". Anything you're watching?"
+  ];
+  return lines[Math.floor(Math.random()*lines.length)];
+}
+// Returns the two lines separately now, instead of one joined string, so they render as
+// two stacked lines: line1 is the time-of-day greeting, line2 is the session comment.
+function twpBuildGreeting(name){
+  var hour=twpAccraHour();
+  var line1=twpGreetingPrefix(twpDayBucket(hour),name);
+  var session=twpSessionTag(hour);
+  var line2=twpSessionLine(session);
+  return {line1:line1,line2:line2};
+}
+var twpGreetingName=null, twpGreetingState={hour:null};
+function twpRenderGreeting(force){
+  var el=document.getElementById('twpGreetingBanner');
+  if(!el||!twpGreetingName) return;
+  var hour=twpAccraHour();
+  if(!force && hour===twpGreetingState.hour && Math.random()<0.5) return; // keep some variety even within the same hour
+  twpGreetingState.hour=hour;
+  var l1=el.querySelector('.twp-greeting-line1'), l2=el.querySelector('.twp-greeting-line2');
+  var next=twpBuildGreeting(twpGreetingName);
+  l1.classList.add('fade'); l2.classList.add('fade');
+  setTimeout(function(){
+    l1.textContent=next.line1;
+    l2.textContent=next.line2;
+    l1.classList.remove('fade'); l2.classList.remove('fade');
+  },300);
+}
+function twpShowGreetingPanel(name){
+  twpGreetingName=name;
+  if(document.getElementById('twpGreetingBanner')) return;
+  try{ if(sessionStorage.getItem('twp_greeting_hidden')==='1') return; }catch(e){}
+  var pageHead=document.querySelector('.page-head');
+  if(!pageHead||pageHead.children.length<2) return; // fail quietly if that header's markup ever changes shape
+  var el=document.createElement('div');
+  el.id='twpGreetingBanner';
+  el.className='twp-greeting-banner';
+  el.innerHTML='<div class="twp-greeting-line1"><span class="twp-greeting-dot"></span></div><div class="twp-greeting-line2"></div>';
+  pageHead.insertBefore(el,pageHead.children[1]); // between the title block (child 0) and the Ready/GH clock block (was child 1)
+  var msg=twpBuildGreeting(name);
+  var l1=el.querySelector('.twp-greeting-line1'), l2=el.querySelector('.twp-greeting-line2');
+  l1.appendChild(document.createTextNode(msg.line1));
+  l2.textContent=msg.line2;
+}
+function twpShowNameGateIfNeeded(){
+  var name=null;
+  try{ name=localStorage.getItem('twp_visitor_name'); }catch(e){}
+  if(name){ twpShowGreetingPanel(name); }
+  else{
+    var overlay=document.createElement('div');
+    overlay.id='twpNameGate';
+    overlay.innerHTML='<div class="twp-name-gate-card">'+
+      '<div class="twp-name-gate-brand">TWP</div>'+
+      '<div class="twp-name-gate-title">Welcome</div>'+
+      '<div class="twp-name-gate-sub">What should we call you?</div>'+
+      '<input id="twpNameGateInput" class="twp-name-gate-input" type="text" maxlength="24" placeholder="Your name" autocomplete="off"/>'+
+      '<button id="twpNameGateBtn" type="button" class="twp-name-gate-btn">Continue</button>'+
+    '</div>';
+    document.body.appendChild(overlay);
+    var input=document.getElementById('twpNameGateInput'), btn=document.getElementById('twpNameGateBtn');
+    if(input) input.focus();
+    function submit(){
+      var v=(input.value||'').trim().slice(0,24);
+      if(!v){ input.focus(); return; }
+      try{ localStorage.setItem('twp_visitor_name',v); }catch(e){}
+      if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      twpShowGreetingPanel(v);
+    }
+    if(btn) btn.onclick=submit;
+    if(input) input.addEventListener('keydown',function(e){ if(e.key==='Enter') submit(); });
+  }
+  // Keep the panel live: re-check every 60s so it always reflects the current hour/session,
+  // and refresh its wording every ~4 minutes so it doesn't sit static while it stays on screen.
+  setInterval(function(){ twpRenderGreeting(false); },60000);
+  setInterval(function(){ twpRenderGreeting(true); },240000);
+}
+twpShowNameGateIfNeeded();
+</script>
+</html>
