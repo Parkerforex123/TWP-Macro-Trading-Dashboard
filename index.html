@@ -13175,4 +13175,47 @@ function twpShowNameGateIfNeeded(){
 }
 twpShowNameGateIfNeeded();
 </script>
+<style id="v68-scanner-sticky-header-seam-fix">
+/* Requested: scrolling down the Trade Scanner table (e.g. after filtering to short-side
+   setups) showed a thin sliver of gap right at the sticky header's edge, with whatever had
+   scrolled past underneath faintly bleeding through it. Root cause: this table combines a
+   vertically-sticky header row with horizontally-sticky frozen columns on top of
+   border-collapse:collapse -- that specific combination has a well-known rendering bug in
+   Chromium browsers where the collapsed borders don't repaint cleanly under a sticky cell,
+   leaving a hairline gap along the header's edge during scroll. Switching to
+   border-collapse:separate with zero spacing keeps every visual border (each cell already
+   carries its own border-bottom) but paints per-cell instead of as one shared/collapsed grid
+   line, which is what a sticky position needs to render solid with no seam. */
+#tab-scanner table.scanner-table{border-collapse:separate!important;border-spacing:0!important;}
+</style>
+<style id="v69-scanner-sticky-header-solid-slab">
+/* The v68 fix (border-collapse:separate) helped, but the real gap has the same root cause
+   that Pair Ranking already hit and fixed for good in "pair-ranking-sticky-v4-solid-strip"
+   above: sticking each <th> individually (this table's original approach) leaves the header
+   built out of several separately-positioned pieces, and a scrolling row can peek through
+   the seams between them for a frame or two. Pair Ranking's fix was to stop sticking the
+   individual cells for the vertical axis and instead stick the whole <thead> as ONE opaque
+   slab, with a covering pseudo-element sized slightly larger than the slab itself so there's
+   no fractional-pixel edge left uncovered. Porting that same pattern here.
+   The frozen left columns (Idea/Pair/Score/7D) are a second, independent axis -- those still
+   need their own position:sticky (for LEFT, when scrolling right), which is untouched below. */
+#tab-scanner .scanner-table thead{
+  position:sticky!important;top:var(--twp-header-offset,56px)!important;z-index:70!important;
+  background:var(--panel2)!important;isolation:isolate!important;margin-top:-1px!important;
+}
+#tab-scanner .scanner-table thead:before{
+  content:"";position:absolute;left:-2px;right:-2px;top:-2px;bottom:-2px;
+  background:var(--panel2);z-index:-1;
+  box-shadow:0 1px 0 var(--border),0 4px 10px rgba(0,0,0,.16);
+  pointer-events:none;
+}
+#tab-scanner .scanner-table thead tr{position:static!important;background:transparent!important;}
+#tab-scanner .scanner-table th{position:static!important;box-shadow:none!important;}
+/* Frozen left columns keep their own sticky (horizontal-only) positioning -- independent
+   of the vertical slab above, and still required for the scroll-right freeze to work. */
+#tab-scanner .scanner-table th:nth-child(2),#tab-scanner .scanner-table th:nth-child(3),
+#tab-scanner .scanner-table th:nth-child(4),#tab-scanner .scanner-table th:nth-child(5){
+  position:sticky!important;z-index:8!important;background:var(--panel2)!important;
+}
+</style>
 </html>
