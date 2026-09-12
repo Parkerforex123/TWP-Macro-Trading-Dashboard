@@ -5549,8 +5549,8 @@ function pairCbStanceLabel(base,quote){
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Weights: Fundamentals 55% + Yield 20% + CB Stance 10% + COT 8% + Risk Sentiment 5% + Seasonality 2%
-  return 100*(0.55*fundTerm+0.20*yieldTerm+0.10*cbTerm+0.08*cotTerm+0.05*riskTerm+0.02*seasTerm); }
+  // Weights: Fundamentals 50% + Yield 18% + CB Stance 14% + COT 10% + Risk Sentiment 5% + Seasonality 3%
+  return 100*(0.50*fundTerm+0.18*yieldTerm+0.14*cbTerm+0.10*cotTerm+0.05*riskTerm+0.03*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
@@ -5569,18 +5569,18 @@ function alignmentFor(ccy){
   });
   var y2s=y2Calc(ccy).score;
   // Vote weights below are kept proportional to the current composite hierarchy
-  // (Fundamentals 55% + Yield 20% + CB Stance 10% + COT 8% + Risk 5% + Seasonality 2%),
-  // matching pairAlignmentFor. Yield=20, COT split 4+4=8 (net position + weekly change), Risk=5.
-  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 20);
-  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 4);
-  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 4);
-  // Central-bank stance is a full 10-point alignment vote, matching its 10%
+  // (Fundamentals 50% + Yield 18% + CB Stance 14% + COT 10% + Risk 5% + Seasonality 3%),
+  // matching pairAlignmentFor. Yield=18, COT split 5+5=10 (net position + weekly change), Risk=5.
+  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 18);
+  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 5);
+  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 5);
+  // Central-bank stance is a full 14-point alignment vote, matching its 14%
   // contribution to the composite score. HIKE agrees with a bullish composite;
   // CUT agrees with a bearish composite; HOLD contributes no directional vote.
   var cbAlign=cbStanceScore(ccy);
-  vote(cbAlign>0?1:(cbAlign<0?-1:0), 10);
+  vote(cbAlign>0?1:(cbAlign<0?-1:0), 14);
   var seasVal=seasonalitySign(d);
-  vote(seasVal>0?1:(seasVal<0?-1:0), 2);
+  vote(seasVal>0?1:(seasVal<0?-1:0), 3);
   var riskVal=riskTermFor(ccy);
   vote(riskVal>0?1:(riskVal<0?-1:0), 5);
   if(dirSign===0 || totalW===0) return null;
@@ -5818,8 +5818,8 @@ function pairCompositeFor(base, quote){
   var cbPair=(cbBase-cbQuote)/2;
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Shared macro hierarchy: Fundamentals 55% + Yield 20% + CB Stance 10% + COT 8% + Risk Sentiment 5% + Seasonality 2%.
-  return 100*(0.55*fundPair+0.20*yieldTerm+0.10*cbPair+0.08*cotTerm+0.05*riskPair+0.02*seasPair);
+  // Shared macro hierarchy: Fundamentals 50% + Yield 18% + CB Stance 14% + COT 10% + Risk Sentiment 5% + Seasonality 3%.
+  return 100*(0.50*fundPair+0.18*yieldTerm+0.14*cbPair+0.10*cotTerm+0.05*riskPair+0.03*seasPair);
 }
 
 
@@ -5857,8 +5857,8 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 55% of the total model. Each underlying indicator keeps its
-  // existing importance inside that pillar; the pillar is normalized to 55 total points.
+  // Fundamentals occupy 50% of the total model. Each underlying indicator keeps its
+  // existing importance inside that pillar; the pillar is normalized to 50 total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
     var d=DATA[ccy]||{};
@@ -5873,24 +5873,24 @@ function pairAlignmentFor(base, quote, score){
     });
   });
   if(fundWeightSum>0){
-    total += 55;
-    agree += 55*(fundAgreeWeight/fundWeightSum);
+    total += 50;
+    agree += 50*(fundAgreeWeight/fundWeightSum);
   }
-  // Yield = 20% of the model.
+  // Yield = 18% of the model.
   var y=pairYieldCalc(base,quote).score;
-  if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,20);
-  // COT = 8%. The pair-level COT engine already combines current positioning + weekly flow.
+  if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,18);
+  // COT = 10%. The pair-level COT engine already combines current positioning + weekly flow.
   var cot=cotPairRegime(base,quote);
-  if(!cot.insufficient && Number(cot.combined)!==0) vote(Number(cot.combined)>0?1:-1,8);
-  // CB stance = 10%. HOLD remains exactly neutral/zero by design.
+  if(!cot.insufficient && Number(cot.combined)!==0) vote(Number(cot.combined)>0?1:-1,10);
+  // CB stance = 14%. HOLD remains exactly neutral/zero by design.
   var cbDiff=cbStanceScore(base)-cbStanceScore(quote);
-  if(cbDiff!==0) vote(cbDiff>0?1:-1,10);
+  if(cbDiff!==0) vote(cbDiff>0?1:-1,14);
   // Risk = 5%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
   if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,5);
-  // Seasonality = 2%.
+  // Seasonality = 3%.
   var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
-  if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,2);
+  if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,3);
   return total ? Math.round((agree/total)*100) : null;
 }
 
@@ -5923,12 +5923,12 @@ function pairCompositeBreakdown(base, quote){
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
   var terms=[
-    {name:"Fundamentals",pts:100*0.55*fundPair},
-    {name:"Yield",pts:100*0.20*yieldTerm},
-    {name:"CB stance",pts:100*0.10*cbPair},
-    {name:"COT flow",pts:100*0.08*cotTerm},
+    {name:"Fundamentals",pts:100*0.50*fundPair},
+    {name:"Yield",pts:100*0.18*yieldTerm},
+    {name:"CB stance",pts:100*0.14*cbPair},
+    {name:"COT flow",pts:100*0.10*cotTerm},
     {name:"Risk sentiment",pts:100*0.05*riskPair},
-    {name:"Seasonality",pts:100*0.02*seasPair}
+    {name:"Seasonality",pts:100*0.03*seasPair}
   ];
   return {total:terms.reduce(function(s,t){return s+t.pts;},0), terms:terms};
 }
@@ -5969,15 +5969,15 @@ function scannerDriverBreakdown(base,quote){
   // These are the exact seven evidence columns shown in the scanner:
   // Fundamentals, Yield, CB stance, Position, WoW, Seasonality, Risk.
   // Their contribution is expressed in composite-score points, preserving the
-  // model's existing 55/20/10/8/2/5 hierarchy while splitting the COT 8% into
+  // model's existing 50/18/14/10/3/5 hierarchy while splitting the COT 10% into
   // its existing 75% position / 25% WoW components.
-  var fundPts=55*((fundBase-fundQuote)/2);
-  var yieldPts=yScore==null?0:2*yScore;
-  var cbPts=10*((cbBase-cbQuote)/2);
-  var posPts=cot.insufficient?0:0.06*cot.posScore;
-  var flowPts=cot.insufficient?0:0.02*cot.flowScore;
+  var fundPts=50*((fundBase-fundQuote)/2);
+  var yieldPts=yScore==null?0:1.8*yScore;
+  var cbPts=14*((cbBase-cbQuote)/2);
+  var posPts=cot.insufficient?0:0.075*cot.posScore;
+  var flowPts=cot.insufficient?0:0.025*cot.flowScore;
   var riskPts=5*((riskBase-riskQuote)/2);
-  var seasPts=2*((seasBase-seasQuote)/2);
+  var seasPts=3*((seasBase-seasQuote)/2);
 
   function push(list,name,pts,label){
     var n=Number(pts)||0;
@@ -6020,12 +6020,12 @@ function scannerDriverBreakdown(base,quote){
   var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
   var out=[];
   function push(name,pts,label){out.push({name:name,pts:Number(pts)||0,label:label||'Neutral'});}
-  push('Fundamentals',55*((fundBase-fundQuote)/2),pillarBias((fundBase-fundQuote)*100));
-  push('Yield',yScore==null?0:2*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
-  push('CB stance',10*((cbBase-cbQuote)/2),pairCbStanceLabel(base,quote));
-  push('Position',cot.insufficient?0:0.06*cot.posScore,cot.posLabel);
-  push('WoW',cot.insufficient?0:0.02*cot.flowScore,cot.flowLabel);
-  push('Seasonality',2*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
+  push('Fundamentals',50*((fundBase-fundQuote)/2),pillarBias((fundBase-fundQuote)*100));
+  push('Yield',yScore==null?0:1.8*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
+  push('CB stance',14*((cbBase-cbQuote)/2),pairCbStanceLabel(base,quote));
+  push('Position',cot.insufficient?0:0.075*cot.posScore,cot.posLabel);
+  push('WoW',cot.insufficient?0:0.025*cot.flowScore,cot.flowLabel);
+  push('Seasonality',3*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
   push('Risk sentiment',5*((riskBase-riskQuote)/2),riskPairState(base,quote));
   return out;
 }
