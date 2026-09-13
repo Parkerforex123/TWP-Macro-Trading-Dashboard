@@ -3953,6 +3953,11 @@ var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=true, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
 var scannerFilters=["All"], scannerFavorites=[], scannerExpandedPair=null;
+// Set true right before a renderScanner() call that should draw-in the big "Overall
+// trend" chart (opening the expanded panel, or switching its 1M/3M/1Y/ALL range) --
+// consumed once per render then reset, so unrelated re-renders (star click, search,
+// live-input edits) while the panel is already open don't replay the animation.
+var scannerBigTrendAnimate=false;
 try{
   var __savedScannerFav=JSON.parse(localStorage.getItem('twp_scanner_favorites')||'[]');
   if(Array.isArray(__savedScannerFav)) scannerFavorites=__savedScannerFav;
@@ -5573,6 +5578,14 @@ function animateScannerTrends(){
     });
   });
 }
+function animateBigTrend(){
+  var lines=document.querySelectorAll('#tab-scanner .pair-big-trend-line');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
 function animateSurpriseStrengthChart(){
   var lines=document.querySelectorAll('#tab-raw .ss-series');
   requestAnimationFrame(function(){
@@ -5702,7 +5715,7 @@ function scannerPairTooltipHtml(base,quote,score){
     '<div class="stt-drivers"><div class="stt-plain-label">led by</div>'+leadHtml+'</div>';
 }
 
-function scannerPairExpandedHtml(pair){
+function scannerPairExpandedHtml(pair,animate){
   var base=pair.slice(0,3), quote=pair.slice(3,6);
   var score=pairCompositeFor(base,quote);
   var t=pairTrend30d(pair);
@@ -5715,7 +5728,7 @@ function scannerPairExpandedHtml(pair){
       '<div class="scanner-expanded-grid">'+
         '<div class="scanner-expanded-trend"><div class="scanner-expanded-label"><span>Overall trend</span><div class="range-switch">'+["1M","3M","1Y","ALL"].map(function(r){
         return '<button type="button" class="range-btn scanner-trend-range-btn'+(expandedRange===r?" active":"")+'" data-scanner-range="'+r+'">'+r+'</button>';
-      }).join("")+'</div></div><div class="scanner-expanded-trend-wrap">'+bigChart(pair,expandedRange)+'</div><div class="scanner-expanded-trend-note">'+esc(t.label)+(t.delta==null?'':' · change '+(t.delta>0?'+':'')+t.delta+' points')+'</div></div>'+
+      }).join("")+'</div></div><div class="scanner-expanded-trend-wrap">'+bigChart(pair,expandedRange,animate)+'</div><div class="scanner-expanded-trend-note">'+esc(t.label)+(t.delta==null?'':' · change '+(t.delta>0?'+':'')+t.delta+' points')+'</div></div>'+
         '<div class="scanner-expanded-macro">'+pairMacroSummaryHtml(pair,score)+'<div class="scanner-expanded-rate"><span>Carry</span><b>'+esc(carryText)+'</b><span>2Y spread</span><b>'+(y.current==null?'—':((y.current>0?'+':'')+Math.round(y.current)+'bp'))+'</b></div></div>'+
       '</div>'+
     '</div></td></tr>';
@@ -5842,7 +5855,7 @@ function renderScanner(animateTrend){
       '<td class="scanner-carry" data-label="Carry" style="'+carryStyle+'" data-scanner-tip="'+esc(carryTip)+'">'+carryTxt+'</td>'+
       '<td class="scanner-ledby" data-label="Led by"'+(ledByTip?' data-scanner-tip="'+esc(ledByTip)+'"':'')+'><span class="scanner-driver-wrap">'+(isNeutral?'—':scannerLedByBoxes(p.base,p.quote,dir))+'</span></td>'+
       '</tr>';
-    if(scannerExpandedPair===p.pair){ rows += scannerPairExpandedHtml(p.pair); }
+    if(scannerExpandedPair===p.pair){ rows += scannerPairExpandedHtml(p.pair, scannerBigTrendAnimate); }
   }
   var filterDefs=[["Very Bullish","Very bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very bearish"]];
   var filterBtns=filterDefs.map(function(fb){
@@ -5866,6 +5879,7 @@ function renderScanner(animateTrend){
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
   document.getElementById("tab-scanner").innerHTML=html;
   if(animateTrend) animateScannerTrends();
+  if(scannerBigTrendAnimate){ animateBigTrend(); scannerBigTrendAnimate=false; }
 
   var recalcBtn=document.getElementById("recalcBtn");
   if(recalcBtn){ recalcBtn.onclick=async function(){
@@ -5964,6 +5978,7 @@ function renderScanner(animateTrend){
     if(!pairCell) return;
     var pr=this.dataset.pair;
     scannerExpandedPair=(scannerExpandedPair===pr)?null:pr;
+    if(scannerExpandedPair) scannerBigTrendAnimate=true;
     renderScanner();
   }; }
   var closeBtns=document.querySelectorAll('[data-scanner-close]');
@@ -5972,6 +5987,7 @@ function renderScanner(animateTrend){
   for(var srb=0;srb<scannerRangeBtns.length;srb++){ scannerRangeBtns[srb].onclick=function(e){
     e.stopPropagation();
     expandedRange=this.dataset.scannerRange;
+    scannerBigTrendAnimate=true;
     renderScanner();
   }; }
 }
@@ -8790,7 +8806,7 @@ function bindBigPairTrendHover(){
   }
 }
 
-function bigChart(pair, rangeSel){
+function bigChart(pair, rangeSel, animate){
   var w=620,h=165,pad=26;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
   var days=filterDaysByRange(allDays, rangeSel);
@@ -8827,14 +8843,14 @@ function bigChart(pair, rangeSel){
     var anchor = i===0 ? "start" : (i===days.length-1 ? "end" : "middle");
     labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
-  var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
   // Matches the same zigzag treatment just applied to the small Trade Scanner Trend
   // spark -- point-to-point straight segments instead of the Catmull-Rom curve, so
   // this bigger "Overall trend" chart reads the same way the small one does now,
   // instead of looking like a different, smoothed-over version of the same data.
   var linePath=linearPath(pts);
   var baseY=h-pad;
-  var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  // No shaded area fill anymore -- same "remove the zone around the line" request
+  // applied to the small spark now applied here too. Just the axis line and the trend.
   var histDots=days.map(function(dt,i){
     return '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="'+(i===days.length-1?2.8:2.0)+'" fill="'+colStrong+'" fill-opacity="'+(i===days.length-1?0.96:0.38)+'" stroke="var(--panel2)" stroke-width="0.7" pointer-events="none"/>';
   }).join('');
@@ -8845,14 +8861,15 @@ function bigChart(pair, rangeSel){
   }).join('');
   // No persistent live-today ring: the line stays clean until the user hovers it.
   var liveDot = '';
+  // Draw-in animation: same stroke-dasharray/dashoffset technique as the small spark,
+  // triggered by animateBigTrend() on the next frame after this markup lands in the DOM.
+  var lineLen=0;
+  for(var bi=1;bi<pts.length;bi++){ var bdx=pts[bi][0]-pts[bi-1][0], bdy=pts[bi][1]-pts[bi-1][1]; lineLen+=Math.sqrt(bdx*bdx+bdy*bdy); }
+  var lenStr=(lineLen*1.02).toFixed(1);
+  var lineStyle=animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .85s ease;"':'';
   return '<svg class="pair-big-trend" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="100%" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
-    '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
-      '<stop offset="0%" stop-color="'+colStrong+'" stop-opacity="0.16"/>'+
-      '<stop offset="100%" stop-color="'+colStrong+'" stop-opacity="0"/>'+
-    '</linearGradient></defs>'+
     '<line x1="'+pad+'" y1="'+baseY+'" x2="'+(w-pad)+'" y2="'+baseY+'" stroke="var(--border)"/>'+
-    '<path d="'+areaPath+'" fill="url(#'+gradId+')" stroke="none" pointer-events="none"/>'+
-    '<path d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'+
+    '<path class="pair-big-trend-line" d="'+linePath+'" fill="none" stroke="'+colStrong+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"'+lineStyle+'/>'+
     liveDot+
     '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+colStrong+'" stroke-width="1.8"/></g>'+labels+hitPts+
     '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-big-trend-hit pair-trend-hit"/>'+
@@ -8880,6 +8897,7 @@ function pairMacroSummaryHtml(pair, score){
   var overall=pairBandLabel(score);
   var baseData=DATA[base]||{}, quoteData=DATA[quote]||{};
   var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
+  var dir=score>0?1:score<0?-1:0;
 
   function clean(v){ return String(v==null?'':v).replace(/\s+/g,' ').trim(); }
   function num(v){ return v==null?'':String(v); }
@@ -8915,13 +8933,6 @@ function pairMacroSummaryHtml(pair, score){
   var facts=allIndicators();
   var supportive=facts.filter(function(x){return x.effect>0;}).sort(function(a,b){return b.weight-a.weight;});
   var opposing=facts.filter(function(x){return x.effect<0;}).sort(function(a,b){return b.weight-a.weight;});
-  function factText(x){
-    if(!x) return '';
-    var n=clean(x.ind.name), a=num(x.ind.actual), f=num(x.ind.forecast);
-    if(a && f && f!=='-' && f!=='—') return x.ccy+' '+n+' '+a+' vs '+f+' forecast';
-    if(a) return x.ccy+' '+n+' '+a;
-    return x.ccy+' '+n+' is '+clean(x.ind.bias||'neutral').toLowerCase();
-  }
   function groupName(g){ return g==='growth'?'growth':g==='inflation'?'inflation':'labour'; }
   function groupScore(f,g){
     var x=f[g]; return x.max?(100*x.raw/x.max):0;
@@ -8931,12 +8942,39 @@ function pairMacroSummaryHtml(pair, score){
     arr.sort(function(a,b){return Math.abs(b[1])-Math.abs(a[1]);});
     return arr[0];
   }
+  function weakestGroup(f){
+    var arr=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];
+    arr.sort(function(a,b){return a[1]-b[1];});
+    return arr[0];
+  }
+  // Rewritten to talk about fundamentals as a WHOLE -- the relative growth/inflation/labour
+  // picture between the two currencies -- instead of cherry-picking one or two headline
+  // prints. The headline data (NFP, wage growth, etc.) is still what's feeding the score
+  // underneath, but the sentence itself now reads like a fundamentals verdict, not a
+  // single data point pretending to be the whole story.
   function topFundLine(){
-    if(!supportive.length && !opposing.length) return 'The macro data is unusually quiet here: nothing in growth, inflation or labour is creating a strong relative impulse yet.';
-    var s=strongestGroup(score>=0?fb:fq), leader=score>=0?base:quote;
-    if(Math.abs(fundRel)<5) return 'The data is mixed rather than one-way. The strongest information is coming from '+leader+' '+groupName(s[0])+', but the gap is not wide enough to call this a clean fundamental trend.';
-    if(supportive.length>=2) return 'The real story is the breadth of the data rather than one headline. '+factText(supportive[0])+' and '+factText(supportive[1])+' are pulling the macro balance toward '+(supportive[0].effect>0?base:quote)+'.';
-    return 'The cleanest data signal is '+factText(supportive[0]||opposing[0])+', which is doing most of the work behind the relative fundamental call.';
+    if(!supportive.length && !opposing.length) return 'Fundamentals are quiet right now: nothing in growth, inflation or labour is creating a strong relative pull between '+base+' and '+quote+', so this leg of the case is background rather than conviction.';
+    if(Math.abs(fundRel)<5) return 'Fundamentals are mixed rather than one-way between '+base+' and '+quote+' -- there is no clean composite winner in growth, inflation or labour yet, so this pillar is not doing much of the work behind the score either way.';
+    var leader=fundRel>=0?base:quote, laggard=fundRel>=0?quote:base;
+    var leaderF=fundRel>=0?fb:fq, laggardF=fundRel>=0?fq:fb;
+    var leadStrong=strongestGroup(leaderF), lagWeak=weakestGroup(laggardF);
+    var closeness = Math.abs(fundRel)<15 ? 'a real but not overwhelming edge' : 'a clear edge';
+    var line=leader+"'s fundamentals are the stronger leg here, giving it "+closeness+' over '+laggard+'. '+groupName(leadStrong[0]).charAt(0).toUpperCase()+groupName(leadStrong[0]).slice(1)+' is doing most of the heavy lifting on the '+leader+' side, while '+laggard+"'s softest spot right now is "+groupName(lagWeak[0])+'.';
+    var leaderG=groupScore(leaderF,'g'), leaderInf=groupScore(leaderF,'inf'), lagG=groupScore(laggardF,'g'), lagInf=groupScore(laggardF,'inf');
+    if(leaderG>lagG && leaderInf>lagInf) line+=' Growth and inflation are both running hotter on the '+leader+' side than on '+laggard+"'s, and that combination is exactly what gives a central bank room to stay higher for longer instead of rushing toward cuts.";
+    else if(leaderG>lagG) line+=' It is the growth side of the ledger doing the work here more than inflation, so the case leans on the real-economy story rather than a hawkish rate argument.';
+    else if(leaderInf>lagInf) line+=" It is the inflation side carrying it — sticky prices on the "+leader+' side keep the higher-for-longer argument alive even if growth itself is not the headline driver.';
+    return line;
+  }
+  function cbNarrative(){
+    var bMove=(DATA[base]&&DATA[base].nextMove||'HOLD').toUpperCase();
+    var qMove=(DATA[quote]&&DATA[quote].nextMove||'HOLD').toUpperCase();
+    var cbLabel=pairCbStanceLabel(base,quote);
+    var bTxt=base+' is '+(bMove==='HOLD'?'on hold':'leaning toward a '+bMove.toLowerCase());
+    var qTxt=quote+' is '+(qMove==='HOLD'?'on hold':'leaning toward a '+qMove.toLowerCase());
+    if(cbLabel==='Neutral') return 'Central bank guidance is not separating the pair much: '+bTxt+' while '+qTxt+'. That makes this a background pillar rather than a driver right now.';
+    var winner=pillarSign(cbLabel)>0?base:quote;
+    return 'Central bank guidance favors '+winner+' too — '+bTxt+' while '+qTxt+'. That is one more pillar reinforcing the case rather than fighting it.';
   }
   function rateNarrative(){
     if(yScore==null) return 'The rate layer is incomplete, so the yield market cannot yet be used as a strong confirmation signal.';
@@ -8944,7 +8982,7 @@ function pairMacroSummaryHtml(pair, score){
     if(Math.abs(bp)<5) return 'The 2Y spread is only '+(bp>=0?'+':'')+bp+'bp. That leaves the rate story almost flat, so this pair is being decided more by data and positioning than by a clear yield advantage.';
     var winner=bp>0?base:quote;
     var reinforces=(score>0&&bp>0)||(score<0&&bp<0);
-    if(reinforces) return 'Rates are helping the same side as the composite: the 2Y spread sits at '+(bp>0?'+':'')+bp+'bp in favour of '+winner+'. That matters because the data story is not standing alone; the rate market is backing it.';
+    if(reinforces) return 'Rates are backing the same side as the composite: the 2Y spread sits at '+(bp>0?'+':'')+bp+'bp in favour of '+winner+'. The data story is not standing alone here — the rate market agrees with it.';
     return 'Rates are the awkward part of the picture. The 2Y spread is '+(bp>0?'+':'')+bp+'bp in favour of '+winner+', but the broader composite leans the other way. That is the tension worth respecting rather than smoothing over.';
   }
   function cotNarrative(){
@@ -8973,6 +9011,29 @@ function pairMacroSummaryHtml(pair, score){
     if(sl==='Neutral') return 'Seasonality is neutral. There is no meaningful calendar tailwind to lean on, which keeps the trade anchored to the live macro picture.';
     return 'Seasonality is '+sl.toLowerCase()+' for '+(seas>0?base:quote)+'. Think of it as timing rather than the reason for the trade: it can reinforce a move, but it should not overrule the macro evidence.';
   }
+  // Named after the same pillar labels used in the Trade Scanner's own Agree/Led by
+  // tooltips, so the currency named here as "the main driver" always matches what those
+  // tooltips already say -- no more disagreeing with your own table.
+  function driverProse(name){
+    var map={'Fundamentals':'fundamentals','Yield':'the rate differential','CB stance':'central bank stance','Position':'COT positioning','WoW':'the weekly COT flow','Seasonality':'seasonality','Risk sentiment':'risk sentiment'};
+    return map[name]||name.toLowerCase();
+  }
+  var leadDrivers=scannerLedByDrivers(base,quote,dir);
+  var mainDriverName=leadDrivers.length?leadDrivers[0].name:null;
+
+  var agreeCount=0, disagreeCount=0, neutralCount=0;
+  if(dir!==0){
+    var agreeLabels={
+      'Fundamentals':pillarBias(fundRel),
+      'Yield':yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'),
+      'CB stance':pairCbStanceLabel(base,quote),
+      'Position':cot.posLabel,'WoW':cot.flowLabel,
+      'Seasonality':seasonalityPairText(base,quote),'Risk sentiment':riskPairState(base,quote)
+    };
+    ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'].forEach(function(name){
+      var sg=pillarSign(agreeLabels[name]); if(sg===dir) agreeCount++; else if(sg===0) neutralCount++; else disagreeCount++;
+    });
+  }
 
   var conflicts=[];
   if(fundRel*score<0 && Math.abs(fundRel)>=7) conflicts.push('fundamentals');
@@ -8984,34 +9045,39 @@ function pairMacroSummaryHtml(pair, score){
   var side=sideName(), story=labelWord();
   var lead;
   if(side==='neither'){
-    lead='There is no clean hero in '+pair+'. The dashboard is reading a two-sided macro market, so the important question is which pillar breaks the balance first rather than forcing a directional story that the evidence does not support.';
+    lead='There is no clean hero in '+pair+' right now — the dashboard is reading a genuinely two-sided macro market. The important question is which pillar breaks the balance first, not forcing a directional story the evidence does not support.';
   } else {
-    lead=pair+' is '+story[0]+': '+side+' has the upper hand, but the quality of that edge depends on whether the other macro pillars confirm it. The score tells you who is in front; the read below explains why.';
+    var driverPhrase=mainDriverName?driverProse(mainDriverName):'the overall blend';
+    lead=pair+' is '+story[0]+': '+side+' has the upper hand'+(agreeCount?', with '+agreeCount+' of 7 pillars backing it':'')+', led by '+driverPhrase+'. The score tells you who is in front — here is why, and what would need to shift to change it.';
   }
 
+  var watchLine=(side!=='neither'&&mainDriverName)
+    ? ('Keep your eyes on '+driverProse(mainDriverName)+' — it is the main thing driving the score right now. Improvement there reinforces '+side+"'s case further; deterioration there is the first place this thesis would actually crack.")
+    : '';
   var divergence;
   if(conflicts.length===0){
-    divergence='The pieces are broadly pulling in the same direction. That is the cleaner kind of setup: data, rates and the supporting layers are not fighting the main signal. The next risk is not contradiction, but a fresh piece of information strong enough to change that alignment.';
+    divergence='The pieces are broadly pulling in the same direction. That is the cleaner kind of setup: data, rates and the supporting layers are not fighting the main signal. '+(watchLine||'The next risk is not contradiction, but a fresh piece of information strong enough to change that alignment.');
   } else if(conflicts.length===1){
-    divergence='The important tension is '+conflicts[0]+'. That is where I would look first for divergence: if it keeps disagreeing while the headline score stays firm, the pair is carrying more internal conflict than the headline bias suggests.';
+    divergence='The one real tension is '+conflicts[0]+'. If it keeps disagreeing while the headline score stays firm, the pair is carrying more internal conflict than the headline bias suggests. '+watchLine;
   } else {
-    divergence='This is not a one-way macro story. '+conflicts.slice(0,3).join(', ')+' are not fully agreeing with the composite, so the quality of the signal matters more than the label. The best confirmation will come from the pillars moving back into alignment, not from a bigger score alone.';
+    divergence='This is not a one-way macro story. '+conflicts.slice(0,3).join(', ')+' are not fully agreeing with the composite, so the quality of the signal matters more than the label. '+watchLine;
   }
 
   var conclusion;
   if(side==='neither'){
-    conclusion='Bottom line: neutrality here is not a blank verdict. It means the market lacks a dominant macro force at this moment. Watch the next meaningful data or rate repricing for the first clean separation between the two currencies.';
+    conclusion='Bottom line: neutrality here is not a blank verdict. It means the market lacks a dominant macro force at this moment — watch the next meaningful data or rate repricing for the first clean separation between the two currencies.';
   } else if(conflicts.length===0){
-    conclusion='Bottom line: '+side+' has the cleaner macro story. The signal becomes more trustworthy if the same side keeps winning in the data and the rate market while positioning does not become excessively stretched.';
+    conclusion='Bottom line: '+side+' has the cleaner macro story right now. It gets more trustworthy the longer '+driverProse(mainDriverName||'Fundamentals')+' keeps winning without positioning getting overstretched.';
   } else if(conflicts.length<=2){
-    conclusion='Bottom line: '+side+' still leads, but it is not a free pass. The disagreement above is the part of the dashboard that can invalidate the simple headline bias, so it deserves more attention than the score itself.';
+    conclusion='Bottom line: '+side+' still leads, but it is not a free pass — the disagreement above is the part of the dashboard that can actually invalidate the simple headline bias, so it deserves more attention than the score itself.';
   } else {
-    conclusion='Bottom line: the headline bias is weaker than it looks because several pillars are pulling against it. This is the type of pair where waiting for confirmation can be more valuable than interpreting every small move as a new trend.';
+    conclusion='Bottom line: the headline bias is weaker than it looks, because several pillars are pulling against it. This is the kind of pair where waiting for confirmation beats treating every small move as a new trend.';
   }
 
   var blocks=[
     lead,
     topFundLine(),
+    cbNarrative(),
     rateNarrative(),
     cotNarrative(),
     riskNarrative()+ ' '+seasonNarrative(),
@@ -9022,8 +9088,8 @@ function pairMacroSummaryHtml(pair, score){
   return '<div class="pair-macro-summary">'+
     '<div class="pair-macro-summary-head"><span>Macro read · analyst brief</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
     '<div class="pair-macro-lead">'+esc(blocks[0])+'</div>'+
-    blocks.slice(1,6).map(function(t){return '<div class="pair-macro-line">'+esc(t)+'</div>';}).join('')+
-    '<div class="pair-macro-verdict">'+esc(blocks[6])+'</div>'+
+    blocks.slice(1,blocks.length-1).map(function(t){return '<div class="pair-macro-line">'+esc(t)+'</div>';}).join('')+
+    '<div class="pair-macro-verdict">'+esc(blocks[blocks.length-1])+'</div>'+
   '</div>';
 }
 
