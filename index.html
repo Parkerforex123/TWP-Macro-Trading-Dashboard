@@ -1618,7 +1618,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 
 <style id="v33-readable-cot-and-yield-fit">
 /* COT: scores are discrete -6..+6, so the dashboard never prints noisy decimals. */
-#tab-detail .stat-row .mono#statCot-USD,#tab-detail .stat-row .mono[id^="statCot-"]{font-variant-numeric:tabular-nums;}
+#tab-detail .stat-row .mono[id^="statCotNet-"],#tab-detail .stat-row .mono[id^="statCotWow-"]{font-variant-numeric:tabular-nums;}
 
 /* Rate Differential Monitor + Bond Yield Spread: keep the whole board visible on a normal desktop viewport. */
 #tab-yield2y .y2-grid>.card{min-height:0!important;}
@@ -4418,8 +4418,9 @@ function getCotScore(ccy){ return cotScoreValue(ccy); }
 
 // ---- Pair-level COT Regime -------------------------------------------------
 // This is a SEPARATE relative layer on top of the individual currency COT score
-// above. The individual score above is untouched and still contributes the
-// existing 10% COT weight to each currency's overall macro score.
+// above. The individual score above is untouched, but its two legs (net position
+// and weekly change) now contribute separately -- 8% and 7% -- to each currency's
+// overall macro score, instead of being summed first and weighted as one 10% block.
 //
 // The individual score answers "what are institutions doing to this currency
 // on its own" (compressed to +/-3 per leg, +/-6 total, intentionally coarse).
@@ -4915,9 +4916,13 @@ function pairCbStanceLabel(base,quote){
 }
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
-  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotTerm=getCotScore(ccy)/6, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Weights: Fundamentals 50% + Yield 18% + CB Stance 14% + COT 10% + Risk Sentiment 5% + Seasonality 3%
-  return 100*(0.50*fundTerm+0.18*yieldTerm+0.14*cbTerm+0.10*cotTerm+0.05*riskTerm+0.03*seasTerm); }
+  // COT is split into two independently-weighted legs instead of being summed first:
+  // Net Position (direction only, +/-3) and Weekly Change (magnitude-banded, +/-3 via
+  // cotWowMagnitudeScore -- bigger weekly contract swings score higher instead of every
+  // nonzero change flattening to the same +/-1).
+  var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotNetTerm=cotNetOnlyScore(ccy)/3, cotWowTerm=cotWowMagnitudeScore(ccy)/3, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
+  // Weights: Fundamentals 45% + Yield 18% + CB Stance 14% + COT Net Position 8% + COT Weekly Change 7% + Risk Sentiment 5% + Seasonality 3%
+  return 100*(0.45*fundTerm+0.18*yieldTerm+0.14*cbTerm+0.08*cotNetTerm+0.07*cotWowTerm+0.05*riskTerm+0.03*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
@@ -4936,11 +4941,11 @@ function alignmentFor(ccy){
   });
   var y2s=y2Calc(ccy).score;
   // Vote weights below are kept proportional to the current composite hierarchy
-  // (Fundamentals 50% + Yield 18% + CB Stance 14% + COT 10% + Risk 5% + Seasonality 3%),
-  // matching pairAlignmentFor. Yield=18, COT split 5+5=10 (net position + weekly change), Risk=5.
+  // (Fundamentals 45% + Yield 18% + CB Stance 14% + COT Net Position 8% + COT Weekly Change 7%
+  // + Risk 5% + Seasonality 3%), matching pairAlignmentFor.
   if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 18);
-  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 5);
-  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 5);
+  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 8);
+  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 7);
   // Central-bank stance is a full 14-point alignment vote, matching its 14%
   // contribution to the composite score. HIKE agrees with a bullish composite;
   // CUT agrees with a bearish composite; HOLD contributes no directional vote.
@@ -5176,7 +5181,11 @@ function pairCompositeFor(base, quote){
   var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
   var y=pairYieldCalc(base,quote).score;
   var yieldTerm=(y==null?0:y/10);
-  var cotTerm=cotPairRegime(base,quote).combined/100;
+  // COT is split into its two existing components -- posScore (positioning) and
+  // flowScore (weekly flow) -- each independently weighted, instead of pre-blending
+  // them into .combined (which baked in a fixed 75/25 position/flow split).
+  var cotRegime=cotPairRegime(base,quote);
+  var cotPosTerm=cotRegime.posScore/100, cotWowTerm=cotRegime.flowScore/100;
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
@@ -5185,8 +5194,8 @@ function pairCompositeFor(base, quote){
   var cbPair=(cbBase-cbQuote)/2;
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Shared macro hierarchy: Fundamentals 50% + Yield 18% + CB Stance 14% + COT 10% + Risk Sentiment 5% + Seasonality 3%.
-  return 100*(0.50*fundPair+0.18*yieldTerm+0.14*cbPair+0.10*cotTerm+0.05*riskPair+0.03*seasPair);
+  // Shared macro hierarchy: Fundamentals 45% + Yield 18% + CB Stance 14% + COT Position 8% + COT Weekly Change 7% + Risk Sentiment 5% + Seasonality 3%.
+  return 100*(0.45*fundPair+0.18*yieldTerm+0.14*cbPair+0.08*cotPosTerm+0.07*cotWowTerm+0.05*riskPair+0.03*seasPair);
 }
 
 
@@ -5224,8 +5233,8 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 50% of the total model. Each underlying indicator keeps its
-  // existing importance inside that pillar; the pillar is normalized to 50 total points.
+  // Fundamentals occupy 45% of the total model. Each underlying indicator keeps its
+  // existing importance inside that pillar; the pillar is normalized to 45 total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
     var d=DATA[ccy]||{};
@@ -5240,15 +5249,18 @@ function pairAlignmentFor(base, quote, score){
     });
   });
   if(fundWeightSum>0){
-    total += 50;
-    agree += 50*(fundAgreeWeight/fundWeightSum);
+    total += 45;
+    agree += 45*(fundAgreeWeight/fundWeightSum);
   }
   // Yield = 18% of the model.
   var y=pairYieldCalc(base,quote).score;
   if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,18);
-  // COT = 10%. The pair-level COT engine already combines current positioning + weekly flow.
+  // COT Position = 8%, COT Weekly Change = 7%. Voted separately instead of blending
+  // into .combined, so a pair with position and flow disagreeing shows that split
+  // instead of cancelling into one vote.
   var cot=cotPairRegime(base,quote);
-  if(!cot.insufficient && Number(cot.combined)!==0) vote(Number(cot.combined)>0?1:-1,10);
+  if(!cot.insufficient && Number(cot.posScore)!==0) vote(Number(cot.posScore)>0?1:-1,8);
+  if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,7);
   // CB stance = 14%. HOLD remains exactly neutral/zero by design.
   var cbDiff=cbStanceScore(base)-cbStanceScore(quote);
   if(cbDiff!==0) vote(cbDiff>0?1:-1,14);
@@ -5281,7 +5293,8 @@ function pairCompositeBreakdown(base, quote){
   var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
   var y=pairYieldCalc(base,quote).score;
   var yieldTerm=(y==null?0:y/10);
-  var cotTerm=cotPairRegime(base,quote).combined/100;
+  var cotRegime=cotPairRegime(base,quote);
+  var cotPosTerm=cotRegime.posScore/100, cotWowTerm=cotRegime.flowScore/100;
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
@@ -5290,10 +5303,11 @@ function pairCompositeBreakdown(base, quote){
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
   var terms=[
-    {name:"Fundamentals",pts:100*0.50*fundPair},
+    {name:"Fundamentals",pts:100*0.45*fundPair},
     {name:"Yield",pts:100*0.18*yieldTerm},
     {name:"CB stance",pts:100*0.14*cbPair},
-    {name:"COT flow",pts:100*0.10*cotTerm},
+    {name:"COT position",pts:100*0.08*cotPosTerm},
+    {name:"COT weekly change",pts:100*0.07*cotWowTerm},
     {name:"Risk sentiment",pts:100*0.05*riskPair},
     {name:"Seasonality",pts:100*0.03*seasPair}
   ];
@@ -5335,14 +5349,14 @@ function scannerDriverBreakdown(base,quote){
 
   // These are the exact seven evidence columns shown in the scanner:
   // Fundamentals, Yield, CB stance, Position, WoW, Seasonality, Risk.
-  // Their contribution is expressed in composite-score points, preserving the
-  // model's existing 50/18/14/10/3/5 hierarchy while splitting the COT 10% into
-  // its existing 75% position / 25% WoW components.
-  var fundPts=50*((fundBase-fundQuote)/2);
+  // Their contribution is expressed in composite-score points, matching the
+  // model's 45/18/14/8/7/5/3 hierarchy -- Position and WoW are independently
+  // weighted (8% / 7%) rather than pre-blended at a fixed 75/25 split.
+  var fundPts=45*((fundBase-fundQuote)/2);
   var yieldPts=yScore==null?0:1.8*yScore;
   var cbPts=14*((cbBase-cbQuote)/2);
-  var posPts=cot.insufficient?0:0.075*cot.posScore;
-  var flowPts=cot.insufficient?0:0.025*cot.flowScore;
+  var posPts=cot.insufficient?0:0.08*cot.posScore;
+  var flowPts=cot.insufficient?0:0.07*cot.flowScore;
   var riskPts=5*((riskBase-riskQuote)/2);
   var seasPts=3*((seasBase-seasQuote)/2);
 
@@ -5428,7 +5442,9 @@ function scannerAgreeTooltip(base,quote,dir){
   var names=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'], agree=0,disagree=0,neutral=0;
   names.forEach(function(name){var sg=pillarSign(labels[name]); if(sg===dir) agree++; else if(sg===0) neutral++; else disagree++;});
   var side=dir>0?'LONG':'SHORT';
-  return '<div class="stt-kicker">Agree</div><div class="stt-title">'+agree+' of 7 drivers agree with '+side+'</div><div class="stt-note">'+agree+' agree · '+disagree+' disagree · '+neutral+' take no side</div>';
+  // stt-note-strong (see scanner7dTooltip) -- bolds the whole counts line so it survives
+  // the later reset rule that otherwise flattens plain <b> back to font-weight 400.
+  return '<div class="stt-kicker">Agree</div><div class="stt-title">'+agree+' of 7 drivers agree with '+side+'</div><div class="stt-note"><b class="stt-note-strong">'+agree+' agree · '+disagree+' disagree · '+neutral+' take no side</b></div>';
 }
 function scannerPillarExplanation(base,quote,name,label){
   return '<div class="stt-pill-row"><b>'+esc(name)+': '+esc(label||'Neutral')+'</b></div>';
@@ -5697,8 +5713,29 @@ function scanner7dTooltip(base,quote,live){
   var d7=last7DayDelta(base+quote,live);
   if(d7.delta==null) return '<div class="stt-kicker">7D</div><div class="stt-note">No logged score at least 7 calendar days back yet.</div>';
   var prior=live-d7.delta;
-  var direction=d7.delta>0?'strengthened':d7.delta<0?'weakened':'was unchanged';
-  return '<div class="stt-kicker">7D</div><div class="stt-title">Score now '+esc(scannerScorePrecise(live))+' · prior '+esc(scannerScorePrecise(prior))+'</div><div class="stt-note">The '+(live>0?'LONG':live<0?'SHORT':'COMPOSITE')+' bias '+direction+' by '+(d7.delta>0?'+':'')+d7.delta+' points versus '+esc(d7.day)+'.</div>';
+  var titleHtml='<div class="stt-title">Score now '+esc(scannerScorePrecise(live))+' · prior '+esc(scannerScorePrecise(prior))+' from 7 days ago</div>';
+  // Neutral band (-7..+7): there's no long/short thesis to gain or lose conviction, so no
+  // strengthened/weakened language belongs here at all -- just the two numbers, plain.
+  if(Math.abs(Math.round(Number(live)||0))<=7){
+    return '<div class="stt-kicker">7D</div>'+titleHtml;
+  }
+  // "Strengthened" / "weakened" is relative to the CURRENT bias direction, not the raw
+  // sign of the delta. A SHORT pair (negative score) moving further negative is the short
+  // thesis gaining conviction (strengthened); the same pair drifting back toward zero is
+  // the short thesis fading (weakened) -- even though the raw number went UP in that case.
+  // Flipping sign entirely (e.g. -9 to +4) is a reversal, not a plain strengthen/weaken.
+  // Kept deliberately simple -- one short bolded line, no point-magnitude, no date string.
+  // stt-note-strong: a later stylesheet block deliberately flattens plain <b> tags
+  // inside .stt-note back to font-weight 400 (a prior fix for a different tooltip
+  // that was arbitrarily bolding random words mid-sentence). This whole line is
+  // meant to read bold, so it needs its own higher-specificity class to survive
+  // that reset rather than a bare <b>.
+  var noteText;
+  if((live>0)!==(prior>0) && prior!==0){ noteText='<b class="stt-note-strong">Flipped from '+(live>0?'short to long':'long to short')+'.</b>'; }
+  else if(d7.delta===0){ noteText='<b class="stt-note-strong">Unchanged.</b>'; }
+  else if(live>0){ noteText='<b class="stt-note-strong">The long has '+(d7.delta>0?'strengthened':'weakened')+'.</b>'; }
+  else { noteText='<b class="stt-note-strong">The short has '+(d7.delta<0?'strengthened':'weakened')+'.</b>'; }
+  return '<div class="stt-kicker">7D</div>'+titleHtml+'<div class="stt-note">'+noteText+'</div>';
 }
 function scannerTrendTooltip(base,quote,live){
   var t=pairTrend30d(base+quote), band=pairBandLabel(live), fromNeutral=Math.abs(live)>7?Math.abs(live)-7:0;
@@ -5764,10 +5801,16 @@ function renderScanner(animateTrend){
     var carry=scannerCarryPct(p.base,p.quote);
     var carryTxt=carry==null?"—":((carry>0?"+":"")+carry.toFixed(2)+"%");
     var carryStyle=carry==null?"color:var(--text-dim);":(carry>0?"color:var(--bullish-strong);":(carry<0?"color:var(--bearish-strong);":"color:var(--text-dim);"));
-    var carryTip=carry==null?"Policy-rate carry is unavailable because one of the two Currency Detail policy rates is missing.":
+    // stt-note-strong (see scanner7dTooltip / scannerAgreeTooltip) -- wrapped in the
+    // same kicker+note structure as the other scanner tooltips, with the whole
+    // sentence bolded so it actually renders bold instead of being flattened by
+    // the later reset rule that targets plain <b> inside .stt-note.
+    var carryTip=carry==null?'<div class="stt-kicker">Carry</div><div class="stt-note"><b class="stt-note-strong">Policy-rate carry is unavailable because one of the two Currency Detail policy rates is missing.</b></div>':
+      '<div class="stt-kicker">Carry</div><div class="stt-note"><b class="stt-note-strong">'+
       (carry>0 ? CCY_NAME[p.base]+' pays '+Math.abs(carry).toFixed(2)+' percentage points more in policy-rate carry than '+CCY_NAME[p.quote]+'.' :
        carry<0 ? CCY_NAME[p.quote]+' pays '+Math.abs(carry).toFixed(2)+' percentage points more in policy-rate carry than '+CCY_NAME[p.base]+'.' :
-       ((DATA[p.base]&&parseNum(DATA[p.base].interestRate)&&parseNum(DATA[p.base].interestRate).num>0) ? 'Both currencies pay '+Math.abs(carry).toFixed(2)+'% to hold, so neither has a carry advantage.' : 'Both policy rates are 0%, so neither currency pays a carry premium to hold.'));
+       ((DATA[p.base]&&parseNum(DATA[p.base].interestRate)&&parseNum(DATA[p.base].interestRate).num>0) ? 'Both currencies pay '+Math.abs(carry).toFixed(2)+'% to hold, so neither has a carry advantage.' : 'Both policy rates are 0%, so neither currency pays a carry premium to hold.'))+
+      '</b></div>';
     var isFav=scannerFavorites.indexOf(p.pair)!==-1;
     var scoreCls=pairScoreClass(p.score);
     rows += '<tr class="rowhover scanner-row" data-pair="'+p.pair+'">'+
@@ -8237,6 +8280,8 @@ function renderDetailBody(ccy, animate){
   var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
   var sectors=[["growth","Growth",f.g],["inflation","Inflation",f.inf],["labour","Labour",f.l]];
   var cotScore = getCotScore(ccy);
+  var cotNetScore = cotNetOnlyScore(ccy);
+  var cotWowScore = cotWowMagnitudeScore(ccy);
   var cbScore = cbStanceScore(ccy);
   var y2Score = y2Calc(ccy).score;
   var align = alignmentFor(ccy);
@@ -8253,7 +8298,8 @@ function renderDetailBody(ccy, animate){
       '<div class="stat-block">'+
         '<div class="stat-row"><span>Currency regime score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
         '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:190px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
-        '<div class="stat-row"><span>COT positioning score</span><span class="mono" id="statCot-'+ccy+'" style="'+numColor(cotScore)+'">'+(cotScore>0?"+":"")+cotScore+'</span></div>'+
+        '<div class="stat-row"><span>COT net position score</span><span class="mono" id="statCotNet-'+ccy+'" style="'+numColor(cotNetScore)+'">'+(cotNetScore>0?"+":"")+cotNetScore+'</span></div>'+
+        '<div class="stat-row"><span>COT weekly change score</span><span class="mono" id="statCotWow-'+ccy+'" style="'+numColor(cotWowScore)+'">'+(cotWowScore>0?"+":"")+cotWowScore+'</span></div>'+
         '<div class="stat-row"><span>CB stance score</span><span class="mono" id="statCb-'+ccy+'" style="'+numColor(cbScore)+'">'+(cbScore>0?"+":"")+cbScore+'</span></div>'+
         '<div class="stat-row"><span>Seasonality score</span><span class="mono" id="statSeason-'+ccy+'" style="'+numColor(seasonalitySign(d))+'">'+fmt(seasonalitySign(d))+'</span></div>'+
         '<div class="stat-row"><span>Risk sentiment contribution</span><span class="mono" id="statRisk-'+ccy+'" style="'+numColor(riskContributionFor(ccy))+'">'+(riskContributionFor(ccy)>0?"+":"")+riskContributionFor(ccy).toFixed(1)+'</span></div>'+
@@ -8487,12 +8533,27 @@ function last7DayDelta(key, liveVal){
 function dailyChangeCell(key, liveVal){
   var t=last7DayDelta(key, liveVal);
   if(t.delta==null){
-    return '<span class="mono day-delta day-delta-flat" title="Need a logged day at least 7 calendar days back to compare yet">&mdash;</span>';
+    return '<span class="mono day-delta day-delta-flat">&mdash;</span>';
   }
+  // Arrow glyph always shows the true raw direction (did the number go up or down).
+  // Color is different: it reflects whether this move STRENGTHENS or WEAKENS the pair's
+  // CURRENT bias, not the raw sign. A SHORT pair (negative score) drifting toward zero
+  // is fading (red) even though the raw number went up; the same pair going more negative
+  // is gaining conviction (green). A pair sitting in the Neutral band gets no color at all --
+  // a wobble around zero isn't confirming or fading anything. (The richer hover panel on
+  // this cell already explains the "strengthened/weakened" wording in full -- no separate
+  // native tooltip here to avoid two overlapping boxes on hover.)
   var symbol=t.dir==="up"?"\u25B2":(t.dir==="down"?"\u25BC":"\u2014");
-  var cls=t.dir==="up"?"day-delta-up":(t.dir==="down"?"day-delta-down":"day-delta-flat");
+  var cls;
+  if(t.dir==="flat" || pairBandLabel(liveVal)==="Neutral"){
+    cls="day-delta-flat";
+  } else if(liveVal>0){
+    cls=t.dir==="up"?"day-delta-up":"day-delta-down";
+  } else {
+    cls=t.dir==="down"?"day-delta-up":"day-delta-down";
+  }
   var deltaTxt=(t.delta>0?"+":"")+t.delta;
-  return '<span class="mono day-delta '+cls+'" title="Change vs score logged on '+t.day+' (7 calendar days ago)">'+symbol+' '+deltaTxt+'</span>';
+  return '<span class="mono day-delta '+cls+'">'+symbol+' '+deltaTxt+'</span>';
 }
 function pairTrend30d(pair){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
@@ -9411,7 +9472,8 @@ function updateComputed(){
   var txt=document.getElementById("gaugeScoreTxt-"+c); if(txt) txt.textContent=fmt(sc);
   var chip=document.getElementById("gaugeBiasChip-"+c); if(chip){ var lbl=bandLabel(sc); chip.className=chipClass(lbl); chip.textContent=lbl; }
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
-  var statCot=document.getElementById("statCot-"+c); if(statCot){ var cotNow=getCotScore(c); statCot.textContent=(cotNow>0?"+":"")+cotNow; statCot.setAttribute("style",numColor(cotNow)); }
+  var statCotNet=document.getElementById("statCotNet-"+c); if(statCotNet){ var cotNetNow=cotNetOnlyScore(c); statCotNet.textContent=(cotNetNow>0?"+":"")+cotNetNow; statCotNet.setAttribute("style",numColor(cotNetNow)); }
+  var statCotWow=document.getElementById("statCotWow-"+c); if(statCotWow){ var cotWowNow=cotWowMagnitudeScore(c); statCotWow.textContent=(cotWowNow>0?"+":"")+cotWowNow; statCotWow.setAttribute("style",numColor(cotWowNow)); }
   var statCb=document.getElementById("statCb-"+c); if(statCb){ var cbNow=cbStanceScore(c); statCb.textContent=(cbNow>0?"+":"")+cbNow; statCb.setAttribute("style",numColor(cbNow)); }
   var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=seasonalityScoreFmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
   var statRisk=document.getElementById("statRisk-"+c); if(statRisk){ var riskPtsNow=riskContributionFor(c); statRisk.textContent=(riskPtsNow>0?"+":"")+riskPtsNow.toFixed(1); statRisk.setAttribute("style",numColor(riskPtsNow)); }
@@ -11622,6 +11684,13 @@ body,html{background:var(--bg);}
 .scanner-hover-tooltip .stt-kicker b{
   font-weight:400!important;
   color:inherit!important;
+}
+/* 7D tooltip's direction line (scanner7dTooltip) is meant to read bold as a whole
+   sentence -- not the "bold one word mid-sentence" pattern the reset above exists
+   to prevent. Higher specificity (extra class) so it wins over that reset. */
+.scanner-hover-tooltip .stt-note b.stt-note-strong{
+  font-weight:800!important;
+  color:#f2f4f2!important;
 }
 .scanner-hover-tooltip .stt-kicker{font-size:10.5px!important;}
 .scanner-hover-tooltip .stt-title{font-size:12px!important;line-height:1.35!important;}
