@@ -5430,7 +5430,7 @@ function scannerLedByBoxes(base,quote,dir){
   }).join(' <span class="scanner-driver-sep">·</span> ');
 }
 function scannerAgreeTooltip(base,quote,dir){
-  if(!dir) return '<div class="stt-kicker">Agree</div><div class="stt-note">Composite is inside the neutral band. There is no side for a driver to agree with.</div>';
+  if(!dir) return '<div class="stt-kicker">Agree</div><div class="stt-note"><b class="stt-note-strong">Composite is inside the neutral band. There is no side for a driver to agree with.</b></div>';
   var fb=fundFor(base), fq=fundFor(quote), y=pairYieldCalc(base,quote).score, cot=cotPairRegime(base,quote);
   var labels={
     'Fundamentals':pillarBias((fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0)),
@@ -5450,11 +5450,14 @@ function scannerPillarExplanation(base,quote,name,label){
   return '<div class="stt-pill-row"><b>'+esc(name)+': '+esc(label||'Neutral')+'</b></div>';
 }
 function scannerDriverTooltip(base,quote,dir){
-  if(!dir) return '<div class="stt-kicker">Led by</div><div class="stt-note">Composite is inside the neutral band. There is no side for a driver to agree with.</div>';
+  if(!dir) return '<div class="stt-kicker">Led by</div><div class="stt-note"><b class="stt-note-strong">Composite is inside the neutral band. There is no side for a driver to agree with.</b></div>';
   var drivers=scannerLedByDrivers(base,quote,dir);
-  if(!drivers.length) return '<div class="stt-kicker">Led by</div><div class="stt-note">No clear main driver at the moment.</div>';
+  if(!drivers.length) return '<div class="stt-kicker">Led by</div><div class="stt-note"><b class="stt-note-strong">No clear main driver at the moment.</b></div>';
+  // Both the driver name+pts AND its explanation sentence are bolded white now (was just
+  // the name) -- same stt-note-strong-style fix, given its own selector below since this
+  // is a <span> without the .stt-note wrapper the other fixes target.
   return '<div class="stt-kicker">Led by</div>'+drivers.map(function(d){
-    return '<div class="stt-driver"><span class="stt-driver-name">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+' pts</span><span>'+esc(scannerDriverExplanation(base,quote,d))+'</span></div>';
+    return '<div class="stt-driver"><span class="stt-driver-name">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+' pts</span><span class="stt-driver-explain">'+esc(scannerDriverExplanation(base,quote,d))+'</span></div>';
   }).join('');
 }
 // Carry = the actual central bank interest rate differential between the two
@@ -5521,7 +5524,7 @@ function scannerGaugeBar(score, cls){
 // A tighter, straight-segment trend line (no bezier smoothing) so 14 days of history
 // reads as a compact zigzag instead of a long smooth snake.
 function scannerTrendSpark(pair,animate){
-  var w=92,h=25,pad=3;
+  var w=76,h=20,pad=2;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
   if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:11px;">&mdash;</span>';
   var loggedDays=trendDaysForKey(pair);
@@ -5533,11 +5536,16 @@ function scannerTrendSpark(pair,animate){
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){min-=5;max+=5;}
   var range=max-min;
   var pts=vals.map(function(v,i){var x=pad+(i/(vals.length-1))*(w-2*pad),y=h-pad-((v-min)/range)*(h-2*pad);return [x,y];});
-  var score=live==null?vals[vals.length-1]:live;
-  var col=score>=8?'var(--bullish)':score<=-8?'var(--bearish)':'var(--text-faint)';
-  var lineD=smoothPath(pts);
-  var baseY=(h-pad).toFixed(1);
-  var areaD=lineD+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
+  // Color now tracks the line's OWN move over the exact window it's drawing (first plotted
+  // point vs last), not the live score's absolute level -- the Score cell and Side badge
+  // already tell you which way the pair is biased right now, so coloring this line the same
+  // way was pure duplication. This way the Trend column answers a different question:
+  // is the score gaining ground (green) or losing it (red) over this window, regardless of
+  // which side it currently sits on. +-3 pts is the "did anything meaningfully move" band,
+  // matching the same threshold used for the strengthened/weakened wording elsewhere.
+  var trendDelta=vals[vals.length-1]-vals[0];
+  var col=trendDelta>=3?'var(--bullish)':trendDelta<=-3?'var(--bearish)':'var(--text-faint)';
+  var lineD=linearPath(pts);
   var lineLen=0;
   for(var li=1;li<pts.length;li++){ var dx=pts[li][0]-pts[li-1][0], dy=pts[li][1]-pts[li-1][1]; lineLen+=Math.sqrt(dx*dx+dy*dy); }
   var lenStr=(lineLen*1.2).toFixed(1);
@@ -5547,12 +5555,15 @@ function scannerTrendSpark(pair,animate){
     return '<circle class="pair-trend-hit-pt" cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="6" fill="transparent" stroke="transparent" pointer-events="all"></circle>';
   }).join('');
   var liveDot='';
+  // Delta label next to the line, same idea as the reference dashboard's small +9/-5 number
+  // beside each sparkline -- shows exactly what the color is reacting to (the move across
+  // this window, start point to end point), instead of making the reader guess at it.
+  var deltaLabel='<span class="scanner-trend-delta-label" style="margin-left:4px;font-size:10.5px;font-weight:700;color:'+col+';font-family:\'IBM Plex Mono\',monospace;">'+(trendDelta>0?'+':'')+Math.round(trendDelta)+'</span>';
   return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
-    '<path d="'+areaD+'" fill="'+col+'" fill-opacity="0.08" stroke="none" pointer-events="none"/>'+
     '<path class="pair-trend-line" d="'+lineD+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
     liveDot+
     '<g class="pair-trend-crosshair" opacity="0" pointer-events="none"><circle class="pair-trend-hover-dot" cx="'+pts[0][0].toFixed(1)+'" cy="'+pts[0][1].toFixed(1)+'" r="3.2" fill="var(--panel)" stroke="'+col+'" stroke-width="1.5"/></g>'+hitPts+
-    '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-trend-hit"/></svg>';
+    '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-trend-hit"/></svg>'+deltaLabel;
 }
 function animateScannerTrends(){
   var lines=document.querySelectorAll('#tab-scanner .pair-trend-line');
@@ -8780,7 +8791,7 @@ function bindBigPairTrendHover(){
 }
 
 function bigChart(pair, rangeSel){
-  var w=620,h=128,pad=26;
+  var w=620,h=165,pad=26;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
   var days=filterDaysByRange(allDays, rangeSel);
   if(days.length<2){
@@ -8817,7 +8828,11 @@ function bigChart(pair, rangeSel){
     labels += '<text x="'+x+'" y="'+(h-6)+'" font-size="'+(mobileView?'9':'10')+'" fill="var(--text-faint)" text-anchor="'+anchor+'" font-family="IBM Plex Mono, monospace">'+days[i].slice(5)+'</text>';
   }
   var gradId="areaGrad-"+pair.replace(/[^A-Za-z0-9]/g,"");
-  var linePath=smoothPath(pts);
+  // Matches the same zigzag treatment just applied to the small Trade Scanner Trend
+  // spark -- point-to-point straight segments instead of the Catmull-Rom curve, so
+  // this bigger "Overall trend" chart reads the same way the small one does now,
+  // instead of looking like a different, smoothed-over version of the same data.
+  var linePath=linearPath(pts);
   var baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
   var histDots=days.map(function(dt,i){
@@ -11691,6 +11706,24 @@ body,html{background:var(--bg);}
 .scanner-hover-tooltip .stt-note b.stt-note-strong{
   font-weight:800!important;
   color:#f2f4f2!important;
+}
+/* Led by driver names (scannerDriverTooltip) hit the exact same problem: the
+   ".stt-driver span" reset a few lines up is a span+class selector, which beats
+   the plain ".stt-driver-name" class rule below on specificity even though that
+   rule comes later in the file -- so the name was quietly rendering ash-gray and
+   normal weight instead of the bold white it's supposed to be. Repeating both
+   classes in one selector out-specifies that reset. */
+.scanner-hover-tooltip .stt-driver span.stt-driver-name{
+  color:#f5f7f5!important;
+  font-weight:800!important;
+}
+/* Driver explanation sentence (the second span, e.g. "3Y differential favors NZD
+   relative to CHF") gets the same bold-white treatment as the name now -- same
+   specificity trick, since it's also just a plain span inside .stt-driver and
+   would otherwise lose to the ".stt-driver span" reset above it. */
+.scanner-hover-tooltip .stt-driver span.stt-driver-explain{
+  color:#f5f7f5!important;
+  font-weight:800!important;
 }
 .scanner-hover-tooltip .stt-kicker{font-size:10.5px!important;}
 .scanner-hover-tooltip .stt-title{font-size:12px!important;line-height:1.35!important;}
