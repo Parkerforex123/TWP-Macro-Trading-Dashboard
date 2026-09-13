@@ -5718,19 +5718,13 @@ function scannerPairTooltipHtml(base,quote,score){
 function scannerPairExpandedHtml(pair,animate){
   var base=pair.slice(0,3), quote=pair.slice(3,6);
   var score=pairCompositeFor(base,quote);
-  var t=pairTrend30d(pair);
-  var y=pairYieldCalc(base,quote);
-  var carry=scannerCarryPct(base,quote);
-  var carryText=carry==null?'—':((carry>0?'+':'')+carry.toFixed(2)+'%');
   return '<tr class="scanner-expanded-row"><td colspan="16">'+
     '<div class="scanner-expanded-panel">'+
-      '<div class="scanner-expanded-head"><div><span class="scanner-expanded-pair">'+esc(pair)+'</span><span class="scanner-expanded-score '+(score>0?'pos':score<0?'neg':'neu')+'">'+fmt(score)+' · '+esc(pairBandLabel(score))+'</span></div><button type="button" class="scanner-expanded-close" data-scanner-close="'+esc(pair)+'">&times;</button></div>'+
+      '<div class="scanner-expanded-head"><div><span class="scanner-expanded-pair">'+esc(pair)+'</span><span class="scanner-expanded-score '+(score>0?'pos':score<0?'neg':'neu')+'">'+fmt(score)+' · '+esc(pairBandLabel(score))+'</span></div><button type="button" class="scanner-expanded-close" data-scanner-close="'+esc(pair)+'">&times;</button></div>'+ 
       '<div class="scanner-expanded-grid">'+
-        '<div class="scanner-expanded-trend"><div class="scanner-expanded-label"><span>Overall trend</span><div class="range-switch">'+["1M","3M","1Y","ALL"].map(function(r){
-        return '<button type="button" class="range-btn scanner-trend-range-btn'+(expandedRange===r?" active":"")+'" data-scanner-range="'+r+'">'+r+'</button>';
-      }).join("")+'</div></div><div class="scanner-expanded-trend-wrap">'+bigChart(pair,expandedRange,animate)+'</div><div class="scanner-expanded-trend-note">'+esc(t.label)+(t.delta==null?'':' · change '+(t.delta>0?'+':'')+t.delta+' points')+'</div></div>'+
-        '<div class="scanner-expanded-macro">'+pairMacroSummaryHtml(pair,score)+'<div class="scanner-expanded-rate"><span>Carry</span><b>'+esc(carryText)+'</b><span>2Y spread</span><b>'+(y.current==null?'—':((y.current>0?'+':'')+Math.round(y.current)+'bp'))+'</b></div></div>'+
-      '</div>'+
+        '<div class="scanner-expanded-focus">'+pairFocusHtml(pair,score)+'</div>'+ 
+        '<div class="scanner-expanded-macro">'+pairMacroSummaryHtml(pair,score)+'</div>'+ 
+      '</div>'+ 
     '</div></td></tr>';
 }
 function scanner7dTooltip(base,quote,live){
@@ -8897,288 +8891,478 @@ function pairMacroSummaryHtml(pair, score){
   var overall=pairBandLabel(score);
   var baseData=DATA[base]||{}, quoteData=DATA[quote]||{};
   var cotBase=cotLatest(base), cotQuote=cotLatest(quote);
-  var dir=score>0?1:score<0?-1:0;
-
+  var dir=score>7?1:score<-7?-1:0;
+  var pairSeed=pair;
   function clean(v){ return String(v==null?'':v).replace(/\s+/g,' ').trim(); }
-  function num(v){ return v==null?'':String(v); }
-  function sideName(){ return score>0?base:score<0?quote:'neither'; }
-  function firstUpper(s){ s=String(s||''); return s.charAt(0).toUpperCase()+s.slice(1); }
+  function safe(v){ return esc(clean(v)); }
+  function pick(arr,salt){ return arr[hashWord(pairSeed+'|'+salt)%arr.length]; }
+  function strong(txt,cls){ return '<strong class="pair-macro-key '+(cls||'')+'">'+safe(txt)+'</strong>'; }
+  function mark(txt,cls){ return '<span class="pair-macro-mark '+(cls||'')+'">'+safe(txt)+'</span>'; }
+  function moneySide(n){ return n>0?base:n<0?quote:'neither'; }
+  function pct(v){ if(v==null||!Number.isFinite(Number(v))) return '—'; return (Number(v)>0?'+':'')+Number(v).toFixed(1)+'%'; }
+  function bp(v){ if(v==null||!Number.isFinite(Number(v))) return '—'; return (Number(v)>0?'+':'')+Math.round(Number(v))+'bp'; }
+  function cap(s){s=clean(s);return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+  function hashWord(str){var h=2166136261;for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 
-  // The old brief forced almost every pair into one of three words. That made
-  // different macro situations sound identical. Keep the score as the anchor,
-  // but give each score band several natural verdicts and choose from them using
-  // stable pair-specific offsets so the wording changes without becoming random.
-  function labelWord(){
-    var s=Number(score)||0, key=pair.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0)%10;
-    if(s>=35){
-      var strong=['dominant','firmly in control','holding a clear lead','well ahead','showing a strong advantage','on the stronger side of the trade','carrying the cleaner edge','clearly out in front','showing a broad macro lead','in a strong lead'];
-      return [strong[key], 'the evidence has built a wide enough gap to give '+base+' a clear macro advantage'];
-    }
-    if(s>=20){
-      var bull=['ahead','holding the upper hand','leading the pair','on the front foot','showing the better setup','carrying the advantage','tilting clearly toward '+base,'keeping the stronger hand','edging into a clear lead','looking better placed'];
-      return [bull[key], 'the balance has moved far enough toward '+base+' to make the lead meaningful, but not untouchable'];
-    }
-    if(s>=8){
-      var leanBull=['leaning toward '+base,'slightly ahead','tilting in favour of '+base,'showing a modest edge','nudging toward '+base,'holding a small advantage','starting to favour '+base,'just ahead','showing a mild lead','giving '+base+' a small macro edge'];
-      return [leanBull[key], 'the gap is real, but still small enough for one important macro shift to change the picture'];
-    }
-    if(s<=-35){
-      var strongBear=['dominant','firmly in control','holding a clear lead','well ahead','showing a strong advantage','on the stronger side of the trade','carrying the cleaner edge','clearly out in front','showing a broad macro lead','in a strong lead'];
-      return [strongBear[key], 'the evidence has built a wide enough gap to give '+quote+' a clear macro advantage'];
-    }
-    if(s<=-20){
-      var bear=['ahead','holding the upper hand','leading the pair','on the front foot','showing the better setup','carrying the advantage','tilting clearly toward '+quote,'keeping the stronger hand','edging into a clear lead','looking better placed'];
-      return [bear[key], 'the balance has moved far enough toward '+quote+' to make the lead meaningful, but not untouchable'];
-    }
-    if(s<=-8){
-      var leanBear=['leaning toward '+quote,'slightly ahead','tilting in favour of '+quote,'showing a modest edge','nudging toward '+quote,'holding a small advantage','starting to favour '+quote,'just ahead','showing a mild lead','giving '+quote+' a small macro edge'];
-      return [leanBear[key], 'the gap is real, but still small enough for one important macro shift to change the picture'];
-    }
-    var flat=['balanced','evenly matched','without a clear winner','sitting in the middle','in a genuine tug-of-war','too close to call','showing no strong leader','mixed','near the line','waiting for a cleaner signal'];
-    return [flat[key], 'the major inputs are too close together to justify forcing a strong directional story'];
-  }
-  function biasSign(ind){
-    return ind && ind.bias==='Bullish' ? 1 : ind && ind.bias==='Bearish' ? -1 : 0;
-  }
-  function effectFor(ccy, ind){
-    var b=biasSign(ind);
-    return ccy===base ? b : -b;
-  }
-  function allIndicators(){
-    var out=[];
-    [base,quote].forEach(function(ccy){
-      var d=DATA[ccy]||{};
-      ['growth','inflation','labour'].forEach(function(group){
-        (d[group]||[]).forEach(function(ind){
-          var effect=effectFor(ccy,ind);
-          var wt=Math.abs(Number(ind.weight)||0);
-          if(effect!==0) out.push({ccy:ccy,group:group,ind:ind,effect:effect,weight:wt});
-        });
-      });
-    });
-    return out;
-  }
-  var facts=allIndicators();
-  var supportive=facts.filter(function(x){return x.effect>0;}).sort(function(a,b){return b.weight-a.weight;});
-  var opposing=facts.filter(function(x){return x.effect<0;}).sort(function(a,b){return b.weight-a.weight;});
-  function groupName(g){ return g==='growth'?'growth':g==='inflation'?'inflation':'labour'; }
-  function groupScore(f,g){
-    var x=f[g]; return x.max?(100*x.raw/x.max):0;
-  }
-  function strongestGroup(f){
-    var arr=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];
-    arr.sort(function(a,b){return Math.abs(b[1])-Math.abs(a[1]);});
-    return arr[0];
-  }
-  function weakestGroup(f){
-    var arr=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];
-    arr.sort(function(a,b){return a[1]-b[1];});
-    return arr[0];
-  }
+  var CB_NAMES={USD:'the Fed',EUR:'the ECB',GBP:'the Bank of England',JPY:'the Bank of Japan',CHF:'the SNB',AUD:'the RBA',NZD:'the RBNZ',CAD:'the Bank of Canada'};
+  function cbName(ccy){return CB_NAMES[ccy]||('the '+ccy+' central bank');}
+  function cbMove(ccy){var m=((DATA[ccy]||{}).nextMove||'HOLD').toUpperCase();return m==='HIKE'?'leaning toward a hike':m==='CUT'?'leaning toward a cut':'set to hold';}
+  function cbConv(ccy){return clean((DATA[ccy]||{}).conviction||'');}
+  function guidance(ccy){var g=clean((DATA[ccy]||{}).guidance||'');return g;}
+  function guidanceSnippet(ccy){var g=guidance(ccy); if(!g) return ''; return g.length>165?g.slice(0,162).replace(/\s+\S*$/,'')+'…':g;}
+  function groupScore(f,g){var x=f[g];return x&&x.max?(100*x.raw/x.max):0;}
+  function strongestGroup(f){var a=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];a.sort(function(x,z){return Math.abs(z[1])-Math.abs(x[1]);});return a[0];}
+  function weakestGroup(f){var a=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];a.sort(function(x,z){return x[1]-z[1];});return a[0];}
+  function gname(g){return g==='inf'?'inflation':g==='l'?'labour':'growth';}
+  var fundLeader=fundRel>5?base:fundRel<-5?quote:'neither';
+  var leadF=fundLeader===base?fb:fq, lagF=fundLeader===base?fq:fb;
+  var leadG=fundLeader==='neither'?null:strongestGroup(leadF);
+  var weakG=fundLeader==='neither'?null:weakestGroup(lagF);
+  var surpriseB=surpriseWeightedPct(base), surpriseQ=surpriseWeightedPct(quote);
+  var carry=scannerCarryPct(base,quote);
+  var flowB=cotBase.netChg==null?0:Number(cotBase.netChg)||0, flowQ=cotQuote.netChg==null?0:Number(cotQuote.netChg)||0;
+  var posLeader=cot.posScore>2?base:cot.posScore<-2?quote:'neither';
+  var flowLeader=Math.abs(flowB-flowQ)>1000?(flowB>flowQ?base:quote):'neither';
+  var posCrowdB=cotCrowding(base), posCrowdQ=cotCrowding(quote);
 
-  function topFundLine(){
-    if(!supportive.length && !opposing.length) return 'Fundamentals are quiet here: growth, inflation and labour are not creating a strong gap between '+base+' and '+quote+' yet, so the macro-data side is not carrying the trade.';
-    if(Math.abs(fundRel)<5) return 'The fundamental picture is fairly even. Growth, inflation and labour are sending mixed messages, so the score is not getting a strong push from the data itself.';
-    var leader=fundRel>=0?base:quote, laggard=fundRel>=0?quote:base;
-    var leaderF=fundRel>=0?fb:fq, laggardF=fundRel>=0?fq:fb;
-    var leadStrong=strongestGroup(leaderF), lagWeak=weakestGroup(laggardF);
-    var closeness=Math.abs(fundRel)<15?'a small but usable edge':Math.abs(fundRel)<30?'a noticeable advantage':'a clear advantage';
-    var line=leader+"'s fundamentals are the stronger leg, with "+closeness+' over '+laggard+'. '+firstUpper(groupName(leadStrong[0]))+' is doing most of the lifting for '+leader+', while '+laggard+"'s weakest area is "+groupName(lagWeak[0])+'.';
-    var leaderG=groupScore(leaderF,'g'), leaderInf=groupScore(leaderF,'inf'), lagG=groupScore(laggardF,'g'), lagInf=groupScore(laggardF,'inf');
-    if(leaderG>lagG && leaderInf>lagInf) line+=' Growth and inflation are both running hotter on the '+leader+' side than on '+laggard+"'s. That gives the central bank more reason to keep rates higher for longer instead of rushing to cut.";
-    else if(leaderG>lagG) line+=' Growth is the main reason for the gap. The real-economy side is doing more work than inflation, so the rate case depends heavily on whether that growth advantage holds.';
-    else if(leaderInf>lagInf) line+=' Inflation is carrying more of the argument. Prices are giving the '+leader+' central bank more reason to stay firm even though growth is not doing all the work.';
-    else line+=' The edge is broad rather than tied to one single release, which makes the fundamentals story less dependent on one data point.';
-    return line;
+  /* Each bank is a pool, not a single template. Different salts mean different sections
+     choose independently, so two pairs can share a structure only by chance. */
+  var heads={
+    bull:[
+      'The balance has moved in '+base+'\'s favour, with enough positive weight to give the pair a usable upside lean.',
+      base+' is holding the better side of the macro equation right now; the edge is visible without needing to stretch the story.',
+      'The live score puts '+base+' ahead of '+quote+', and the underlying mix gives that lead some substance.',
+      'This cross is tilting toward '+base+'. The important part is that the lead comes from several pieces rather than one isolated signal.',
+      base+' has the upper hand at present. The score matters, but the shape of the seven pillars matters more.',
+      'The dashboard is favouring '+base+' here, with the gap large enough to notice but still small enough to monitor closely.',
+      'The '+base+'/'+quote+' picture has a clear positive tilt. What matters next is whether the support underneath keeps building.',
+      'The macro mix is giving '+base+' the cleaner side of this pair for now.',
+      base+' is in front on the current evidence, although the size of the lead still decides how much conviction to attach to it.',
+      'The pair is leaning toward '+base+', with the live score showing more support than resistance.'
+    ],
+    veryBull:[
+      base+' is well ahead in the current macro mix. This is a broad lead rather than a one-pillar story.',
+      'The score has opened a meaningful gap in favour of '+base+'. The dashboard is showing a strong macro advantage.',
+      'The '+base+' side is firmly on top, and the separation is wide enough to treat the signal as substantial.',
+      base+' has built a sizeable macro lead over '+quote+'. A reversal would need a real change underneath it.',
+      'This is no longer a marginal difference: '+base+' has the stronger side of the book across the current evidence.',
+      'The macro picture is heavily tilted toward '+base+'. The next question is whether that gap widens, holds, or gets chipped away.',
+      base+' is clearly in command of the live score, with enough breadth in the evidence to support the headline.',
+      'The dashboard is giving '+base+' a strong lead. The supporting sections below explain where that lead is coming from.',
+      'The current setup is firmly weighted to '+base+'. The burden now is on the opposing pillars to close the gap.',
+      'There is a sizeable '+base+' advantage in this cross, not just a small score difference around the middle.'
+    ],
+    bear:[
+      'The balance has slipped toward '+quote+', giving that side the cleaner read at present.',
+      quote+' is ahead on the live macro mix, with the score showing more weight on that side than on '+base+'.',
+      'The current setup favours '+quote+'. The gap is useful, but it still deserves to be read through the pillars underneath it.',
+      'The macro board has '+quote+' in front for now. The key is how broad the support is behind that lead.',
+      quote+' has taken the better side of the cross, although the size of the gap still matters.',
+      'The evidence is tilted toward '+quote+' at the moment, with '+base+' needing some pillars to catch up.',
+      'This pair is carrying a negative '+base+' tilt. The sections below show what is pulling the score that way.',
+      quote+' has the stronger position in the current macro balance. It is a lead, not a guarantee.',
+      'The live composite is giving '+quote+' the advantage over '+base+'.',
+      'For now, '+quote+' has the better side of the macro equation; the next move depends on whether that support stays broad.'
+    ],
+    veryBear:[
+      quote+' is well in front on the current macro evidence, with the gap large enough to call the signal strong.',
+      'The setup is firmly tilted toward '+quote+'. The score shows a real separation from '+base+'.',
+      'The '+quote+' side has established a sizeable advantage in the live composite.',
+      'This cross carries a strong '+quote+' bias. It would take a meaningful repricing to pull it back toward the middle.',
+      quote+' is clearly ahead, and the supporting evidence is broad enough to give the score weight.',
+      'The macro picture leaves '+quote+' firmly on top. The useful work now is identifying the drivers and the reversal points.',
+      'There is a substantial '+quote+' lead here. That makes the opposing side’s weak spots more important than the headline alone.',
+      quote+' is firmly in control of the current score, rather than merely edging '+base+'.',
+      'The balance is strongly against '+base+' at present, with '+quote+' carrying the better mix across the dashboard.',
+      'The current macro map is decisively weighted toward '+quote+'.'
+    ],
+    neutral:[
+      'The pair is still in the middle. There is not enough separation to manufacture a directional call.',
+      base+' and '+quote+' are trading inside a genuine macro middle ground right now.',
+      'The evidence is too close to call. A small score move should not be mistaken for a clean trend.',
+      'Neither side has taken control of the seven-pillar mix yet.',
+      'This is a balance-of-forces setup: some inputs favour '+base+', others favour '+quote+', and the total remains near the middle.',
+      'The dashboard is withholding a strong side for now. The next useful signal is fresh separation, not a tiny change in score.',
+      'There is no clean macro winner here yet. Watch which pillar breaks away first.',
+      'The cross is sitting between two stories rather than following one clear story.',
+      'This remains a watch-for-confirmation setup. The current score is too close to the centre to carry a strong directional message.',
+      'The macro read is balanced enough that patience is more useful than forcing a side.'
+    ]
+  };
+  function head(){if(overall==='Very Bullish')return pick(heads.veryBull,'head');if(overall==='Bullish'||overall==='Leaning Bullish')return pick(heads.bull,'head');if(overall==='Very Bearish')return pick(heads.veryBear,'head');if(overall==='Bearish'||overall==='Leaning Bearish')return pick(heads.bear,'head');return pick(heads.neutral,'head');}
+
+  function fundamentalRead(){
+    if(fundLeader==='neither') return pick([
+      'Growth, inflation and labour are not creating a wide enough gap to hand this pair a clear fundamental winner.',
+      'The economic data is split rather than one-way. None of the three big areas — growth, prices or jobs — is separating the currencies by much.',
+      'Fundamentals are acting more like a balance sheet than a driver here: the two sides are giving mixed signals.',
+      'The real-economy picture is close. The data is not strong enough on either side to carry a directional call by itself.',
+      'Growth, inflation and labour are pulling in different directions, leaving the fundamental pillar near the middle.'
+    ],'fund-neutral')+' '+pick([
+      'That keeps this part of the story secondary for now.',
+      'The next meaningful surprise would matter more than the current small differences.',
+      'A fresh run of stronger or weaker data is what would change the balance.',
+      'For the moment, the macro score has to get its separation elsewhere.'
+    ],'fund-neutral-tail');
+    var strongLead=strong(fundLeader+"'s fundamentals are ahead of "+(fundLeader===base?quote:base)+'.','amber');
+    var gapPhrase=Math.abs(fundRel)<15?pick(['It is a modest lead, not a wide gap.','The advantage is real but still fairly narrow.','That is enough to tilt the score, not enough to own the whole trade.','The difference is noticeable without being overwhelming.'],'fund-gap-small')
+      :Math.abs(fundRel)<30?pick(['The separation is meaningful.','The gap is now large enough to matter to the pair.','This is a proper macro advantage rather than a rounding error.','The distance gives fundamentals a real role in the current move.'],'fund-gap-mid')
+      :pick(['The economic gap is broad and is doing serious work in the score.','This is one of the largest relative differences in the current pair mix.','The fundamental distance is substantial enough to anchor the headline read.','The data gap gives this side a strong base beneath the composite.'],'fund-gap-wide');
+    var leadSentence=pick([
+      gname(leadG[0]).charAt(0).toUpperCase()+gname(leadG[0]).slice(1)+' is the biggest source of that advantage.',
+      'Most of the lift is coming from '+gname(leadG[0])+'.',
+      'The first place to look is '+gname(leadG[0])+', where the relative gap is doing the most work.',
+      gname(leadG[0]).charAt(0).toUpperCase()+gname(leadG[0]).slice(1)+' is carrying more of the fundamental case than the other data groups.',
+      'The strongest part of the economic story sits in '+gname(leadG[0])+'.'
+    ],'fund-driver');
+    var weakSentence=pick([
+      (fundLeader===base?quote:base)+' is less comfortable on '+gname(weakG[0])+'.',
+      'Across the other side, '+gname(weakG[0])+' is the softer patch.',
+      'The weaker leg shows its clearest problem in '+gname(weakG[0])+'.',
+      gname(weakG[0]).charAt(0).toUpperCase()+gname(weakG[0]).slice(1)+' is where '+(fundLeader===base?quote:base)+' is losing the most ground.',
+      'The main drag on '+(fundLeader===base?quote:base)+' comes from '+gname(weakG[0])+'.'
+    ],'fund-weak');
+    var context='';
+    var lg=groupScore(leadF,'g'), li=groupScore(leadF,'inf'), ll=groupScore(leadF,'l');
+    var qg=groupScore(lagF,'g'), qi=groupScore(lagF,'inf'), ql=groupScore(lagF,'l');
+    if(lg>qg && li>qi) context=pick([
+      'Growth and inflation are both stronger on the '+fundLeader+' side, which gives '+cbName(fundLeader)+' more room to stay firm rather than rush toward cuts.',
+      'Both activity and prices are helping '+fundLeader+'. That matters because it supports the case for policy to stay firm for longer.',
+      'The two biggest macro engines are aligned: growth is firmer and inflation is also running hotter on the '+fundLeader+' side.'
+    ],'fund-context-both');
+    else if(lg>qg) context=pick([
+      'The growth side is doing more work than prices here, so the story rests more on the real economy than on inflation.',
+      'Activity is the cleaner part of the argument; inflation is not doing as much of the heavy lifting.',
+      'This is mainly a growth-led advantage, not a pure inflation story.'
+    ],'fund-context-growth');
+    else if(li>qi) context=pick([
+      'Inflation is the stronger support, keeping the higher-for-longer case alive even if growth is not especially strong.',
+      'Prices are doing more of the policy work here. Sticky inflation gives '+cbName(fundLeader)+' less room to ease quickly.',
+      'The inflation side carries the bigger message, even with a less convincing growth backdrop.'
+    ],'fund-context-inflation');
+    else if(ll>ql) context=pick([
+      'Labour is giving the '+fundLeader+' side the extra lift, which can matter quickly for policy expectations.',
+      'The labour market is the clearest point of difference in this cross.',
+      'Jobs are one of the more useful clues here because they help shape how much room the central bank has to move rates.'
+    ],'fund-context-labour');
+    return strongLead+' '+safe(gapPhrase)+' '+safe(leadSentence)+' '+safe(weakSentence)+' '+safe(context);
   }
 
   function cbNarrative(){
-    var bMove=(baseData.nextMove||'HOLD').toUpperCase(), qMove=(quoteData.nextMove||'HOLD').toUpperCase();
-    var cbLabel=pairCbStanceLabel(base,quote);
-    var bTxt=base+' is '+(bMove==='HOLD'?'on hold':'leaning toward a '+bMove.toLowerCase());
-    var qTxt=quote+' is '+(qMove==='HOLD'?'on hold':'leaning toward a '+qMove.toLowerCase());
-    if(cbLabel==='Neutral'){
-      var neutralCb=['Central bank guidance is close between the two sides','The central banks are not giving this pair a big rate-policy gap yet','Policy expectations are fairly close for now'];
-      return neutralCb[pair.length%neutralCb.length]+': '+bTxt+' while '+qTxt+'. That keeps central-bank policy in the background unless one side changes course.';
+    var cbLabel=pairCbStanceLabel(base,quote), b=cbName(base), q=cbName(quote);
+    var winner=cbLabel.indexOf('Bullish')>=0?base:cbLabel.indexOf('Bearish')>=0?quote:'neither';
+    var line='';
+    if(winner==='neither'){
+      line=pick([
+        'Policy is not creating much separation: '+b+' is '+cbMove(base)+' while '+q+' is '+cbMove(quote)+'.',
+        'The central-bank story is close. '+b+' is '+cbMove(base)+' and '+q+' is '+cbMove(quote)+'.',
+        'There is little policy distance between the two sides at the moment. '+b+' is '+cbMove(base)+'; '+q+' is '+cbMove(quote)+'.',
+        'Monetary policy is broadly matched here, with '+b+' '+cbMove(base)+' and '+q+' '+cbMove(quote)+'.'
+      ],'cb-neutral');
+    } else {
+      var wcb=cbName(winner), lcb=cbName(winner===base?quote:base);
+      var guide=guidanceSnippet(winner), guidePart=guide?pick([
+        ' The forward guidance is consistent with that direction: ',
+        ' That is also the line coming through the guidance: ',
+        ' The bank\'s own guidance adds context here: ',
+        ' The written guidance points in the same general direction: '
+      ],'cb-guide-intro')+strong(wcb+' guidance: '+guide,'amber'):'';
+      line=pick([
+        'The policy gap is favouring '+winner+': '+wcb+' is '+cbMove(winner)+' while '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
+        winner+' gets the clearer rate-policy push because '+wcb+' is '+cbMove(winner)+' against '+lcb+' being '+cbMove(winner===base?quote:base)+'.',
+        'Monetary policy is leaning toward '+winner+'. '+wcb+' is '+cbMove(winner)+', while '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
+        'The central banks are not standing at the same point: '+wcb+' is '+cbMove(winner)+' and '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
+        'The rate-setting story gives '+winner+' the advantage. '+wcb+' is '+cbMove(winner)+' versus '+lcb+' being '+cbMove(winner===base?quote:base)+'.'
+      ],'cb-'+winner)+guidePart;
     }
-    var winner=pillarSign(cbLabel)>0?base:quote;
-    var leadCb=['That policy gap adds support to '+winner,'The rate-policy side also gives '+winner+' the better hand','This is another point in '+winner+"'s favour",'Policy expectations are pulling the same way as the macro lead'];
-    return leadCb[(base.charCodeAt(0)+quote.charCodeAt(0))%leadCb.length]+': '+bTxt+' while '+qTxt+'. A sharper change in either central bank\'s guidance could therefore move this pillar quickly.';
+    return safeLineWithKeys(line, [cbName(base),cbName(quote),base,quote]);
+  }
+
+  function safeLineWithKeys(text,keys){
+    var raw=clean(text), hit=null;
+    for(var i=0;i<keys.length;i++){if(raw.indexOf(keys[i])!==-1){hit=keys[i];break;}}
+    if(!hit) return safe(raw);
+    var parts=raw.split(hit); return safe(parts[0])+strong(hit,'amber')+safe(parts.slice(1).join(hit));
   }
 
   function rateNarrative(){
-    if(yScore==null) return 'The 2Y yield history is incomplete, so there is not enough rate data yet to use the spread as a strong confirmation.';
-    var bp=Math.round(y.current), priorWeek=y.week==null?null:bp-y.week, winner=bp>0?base:bp<0?quote:'neither';
-    var spreadTxt=(bp>0?'+':'')+bp+'bp';
-    if(winner==='neither') return 'The two-year yields are almost level at the moment. With no meaningful spread to lean on, the pair is being left to fundamentals and the other supporting signals.';
-    var currentFavor=winner;
-    var movement='';
-    if(priorWeek!=null){
-      if(Math.sign(bp)!==Math.sign(priorWeek) && Math.abs(priorWeek)>5 && Math.abs(bp)>5){
-        movement='The spread has crossed through zero since last week, so the rate advantage has switched sides.';
-      } else {
-        var absNow=Math.abs(bp), absPrev=Math.abs(priorWeek);
-        if(absNow>absPrev+2) movement='The yield gap is widening toward '+currentFavor+'; that makes the rate advantage more meaningful.';
-        else if(absNow<absPrev-2) movement='The yield gap is narrowing, which means '+currentFavor+"'s rate advantage is losing some force even though it is still there.";
-        else movement='The spread is not moving much from last week, so the rate advantage is still fairly steady.';
-      }
-    }
-    var reinforces=(score>0&&bp>0)||(score<0&&bp<0);
-    if(reinforces){
-      return 'The 2Y spread is '+spreadTxt+' in favour of '+currentFavor+'. '+movement+' '+currentFavor+' is therefore backed by the rate market as well as the wider composite, so watch the spread for confirmation or an early warning.';
-    }
-    return 'The 2Y spread is '+spreadTxt+' in favour of '+currentFavor+', but the composite is leaning the other way. '+movement+' This is the part of the dashboard to watch closely because a widening gap can strengthen the rate-driven side, while further narrowing can weaken it.';
+    if(yScore==null||y.current==null) return pick([
+      'The 2Y market does not have a usable current spread here, so rates cannot yet confirm or challenge the pair score.',
+      'There is no clean current 2Y observation to lean on. Treat the yield layer as missing rather than inventing a rate story.',
+      'The short-end rate picture is incomplete at the moment. That leaves data, policy and positioning doing more of the explaining.'
+    ],'rate-missing');
+    var cur=Math.round(y.current), wk=y.week==null?null:Math.round(y.week);
+    var yieldSide=cur>0?base:cur<0?quote:'neither';
+    var carryTxt=carry==null?'':(Math.abs(carry)<0.005?'0.00%':(carry>0?'+':'')+carry.toFixed(2)+'%');
+    var spreadText=cur===0?'flat at 0bp':(cur>0?'+'+cur+'bp for '+base:cur+'bp for '+quote);
+    var moveText=wk==null?'':(Math.abs(wk)<=2?pick([' The spread is almost unchanged from the prior week.',' Week to week, the gap is barely moving.',' The latest weekly move is too small to call a real shift in the rate gap.'],'rate-flat'):wk>0?' The gap has widened by roughly +'+wk+'bp over the week.':' The gap has narrowed by roughly '+wk+'bp over the week.');
+    var alignment=score>7&&yieldSide===base||score<-7&&yieldSide===quote
+      ?pick([' That agrees with the current pair score.',' The bond market is confirming the headline side.',' Rates are pushing in the same direction as the composite.',' That gives the macro read extra support from the short-end market.'],'rate-align')
+      :Math.abs(score)<=7?' Because the pair itself is neutral, this is the direct rate signal rather than proof of a full macro trend.':pick([' That is the part of the picture pushing against the headline score.',' The rate market is not validating the current bias, so the gap deserves close attention.',' This puts rates on the other side of the trade from the composite.',' The spread is a useful counterweight here rather than simple confirmation.'],'rate-conflict');
+    var carryLine=carryTxt?(Math.abs(carry)<0.005?' '+pick(['Policy-rate carry is effectively zero at '+carryTxt+'. There is no payment advantage between the two currencies.','The policy rates are matched, so carry is '+carryTxt+' and neither side is paying a premium to hold.','The carry gap is '+carryTxt+' — effectively flat. The 2Y spread is therefore the more useful rate signal.'],'carry-zero'): ' The policy-rate carry is '+carryTxt+' in favour of '+(carry>0?base:quote)+'.'):'';
+    return strong('2Y spread '+spreadText+'.','amber')+safe(moveText)+safe(alignment)+safe(carryLine);
   }
 
   function cotNarrative(){
-    if(cot.insufficient) return 'COT does not have enough history yet to say much. Leave positioning in the background until the sample becomes usable.';
-    var bn=(cotBase.oi&&cotBase.net!=null)?100*cotBase.net/cotBase.oi:null;
-    var qn=(cotQuote.oi&&cotQuote.net!=null)?100*cotQuote.net/cotQuote.oi:null;
-    var winner=cot.combined>5?base:(cot.combined<-5?quote:'neither');
-    var flowBase=cotBase.netChg==null?0:cotBase.netChg, flowQuote=cotQuote.netChg==null?0:cotQuote.netChg;
-    var flowWinner=flowBase>flowQuote?base:flowBase<flowQuote?quote:'neither';
-    if(winner!=='neither'){
-      var norm=winner===base?bn:qn, raw=winner===base?cotBase.net:cotQuote.net;
-      if(winner===flowWinner && flowBase!==flowQuote) return 'Positioning favours '+winner+', with net exposure around '+(norm!=null?norm.toFixed(1)+'% of open interest':'the latest reported level')+' (raw net '+cotFormat(raw)+'). The weekly flow is moving the same way, so traders are adding to the same side rather than fading it.';
-      if(winner!==flowWinner && flowWinner!=='neither') return 'Positioning still favours '+winner+', but the latest weekly flow points more toward '+flowWinner+'. That split matters: the stock of positions says one thing while the newest money is moving another way.';
-      return 'Positioning gives '+winner+' the edge, with net exposure around '+(norm!=null?norm.toFixed(1)+'% of open interest':'the latest reported level')+'. The weekly change is not adding much fresh information, so treat COT as confirmation rather than the main trigger.';
+    if(cot.insufficient) return pick([
+      'The COT sample is still too thin to make positioning a reliable part of the story.',
+      'There is not enough COT history yet for the positioning layer to carry much weight.',
+      'Futures positioning is still too limited to support a strong read here.'
+    ],'cot-missing');
+    var stockOpeners={
+      [base]:[
+        'The futures book is currently tilted toward '+base,
+        'The standing net position favours '+base,
+        'The current position stock is heavier on the '+base+' side',
+        'The existing net book is still built around '+base,
+        'The futures crowd is carrying more exposure toward '+base,
+        'The accumulated position leans toward '+base,
+        'The live positioning base remains tilted to '+base,
+        'The current net exposure still points toward '+base,
+        'The established futures position is more supportive of '+base,
+        'The position already on the books favours '+base,
+        'The standing COT exposure has a '+base+' bias',
+        'The current futures inventory is weighted toward '+base,
+        'The older positioning still leaves '+base+' on the favoured side',
+        'The book carried into this week still prefers '+base,
+        'The positioning stock entering the latest report leaned toward '+base,
+        'The existing speculative exposure remains more concentrated in '+base,
+        'The futures positioning already in place is tilted to '+base,
+        'The accumulated net exposure gives '+base+' the stronger positioning side',
+        'The current COT stock is still pointing toward '+base,
+        'The standing futures position gives '+base+' the edge in the positioning column'
+      ]
+    };
+    var stock='';
+    if(posLeader!=='neither'){
+      var c=posLeader===base?cotBase:cotQuote, pcent=(c.oi&&c.net!=null)?100*c.net/c.oi:null;
+      var openers=stockOpeners[posLeader] || ['The current COT book leans toward '+posLeader];
+      stock=safe(pick(openers,'cot-stock'))+(pcent!=null?' with net exposure around '+pcent.toFixed(1)+'% of open interest':'')+'.';
     }
-    return 'COT is not giving the pair a clean winner. The better tell would be a clear change in the weekly flow that starts separating '+base+' from '+quote+'.';
+    var flowPhrases={
+      strong:[
+        'The latest report then shows a large fresh move of '+flowLeader+' '+cotFormat(flowLeader===base?flowB:flowQ)+' contracts.',
+        'Fresh weekly flow is doing more than nudging the book: '+flowLeader+' saw '+cotFormat(flowLeader===base?flowB:flowQ)+' net contracts added.',
+        'This week\'s change is sizeable, with '+cotFormat(flowLeader===base?flowB:flowQ)+' contracts shifting toward '+flowLeader+'.'
+      ],
+      medium:[
+        'The weekly flow has also moved in '+flowLeader+'\'s favour, though the change is more measured.',
+        'The latest report adds a noticeable '+flowLeader+' move rather than a full repositioning wave.',
+        'Week on week, the book has shifted some ground toward '+flowLeader+'.'
+      ],
+      small:[
+        'The newest weekly change is relatively small, so it looks more like a nudge than a new crowd.',
+        'This week\'s flow is modest; it changes the picture at the margin rather than rewriting it.',
+        'The fresh weekly move is limited, so the standing position remains the bigger clue.'
+      ],
+      flat:[
+        'The newest report did not create a meaningful separation in weekly flow.',
+        'This week\'s change is close enough between the two sides that it adds little direction.',
+        'Fresh flow is not giving the pair a new institutional lead yet.'
+      ]
+    };
+    var flowText=flowLeader==='neither'?pick(flowPhrases.flat,'cot-flow-flat'):(Math.abs(flowLeader===base?flowB:flowQ)>50000?pick(flowPhrases.strong,'cot-flow-strong'):Math.abs(flowLeader===base?flowB:flowQ)>15000?pick(flowPhrases.medium,'cot-flow-medium'):pick(flowPhrases.small,'cot-flow-small'));
+    if(!stock && flowLeader==='neither') return pick([
+      'COT is not handing the pair a clean institutional side. The standing book is balanced and the newest report did not break the tie.',
+      'Positioning is close enough between '+base+' and '+quote+' that neither the stock nor the latest flow gives a convincing direction.',
+      'The futures market is fairly balanced here. There is no strong stock-versus-flow signal to lean on yet.'
+    ],'cot-balanced');
+    var split=posLeader!=='neither'&&flowLeader!=='neither'&&posLeader!==flowLeader;
+    var cleanFlow=flowLeader===posLeader&&flowLeader!=='neither';
+    var conclusion=split?pick([
+      'That split is important: the established book is pointing one way while the newest money is moving the other way.',
+      'This is a stock-versus-flow disagreement. The old positioning is one story; the latest contracts are starting another.',
+      'The two COT lenses are no longer saying exactly the same thing, which makes the setup less clean.',
+      'The positioning signal is carrying a warning flag because fresh flow is not simply extending the existing crowd.',
+      'The old book has not flipped, but the new flow is moving against it — the early stage of a possible repositioning story.'
+    ],'cot-split'):cleanFlow?pick([
+      'The stock and the latest flow are broadly aligned, so COT is reinforcing rather than fighting the macro read.',
+      'Both the position already held and the newest weekly change are pointing the same way.',
+      'That gives the futures market a cleaner supporting role in the pair.',
+      'The positioning side is more coherent here because the fresh flow is not pushing against the existing book.',
+      'For now, COT is adding weight rather than creating a contradiction.'
+    ],'cot-clean'):pick([
+      'That leaves the freshest flow as the more useful clue for the next update.',
+      'The key question is whether the next report turns that fresh move into a larger position change.',
+      'Watch the next weekly print to see whether this stays a small adjustment or becomes a real shift in the book.'
+    ],'cot-flow-only');
+    return (stock?stock+' ':'')+safe(flowText)+' '+safe(conclusion);
   }
 
   function riskNarrative(){
-    if(!riskHasAnyReading()) return 'Risk sentiment is not complete enough to add a useful pair distinction.';
-    if(riskState==='Neutral') return 'Risk appetite is not separating the two currencies enough to matter right now. It is background noise until the regime becomes clearer.';
-    return 'The broader risk mood is '+riskState.toLowerCase()+' for this pair, giving '+(riskDiff>0?base:quote)+' some help. It is a smaller input than fundamentals and rates, but it can amplify a move when the macro story is already pointing the same way.';
+    if(!riskHasAnyReading()) return pick([
+      'Risk sentiment is not populated enough to change the pair read yet.',
+      'The risk layer is currently unavailable, so it stays outside the main case.',
+      'There is not enough risk data here to make a clean pair call from the broader market regime.'
+    ],'risk-missing');
+    if(riskState==='Neutral') return pick([
+      'Risk is not separating the two legs enough to matter, so it stays in the background.',
+      'The broader risk regime is balanced for this cross. It is not adding a strong push either way.',
+      'Risk appetite is not creating a meaningful difference between '+base+' and '+quote+' right now.',
+      'The risk backdrop is quiet for this pair; the bigger signals are coming from data, policy and rates.'
+    ],'risk-neutral');
+    return pick([
+      'The wider risk mood is giving '+(riskDiff>0?base:quote)+' some extra support.',
+      'The current risk regime is helping '+(riskDiff>0?base:quote)+' relative to the other side.',
+      'Risk is adding a tailwind for '+(riskDiff>0?base:quote)+' rather than '+(riskDiff>0?quote:base)+'.',
+      'The broader market tone is working more comfortably for '+(riskDiff>0?base:quote)+' in this cross.'
+    ],'risk-active');
   }
 
   function seasonNarrative(){
     var sl=seasonalityBandLabelFromValue(seas);
-    if(sl==='Neutral') return 'Seasonality is not offering much help either way. For now, the trade should be judged mainly on the live macro and rate picture.';
-    return 'The seasonal pattern currently favours '+(seas>0?base:quote)+'. Think of this as a tailwind, not the engine: it can help a move along, but it should not overrule a big change in growth, inflation or policy.';
+    if(sl==='Neutral') return pick([
+      'Seasonality is neutral, so there is no useful calendar push to lean on here.',
+      'The seasonal pattern is not strong enough to add direction.',
+      'Calendar effects are quiet for this cross, leaving the live macro evidence in charge.'
+    ],'season-neutral');
+    return pick([
+      'The seasonal backdrop is '+sl.toLowerCase()+' for '+(seas>0?base:quote)+', which can help the move but should not drive it.',
+      'Seasonality is giving '+(seas>0?base:quote)+' a '+sl.toLowerCase()+' backdrop. Treat that as timing help, not the core reason for the trade.',
+      'The calendar pattern favours '+(seas>0?base:quote)+' at the margin. It is a support layer, not the main thesis.'
+    ],'season-active');
   }
 
-  function driverProse(name){
-    var map={
-      'Fundamentals':'the data mix',
-      'Yield':'the 2Y rate gap',
-      'CB stance':'central-bank policy',
-      'Position':'positioning',
-      'WoW':'the latest COT flow',
-      'Seasonality':'the seasonal pattern',
-      'Risk sentiment':'the broader risk mood'
+  function alignmentRead(){
+    if(dir===0) return pick([
+      'With the pair inside the neutral band, there is no directional alignment to celebrate yet. The better signal is whichever pillar breaks away from zero first.',
+      'The setup is still neutral, so the Agree count should not be used to manufacture a long or short. What matters is fresh separation.',
+      'This is a watch condition rather than a conviction trade. A meaningful policy, rates, data or positioning shift would be needed to change that.'
+    ],'align-neutral');
+    var labels={
+      Fundamentals:pillarBias(fundRel),
+      Yield:yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'),
+      'CB stance':pairCbStanceLabel(base,quote),Position:cot.posLabel,WoW:cot.flowLabel,Seasonality:seasonalityPairText(base,quote),'Risk sentiment':riskState
     };
-    return map[name]||String(name||'the overall mix').toLowerCase();
+    var agree=0,dis=0,neu=0;
+    ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'].forEach(function(n){var sg=pillarSign(labels[n]);if(sg===dir)agree++;else if(sg===0)neu++;else dis++;});
+    if(dis===0) return pick([
+      agree+' of 7 pillars support '+(dir>0?base:quote)+' and none is pushing back. That is a clean alignment of the current evidence.',
+      'The evidence is unusually tidy: '+agree+' of 7 pillars agree with '+(dir>0?base:quote)+', with no clear opposing pillar.',
+      'There is broad agreement behind '+(dir>0?base:quote)+'. '+agree+' of the seven inputs point the same way.'
+    ],'align-clean')+ (neu?(' '+neu+' pillar'+(neu>1?'s':'')+' are neutral rather than negative.'):'');
+    if(agree>=5) return pick([
+      agree+' of 7 pillars back '+(dir>0?base:quote)+'. The disagreement is real, but it is still a minority view inside the model.',
+      'The signal has strong breadth: '+agree+' of 7 pillars support '+(dir>0?base:quote)+', while '+dis+' push the other way.',
+      (dir>0?base:quote)+' still has the weight of the dashboard behind it, with '+agree+' of 7 drivers aligned.'
+    ],'align-strong')+ (neu?(' '+neu+' remain neutral.'):'');
+    return pick([
+      'Only '+agree+' of 7 pillars support '+(dir>0?base:quote)+', so the headline score has more internal tension than it first appears.',
+      'Agreement is limited to '+agree+' of 7 drivers. That leaves '+dis+' active counter-signals to watch.',
+      'The score has a side, but the evidence is not fully behind it: '+agree+' agree and '+dis+' disagree.'
+    ],'align-mixed');
   }
 
-  var leadDrivers=scannerLedByDrivers(base,quote,dir), mainDriverName=leadDrivers.length?leadDrivers[0].name:null;
-  var agreeCount=0, disagreeCount=0, neutralCount=0;
-  if(dir!==0){
-    var agreeLabels={
-      'Fundamentals':pillarBias(fundRel),
-      'Yield':yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'),
-      'CB stance':pairCbStanceLabel(base,quote),
-      'Position':cot.posLabel,'WoW':cot.flowLabel,
-      'Seasonality':seasonalityPairText(base,quote),'Risk sentiment':riskPairState(base,quote)
-    };
-    ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'].forEach(function(name){
-      var sg=pillarSign(agreeLabels[name]); if(sg===dir) agreeCount++; else if(sg===0) neutralCount++; else disagreeCount++;
-    });
+  function whatChanges(){
+    var risks=[];
+    if(fundRel*score<0 && Math.abs(fundRel)>=7) risks.push(pick(['the fundamental gap closes','growth or inflation data catch up on the weaker side','the data advantage behind the current lead fades'],'flip-fund'));
+    if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=10) risks.push(pick(['the 2Y spread turns back toward the opposing currency','the short-end yield gap narrows sharply','the bond market stops supporting the current rate side'],'flip-rate')); 
+    if(cot.insufficient===false && cot.posScore*score<0 && Math.abs(cot.posScore)>=6) risks.push(pick(['positioning swings back toward the other side','the established futures book unwinds','the COT crowding moves against the current lead'],'flip-pos'));
+    if(cot.insufficient===false && flowLeader!=='neither' && dir!==0 && flowLeader===(dir>0?quote:base)) risks.push(pick(['fresh COT flow keeps building against the current side','weekly positioning continues to move away from the current leader','new contracts keep accumulating on the opposing currency'],'flip-flow'));
+    if(!risks.length){
+      if(dir===0) return pick(['The setup becomes directional if either the 2Y spread, policy stance or fundamentals creates a clear gap.','A clean break would need real separation in data, rates or policy rather than a small score wobble.','The next change should come from a meaningful repricing in the major pillars — not from noise around the neutral line.'],'flip-neutral');
+      risks.push(pick(['the main supporting pillars lose their current advantage','a stronger data or policy repricing pulls the weaker currency closer','the current rates and fundamentals support stops holding','the opposing side starts winning enough pillars to close the gap'],'flip-generic'));
+    }
+    var r1=risks[0], r2=risks.length>1?risks[1]:'';
+    return pick([
+      'What could flip this read? '+r1+(r2?' And a second warning would be '+r2+'.':''),
+      'The first real reversal test is '+r1+(r2?' Another warning sign would be '+r2+'.':''),
+      'This view would come under pressure if '+r1+(r2?' A second pressure point is '+r2+'.':''),
+      'The cleanest route to a different score is '+r1+(r2?'; '+r2+' would add to that pressure.':'')
+    ],'flip-'+pair);
   }
 
-  var conflicts=[];
-  if(fundRel*score<0 && Math.abs(fundRel)>=7) conflicts.push('fundamentals');
-  if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=10) conflicts.push('rates');
-  if(cot.combined*score<0 && Math.abs(cot.combined)>=6) conflicts.push('positioning');
-  if(riskDiff*score<0 && Math.abs(riskDiff)>=4) conflicts.push('risk');
-  if(seas*score<0 && Math.abs(seas)>=0.75) conflicts.push('seasonality');
-
-  var side=sideName(), story=labelWord(), lead;
-  if(side==='neither'){
-    var balancedLead=[
-      pair+' is '+story[0]+' right now: there is no clear leader, so the next useful clue is whichever pillar breaks the tie first.',
-      'The '+pair+' macro picture is '+story[0]+'. Rather than forcing a direction, the useful question is what can create a clean gap between '+base+' and '+quote+'.',
-      pair+' is '+story[0]+'. The dashboard is not seeing enough separation to make one side the clear trade yet.'
-    ];
-    lead=balancedLead[(base.charCodeAt(0)+score.toString().length)%balancedLead.length];
-  } else {
-    var driverPhrase=mainDriverName?driverProse(mainDriverName):'the overall mix';
-    var leadOpen=[
-      pair+' is '+story[0]+': '+side+' is currently in front, with '+agreeCount+' of 7 pillars pointing the same way. The biggest support is '+driverPhrase+'.',
-      'The current '+pair+' score puts '+side+' ahead. '+story[1]+'. '+driverProse(mainDriverName||'Fundamentals')+' is doing the most work in the background.',
-      pair+' currently gives '+side+' the better macro setup. The lead comes from '+agreeCount+' of 7 pillars, with '+driverPhrase+' carrying the most weight.',
-      'On the dashboard, '+side+' has the stronger hand in '+pair+'. The important part is not the label itself but the mix underneath it: '+driverPhrase+' is the main reason the gap exists.'
-    ];
-    lead=leadOpen[(pair.charCodeAt(0)+pair.charCodeAt(3)+agreeCount)%leadOpen.length];
+  var leadDrivers=dir?scannerLedByDrivers(base,quote,dir):[];
+  var driverName=leadDrivers.length?leadDrivers[0].name:'';
+  var leadText=sideNameText();
+  function sideNameText(){
+    if(dir===0) return head();
+    var lead=dir>0?base:quote;
+    var driverPhrase=driverName?pick([' The biggest push is coming from '+driverName.toLowerCase()+'.',' '+cap(driverName.toLowerCase())+' is carrying the most weight here.',' The strongest current support is coming from '+driverName.toLowerCase()+'.',' Look first at '+driverName.toLowerCase()+': it is the clearest reason the score is on this side.'],'lead-driver'):'';
+    return head()+driverPhrase;
   }
 
-  var watchLine='';
-  if(side!=='neither'){
-    var watchDriver=mainDriverName||'Fundamentals';
-    var watchTemplates=[
-      'Keep an eye on '+driverProse(watchDriver)+'. A clear move against '+side+' would be the first sign that this lead is fading.',
-      'The key test is '+driverProse(watchDriver)+': if it starts turning, the pair can move from a lead to a much more balanced setup.',
-      'For the bias to weaken, you would want to see '+driverProse(watchDriver)+' stop supporting '+side+' and at least one other pillar start joining the other side.',
-      'The score can stay positive while the story worsens. Watch for a reversal in '+driverProse(watchDriver)+' before the headline bias fully flips.',
-      'What would change the call? A clear deterioration in '+driverProse(watchDriver)+', especially if the yield gap or policy gap moves the other way at the same time.'
-    ];
-    watchLine=watchTemplates[(pair.charCodeAt(1)+Math.abs(Math.round(score)))%watchTemplates.length];
-  }
-
-  var divergence;
-  if(conflicts.length===0){
-    var cleanTemplates=[
-      'Most of the evidence is moving together. That is the cleaner setup: the data, rates and secondary signals are broadly telling the same story.',
-      'There is little internal conflict at the moment. Several pillars are pointing the same way, which makes the headline score easier to trust.',
-      'The dashboard is relatively aligned. Nothing important is currently fighting the main signal hard enough to create a major warning.',
-      'The pieces fit together reasonably well. That does not remove risk, but it means there is no obvious macro contradiction to solve first.'
-    ];
-    divergence=cleanTemplates[(base.charCodeAt(0)+quote.charCodeAt(0)+Math.abs(Math.round(score)))%cleanTemplates.length]+' '+(watchLine||'The next risk is a fresh data or policy surprise that changes one of the main pillars.');
-  } else if(conflicts.length===1){
-    var oneName=conflicts[0];
-    var oneTemplates=[
-      'There is one clear disagreement: '+oneName+' is leaning against the headline score. That does not kill the setup, but it is the part most likely to make the move less clean.',
-      'One pillar is pushing back — '+oneName+'. The lead can hold while the rest of the picture stays firm, but this is the first area to watch for a warning.',
-      'The main caution flag is '+oneName+'. The pair still has a lead, yet one part of the macro story is refusing to confirm it.',
-      'The score has one weak link: '+oneName+' is not fully agreeing with the dominant side. That is a reason to monitor the pair, not to ignore the disagreement.'
-    ];
-    divergence=oneTemplates[(pair.charCodeAt(2)+Math.abs(Math.round(score)))%oneTemplates.length]+' '+watchLine;
-  } else {
-    divergence='This is a more mixed setup. '+conflicts.slice(0,3).join(', ')+' are not fully aligned with the composite, so the quality of the signal matters more than the label on top. '+(watchLine||'A fresh catalyst could easily change which side has the cleaner case.');
-  }
-
-  var conclusion;
-  if(side==='neither'){
-    var neutralConclusions=[
-      'Bottom line: there is no strong macro winner yet. Wait for the data, policy or yield market to create a clearer gap before treating the pair as a strong directional setup.',
-      'Bottom line: this is a balance-of-forces market. The next decisive move should come from a new separation in fundamentals or rates, not from the current score alone.',
-      'Bottom line: neutrality here is useful information. The dashboard is saying the pair needs a new catalyst before one side deserves clear priority.'
-    ];
-    conclusion=neutralConclusions[(pair.charCodeAt(0)+pair.charCodeAt(5))%neutralConclusions.length];
-  } else if(conflicts.length===0){
-    var clearConclusions=[
-      'Bottom line: '+side+' has the cleaner macro case right now. The trade gets stronger if '+driverProse(mainDriverName||'Fundamentals')+' keeps moving in the same direction and the yield gap does not undercut it.',
-      'Bottom line: the lead is supported rather than isolated. What matters next is whether the main driver keeps improving without a sharp reversal in rates or policy.',
-      'Bottom line: '+side+' has the better setup at this point. The main thing that would change the view is a clear turn in the driver carrying the score or a meaningful move in the 2Y spread.',
-      'Bottom line: the macro story currently hangs together for '+side+'. Keep checking the yield differential because that is often where a clean story starts to crack first.'
-    ];
-    conclusion=clearConclusions[(pair.charCodeAt(3)+Math.abs(Math.round(score)))%clearConclusions.length];
-  } else if(conflicts.length===1){
-    conclusion=side+' still has the better score, but the signal is not perfect. The disagreement in '+conflicts[0]+' is the main thing that could stop the move from carrying further.';
-  } else {
-    conclusion=side+' still leads on the headline score, but several parts of the macro picture are pulling the other way. Treat this as a conditional bias: it needs confirmation rather than blind follow-through.';
-  }
-
-  var blocks=[lead,topFundLine(),cbNarrative(),rateNarrative(),cotNarrative(),riskNarrative()+' '+seasonNarrative(),divergence,conclusion];
+  var body=[
+    {cls:'lead',html:leadText},
+    {cls:'fund',html:fundamentalRead()},
+    {cls:'cb',html:cbNarrative()},
+    {cls:'rate',html:rateNarrative()},
+    {cls:'cot',html:cotNarrative()},
+    {cls:'risk',html:safe(riskNarrative())+' '+safe(seasonNarrative())},
+    {cls:'align',html:safe(alignmentRead())},
+    {cls:'flip',html:safe(whatChanges())},
+    {cls:'verdict',html:safe(leadText)+' '+safe(whatChanges())}
+  ];
+  function styleBlock(b){return '<div class="pair-macro-'+b.cls+'">'+b.html+'</div>';}
   return '<div class="pair-macro-summary">'+
     '<div class="pair-macro-summary-head"><span>Macro read · analyst brief</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
-    '<div class="pair-macro-lead">'+esc(blocks[0])+'</div>'+
-    blocks.slice(1,blocks.length-1).map(function(t){return '<div class="pair-macro-line">'+esc(t)+'</div>';}).join('')+
-    '<div class="pair-macro-verdict">'+esc(blocks[blocks.length-1])+'</div>'+
+    body.map(styleBlock).join('')+
   '</div>';
 }
 
-
+function pairFocusHtml(pair,score){
+  var base=pair.slice(0,3), quote=pair.slice(3,6), y=pairYieldCalc(base,quote), cot=cotPairRegime(base,quote);
+  var fb=fundFor(base), fq=fundFor(quote), fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
+  var carry=scannerCarryPct(base,quote), bSur=surpriseWeightedPct(base), qSur=surpriseWeightedPct(quote);
+  var risk=riskPairState(base,quote), riskDiff=100*0.03*(riskTermFor(base)-riskTermFor(quote));
+  var dir=score>7?1:score<-7?-1:0;
+  var labels={
+    Fundamentals:pillarBias(fundRel),
+    Yield:y.score==null?'Neutral':(y.score>=7?'Very Bullish':y.score>=3?'Bullish':y.score<=-7?'Very Bearish':y.score<=-3?'Bearish':'Neutral'),
+    'CB stance':pairCbStanceLabel(base,quote),Position:cot.posLabel,WoW:cot.flowLabel,
+    Seasonality:seasonalityPairText(base,quote),'Risk sentiment':risk
+  };
+  var agree=0,dis=0,neutral=0;
+  ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'].forEach(function(n){var sg=pillarSign(labels[n]);if(dir&&sg===dir)agree++;else if(dir&&sg!==0)dis++;else neutral++;});
+  var cbNameMap={USD:'Fed',EUR:'ECB',GBP:'Bank of England',JPY:'Bank of Japan',CHF:'SNB',AUD:'RBA',NZD:'RBNZ',CAD:'Bank of Canada'};
+  function cb(ccy){return cbNameMap[ccy]||ccy;}
+  function ccyRate(ccy){var v=DATA[ccy]&&parseNum(DATA[ccy].interestRate);return v&&v.num!=null?v.num:null;}
+  function val(v){return v==null?'—':(Number(v)>0?'+':'')+Number(v).toFixed(1);}
+  function bps(v){return v==null?'—':(Number(v)>0?'+':'')+Math.round(Number(v))+'bp';}
+  function key(label,value,cls){return '<div class="pair-focus-item"><span>'+esc(label)+'</span><b class="'+(cls||'')+'">'+esc(value)+'</b></div>';}
+  var policyGap=cbStanceScore(base)-cbStanceScore(quote), rateB=ccyRate(base), rateQ=ccyRate(quote);
+  var policyText=policyGap===0?'Matched':(policyGap>0?base+' '+cb(base):quote+' '+cb(quote));
+  var cotStock=cot.posLabel&&cot.posLabel!=='Neutral'?cot.posLabel:'Balanced';
+  var cotFlow=cot.flowLabel&&cot.flowLabel!=='Neutral'?cot.flowLabel:'No clear weekly lead';
+  var flowBase=Number((cotLatest(base)||{}).netChg)||0, flowQuote=Number((cotLatest(quote)||{}).netChg)||0;
+  var flowDiff=Math.abs(flowBase-flowQuote);
+  var flowWinner=flowDiff>1000?(flowBase>flowQuote?base:quote):'neither';
+  var crowdBase=cotCrowding(base), crowdQuote=cotCrowding(quote);
+  var crowdLine=[];
+  if(crowdBase&&crowdBase.label&&crowdBase.label!=='Neutral') crowdLine.push(base+' '+crowdBase.label.toLowerCase());
+  if(crowdQuote&&crowdQuote.label&&crowdQuote.label!=='Neutral') crowdLine.push(quote+' '+crowdQuote.label.toLowerCase());
+  var drivers=dir?scannerLedByDrivers(base,quote,dir).slice(0,3):[];
+  var support=drivers.length?drivers.map(function(d){return '<span class="pair-focus-driver '+(d.pts>0?'pos':'neg')+'">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';}).join(' '):'<span class="pair-focus-muted">No directional driver yet</span>';
+  var flip=[];
+  if(Math.abs(fundRel)>=7 && ((fundRel>0?1:-1)!==dir || dir===0)) flip.push('the fundamental gap closes');
+  if(y.current!=null && Math.abs(y.current)>=10 && ((y.current>0?1:-1)!==dir || dir===0)) flip.push('the 2Y spread turns back');
+  if(flowWinner!=='neither' && dir && flowWinner!== (dir>0?base:quote)) flip.push('fresh COT flow keeps moving against '+(dir>0?base:quote));
+  if(crowdLine.length) flip.push(crowdLine.join(' and ')+' becomes too crowded');
+  if(!flip.length) flip.push('a meaningful data, policy or rates repricing changes the balance');
+  var focusNotes=[];
+  focusNotes.push(dir ? ('<strong>'+esc(agree)+'/7 pillars support '+esc(dir>0?base:quote)+'</strong>' + (dis ? ' · '+esc(dis)+' against'+(neutral?' · '+esc(neutral)+' neutral':'') : '')) : '<strong>Neutral band</strong> · no side has enough separation to claim the trade');
+  if(y.current!=null) focusNotes.push('<strong>2Y '+esc(bps(y.current))+'</strong>'+ (y.week!=null?' · week '+esc(bps(y.week)):'') );
+  if(carry!=null) focusNotes.push('<strong>Carry '+esc((carry>0?'+':'')+carry.toFixed(2)+'%')+'</strong> · policy-rate gap');
+  return '<div class="pair-focus-card">'+
+    '<div class="pair-focus-head"><div><div class="pair-focus-kicker">PAIR FOCUS</div><div class="pair-focus-title">'+esc(base)+' / '+esc(quote)+'</div></div><div class="pair-focus-band '+(dir>0?'pos':dir<0?'neg':'neu')+'">'+esc(pairBandLabel(score))+'</div></div>'+
+    '<div class="pair-focus-score-row"><div class="pair-focus-big '+(score>0?'pos':score<0?'neg':'neu')+'">'+esc(fmt(score))+'</div><div><div class="pair-focus-caption">Live composite</div><div class="pair-focus-mini">'+esc(dir>0?base+' ahead':dir<0?quote+' ahead':'No side in control')+'</div></div></div>'+
+    '<div class="pair-focus-grid">'+
+      key('Agree',dir?agree+'/7':'Neutral','')+
+      key('Fundamentals',fundRel>=0?'+'+Math.round(fundRel)+' pts '+base:'+'+Math.round(Math.abs(fundRel))+' pts '+quote, fundRel===0?'':fundRel>0?'pos':'neg')+
+      key('2Y spread',y.current==null?'—':bps(y.current),y.current==null?'':y.current>0?'pos':'neg')+
+      key('Carry',carry==null?'—':(carry>0?'+':'')+carry.toFixed(2)+'%',carry==null?'':carry>0?'pos':carry<0?'neg':'')+
+      key('Policy gap',policyGap===0?'Matched':(policyGap>0?base:quote)+' lead',policyGap===0?'':policyGap>0?'pos':'neg')+
+      key('COT stock',cotStock,'')+
+      key('COT flow',flowWinner==='neither'?'Balanced':flowWinner+' this week',flowWinner==='neither'?'':flowWinner===base?'pos':'neg')+
+      key('Risk',risk,risk==='Neutral'?'':risk.indexOf('Bull')>=0?'pos':'neg')+
+    '</div>'+ 
+    '<div class="pair-focus-section"><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
+    '<div class="pair-focus-section"><div class="pair-focus-section-title">DATA / SURPRISE</div><div class="pair-focus-dual"><span>'+esc(base)+' <b>'+esc(bSur.pct==null?'—':bSur.pct+'%')+'</b></span><span>'+esc(quote)+' <b>'+esc(qSur.pct==null?'—':qSur.pct+'%')+'</b></span></div></div>'+ 
+    '<div class="pair-focus-section"><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note">'+esc(cotStock)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div></div>'+ 
+    '<div class="pair-focus-section"><div class="pair-focus-section-title">WHAT COULD FLIP IT</div><div class="pair-focus-flip">'+esc(flip.slice(0,3).join(' · '))+'</div></div>'+ 
+    '<div class="pair-focus-notes">'+focusNotes.map(function(x){return '<div>'+x+'</div>';}).join('')+'</div>'+ 
+  '</div>';
+}
 
 var activeCotCcy="ALL";
 // Default to the full 52-week window so the selected COT regime is immediately traceable.
@@ -11552,6 +11736,19 @@ body,html{background:var(--bg);}
 <style id="final-score-size-fix">
 #tab-scanner .scanner-score{font-size:14px!important;font-weight:700!important;line-height:1!important;}
 </style>
+
+<style id="macro-read-v2-analyst-texture">
+/* Analyst brief: same size, stronger hierarchy, and the same orange accent used by the
+   dashboard's greeting/analyst messaging. */
+.pair-macro-summary-head span{color:var(--amber)!important;font-weight:800!important;}
+.pair-macro-summary-head b{font-weight:800!important;}
+.pair-macro-lead,.pair-macro-fund,.pair-macro-cb,.pair-macro-rate,.pair-macro-verdict{font-weight:700!important;color:var(--text)!important;}
+.pair-macro-lead strong,.pair-macro-fund strong,.pair-macro-cb strong,.pair-macro-rate strong,.pair-macro-verdict strong{color:var(--amber)!important;font-weight:800!important;}
+.pair-macro-summary .pair-macro-line{font-size:11px;color:var(--text-dim);}
+.pair-macro-summary .pair-macro-line strong{font-weight:800!important;}
+.pair-macro-summary u{text-decoration-thickness:1px;text-underline-offset:2px;}
+.pair-macro-summary em{font-style:italic;}
+</style>
 </body>
 <style id="overview-kpi-trend-arrows-final">
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow{font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:900;margin-left:5px;display:inline-block;vertical-align:middle;}
@@ -12379,5 +12576,56 @@ twpShowNameGateIfNeeded();
 #tab-scanner .scanner-table th:nth-child(4),#tab-scanner .scanner-table th:nth-child(5){
   position:sticky!important;z-index:8!important;background:var(--panel2)!important;
 }
+</style>
+
+<style id="pair-focus-and-macro-highlight-v70">
+/* Pair Focus replaces the generic Overall Trend card inside an expanded scanner row. */
+#tab-scanner .scanner-expanded-grid{grid-template-columns:minmax(320px,.92fr) minmax(0,1.42fr)!important;gap:10px!important;align-items:start!important;}
+#tab-scanner .pair-focus-card{background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:10px 11px;color:var(--text);}
+#tab-scanner .pair-focus-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+#tab-scanner .pair-focus-kicker{font-size:9.5px;letter-spacing:.9px;text-transform:uppercase;color:var(--amber);font-weight:800;}
+#tab-scanner .pair-focus-title{font-size:15px;font-weight:800;margin-top:2px;}
+#tab-scanner .pair-focus-band{font-size:10.5px;font-weight:800;white-space:nowrap;}
+#tab-scanner .pair-focus-band.pos{color:var(--bullish-strong)}
+#tab-scanner .pair-focus-band.neg{color:var(--bearish-strong)}
+#tab-scanner .pair-focus-band.neu{color:var(--text-dim)}
+#tab-scanner .pair-focus-score-row{display:flex;align-items:center;gap:10px;padding:9px 0 8px;}
+#tab-scanner .pair-focus-big{font-size:25px;line-height:1;font-weight:800;}
+#tab-scanner .pair-focus-big.pos{color:var(--bullish-strong)}
+#tab-scanner .pair-focus-big.neg{color:var(--bearish-strong)}
+#tab-scanner .pair-focus-big.neu{color:var(--text-dim)}
+#tab-scanner .pair-focus-caption{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
+#tab-scanner .pair-focus-mini{font-size:11px;font-weight:700;margin-top:2px;}
+#tab-scanner .pair-focus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}
+#tab-scanner .pair-focus-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 7px;background:var(--panel2);border:1px solid var(--border);border-radius:5px;min-width:0;}
+#tab-scanner .pair-focus-item span{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.45px;}
+#tab-scanner .pair-focus-item b{font-size:11px;text-align:right;white-space:nowrap;}
+#tab-scanner .pair-focus-item b.pos{color:var(--bullish-strong)}
+#tab-scanner .pair-focus-item b.neg{color:var(--bearish-strong)}
+#tab-scanner .pair-focus-section{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);}
+#tab-scanner .pair-focus-section-title{font-size:9.5px;color:var(--text-faint);letter-spacing:.7px;font-weight:800;margin-bottom:5px;}
+#tab-scanner .pair-focus-drivers{display:flex;flex-wrap:wrap;gap:4px;}
+#tab-scanner .pair-focus-driver{display:inline-flex;align-items:center;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--panel2);font-size:10px;font-weight:800;}
+#tab-scanner .pair-focus-driver.pos{color:var(--bullish-strong)}
+#tab-scanner .pair-focus-driver.neg{color:var(--bearish-strong)}
+#tab-scanner .pair-focus-muted,.pair-focus-note,.pair-focus-flip{font-size:10.5px;color:var(--text-dim);line-height:1.42;}
+#tab-scanner .pair-focus-dual{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+#tab-scanner .pair-focus-dual span{padding:5px 7px;background:var(--panel2);border-radius:4px;font-size:10.5px;color:var(--text-dim);}
+#tab-scanner .pair-focus-dual b{float:right;color:var(--text);}
+#tab-scanner .pair-focus-flip{color:var(--amber);font-weight:700;}
+#tab-scanner .pair-focus-notes{display:grid;gap:3px;margin-top:8px;font-size:9.5px;color:var(--text-faint);line-height:1.35;}
+
+/* The analyst brief uses the dashboard's existing amber analyst accent to call out only
+   the information worth remembering. No font-size increase: emphasis is carried by color
+   + weight, with a subtle underline for the highest-value phrase. */
+#tab-scanner .pair-macro-summary{line-height:1.48!important;}
+#tab-scanner .pair-macro-lead,#tab-scanner .pair-macro-fund,#tab-scanner .pair-macro-cb,#tab-scanner .pair-macro-rate,#tab-scanner .pair-macro-cot,#tab-scanner .pair-macro-verdict{font-weight:500!important;}
+#tab-scanner .pair-macro-key{color:var(--amber)!important;font-weight:900!important;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
+#tab-scanner .pair-macro-mark{font-weight:800!important;}
+#tab-scanner .pair-macro-line{font-weight:500!important;}
+#tab-scanner .pair-macro-flip,#tab-scanner .pair-macro-align{font-weight:600!important;color:var(--text-dim)!important;}
+#tab-scanner .pair-macro-verdict{border-top:1px solid var(--border);margin-top:7px;padding-top:7px;}
+@media(max-width:900px){#tab-scanner .scanner-expanded-grid{grid-template-columns:1fr!important;}#tab-scanner .pair-focus-grid{grid-template-columns:1fr 1fr!important;}}
+@media(max-width:600px){#tab-scanner .pair-focus-grid,#tab-scanner .pair-focus-dual{grid-template-columns:1fr!important;}}
 </style>
 </html>
