@@ -1439,7 +1439,8 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 #tab-cot .cot-bad{color:var(--bearish-strong)!important;}
 #tab-cot .cot-neutral{color:var(--text-dim)!important;}
 #tab-cot .cot-muted{color:var(--text-faint)!important;}
-#tab-cot .cot-bar{height:8px;position:relative;background:var(--panel3);border-radius:3px;overflow:hidden;}
+#tab-cot .cot-bar{height:8px;position:relative;background:var(--panel3);border-radius:0;overflow:hidden;}
+#tab-cot .cot-bar-seg{transition:width .65s cubic-bezier(.22,.9,.35,1);}
 #tab-cot .cot-bar .neg{position:absolute;right:50%;top:0;bottom:0;background:var(--bearish);opacity:.9;}
 #tab-cot .cot-bar .pos{position:absolute;left:50%;top:0;bottom:0;background:var(--bullish);opacity:.9;}
 #tab-cot .cot-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);z-index:2;}
@@ -5341,45 +5342,6 @@ function pillarStrengthTier(label){
   if(label.indexOf("Bullish")!==-1||label.indexOf("Bearish")!==-1) return 1;
   return 0;
 }
-function scannerDriverBreakdown(base,quote){
-  var db=DATA[base], dq=DATA[quote];
-  var fb=fundFor(base), fq=fundFor(quote);
-  var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
-  var y=pairYieldCalc(base,quote);
-  var yScore=y.score;
-  var cot=cotPairRegime(base,quote);
-  var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
-  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
-  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
-
-  // These are the exact seven evidence columns shown in the scanner:
-  // Fundamentals, Yield, CB stance, Position, WoW, Seasonality, Risk.
-  // Their contribution is expressed in composite-score points, matching the
-  // model's 45/18/14/8/7/5/3 hierarchy -- Position and WoW are independently
-  // weighted (8% / 7%) rather than pre-blended at a fixed 75/25 split.
-  var fundPts=45*((fundBase-fundQuote)/2);
-  var yieldPts=yScore==null?0:1.8*yScore;
-  var cbPts=14*((cbBase-cbQuote)/2);
-  var posPts=cot.insufficient?0:0.08*cot.posScore;
-  var flowPts=cot.insufficient?0:0.07*cot.flowScore;
-  var riskPts=5*((riskBase-riskQuote)/2);
-  var seasPts=3*((seasBase-seasQuote)/2);
-
-  function push(list,name,pts,label){
-    var n=Number(pts)||0;
-    if(Math.abs(n)<0.5) return;
-    list.push({name:name,pts:n,label:label||''});
-  }
-  var out=[];
-  push(out,'Fundamentals',fundPts,pillarBias((fundBase-fundQuote)*100));
-  push(out,'Yield',yieldPts,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
-  push(out,'CB stance',cbPts,pairCbStanceLabel(base,quote));
-  push(out,'Position',posPts,cot.posLabel);
-  push(out,'WoW',flowPts,cot.flowLabel);
-  push(out,'Seasonality',seasPts,seasonalityPairText(base,quote));
-  push(out,'Risk sentiment',riskPts,riskPairState(base,quote));
-  return out;
-}
 function scannerDriverExplanation(base,quote,driver){
   var leader=driver.pts>0?base:quote;
   var other=driver.pts>0?quote:base;
@@ -5395,6 +5357,14 @@ function scannerDriverExplanation(base,quote,driver){
   };
   return templates[driver.name]||('This driver '+direction+' '+leader+' versus '+other+'.');
 }
+// Single source of truth for the seven-pillar point breakdown (Fundamentals, Yield,
+// CB stance, Position, WoW, Seasonality, Risk sentiment) used by both the scanner
+// table and the Pair Focus panel. An earlier duplicate of this function existed
+// above with different weights (45/8%/7% vs the 50/7.5%/2.5% actually used here) --
+// it was dead code (later declaration wins), removed for clarity, not a scoring change.
+// Weights: Fundamentals max 25pts, Yield max 18pts, CB stance max 14pts, Position max
+// 7.5pts, WoW max 2.5pts, Seasonality max 3pts, Risk sentiment max 5pts -- these match
+// PAIR_FOCUS_PILLAR_CAP used to normalize the driver bars.
 function scannerDriverBreakdown(base,quote){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
@@ -5580,6 +5550,32 @@ function animateScannerTrends(){
 }
 function animateBigTrend(){
   var lines=document.querySelectorAll('#tab-scanner .pair-big-trend-line');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
+// Tiny COT net-position trend line for the Pair Focus "Positioning / Crowd" section --
+// same straight-line, draw-in-on-open pattern as the other sparklines in this file.
+function pairFocusCotSpark(ccy){
+  var w=64,h=18,pad=2;
+  var hist=cotSortHistory(ccy).slice(-14).filter(function(r){return r.net!=null && Number.isFinite(Number(r.net));});
+  if(hist.length<2) return '<span style="color:var(--text-faint);font-size:10px;">&mdash;</span>';
+  var vals=hist.map(function(r){return Number(r.net);});
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){min-=1000;max+=1000;}
+  var range=max-min;
+  var pts=vals.map(function(v,i){var x=pad+(i/(vals.length-1))*(w-2*pad),y=h-pad-((v-min)/range)*(h-2*pad);return [x,y];});
+  var col=vals[vals.length-1]>=vals[0]?'var(--bullish-strong)':'var(--bearish-strong)';
+  var d=pts.map(function(p,i){return (i===0?'M':'L')+p[0].toFixed(1)+' '+p[1].toFixed(1);}).join(' ');
+  var len=0; for(var i=1;i<pts.length;i++){ var dx=pts[i][0]-pts[i-1][0],dy=pts[i][1]-pts[i-1][1]; len+=Math.sqrt(dx*dx+dy*dy); }
+  var lenStr=(len*1.2).toFixed(1);
+  return '<svg class="pfd-cot-spark" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;">'+
+    '<path class="pfd-cot-line" d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .7s ease;"/>'+
+  '</svg>';
+}
+function animatePairFocusCotSpark(){
+  var lines=document.querySelectorAll('#tab-scanner .pfd-cot-line');
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){
       for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
@@ -5873,7 +5869,7 @@ function renderScanner(animateTrend){
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
   document.getElementById("tab-scanner").innerHTML=html;
   if(animateTrend) animateScannerTrends();
-  if(scannerBigTrendAnimate){ animateBigTrend(); scannerBigTrendAnimate=false; }
+  if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); scannerBigTrendAnimate=false; }
 
   var recalcBtn=document.getElementById("recalcBtn");
   if(recalcBtn){ recalcBtn.onclick=async function(){
@@ -6197,7 +6193,7 @@ function switchTab(tab){
   else if(tab==="scanner"){ renderScanner(true); }
   else if(tab==="yield2y"){ renderYield2Y(); }
   else if(tab==="risk"){ renderRiskSentiment(); }
-  else if(tab==="cot"){ renderCotRegime(); }
+  else if(tab==="cot"){ renderCotRegime(true); }
   if(tab==="yield2y" && typeof histSpreadDraw==="function"){
     // The chart canvas is built while its tab is still hidden, so the browser
     // reports zero width at that point and the chart draws at the wrong size.
@@ -6679,6 +6675,7 @@ for(var hpi=0;hpi<CCY_ORDER.length;hpi++){
 var HIST_SPREAD_RANGE = 63;
 var HIST_SPREAD_ACTIVE = "EURUSD";
 var HIST_SPREAD_ANIM_ID = null;
+var COT_CHART_ANIM_ID = null;
 
 function histSpreadLabel(code){
   var x=HIST_SPREAD_PAIRS.find(function(p){return p[0]===code;});
@@ -9051,7 +9048,7 @@ function pairMacroSummaryHtml(pair, score){
   function cbNarrative(){
     var cbLabel=pairCbStanceLabel(base,quote), b=cbName(base), q=cbName(quote);
     var winner=cbLabel.indexOf('Bullish')>=0?base:cbLabel.indexOf('Bearish')>=0?quote:'neither';
-    var line='';
+    var line='', guidePart='';
     if(winner==='neither'){
       line=pick([
         'Policy is not creating much separation: '+b+' is '+cbMove(base)+' while '+q+' is '+cbMove(quote)+'.',
@@ -9073,9 +9070,14 @@ function pairMacroSummaryHtml(pair, score){
         'Monetary policy is leaning toward '+winner+'. '+wcb+' is '+cbMove(winner)+', while '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
         'The central banks are not standing at the same point: '+wcb+' is '+cbMove(winner)+' and '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
         'The rate-setting story gives '+winner+' the advantage. '+wcb+' is '+cbMove(winner)+' versus '+lcb+' being '+cbMove(winner===base?quote:base)+'.'
-      ],'cb-'+winner)+guidePart;
+      ],'cb-'+winner);
     }
-    return safeLineWithKeys(line, [cbName(base),cbName(quote),base,quote]);
+    // guidePart already contains raw <strong> markup (built above via strong()), so it must
+    // stay OUTSIDE safeLineWithKeys — that helper escapes everything around the matched key,
+    // and running it over already-built HTML re-escapes the tags into visible literal text.
+    // Highlight the actual decisive fact (the winning bank's stance -- hike/cut/hold),
+    // not just the bank's name -- a name isn't the information that matters here.
+    return safeLineWithKeys(line, [cbMove(winner==='neither'?base:winner),cbName(base),cbName(quote),base,quote]) + guidePart;
   }
 
   function safeLineWithKeys(text,keys){
@@ -9300,6 +9302,57 @@ function pairMacroSummaryHtml(pair, score){
   '</div>';
 }
 
+// Per-pillar "driver breakdown" rows for the Pair Focus panel: one row per pillar with
+// a base-vs-quote lean bar and a points delta -- weight % deliberately left out of the
+// markup (kept internal to the model) per request. Each pillar's raw point contribution
+// (from scannerDriverBreakdown) is normalized against that pillar's own realistic max
+// so the two flanking numbers and the bar tick are on a common, comparable 0-100 scale;
+// they are a display convention (mirrored around 50), not independently-tracked raw
+// per-currency sub-scores for every pillar -- COT Position/WoW and Yield only exist as
+// a pair-level differential in the underlying model, so their "isolated" numbers are
+// derived from that differential rather than being a separately stored figure.
+var PAIR_FOCUS_PILLAR_CAP={Fundamentals:25,Yield:18,'CB stance':14,Position:7.5,WoW:2.5,Seasonality:3,'Risk sentiment':5};
+// One-line explanation per pillar, used only in the hover tooltip -- kept out of the
+// row markup itself since the request was to keep the table dense, not to add copy.
+var PAIR_FOCUS_PILLAR_EXPLAIN={
+  Fundamentals:'Relative growth, inflation and labour evidence between the two economies.',
+  Yield:'2Y government-bond yield differential between the two currencies.',
+  'CB stance':'Relative hawkish/dovish policy stance of the two central banks.',
+  Position:'Net speculative futures positioning (CFTC COT) between the two currencies.',
+  WoW:'This week\u2019s change in that COT positioning -- who added, who trimmed.',
+  Seasonality:'Historical tendency for this pair to move a given direction at this time of year.',
+  'Risk sentiment':'How each currency tends to trade in the current risk-on/risk-off regime.'
+};
+function pairFocusDriverRowsHtml(base,quote){
+  var rows=scannerDriverBreakdown(base,quote);
+  var order=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'];
+  rows=order.map(function(name){ var r=rows.filter(function(x){return x.name===name;})[0]; return r||{name:name,pts:0,label:'Neutral'}; });
+  return rows.map(function(r){
+    var cap=PAIR_FOCUS_PILLAR_CAP[r.name]||10;
+    var leanFrac=Math.max(-1,Math.min(1,r.pts/cap));
+    var baseScore=50+50*leanFrac, quoteScore=50-50*leanFrac;
+    var deltaTxt=(r.pts>0?'+':'')+r.pts.toFixed(2);
+    var deltaCls=r.pts>0.05?'pos':r.pts<-0.05?'neg':'';
+    var explain=PAIR_FOCUS_PILLAR_EXPLAIN[r.name]||'';
+    var tip=esc(r.name)+'||'+esc(explain)+' Currently '+esc(r.label||'Neutral')+' ('+esc(base)+' '+baseScore.toFixed(1)+' vs '+esc(quote)+' '+quoteScore.toFixed(1)+', contributing '+esc(deltaTxt)+' composite pts).';
+    // Single-color bar: one fill, growing out from the center line toward whichever
+    // side is actually ahead -- never both a red segment and a green segment shown
+    // at once. Green + grows right (toward base) when base leads; red + grows left
+    // (toward quote) when quote leads. Flat/neutral rows show no fill at all.
+    var fillCls=leanFrac>0.005?'pos':leanFrac<-0.005?'neg':'';
+    var fillPct=Math.abs(leanFrac)*50;
+    var fillStyle=leanFrac>=0
+      ? 'left:50%;width:'+fillPct.toFixed(1)+'%;'
+      : 'right:50%;width:'+fillPct.toFixed(1)+'%;';
+    return '<div class="pfd-row" data-tip="'+tip+'">'+
+      '<div class="pfd-name">'+esc(r.name)+'</div>'+
+      '<div class="pfd-num pfd-num-l">'+baseScore.toFixed(1)+'</div>'+
+      '<div class="pfd-bar-wrap"><div class="pfd-bar"><span class="pfd-bar-fill '+fillCls+'" style="'+fillStyle+'"></span><span class="pfd-bar-mid"></span></div></div>'+
+      '<div class="pfd-num pfd-num-r">'+quoteScore.toFixed(1)+'</div>'+
+      '<div class="pfd-delta '+deltaCls+'">'+deltaTxt+'</div>'+
+    '</div>';
+  }).join('');
+}
 function pairFocusHtml(pair,score){
   var base=pair.slice(0,3), quote=pair.slice(3,6), y=pairYieldCalc(base,quote), cot=cotPairRegime(base,quote);
   var fb=fundFor(base), fq=fundFor(quote), fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
@@ -9346,20 +9399,15 @@ function pairFocusHtml(pair,score){
   return '<div class="pair-focus-card">'+
     '<div class="pair-focus-head"><div><div class="pair-focus-kicker">PAIR FOCUS</div><div class="pair-focus-title">'+esc(base)+' / '+esc(quote)+'</div></div><div class="pair-focus-band '+(dir>0?'pos':dir<0?'neg':'neu')+'">'+esc(pairBandLabel(score))+'</div></div>'+
     '<div class="pair-focus-score-row"><div class="pair-focus-big '+(score>0?'pos':score<0?'neg':'neu')+'">'+esc(fmt(score))+'</div><div><div class="pair-focus-caption">Live composite</div><div class="pair-focus-mini">'+esc(dir>0?base+' ahead':dir<0?quote+' ahead':'No side in control')+'</div></div></div>'+
-    '<div class="pair-focus-grid">'+
-      key('Agree',dir?agree+'/7':'Neutral','')+
-      key('Fundamentals',fundRel>=0?'+'+Math.round(fundRel)+' pts '+base:'+'+Math.round(Math.abs(fundRel))+' pts '+quote, fundRel===0?'':fundRel>0?'pos':'neg')+
-      key('2Y spread',y.current==null?'—':bps(y.current),y.current==null?'':y.current>0?'pos':'neg')+
-      key('Carry',carry==null?'—':(carry>0?'+':'')+carry.toFixed(2)+'%',carry==null?'':carry>0?'pos':carry<0?'neg':'')+
-      key('Policy gap',policyGap===0?'Matched':(policyGap>0?base:quote)+' lead',policyGap===0?'':policyGap>0?'pos':'neg')+
-      key('COT stock',cotStock,'')+
-      key('COT flow',flowWinner==='neither'?'Balanced':flowWinner+' this week',flowWinner==='neither'?'':flowWinner===base?'pos':'neg')+
-      key('Risk',risk,risk==='Neutral'?'':risk.indexOf('Bull')>=0?'pos':'neg')+
+    '<div class="pfd-table">'+
+      '<div class="pfd-head-row"><div class="pfd-name"></div><div class="pfd-num pfd-num-l">'+esc(base)+'</div><div class="pfd-bar-wrap"></div><div class="pfd-num pfd-num-r">'+esc(quote)+'</div><div class="pfd-delta"></div></div>'+
+      pairFocusDriverRowsHtml(base,quote)+
     '</div>'+ 
-    '<div class="pair-focus-section"><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
-    '<div class="pair-focus-section"><div class="pair-focus-section-title">DATA / SURPRISE</div><div class="pair-focus-dual"><span>'+esc(base)+' <b>'+esc(bSur.pct==null?'—':bSur.pct+'%')+'</b></span><span>'+esc(quote)+' <b>'+esc(qSur.pct==null?'—':qSur.pct+'%')+'</b></span></div></div>'+ 
-    '<div class="pair-focus-section"><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note">'+esc(cotStock)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div></div>'+ 
-    '<div class="pair-focus-section"><div class="pair-focus-section-title">WHAT COULD FLIP IT</div><div class="pair-focus-flip">'+esc(flip.slice(0,3).join(' · '))+'</div></div>'+ 
+    '<div class="pair-focus-section" data-tip="'+esc('WHAT IS MOVING THE PAIR')+'||The 1-2 pillars with the largest point contribution behind the current score -- recalculated live, not a fixed list."><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
+    '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||From CFTC weekly futures positioning (COT) for both currencies -- this is speculative money on regulated futures, not a single-country reading. Crowded = top/bottom 20% of its own 52-week range, so it can flag either side, not just one currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note">'+esc(cotStock)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div>'+
+      '<div class="pfd-cot-trend-row"><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(base)+'</span>'+pairFocusCotSpark(base)+'</div><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(quote)+'</span>'+pairFocusCotSpark(quote)+'</div></div>'+
+    '</div>'+ 
+    '<div class="pair-focus-section" data-tip="'+esc('WHAT COULD FLIP IT')+'||Generated per pair from whichever pillars are currently closest to reversing -- fundamentals gap, yield spread, COT flow or crowding -- not a fixed list of stock reasons."><div class="pair-focus-section-title">WHAT COULD FLIP IT</div><div class="pair-focus-flip-list">'+flip.slice(0,4).map(function(f){return '<div class="pair-focus-flip-item">'+esc(f)+'</div>';}).join('')+'</div></div>'+ 
     '<div class="pair-focus-notes">'+focusNotes.map(function(x){return '<div>'+x+'</div>';}).join('')+'</div>'+ 
   '</div>';
 }
@@ -9370,7 +9418,8 @@ var activeCotRange="12M";
 function cotRangeLimit(range){
   return range==='6W'?6:(range==='3M'?13:(range==='6M'?26:(range==='12M'?52:null)));
 }
-function cotDrawChart(ccy){
+function cotDrawChart(ccy,animate){
+  if(COT_CHART_ANIM_ID){ cancelAnimationFrame(COT_CHART_ANIM_ID); COT_CHART_ANIM_ID=null; }
   var canvas=document.getElementById('cotRegimeCanvas'), empty=document.getElementById('cotRegimeEmpty'), tip=document.getElementById('cotCrosshairTip'), zoneNote=document.getElementById('cotChartZoneNote');
   if(!canvas) return;
   var allRows=cotSortHistory(ccy), limit=cotRangeLimit(activeCotRange);
@@ -9439,17 +9488,27 @@ function cotDrawChart(ccy){
     ctx.fillRect(zx,top,zoneW,h);
     ctx.restore();
   }
-  function drawBase(){
+  function drawBase(reveal){
+    // reveal (0..1) is how far across the plot width the line has been traced so far.
+    // Axis labels, the zero line and date labels stay fully drawn throughout -- only
+    // the line itself (and its weekly dot markers) sweeps in. reveal===undefined or 1
+    // behaves exactly like the old always-fully-drawn version (used for hover redraws).
+    if(reveal==null) reveal=1;
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
     ctx.font='10px IBM Plex Mono, monospace'; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillStyle=td;
     [max,min,0].forEach(function(v){var y=Y(v); if(y<10||y>H-25) return; ctx.fillText(cotFormat(v),pad.l-7,y);});
     if(0>=min && 0<=max){ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(pad.l,Y(0));ctx.lineTo(W-pad.r,Y(0));ctx.stroke();}
     drawCrowdingZone();
-    ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(pad.l,0,Math.max(0,pw*reveal),H);
+    ctx.clip();
+    ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.lineJoin='miter';ctx.lineCap='butt';ctx.beginPath();
     vals.forEach(function(v,i){var x=X(i),y=Y(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
     // Tiny persistent weekly markers. They make every saved observation traceable without clutter.
     vals.forEach(function(v,i){var x=X(i),y=Y(v);ctx.fillStyle=color;ctx.globalAlpha=(i===vals.length-1?0.95:0.38);ctx.beginPath();ctx.arc(x,y,i===vals.length-1?3.2:1.65,0,Math.PI*2);ctx.fill();});
     ctx.globalAlpha=1;
+    ctx.restore();
     ctx.fillStyle=tf;ctx.textBaseline='top';ctx.font='10px IBM Plex Mono, monospace';
     var labelN=Math.min(6,rows.length); for(var i=0;i<labelN;i++){var idx=Math.round(i*(rows.length-1)/(labelN-1||1));var dt=String(rows[idx].date);var lab=dt.slice(5,10);var x=X(idx);ctx.textAlign=idx===0?'left':(idx===rows.length-1?'right':'center');ctx.fillText(lab,x,H-pad.b+10);}
   }
@@ -9467,7 +9526,18 @@ function cotDrawChart(ccy){
       tip.style.left=Math.max(6,left)+'px'; tip.style.top=Math.max(6,top)+'px'; tip.style.display='block';
     }
   }
-  drawBase();
+  if(animate){
+    var cotAnimStart=null, cotAnimDur=650;
+    COT_CHART_ANIM_ID=requestAnimationFrame(function step(ts){
+      if(cotAnimStart===null) cotAnimStart=ts;
+      var t=Math.min(1,(ts-cotAnimStart)/cotAnimDur), eased=1-Math.pow(1-t,3);
+      drawBase(eased);
+      if(t<1){ COT_CHART_ANIM_ID=requestAnimationFrame(step); }
+      else { COT_CHART_ANIM_ID=null; }
+    });
+  } else {
+    drawBase(1);
+  }
   canvas.__cotChartState={rows:rows,vals:vals,W:W,H:H,pad:pad,X:X,Y:Y,color:color,min:min,max:max,dpr:dpr};
 
   if(!canvas.__cotHoverBound){
@@ -9569,7 +9639,7 @@ function cotExportCsv(){
   a.href=URL.createObjectURL(blob);a.download='TWP_COT_History_Master.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},500);
   updateStatus('COT CSV exported · '+rows.length+' rows','var(--bullish-strong)');
 }
-function cotRenderScannerRows(){
+function cotRenderScannerRows(animate){
   var rows=CCY_ORDER.map(function(c){var d=cotLatest(c), crowd=cotCrowding(c);return {c:c,d:d,crowd:crowd};});
   rows.sort(function(a,b){return (b.d.net||0)-(a.d.net||0);});
   return rows.map(function(o){
@@ -9578,7 +9648,11 @@ function cotRenderScannerRows(){
     var dot=crowd.tone==='bull'?'bull':crowd.tone==='bear'?'bear':'neu';
     var normOi=(d.oi!=null&&d.net!=null&&d.oi)?(100*d.net/d.oi):null;
     var normCls=normOi==null?'cot-neutral':normOi>0?'cot-good':normOi<0?'cot-bad':'cot-neutral';
-    return '<tr>'+      '<td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortPct.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longPct.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td class="cot-net '+normCls+'">'+(normOi==null?'—':cotPercent(normOi))+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
+    // On tab-open (animate=true), both segments start at 0% width with their real
+    // target stashed in data-cot-target-w; renderCotRegime then flips them to the
+    // real width on the next frame so the CSS width transition actually plays.
+    var shortW=animate?0:shortPct, longW=animate?0:longPct;
+    return '<tr>'+      '<td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span class="cot-bar-seg" data-cot-target-w="'+shortPct.toFixed(1)+'" style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortW.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span class="cot-bar-seg" data-cot-target-w="'+longPct.toFixed(1)+'" style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longW.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td class="cot-net '+normCls+'">'+(normOi==null?'—':cotPercent(normOi))+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
   }).join('');
 }
 function cotExtremesHtml(){
@@ -9600,7 +9674,7 @@ function cotDetailHtml(ccy){
   return '<div class="cot-hero">'+
     '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net ÷ OI</span><b class="'+netCls+'">'+(d.oi!=null&&d.net!=null&&d.oi?cotPercent(100*d.net/d.oi):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">This is the normalized figure the pair COT score actually compares against other currencies — not the raw net number above.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+Math.min(hist.length,52)+' rolling weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div><div id="cotChartZoneNote" class="cot-chart-zone-note"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
 }
-function renderCotRegime(){
+function renderCotRegime(animate){
   var tab=document.getElementById('tab-cot'); if(!tab||!DATA) return;
   ensureCotEngine();
   var ccy=activeCotCcy==='ALL'?'USD':activeCotCcy;
@@ -9613,7 +9687,17 @@ function renderCotRegime(){
     adminInput='<div class="cot-card cot-admin-card" style="margin-top:10px;">'+
       '<div class="cot-input-wrap"><div class="cot-input-head"><div><div class="cot-input-title">Weekly COT input · edit mode only</div><div class="cot-input-meta">Enter this week’s Long Contracts, Short Contracts, and Open Interest. Net position and weekly change are calculated automatically from saved history.</div></div><div class="cot-input-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">COT week (Tuesday): <input type="date" id="cotInputDate" class="cot-input" style="width:140px;display:inline-block;" value="'+esc(saveDate)+'"> · Report available: <span class="cot-link">'+esc(cotFriendlyDate(releaseDate))+'</span></div></div>'+      '<div class="cot-form-grid"><div>Currency</div><div>Long Contracts</div><div>Short Contracts</div><div>Open Interest</div><div>Net</div><div>WoW Δ</div><div>Action</div></div>'+editorRows+      '<div class="cot-disclaimer">The dashboard stores each weekly observation in history. Long + means longs were added; Long − means longs were reduced. Short + means shorts were added; Short − means shorts were reduced. Net Δ is the real week-on-week change in net positioning. Enter the report’s actual Open Interest when available; if you leave it blank, this week is simply recorded with no OI figure — the dashboard will not reuse last week’s number. If the week above ever gets ahead of (or behind) the actual latest CFTC report, correct it directly in that date field. This input panel is hidden when you are signed out.</div></div></div>';
   }
-  tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:11%" title="Net divided by Open Interest">Net / OI</th><th style="width:19%">Regime</th><th class="right" style="width:17%">Range</th></tr></thead><tbody>'+cotRenderScannerRows()+'</tbody></table></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    adminInput+  '</div>';
+  tab.innerHTML='<div class="cot-page">'+buttons+    '<div class="cot-grid">'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">COT positioning</div><div class="cot-sub">Current long/short split, net position and regime</div></div><div class="cot-chart-meta">History through '+(COT_ENGINE.currentDate||'—')+'</div></div><div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:13%">Asset</th><th style="width:22%">Short ↔ Long</th><th style="width:9%">Net</th><th style="width:9%">1W Δ</th><th style="width:11%" title="Net divided by Open Interest">Net / OI</th><th style="width:19%">Regime</th><th class="right" style="width:17%">Range</th></tr></thead><tbody>'+cotRenderScannerRows(animate)+'</tbody></table></div></div>'+      '<div class="cot-card"><div class="cot-card-head"><div><div class="cot-title">Selected COT regime · '+ccy+'</div><div class="cot-sub">Net-position history and current positioning state</div></div></div>'+cotDetailHtml(ccy)+'</div>'+    '</div>'+    adminInput+  '</div>';
+  if(animate){
+    // Let the 0%-width bars actually mount before flipping to their real width,
+    // otherwise the browser has nothing to transition from.
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        var segs=tab.querySelectorAll('.cot-bar-seg');
+        for(var s=0;s<segs.length;s++){ segs[s].style.width=segs[s].getAttribute('data-cot-target-w')+'%'; }
+      });
+    });
+  }
   var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
   var cotRanges=tab.querySelectorAll('[data-cot-range]'); for(var cr=0;cr<cotRanges.length;cr++){cotRanges[cr].onclick=function(){activeCotRange=this.dataset.cotRange;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
   var inputs=tab.querySelectorAll('[data-cot-field]'); for(var j=0;j<inputs.length;j++){inputs[j].addEventListener('input',function(){isTyping=true;});inputs[j].addEventListener('blur',function(){isTyping=false;});}
@@ -9631,7 +9715,7 @@ function renderCotRegime(){
     };
   }
   var cotExportBtn=document.getElementById('cotExportCsvBtn'); if(cotExportBtn) cotExportBtn.onclick=cotExportCsv;
-  requestAnimationFrame(function(){cotDrawChart(ccy);});
+  requestAnimationFrame(function(){cotDrawChart(ccy,animate);});
 }
 function cotCommitInputs(ccy,tab){
   if(!unlockedLocally) return;
@@ -11749,6 +11833,59 @@ body,html{background:var(--bg);}
 .pair-macro-summary u{text-decoration-thickness:1px;text-underline-offset:2px;}
 .pair-macro-summary em{font-style:italic;}
 </style>
+
+<script id="pair-focus-tooltip-v1">
+// Single delegated tooltip for the whole Pair Focus card. Delegated on document so it
+// works no matter when a card is rendered/re-rendered, and covers the whole hover area
+// (driver rows, section headers) rather than one hardcoded spot -- per request, moving
+// the mouse anywhere over a data-tip element shows its tooltip.
+(function(){
+  var tipEl=null;
+  function ensureTip(){
+    if(tipEl) return tipEl;
+    tipEl=document.createElement('div');
+    tipEl.id='pair-focus-tip';
+    document.body.appendChild(tipEl);
+    return tipEl;
+  }
+  function findTarget(el){
+    while(el && el!==document.body){
+      if(el.hasAttribute && el.hasAttribute('data-tip')) return el;
+      el=el.parentElement;
+    }
+    return null;
+  }
+  function place(x,y){
+    var t=ensureTip(), pad=12, w=t.offsetWidth||240, h=t.offsetHeight||40;
+    var left=x+pad, top=y+pad;
+    if(left+w>window.innerWidth-8) left=x-w-pad;
+    if(top+h>window.innerHeight-8) top=y-h-pad;
+    t.style.left=Math.max(6,left)+'px';
+    t.style.top=Math.max(6,top)+'px';
+  }
+  document.addEventListener('mouseover',function(e){
+    var target=findTarget(e.target);
+    if(!target) return;
+    var raw=target.getAttribute('data-tip')||'';
+    var parts=raw.split('||');
+    var title=parts[0]||'', body=parts.slice(1).join('||')||'';
+    var t=ensureTip();
+    t.innerHTML=(title?'<b>'+title+'</b>':'')+body;
+    t.classList.add('show');
+    place(e.clientX,e.clientY);
+  });
+  document.addEventListener('mousemove',function(e){
+    if(tipEl && tipEl.classList.contains('show')) place(e.clientX,e.clientY);
+  });
+  document.addEventListener('mouseout',function(e){
+    var target=findTarget(e.target);
+    if(!target) return;
+    var to=e.relatedTarget;
+    if(to && target.contains(to)) return;
+    if(tipEl) tipEl.classList.remove('show');
+  });
+})();
+</script>
 </body>
 <style id="overview-kpi-trend-arrows-final">
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow{font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:900;margin-left:5px;display:inline-block;vertical-align:middle;}
@@ -12605,15 +12742,59 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-focus-section{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);}
 #tab-scanner .pair-focus-section-title{font-size:9.5px;color:var(--text-faint);letter-spacing:.7px;font-weight:800;margin-bottom:5px;}
 #tab-scanner .pair-focus-drivers{display:flex;flex-wrap:wrap;gap:4px;}
-#tab-scanner .pair-focus-driver{display:inline-flex;align-items:center;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--panel2);font-size:10px;font-weight:800;}
+#tab-scanner .pair-focus-driver{display:inline-flex;align-items:center;padding:4px 6px;border:1px solid var(--border);border-radius:0;background:var(--panel2);font-size:10.5px;font-weight:900;}
 #tab-scanner .pair-focus-driver.pos{color:var(--bullish-strong)}
 #tab-scanner .pair-focus-driver.neg{color:var(--bearish-strong)}
 #tab-scanner .pair-focus-muted,.pair-focus-note,.pair-focus-flip{font-size:10.5px;color:var(--text-dim);line-height:1.42;}
+#tab-scanner .pfd-cot-trend-row{display:flex;gap:14px;margin-top:7px;}
+#tab-scanner .pfd-cot-trend-item{display:flex;align-items:center;gap:6px;}
+#tab-scanner .pfd-cot-trend-ccy{font-size:9.5px;font-weight:800;color:var(--text-faint);}
+#tab-scanner .pair-focus-flip-list{display:grid;gap:3px;}
+#tab-scanner .pair-focus-flip-item{color:var(--amber);font-weight:700;font-size:10.5px;line-height:1.4;}
+#tab-scanner .pair-focus-flip-item:before{content:'\2022';margin-right:5px;color:var(--text-faint);}
 #tab-scanner .pair-focus-dual{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 #tab-scanner .pair-focus-dual span{padding:5px 7px;background:var(--panel2);border-radius:4px;font-size:10.5px;color:var(--text-dim);}
 #tab-scanner .pair-focus-dual b{float:right;color:var(--text);}
 #tab-scanner .pair-focus-flip{color:var(--amber);font-weight:700;}
 #tab-scanner .pair-focus-notes{display:grid;gap:3px;margin-top:8px;font-size:9.5px;color:var(--text-faint);line-height:1.35;}
+/* Driver-breakdown table (replaces the old 8-box metric grid): one row per pillar,
+   weight % deliberately omitted from the markup. Square corners throughout, per
+   request -- no rounded bars/ticks anywhere in this table.
+   v71: bars thickened to match the reference density (6px -> 11px). The tick was
+   previously drawn at the exact same position as the fill boundary -- i.e. it never
+   showed anything the color split didn't already show, which is why it read as
+   decorative. It is now fixed at the 50 (neutral) line on every row, so it acts as a
+   real reference point: how far the fill has moved off dead-center, at a glance,
+   without reading the numbers. */
+#tab-scanner .pfd-table{display:grid;gap:4px;}
+#tab-scanner .pfd-head-row,#tab-scanner .pfd-row{display:grid;grid-template-columns:74px 30px 1fr 30px 46px;align-items:center;gap:6px;}
+#tab-scanner .pfd-head-row{font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;font-weight:800;padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:3px;}
+#tab-scanner .pfd-head-row .pfd-num-l,#tab-scanner .pfd-head-row .pfd-num-r{text-align:center;}
+#tab-scanner .pfd-row{padding:4px 0;cursor:default;}
+#tab-scanner .pfd-row:hover{background:var(--panel2);}
+#tab-scanner .pfd-name{font-size:10.5px;color:var(--text-dim);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#tab-scanner .pfd-num{font-size:11px;font-weight:800;color:var(--text);text-align:center;font-family:'IBM Plex Mono',monospace;}
+#tab-scanner .pfd-bar-wrap{position:relative;padding:3px 0;}
+#tab-scanner .pfd-bar{position:relative;height:11px;background:#000;border-radius:0;overflow:visible;}
+#tab-scanner .pfd-bar-fill{position:absolute;top:0;bottom:0;border-radius:0;background:var(--panel3);}
+#tab-scanner .pfd-bar-fill.pos{background:var(--bullish-strong);}
+#tab-scanner .pfd-bar-fill.neg{background:var(--bearish-strong);}
+#tab-scanner .pfd-bar-mid{position:absolute;top:-2px;bottom:-2px;left:50%;width:1px;background:var(--border);}
+#tab-scanner .pfd-delta{font-size:10.5px;font-weight:800;text-align:right;font-family:'IBM Plex Mono',monospace;color:var(--text-dim);}
+#tab-scanner .pfd-delta.pos{color:var(--bullish-strong);}
+#tab-scanner .pfd-delta.neg{color:var(--bearish-strong);}
+
+/* Hover tooltip for the whole Pair Focus card: one delegated listener covers every
+   element carrying data-tip (driver rows, the head-row labels, the key/value chips,
+   the DATA/SURPRISE and POSITIONING sections) so the tooltip works no matter where
+   in the card the mouse enters, per request -- not just on one hardcoded spot. */
+#pair-focus-tip{position:fixed;z-index:9999;max-width:260px;background:var(--panel);border:1px solid var(--border);
+  border-radius:6px;padding:8px 10px;font-size:11px;line-height:1.45;color:var(--text);
+  box-shadow:0 6px 18px rgba(0,0,0,.28);pointer-events:none;opacity:0;transform:translateY(3px);
+  transition:opacity .12s ease,transform .12s ease;}
+#pair-focus-tip.show{opacity:1;transform:translateY(0);}
+#pair-focus-tip b{color:var(--amber);display:block;margin-bottom:3px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;}
+[data-tip]{cursor:default;}
 
 /* The analyst brief uses the dashboard's existing amber analyst accent to call out only
    the information worth remembering. No font-size increase: emphasis is carried by color
@@ -12623,7 +12804,7 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-macro-key{color:var(--amber)!important;font-weight:900!important;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
 #tab-scanner .pair-macro-mark{font-weight:800!important;}
 #tab-scanner .pair-macro-line{font-weight:500!important;}
-#tab-scanner .pair-macro-flip,#tab-scanner .pair-macro-align{font-weight:600!important;color:var(--text-dim)!important;}
+#tab-scanner .pair-macro-flip,#tab-scanner .pair-macro-align{font-weight:500!important;color:var(--text)!important;}
 #tab-scanner .pair-macro-verdict{border-top:1px solid var(--border);margin-top:7px;padding-top:7px;}
 @media(max-width:900px){#tab-scanner .scanner-expanded-grid{grid-template-columns:1fr!important;}#tab-scanner .pair-focus-grid{grid-template-columns:1fr 1fr!important;}}
 @media(max-width:600px){#tab-scanner .pair-focus-grid,#tab-scanner .pair-focus-dual{grid-template-columns:1fr!important;}}
