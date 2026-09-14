@@ -5582,6 +5582,14 @@ function animatePairFocusCotSpark(){
     });
   });
 }
+function animatePairFocusDriverBars(){
+  var bars=document.querySelectorAll('#tab-scanner .pfd-bar-fill');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<bars.length;i++){ bars[i].style.width=bars[i].getAttribute('data-pfd-target')+'%'; }
+    });
+  });
+}
 function animateSurpriseStrengthChart(){
   var lines=document.querySelectorAll('#tab-raw .ss-series');
   requestAnimationFrame(function(){
@@ -5716,9 +5724,9 @@ function scannerPairExpandedHtml(pair,animate){
   var score=pairCompositeFor(base,quote);
   return '<tr class="scanner-expanded-row"><td colspan="16">'+
     '<div class="scanner-expanded-panel">'+
-      '<div class="scanner-expanded-head"><div><span class="scanner-expanded-pair">'+esc(pair)+'</span><span class="scanner-expanded-score '+(score>0?'pos':score<0?'neg':'neu')+'">'+fmt(score)+' · '+esc(pairBandLabel(score))+'</span></div><button type="button" class="scanner-expanded-close" data-scanner-close="'+esc(pair)+'">&times;</button></div>'+ 
+      '<div class="scanner-expanded-head"><div></div><button type="button" class="scanner-expanded-close" data-scanner-close="'+esc(pair)+'">&times;</button></div>'+ 
       '<div class="scanner-expanded-grid">'+
-        '<div class="scanner-expanded-focus">'+pairFocusHtml(pair,score)+'</div>'+ 
+        '<div class="scanner-expanded-focus">'+pairFocusHtml(pair,score,animate)+'</div>'+ 
         '<div class="scanner-expanded-macro">'+pairMacroSummaryHtml(pair,score)+'</div>'+ 
       '</div>'+ 
     '</div></td></tr>';
@@ -5869,7 +5877,7 @@ function renderScanner(animateTrend){
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
   document.getElementById("tab-scanner").innerHTML=html;
   if(animateTrend) animateScannerTrends();
-  if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); scannerBigTrendAnimate=false; }
+  if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); animatePairFocusDriverBars(); scannerBigTrendAnimate=false; }
 
   var recalcBtn=document.getElementById("recalcBtn");
   if(recalcBtn){ recalcBtn.onclick=async function(){
@@ -9302,15 +9310,16 @@ function pairMacroSummaryHtml(pair, score){
   '</div>';
 }
 
-// Per-pillar "driver breakdown" rows for the Pair Focus panel: one row per pillar with
-// a base-vs-quote lean bar and a points delta -- weight % deliberately left out of the
-// markup (kept internal to the model) per request. Each pillar's raw point contribution
-// (from scannerDriverBreakdown) is normalized against that pillar's own realistic max
-// so the two flanking numbers and the bar tick are on a common, comparable 0-100 scale;
-// they are a display convention (mirrored around 50), not independently-tracked raw
-// per-currency sub-scores for every pillar -- COT Position/WoW and Yield only exist as
-// a pair-level differential in the underlying model, so their "isolated" numbers are
-// derived from that differential rather than being a separately stored figure.
+// Per-pillar "driver breakdown" rows for the Pair Focus panel. The bar's fill (which
+// side, how far) is still driven by that pillar's actual point contribution to the
+// live composite score -- that part was never wrong. What WAS wrong: the two flanking
+// numbers were a synthetic pair-differential mirrored around 50 (50 +/- lean), which
+// could never match the real per-currency reading shown anywhere else in the app.
+// Fixed: both numbers now come from the exact same functions the real composite score
+// is built from (fundFor, y2Calc, cbStanceScore, cotNetOnlyScore, cotWowMagnitudeScore,
+// seasonalityValue, riskTermFor), each independently rescaled to 0-100. They are two
+// real, separate readings now, not a mirrored pair -- so they will not generally sum
+// to ~100 the way the old fake ones always did.
 var PAIR_FOCUS_PILLAR_CAP={Fundamentals:25,Yield:18,'CB stance':14,Position:7.5,WoW:2.5,Seasonality:3,'Risk sentiment':5};
 // One-line explanation per pillar, used only in the hover tooltip -- kept out of the
 // row markup itself since the request was to keep the table dense, not to add copy.
@@ -9323,14 +9332,29 @@ var PAIR_FOCUS_PILLAR_EXPLAIN={
   Seasonality:'Historical tendency for this pair to move a given direction at this time of year.',
   'Risk sentiment':'How each currency tends to trade in the current risk-on/risk-off regime.'
 };
-function pairFocusDriverRowsHtml(base,quote){
+function clamp0to100(v){ return Math.max(0,Math.min(100,v)); }
+// Real, independent, per-currency 0-100 reading for one pillar -- the same underlying
+// number the rest of the app uses for that currency, just rescaled onto a common 0-100
+// axis so all seven rows are visually comparable. Each pillar's native range is
+// documented inline since that's exactly what determines the rescale.
+function pairFocusPillarAbsolute(name,ccy){
+  if(name==='Fundamentals'){ var f=fundFor(ccy); var v=f.max?100*f.raw/f.max:0; return clamp0to100((v+100)/2); } // native range roughly -100..+100
+  if(name==='Yield'){ var y=y2Calc(ccy).score; return y==null?50:clamp0to100((y+10)*5); } // native range -10..+10
+  if(name==='CB stance'){ return clamp0to100((cbStanceScore(ccy)+10)*5); } // native range -10..+10
+  if(name==='Position'){ return clamp0to100((cotNetOnlyScore(ccy)+3)/6*100); } // native range -3..+3 (discrete)
+  if(name==='WoW'){ return clamp0to100((cotWowMagnitudeScore(ccy)+3)/6*100); } // native range -3..+3
+  if(name==='Seasonality'){ return clamp0to100((seasonalityValue(DATA[ccy])+1)/2*100); } // native range -1..+1
+  if(name==='Risk sentiment'){ return clamp0to100((riskTermFor(ccy)+1)/2*100); } // native range -1..+1
+  return 50;
+}
+function pairFocusDriverRowsHtml(base,quote,animate){
   var rows=scannerDriverBreakdown(base,quote);
   var order=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'];
   rows=order.map(function(name){ var r=rows.filter(function(x){return x.name===name;})[0]; return r||{name:name,pts:0,label:'Neutral'}; });
   return rows.map(function(r){
     var cap=PAIR_FOCUS_PILLAR_CAP[r.name]||10;
     var leanFrac=Math.max(-1,Math.min(1,r.pts/cap));
-    var baseScore=50+50*leanFrac, quoteScore=50-50*leanFrac;
+    var baseScore=pairFocusPillarAbsolute(r.name,base), quoteScore=pairFocusPillarAbsolute(r.name,quote);
     var deltaTxt=(r.pts>0?'+':'')+r.pts.toFixed(2);
     var deltaCls=r.pts>0.05?'pos':r.pts<-0.05?'neg':'';
     var explain=PAIR_FOCUS_PILLAR_EXPLAIN[r.name]||'';
@@ -9338,22 +9362,26 @@ function pairFocusDriverRowsHtml(base,quote){
     // Single-color bar: one fill, growing out from the center line toward whichever
     // side is actually ahead -- never both a red segment and a green segment shown
     // at once. Green + grows right (toward base) when base leads; red + grows left
-    // (toward quote) when quote leads. Flat/neutral rows show no fill at all.
+    // (toward quote) when quote leads. Flat/neutral rows show no fill at all. This
+    // fill still tracks the pillar's real point contribution to the composite --
+    // that part of the bar was always correct and is unchanged here.
     var fillCls=leanFrac>0.005?'pos':leanFrac<-0.005?'neg':'';
     var fillPct=Math.abs(leanFrac)*50;
-    var fillStyle=leanFrac>=0
-      ? 'left:50%;width:'+fillPct.toFixed(1)+'%;'
-      : 'right:50%;width:'+fillPct.toFixed(1)+'%;';
+    // On tap-open (animate=true) the fill starts at 0 width and the real target
+    // width is stashed in data-pfd-target -- pairFocusHtml then flips every row to
+    // its target on the next frame so the CSS width transition actually plays,
+    // same draw-in-on-open pattern used on the COT Regime tab's bars.
+    var fillStyle=(leanFrac>=0?'left:50%;':'right:50%;')+'width:'+(animate?0:fillPct).toFixed(1)+'%;';
     return '<div class="pfd-row" data-tip="'+tip+'">'+
       '<div class="pfd-name">'+esc(r.name)+'</div>'+
       '<div class="pfd-num pfd-num-l">'+baseScore.toFixed(1)+'</div>'+
-      '<div class="pfd-bar-wrap"><div class="pfd-bar"><span class="pfd-bar-fill '+fillCls+'" style="'+fillStyle+'"></span><span class="pfd-bar-mid"></span></div></div>'+
+      '<div class="pfd-bar-wrap"><div class="pfd-bar"><span class="pfd-bar-fill '+fillCls+'" data-pfd-target="'+fillPct.toFixed(1)+'" style="'+fillStyle+'"></span><span class="pfd-bar-mid"></span></div></div>'+
       '<div class="pfd-num pfd-num-r">'+quoteScore.toFixed(1)+'</div>'+
       '<div class="pfd-delta '+deltaCls+'">'+deltaTxt+'</div>'+
     '</div>';
   }).join('');
 }
-function pairFocusHtml(pair,score){
+function pairFocusHtml(pair,score,animate){
   var base=pair.slice(0,3), quote=pair.slice(3,6), y=pairYieldCalc(base,quote), cot=cotPairRegime(base,quote);
   var fb=fundFor(base), fq=fundFor(quote), fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
   var carry=scannerCarryPct(base,quote), bSur=surpriseWeightedPct(base), qSur=surpriseWeightedPct(quote);
@@ -9387,9 +9415,20 @@ function pairFocusHtml(pair,score){
   var drivers=dir?scannerLedByDrivers(base,quote,dir).slice(0,3):[];
   var support=drivers.length?drivers.map(function(d){return '<span class="pair-focus-driver '+(d.pts>0?'pos':'neg')+'">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';}).join(' '):'<span class="pair-focus-muted">No directional driver yet</span>';
   var flip=[];
-  if(Math.abs(fundRel)>=7 && ((fundRel>0?1:-1)!==dir || dir===0)) flip.push('the fundamental gap closes');
-  if(y.current!=null && Math.abs(y.current)>=10 && ((y.current>0?1:-1)!==dir || dir===0)) flip.push('the 2Y spread turns back');
-  if(flowWinner!=='neither' && dir && flowWinner!== (dir>0?base:quote)) flip.push('fresh COT flow keeps moving against '+(dir>0?base:quote));
+  // Dynamic, not a fixed fundamentals/yield/crowding checklist: take whichever pillars
+  // are actually propping up the current score right now (ranked by real point size,
+  // same numbers as the driver table above) and phrase each as the condition that
+  // would need to reverse for the pair to flip. Whatever is actually driving the score
+  // this time -- could be Yield, CB stance, Risk sentiment, Position, any of the seven --
+  // is what shows up here, not a hardcoded subset.
+  if(dir){
+    var flipCandidates=scannerDriverBreakdown(base,quote)
+      .filter(function(d){ return ((d.pts>0)===(dir>0)) && Math.abs(d.pts)>=0.5; })
+      .sort(function(a,b){ return Math.abs(b.pts)-Math.abs(a.pts); });
+    flipCandidates.slice(0,3).forEach(function(d){
+      flip.push(d.name.toLowerCase()+' turns the other way (currently '+d.label.toLowerCase()+')');
+    });
+  }
   if(crowdLine.length) flip.push(crowdLine.join(' and ')+' becomes too crowded');
   if(!flip.length) flip.push('a meaningful data, policy or rates repricing changes the balance');
   var focusNotes=[];
@@ -9401,7 +9440,7 @@ function pairFocusHtml(pair,score){
     '<div class="pair-focus-score-row"><div class="pair-focus-big '+(score>0?'pos':score<0?'neg':'neu')+'">'+esc(fmt(score))+'</div><div><div class="pair-focus-caption">Live composite</div><div class="pair-focus-mini">'+esc(dir>0?base+' ahead':dir<0?quote+' ahead':'No side in control')+'</div></div></div>'+
     '<div class="pfd-table">'+
       '<div class="pfd-head-row"><div class="pfd-name"></div><div class="pfd-num pfd-num-l">'+esc(base)+'</div><div class="pfd-bar-wrap"></div><div class="pfd-num pfd-num-r">'+esc(quote)+'</div><div class="pfd-delta"></div></div>'+
-      pairFocusDriverRowsHtml(base,quote)+
+      pairFocusDriverRowsHtml(base,quote,animate)+
     '</div>'+ 
     '<div class="pair-focus-section" data-tip="'+esc('WHAT IS MOVING THE PAIR')+'||The 1-2 pillars with the largest point contribution behind the current score -- recalculated live, not a fixed list."><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
     '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||From CFTC weekly futures positioning (COT) for both currencies -- this is speculative money on regulated futures, not a single-country reading. Crowded = top/bottom 20% of its own 52-week range, so it can flag either side, not just one currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note">'+esc(cotStock)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div>'+
@@ -12742,7 +12781,7 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-focus-section{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);}
 #tab-scanner .pair-focus-section-title{font-size:9.5px;color:var(--text-faint);letter-spacing:.7px;font-weight:800;margin-bottom:5px;}
 #tab-scanner .pair-focus-drivers{display:flex;flex-wrap:wrap;gap:4px;}
-#tab-scanner .pair-focus-driver{display:inline-flex;align-items:center;padding:4px 6px;border:1px solid var(--border);border-radius:0;background:var(--panel2);font-size:10.5px;font-weight:900;}
+#tab-scanner .pair-focus-driver{display:inline-flex;align-items:center;padding:0;margin-right:12px;border:none;background:none;font-size:11px;font-weight:900;}
 #tab-scanner .pair-focus-driver.pos{color:var(--bullish-strong)}
 #tab-scanner .pair-focus-driver.neg{color:var(--bearish-strong)}
 #tab-scanner .pair-focus-muted,.pair-focus-note,.pair-focus-flip{font-size:10.5px;color:var(--text-dim);line-height:1.42;}
@@ -12772,11 +12811,11 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pfd-head-row .pfd-num-l,#tab-scanner .pfd-head-row .pfd-num-r{text-align:center;}
 #tab-scanner .pfd-row{padding:4px 0;cursor:default;}
 #tab-scanner .pfd-row:hover{background:var(--panel2);}
-#tab-scanner .pfd-name{font-size:10.5px;color:var(--text-dim);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#tab-scanner .pfd-num{font-size:11px;font-weight:800;color:var(--text);text-align:center;font-family:'IBM Plex Mono',monospace;}
+#tab-scanner .pfd-name{font-size:12px;color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#tab-scanner .pfd-num{font-size:12.5px;font-weight:800;color:var(--text);text-align:center;font-family:inherit;}
 #tab-scanner .pfd-bar-wrap{position:relative;padding:3px 0;}
 #tab-scanner .pfd-bar{position:relative;height:11px;background:#000;border-radius:0;overflow:visible;}
-#tab-scanner .pfd-bar-fill{position:absolute;top:0;bottom:0;border-radius:0;background:var(--panel3);}
+#tab-scanner .pfd-bar-fill{position:absolute;top:0;bottom:0;border-radius:0;background:var(--panel3);transition:width .6s cubic-bezier(.22,.9,.35,1);}
 #tab-scanner .pfd-bar-fill.pos{background:var(--bullish-strong);}
 #tab-scanner .pfd-bar-fill.neg{background:var(--bearish-strong);}
 #tab-scanner .pfd-bar-mid{position:absolute;top:-2px;bottom:-2px;left:50%;width:1px;background:var(--border);}
