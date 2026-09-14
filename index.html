@@ -545,13 +545,13 @@ td{padding:6px 8px;}
 body.black, html.black{
   --bg:#090909; --panel:#101010; --panel2:#151515; --panel3:#1b1b1b; --border:#292929;
   --text:#eef1ee; --text-dim:#a5aba6; --text-faint:#6f756f;
-  --bullish:#22c98b; --bullish-strong:#38e3a5; --bearish:#f04455; --bearish-strong:#ff707d;
+  --bullish:#22c98b; --bullish-strong:#22c98b; --bearish:#f04455; --bearish-strong:#f04455;
   --bullish-lean:#60ab8a; --bearish-lean:#af545f; --neutral:#747b76; --amber:#fa660f;
 }
 body.ash, html.ash{
   --bg:#0e0e0e; --panel:#151515; --panel2:#1a1a1a; --panel3:#212121; --border:#2c2c2c;
   --text:#eef1ee; --text-dim:#a0a7a1; --text-faint:#6d746e;
-  --bullish:#22c98b; --bullish-strong:#38e3a5; --bearish:#f04455; --bearish-strong:#ff707d;
+  --bullish:#22c98b; --bullish-strong:#22c98b; --bearish:#f04455; --bearish-strong:#f04455;
   --bullish-lean:#60ab8a; --bearish-lean:#af545f; --neutral:#747b76; --amber:#fa660f;
 }
 .content{padding:12px 16px 24px;max-width:1540px;}
@@ -1209,9 +1209,9 @@ table,th,td,.card,.tab-btn,.chip,.ccy-pill,
 body.ash, html.ash,
 body.black, html.black{
   --bullish:#22c98b;
-  --bullish-strong:#38e3a5;
+  --bullish-strong:#22c98b;
   --bearish:#f04455;
-  --bearish-strong:#ff707d;
+  --bearish-strong:#f04455;
   --bullish-lean:#60ab8a;
   --bearish-lean:#af545f;
   --neutral:#747b76;
@@ -5376,11 +5376,15 @@ function scannerDriverBreakdown(base,quote){
   var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
   var out=[];
   function push(name,pts,label){out.push({name:name,pts:Number(pts)||0,label:label||'Neutral'});}
-  push('Fundamentals',50*((fundBase-fundQuote)/2),pillarBias((fundBase-fundQuote)*100));
+  // IMPORTANT: keep every driver contribution exactly aligned with pairCompositeFor().
+  // The previous scanner breakdown used 25/7.5/2.5 point caps for Fundamentals/Position/WoW,
+  // while the live composite actually uses 45/8/7. This made the displayed Bias and driver
+  // contribution disagree with the real pair score.
+  push('Fundamentals',45*((fundBase-fundQuote)/2),pillarBias((fundBase-fundQuote)*100));
   push('Yield',yScore==null?0:1.8*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
   push('CB stance',14*((cbBase-cbQuote)/2),pairCbStanceLabel(base,quote));
-  push('Position',cot.insufficient?0:0.075*cot.posScore,cot.posLabel);
-  push('WoW',cot.insufficient?0:0.025*cot.flowScore,cot.flowLabel);
+  push('Position',cot.insufficient?0:0.08*cot.posScore,cot.posLabel);
+  push('WoW',cot.insufficient?0:0.07*cot.flowScore,cot.flowLabel);
   push('Seasonality',3*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
   push('Risk sentiment',5*((riskBase-riskQuote)/2),riskPairState(base,quote));
   return out;
@@ -5816,7 +5820,16 @@ function renderScanner(animateTrend){
       var agreeLabels=[fundBias,yb,cbLbl,cotPair.posLabel,cotPair.flowLabel,seasLbl,riskLbl];
       var agree=agreeLabels.filter(function(lbl){return pillarSign(lbl)===dir;}).length;
       agreeTxt=agree+"/7";
-      agreeStyle=agree>=4?"color:var(--text);":"";
+      // 4/7 is the neutral evidence threshold: keep it white. 5-7/7 means
+      // the evidence is strongly aligned, so inherit the trade side colour:
+      // LONG = green, SHORT = red.
+      if(agree>=5){
+        agreeStyle=dir>0?"color:var(--bullish-strong);":"color:var(--bearish-strong);";
+      }else if(agree===4){
+        agreeStyle="color:var(--text);";
+      }else{
+        agreeStyle="";
+      }
     }
     var ledByTxt=isNeutral?"—":scannerLedByText(p.base,p.quote,dir);
     var ledByTip=scannerDriverTooltip(p.base,p.quote,dir);
@@ -9303,12 +9316,23 @@ function pairMacroSummaryHtml(pair, score){
     {cls:'flip',html:safe(whatChanges())},
     {cls:'verdict',html:safe(leadText)+' '+safe(whatChanges())}
   ];
-  function styleBlock(b){return '<div class="pair-macro-'+b.cls+'">'+b.html+'</div>';}
+  function styleBlock(b){return '<div class="pair-macro-'+b.cls+'">'+autoHighlightBrief(b.html)+'</div>';}
   return '<div class="pair-macro-summary">'+
     '<div class="pair-macro-summary-head"><span>Macro read · analyst brief</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
     body.map(styleBlock).join('')+
   '</div>';
 }
+// Auto-highlighter for the analyst brief: previously only 2-3 hand-picked phrases
+// (fundamentals lead, CB guidance, 2Y spread) ever got wrapped in <strong>, so most
+// runs -- rate levels, vote splits, bp/percent figures, pillar-agreement counts,
+// hawkish/dovish/crowded language, named central banks -- rendered as plain text no
+// matter how important they were. This scans the already-built HTML for those
+// patterns and wraps every match found, so the number of highlights scales with how
+// much load-bearing detail is actually in that pair's brief instead of a fixed count.
+// It only touches text NODES (segments between tags), never tag/attribute content,
+// and skips anything already inside a <strong> from strong()/mark() above so nothing
+// gets double-wrapped.
+function autoHighlightBrief(html){ return html || ''; }
 
 // Per-pillar "driver breakdown" rows for the Pair Focus panel. The bar's fill (which
 // side, how far) is still driven by that pillar's actual point contribution to the
@@ -9320,7 +9344,12 @@ function pairMacroSummaryHtml(pair, score){
 // seasonalityValue, riskTermFor), each independently rescaled to 0-100. They are two
 // real, separate readings now, not a mirrored pair -- so they will not generally sum
 // to ~100 the way the old fake ones always did.
-var PAIR_FOCUS_PILLAR_CAP={Fundamentals:25,Yield:18,'CB stance':14,Position:7.5,WoW:2.5,Seasonality:3,'Risk sentiment':5};
+var PAIR_FOCUS_PILLAR_CAP={Fundamentals:45,Yield:18,'CB stance':14,Position:8,WoW:7,Seasonality:3,'Risk sentiment':5};
+// Matches the weights actually used in compositeFor() -- Fundamentals 45% + Yield 18%
+// + CB stance 14% + Position 8% + WoW 7% + Risk sentiment 5% + Seasonality 3%. Shown
+// under each pillar name in the driver table, and used to blend the per-currency
+// "USD"/"CHF" summary-tile numbers at the top of the card.
+var PAIR_FOCUS_PILLAR_WEIGHT={Fundamentals:45,Yield:18,'CB stance':14,Position:8,WoW:7,Seasonality:3,'Risk sentiment':5};
 // One-line explanation per pillar, used only in the hover tooltip -- kept out of the
 // row markup itself since the request was to keep the table dense, not to add copy.
 var PAIR_FOCUS_PILLAR_EXPLAIN={
@@ -9347,6 +9376,17 @@ function pairFocusPillarAbsolute(name,ccy){
   if(name==='Risk sentiment'){ return clamp0to100((riskTermFor(ccy)+1)/2*100); } // native range -1..+1
   return 50;
 }
+// Single per-currency number blending all 7 pillars by their real composite weights
+// (same weights as PAIR_FOCUS_PILLAR_WEIGHT / compositeFor) -- used only for the two
+// "USD"/"CHF" summary tiles at the top of the Pair Focus card, not the per-row table.
+function pairFocusBlendScore(ccy){
+  var total=0, wsum=0;
+  Object.keys(PAIR_FOCUS_PILLAR_WEIGHT).forEach(function(name){
+    var w=PAIR_FOCUS_PILLAR_WEIGHT[name];
+    total+=w*pairFocusPillarAbsolute(name,ccy); wsum+=w;
+  });
+  return wsum?total/wsum:50;
+}
 function pairFocusDriverRowsHtml(base,quote,animate){
   var rows=scannerDriverBreakdown(base,quote);
   var order=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'];
@@ -9372,11 +9412,17 @@ function pairFocusDriverRowsHtml(base,quote,animate){
     // its target on the next frame so the CSS width transition actually plays,
     // same draw-in-on-open pattern used on the COT Regime tab's bars.
     var fillStyle=(leanFrac>=0?'left:50%;':'right:50%;')+'width:'+(animate?0:fillPct).toFixed(1)+'%;';
+    // Bias score: this pillar's own 0-100 read on the PAIR (not either currency alone),
+    // mirrored around 50 the same way the leanFrac/bar already are -- 50=dead neutral,
+    // above 50 leans base, below 50 leans quote. Colored only once it clears the same
+    // neutral band the rest of the app uses, so a near-50 read prints in neutral gray
+    // instead of a false-strength green/red.
+    var numCls=function(v){return v>=55?'pos':v<=45?'neg':'';};
     return '<div class="pfd-row" data-tip="'+tip+'">'+
       '<div class="pfd-name">'+esc(r.name)+'</div>'+
-      '<div class="pfd-num pfd-num-l">'+baseScore.toFixed(1)+'</div>'+
+      '<div class="pfd-num pfd-num-l '+numCls(baseScore)+'">'+baseScore.toFixed(1)+'</div>'+
       '<div class="pfd-bar-wrap"><div class="pfd-bar"><span class="pfd-bar-fill '+fillCls+'" data-pfd-target="'+fillPct.toFixed(1)+'" style="'+fillStyle+'"></span><span class="pfd-bar-mid"></span></div></div>'+
-      '<div class="pfd-num pfd-num-r">'+quoteScore.toFixed(1)+'</div>'+
+      '<div class="pfd-num pfd-num-r '+numCls(quoteScore)+'">'+quoteScore.toFixed(1)+'</div>'+
       '<div class="pfd-delta '+deltaCls+'">'+deltaTxt+'</div>'+
     '</div>';
   }).join('');
@@ -9403,15 +9449,17 @@ function pairFocusHtml(pair,score,animate){
   function key(label,value,cls){return '<div class="pair-focus-item"><span>'+esc(label)+'</span><b class="'+(cls||'')+'">'+esc(value)+'</b></div>';}
   var policyGap=cbStanceScore(base)-cbStanceScore(quote), rateB=ccyRate(base), rateQ=ccyRate(quote);
   var policyText=policyGap===0?'Matched':(policyGap>0?base+' '+cb(base):quote+' '+cb(quote));
+  // Positioning is a currency-level COT reading, not literal trading of the FX pair.
+  // We make the pair interpretation explicit by comparing BASE vs QUOTE net positioning
+  // and weekly net-flow direction, while keeping crowding separate.
   var cotStock=cot.posLabel&&cot.posLabel!=='Neutral'?cot.posLabel:'Balanced';
   var cotFlow=cot.flowLabel&&cot.flowLabel!=='Neutral'?cot.flowLabel:'No clear weekly lead';
-  var flowBase=Number((cotLatest(base)||{}).netChg)||0, flowQuote=Number((cotLatest(quote)||{}).netChg)||0;
-  var flowDiff=Math.abs(flowBase-flowQuote);
-  var flowWinner=flowDiff>1000?(flowBase>flowQuote?base:quote):'neither';
+  var positionPairText=cot.positionAdvantage ? (base+' long / '+quote+' short') : 'No clear pair-side positioning';
+  var flowPairText=cot.flowAdvantage ? (cot.flowAdvantage+' leading weekly flow') : 'No clear weekly flow lead';
   var crowdBase=cotCrowding(base), crowdQuote=cotCrowding(quote);
   var crowdLine=[];
-  if(crowdBase&&crowdBase.label&&crowdBase.label!=='Neutral') crowdLine.push(base+' '+crowdBase.label.toLowerCase());
-  if(crowdQuote&&crowdQuote.label&&crowdQuote.label!=='Neutral') crowdLine.push(quote+' '+crowdQuote.label.toLowerCase());
+  if(crowdBase&&crowdBase.label&&crowdBase.label!=='Neutral'&&crowdBase.label!=='No regime') crowdLine.push(base+' '+crowdBase.label.toLowerCase());
+  if(crowdQuote&&crowdQuote.label&&crowdQuote.label!=='Neutral'&&crowdQuote.label!=='No regime') crowdLine.push(quote+' '+crowdQuote.label.toLowerCase());
   var drivers=dir?scannerLedByDrivers(base,quote,dir).slice(0,3):[];
   var support=drivers.length?drivers.map(function(d){return '<span class="pair-focus-driver '+(d.pts>0?'pos':'neg')+'">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';}).join(' '):'<span class="pair-focus-muted">No directional driver yet</span>';
   var flip=[];
@@ -9435,15 +9483,26 @@ function pairFocusHtml(pair,score,animate){
   focusNotes.push(dir ? ('<strong>'+esc(agree)+'/7 pillars support '+esc(dir>0?base:quote)+'</strong>' + (dis ? ' · '+esc(dis)+' against'+(neutral?' · '+esc(neutral)+' neutral':'') : '')) : '<strong>Neutral band</strong> · no side has enough separation to claim the trade');
   if(y.current!=null) focusNotes.push('<strong>2Y '+esc(bps(y.current))+'</strong>'+ (y.week!=null?' · week '+esc(bps(y.week)):'') );
   if(carry!=null) focusNotes.push('<strong>Carry '+esc((carry>0?'+':'')+carry.toFixed(2)+'%')+'</strong> · policy-rate gap');
+  var pairTileScore=Number(score)||0;
+  var pairTileCls=pairTileScore>0?'pos':pairTileScore<0?'neg':'';
+  var baseOverall=compositeFor(base), quoteOverall=compositeFor(quote);
+  var baseTileCls=baseOverall>0?'pos':baseOverall<0?'neg':'';
+  var quoteTileCls=quoteOverall>0?'pos':quoteOverall<0?'neg':'';
   return '<div class="pair-focus-card">'+
-    '<div class="pair-focus-head"><div><div class="pair-focus-kicker">PAIR FOCUS</div><div class="pair-focus-title">'+esc(base)+' / '+esc(quote)+'</div></div><div class="pair-focus-band '+(dir>0?'pos':dir<0?'neg':'neu')+'">'+esc(pairBandLabel(score))+'</div></div>'+
-    '<div class="pair-focus-score-row"><div class="pair-focus-big '+(score>0?'pos':score<0?'neg':'neu')+'">'+esc(fmt(score))+'</div><div><div class="pair-focus-caption">Live composite</div><div class="pair-focus-mini">'+esc(dir>0?base+' ahead':dir<0?quote+' ahead':'No side in control')+'</div></div></div>'+
+    '<div class="pf2-head"><span class="pf2-dot '+(dir>0?'':dir<0?'neg':'neu')+'"></span><b class="pf2-title">Pair focus</b><span class="pf2-crumb"> &middot; '+esc(base)+'/'+esc(quote)+' &middot; Driver breakdown</span></div>'+
+    '<div class="pf2-tiles">'+
+      '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'/'+esc(quote)+'</span><b class="pf2-tile-val '+pairTileCls+'">'+(pairTileScore>0?'+':'')+pairTileScore.toFixed(1)+'</b></div>'+
+      '<div class="pf2-tile"><span class="pf2-tile-label">Bias</span><b class="pf2-tile-val">'+esc(pairBandLabel(score))+'</b></div>'+
+      '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'</span><b class="pf2-tile-val '+baseTileCls+'">'+(baseOverall>0?'+':'')+baseOverall.toFixed(1)+'</b></div>'+
+      '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(quote)+'</span><b class="pf2-tile-val '+quoteTileCls+'">'+(quoteOverall>0?'+':'')+quoteOverall.toFixed(1)+'</b></div>'+
+    '</div>'+
     '<div class="pfd-table">'+
       '<div class="pfd-head-row"><div class="pfd-name"></div><div class="pfd-num pfd-num-l">'+esc(base)+'</div><div class="pfd-bar-wrap"></div><div class="pfd-num pfd-num-r">'+esc(quote)+'</div><div class="pfd-delta"></div></div>'+
       pairFocusDriverRowsHtml(base,quote,animate)+
     '</div>'+ 
     '<div class="pair-focus-section" data-tip="'+esc('WHAT IS MOVING THE PAIR')+'||The 1-2 pillars with the largest point contribution behind the current score -- recalculated live, not a fixed list."><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
-    '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||From CFTC weekly futures positioning (COT) for both currencies -- this is speculative money on regulated futures, not a single-country reading. Crowded = top/bottom 20% of its own 52-week range, so it can flag either side, not just one currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note">'+esc(cotStock)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div>'+
+    '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||CFTC futures positioning is measured separately for each currency. The pair read is a relative comparison: Bullish means the positioning balance favours BASE over QUOTE; it does not mean traders literally hold the spot FX pair. Crowding is the 52-week-extreme status of each currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note pair-position-read"><b>'+esc(cotStock)+'</b> · '+esc(positionPairText)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div>'+
+      '<div class="pair-focus-note pair-flow-read">'+esc(flowPairText)+'</div>'+
       '<div class="pfd-cot-trend-row"><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(base)+'</span>'+pairFocusCotSpark(base)+'</div><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(quote)+'</span>'+pairFocusCotSpark(quote)+'</div></div>'+
     '</div>'+ 
     '<div class="pair-focus-section" data-tip="'+esc('WHAT COULD FLIP IT')+'||Generated per pair from whichever pillars are currently closest to reversing -- fundamentals gap, yield spread, COT flow or crowding -- not a fixed list of stock reasons."><div class="pair-focus-section-title">WHAT COULD FLIP IT</div><div class="pair-focus-flip-list">'+flip.slice(0,4).map(function(f){return '<div class="pair-focus-flip-item">'+esc(f)+'</div>';}).join('')+'</div></div>'+ 
@@ -10959,9 +11018,9 @@ body.black,html.black{
   --text-dim:rgba(255,255,255,.62);
   --text-faint:rgba(255,255,255,.47);
   --bullish:#22c98b;
-  --bullish-strong:#38e3a5;
+  --bullish-strong:#22c98b;
   --bearish:#f04455;
-  --bearish-strong:#ff707d;
+  --bearish-strong:#f04455;
   --bullish-lean:#60ab8a;
   --bearish-lean:#af545f;
   --neutral:#747b76;
@@ -10977,9 +11036,9 @@ body.ash,html.ash{
   --text-dim:rgba(255,255,255,.62);
   --text-faint:rgba(255,255,255,.47);
   --bullish:#22c98b;
-  --bullish-strong:#38e3a5;
+  --bullish-strong:#22c98b;
   --bearish:#f04455;
-  --bearish-strong:#ff707d;
+  --bearish-strong:#f04455;
   --bullish-lean:#60ab8a;
   --bearish-lean:#af545f;
   --neutral:#747b76;
@@ -12761,7 +12820,7 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-focus-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
 #tab-scanner .pair-focus-kicker{font-size:9.5px;letter-spacing:.9px;text-transform:uppercase;color:var(--amber);font-weight:800;}
 #tab-scanner .pair-focus-title{font-size:15px;font-weight:800;margin-top:2px;}
-#tab-scanner .pair-focus-band{font-size:10.5px;font-weight:800;white-space:nowrap;}
+#tab-scanner .pair-focus-band{display:inline-block;font-size:12px;font-weight:800;white-space:nowrap;overflow:visible;margin-left:8px;vertical-align:middle;}
 #tab-scanner .pair-focus-band.pos{color:var(--bullish-strong)}
 #tab-scanner .pair-focus-band.neg{color:var(--bearish-strong)}
 #tab-scanner .pair-focus-band.neu{color:var(--text-dim)}
@@ -12806,13 +12865,32 @@ twpShowNameGateIfNeeded();
    real reference point: how far the fill has moved off dead-center, at a glance,
    without reading the numbers. */
 #tab-scanner .pfd-table{display:grid;gap:4px;}
-#tab-scanner .pfd-head-row,#tab-scanner .pfd-row{display:grid;grid-template-columns:74px 30px 1fr 30px 46px;align-items:center;gap:6px;}
+#tab-scanner .pfd-head-row,#tab-scanner .pfd-row{display:grid;grid-template-columns:96px 44px 44px 1fr 44px 56px;align-items:center;gap:6px;}
 #tab-scanner .pfd-head-row{font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;font-weight:800;padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:3px;}
-#tab-scanner .pfd-head-row .pfd-num-l,#tab-scanner .pfd-head-row .pfd-num-r{text-align:center;}
-#tab-scanner .pfd-row{padding:4px 0;cursor:default;}
+#tab-scanner .pfd-head-row .pfd-num-bias,#tab-scanner .pfd-head-row .pfd-num-l,#tab-scanner .pfd-head-row .pfd-num-r{text-align:center;}
+#tab-scanner .pfd-row{padding:6px 0;cursor:default;}
 #tab-scanner .pfd-row:hover{background:var(--panel2);}
-#tab-scanner .pfd-name{font-size:12px;color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#tab-scanner .pfd-num{font-size:12.5px;font-weight:800;color:var(--text);text-align:center;font-family:inherit;}
+#tab-scanner .pfd-name{font-size:13px;color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+#tab-scanner .pfd-weight{display:block;font-size:10px;font-weight:600;color:var(--text-faint);margin-top:1px;}
+#tab-scanner .pfd-num{font-size:14px;font-weight:800;color:var(--text);text-align:center;font-family:inherit;}
+#tab-scanner .pfd-num.pfd-num-bias{color:var(--text-dim);}
+#tab-scanner .pfd-num.pos{color:var(--bullish-strong);}
+#tab-scanner .pfd-num.neg{color:var(--bearish-strong);}
+/* Breadcrumb-style card header + 4-tile summary strip, replacing the old
+   kicker/title/band block, matching the exact reference layout requested. */
+#tab-scanner .pf2-head{display:flex;align-items:center;gap:7px;padding-bottom:10px;font-size:13px;}
+#tab-scanner .pf2-dot{width:7px;height:7px;border-radius:50%;background:var(--bullish-strong);flex:0 0 auto;}
+#tab-scanner .pf2-dot.neg{background:var(--bearish-strong);}
+#tab-scanner .pf2-dot.neu{background:var(--text-faint);}
+#tab-scanner .pf2-title{font-weight:800;color:var(--text);}
+#tab-scanner .pf2-crumb{color:var(--text-faint);}
+#tab-scanner .pf2-tiles{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;}
+#tab-scanner .pf2-tile{padding:9px 12px;border-right:1px solid var(--border);}
+#tab-scanner .pf2-tile:last-child{border-right:none;}
+#tab-scanner .pf2-tile-label{display:block;font-size:11.5px;color:var(--text-faint);margin-bottom:4px;}
+#tab-scanner .pf2-tile-val{font-size:18px;font-weight:800;color:var(--text);}
+#tab-scanner .pf2-tile-val.pos{color:var(--bullish-strong);}
+#tab-scanner .pf2-tile-val.neg{color:var(--bearish-strong);}
 #tab-scanner .pfd-bar-wrap{position:relative;padding:3px 0;}
 #tab-scanner .pfd-bar{position:relative;height:11px;background:#000;border-radius:0;overflow:visible;}
 #tab-scanner .pfd-bar-fill{position:absolute;top:0;bottom:0;border-radius:0;background:var(--panel3);transition:width .6s cubic-bezier(.22,.9,.35,1);}
@@ -12840,7 +12918,7 @@ twpShowNameGateIfNeeded();
    + weight, with a subtle underline for the highest-value phrase. */
 #tab-scanner .pair-macro-summary{line-height:1.48!important;}
 #tab-scanner .pair-macro-lead,#tab-scanner .pair-macro-fund,#tab-scanner .pair-macro-cb,#tab-scanner .pair-macro-rate,#tab-scanner .pair-macro-cot,#tab-scanner .pair-macro-verdict{font-weight:500!important;}
-#tab-scanner .pair-macro-key{color:var(--amber)!important;font-weight:900!important;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
+#tab-scanner .pair-macro-key{color:var(--amber)!important;font-weight:900!important;font-style:italic!important;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
 #tab-scanner .pair-macro-mark{font-weight:800!important;}
 #tab-scanner .pair-macro-line{font-weight:500!important;}
 #tab-scanner .pair-macro-flip,#tab-scanner .pair-macro-align{font-weight:500!important;color:var(--text)!important;}
@@ -12848,4 +12926,177 @@ twpShowNameGateIfNeeded();
 @media(max-width:900px){#tab-scanner .scanner-expanded-grid{grid-template-columns:1fr!important;}#tab-scanner .pair-focus-grid{grid-template-columns:1fr 1fr!important;}}
 @media(max-width:600px){#tab-scanner .pair-focus-grid,#tab-scanner .pair-focus-dual{grid-template-columns:1fr!important;}}
 </style>
+
+<style id="pair-focus-normal-fonts">
+/* Pair Focus: normal readable typography. Keep geometry compact; do not shrink data into tiny text. */
+#tab-scanner .pf2-head{font-size:12px!important;}
+#tab-scanner .pf2-title{font-size:12px!important;}
+#tab-scanner .pf2-tiles{margin-bottom:8px!important;}
+#tab-scanner .pf2-tile{padding:7px 10px!important;}
+#tab-scanner .pf2-tile-label{font-size:10px!important;margin-bottom:3px!important;}
+#tab-scanner .pf2-tile-val{font-size:16px!important;}
+#tab-scanner .pfd-head-row{font-size:10px!important;}
+#tab-scanner .pfd-row{padding:5px 0!important;}
+#tab-scanner .pfd-name{font-size:13px!important;line-height:1.25!important;}
+#tab-scanner .pfd-weight{font-size:9.5px!important;}
+#tab-scanner .pfd-num{font-size:13.5px!important;font-weight:700!important;}
+#tab-scanner .pfd-delta{font-size:11.5px!important;font-weight:700!important;}
+</style>
+
+
+<style id="pair-focus-tight-v2">
+/* Pair Focus v2: compact geometry, normal typography, no synthetic Bias row, no weight labels. */
+#tab-scanner .pfd-table{gap:2px!important;}
+#tab-scanner .pfd-head-row,#tab-scanner .pfd-row{grid-template-columns:96px 46px 1fr 46px 52px!important;gap:5px!important;}
+#tab-scanner .pfd-head-row{font-size:9px!important;padding-bottom:3px!important;margin-bottom:1px!important;}
+#tab-scanner .pfd-row{padding:3px 0!important;min-height:0!important;}
+#tab-scanner .pfd-name{font-size:12px!important;font-weight:600!important;line-height:1.15!important;}
+#tab-scanner .pfd-num{font-size:12px!important;font-weight:700!important;font-family:inherit!important;line-height:1.1!important;}
+#tab-scanner .pfd-delta{font-size:12px!important;font-weight:700!important;font-family:inherit!important;line-height:1.1!important;}
+#tab-scanner .pfd-bar-wrap{padding:2px 0!important;}
+#tab-scanner .pfd-bar{height:8px!important;}
+#tab-scanner .pfd-bar-mid{top:-1px!important;bottom:-1px!important;}
+#tab-scanner .pf2-head{font-size:11.5px!important;padding-bottom:6px!important;}
+#tab-scanner .pf2-title{font-size:11.5px!important;}
+#tab-scanner .pf2-tiles{margin-bottom:6px!important;}
+#tab-scanner .pf2-tile{padding:5px 8px!important;}
+#tab-scanner .pf2-tile-label{font-size:9px!important;margin-bottom:2px!important;}
+#tab-scanner .pf2-tile-val{font-size:14px!important;font-weight:700!important;font-family:inherit!important;line-height:1.1!important;}
+#tab-scanner .pair-focus-section{margin-top:5px!important;padding-top:5px!important;}
+#tab-scanner .pair-focus-section-title{font-size:9px!important;margin-bottom:3px!important;}
+#tab-scanner .pair-focus-note,#tab-scanner .pair-focus-flip-item,#tab-scanner .pair-focus-muted{font-size:10px!important;line-height:1.25!important;}
+#tab-scanner .pfd-cot-trend-row{margin-top:4px!important;gap:10px!important;}
+#tab-scanner .pfd-cot-trend-ccy{font-size:9px!important;}
+#tab-scanner .pair-focus-notes{margin-top:5px!important;font-size:9px!important;line-height:1.2!important;}
+</style>
+
+<style id="pair-focus-final-tight-v3">
+/* Final Pair Focus presentation: compact, plain, with restrained separators. */
+#tab-scanner .pf2-head{
+  padding-bottom:4px!important;
+  font-size:12px!important;
+  border-bottom:0!important;
+}
+#tab-scanner .pf2-title{
+  color:var(--bearish-strong)!important;
+  font-size:12.5px!important;
+  font-weight:900!important;
+}
+#tab-scanner .pf2-crumb{font-size:12px!important;}
+#tab-scanner .pf2-tiles{
+  margin-bottom:4px!important;
+  border-top:1px solid var(--border)!important;
+  border-bottom:1px solid var(--border)!important;
+}
+#tab-scanner .pf2-tile{padding:5px 8px!important;}
+#tab-scanner .pf2-tile-label{font-size:9.5px!important;margin-bottom:2px!important;}
+#tab-scanner .pf2-tile-val{font-size:15px!important;font-weight:700!important;font-family:inherit!important;line-height:1.1!important;}
+#tab-scanner .pfd-table{gap:0!important;}
+#tab-scanner .pfd-head-row,#tab-scanner .pfd-row{
+  grid-template-columns:96px 46px 1fr 46px 52px!important;
+  gap:5px!important;
+}
+#tab-scanner .pfd-head-row{
+  padding-bottom:2px!important;
+  margin-bottom:0!important;
+  font-size:9.5px!important;
+}
+#tab-scanner .pfd-row{
+  padding:3px 0!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+}
+#tab-scanner .pfd-row:last-child{border-bottom:0!important;}
+#tab-scanner .pfd-name{font-size:12.5px!important;font-weight:600!important;line-height:1.15!important;}
+#tab-scanner .pfd-num{font-size:12.5px!important;font-weight:700!important;font-family:inherit!important;line-height:1.1!important;}
+#tab-scanner .pfd-delta{font-size:12.5px!important;font-weight:700!important;font-family:inherit!important;line-height:1.1!important;}
+#tab-scanner .pfd-bar-wrap{padding:1.5px 0!important;}
+#tab-scanner .pfd-bar{height:7px!important;}
+#tab-scanner .pfd-bar-mid{top:-1px!important;bottom:-1px!important;}
+#tab-scanner .pair-focus-section{
+  margin-top:4px!important;
+  padding-top:4px!important;
+  border-top:0!important;
+}
+#tab-scanner .pair-focus-section-title{
+  font-size:9.5px!important;
+  margin-bottom:2px!important;
+}
+#tab-scanner .pair-focus-note,
+#tab-scanner .pair-focus-flip-item,
+#tab-scanner .pair-focus-muted{
+  font-size:10px!important;
+  line-height:1.22!important;
+}
+#tab-scanner .pair-position-read b{font-weight:800!important;}
+#tab-scanner .pair-flow-read{margin-top:1px!important;color:var(--text-faint)!important;}
+#tab-scanner .pfd-cot-trend-row{margin-top:3px!important;gap:9px!important;}
+#tab-scanner .pfd-cot-trend-ccy{font-size:9.5px!important;}
+#tab-scanner .pair-focus-flip-list{gap:2px!important;}
+#tab-scanner .pair-focus-notes{margin-top:4px!important;font-size:9.5px!important;line-height:1.15!important;}
+#tab-scanner .pair-macro-summary{line-height:1.38!important;}
+#tab-scanner .pair-macro-summary-head{
+  color:var(--bearish-strong)!important;
+  font-weight:900!important;
+  border-bottom:1px solid var(--border)!important;
+  padding-bottom:4px!important;
+  margin-bottom:4px!important;
+}
+#tab-scanner .pair-macro-summary-head span{
+  color:var(--bearish-strong)!important;
+  font-weight:900!important;
+}
+#tab-scanner .pair-macro-summary-head b{font-weight:800!important;}
+#tab-scanner .pair-macro-key{
+  color:inherit!important;
+  font-style:normal!important;
+  text-decoration:none!important;
+  font-weight:inherit!important;
+}
+#tab-scanner .pfd-head-row,
+#tab-scanner .pfd-name,
+#tab-scanner .pfd-num,
+#tab-scanner .pfd-delta,
+#tab-scanner .pf2-tile-label,
+#tab-scanner .pf2-tile-val,
+#tab-scanner .pair-focus-section-title,
+#tab-scanner .pair-focus-note,
+#tab-scanner .pair-focus-flip-item,
+#tab-scanner .pair-focus-notes{font-family:inherit!important;}
+</style>
+
+<style id="pair-focus-readable-targeted-v7">
+/* Pair Focus only: restore breathing room without changing the main scanner/overview typography. */
+#tab-scanner .pf2-head{font-size:13px!important;padding-bottom:8px!important;}
+#tab-scanner .pf2-title{font-size:13px!important;}
+#tab-scanner .pf2-crumb{font-size:12.5px!important;}
+#tab-scanner .pf2-tile{padding:8px 11px!important;}
+#tab-scanner .pf2-tile-label{font-size:10.5px!important;margin-bottom:3px!important;}
+#tab-scanner .pf2-tile-val{font-size:17px!important;font-weight:800!important;line-height:1.15!important;}
+
+/* Driver rows: a little more vertical breathing room and a thicker bar.
+   Keep the two currency readings and delta in their existing semantic colours. */
+#tab-scanner .pfd-table{gap:2px!important;}
+#tab-scanner .pfd-head-row,#tab-scanner .pfd-row{gap:6px!important;}
+#tab-scanner .pfd-head-row{font-size:10px!important;padding-bottom:4px!important;margin-bottom:1px!important;}
+#tab-scanner .pfd-row{padding:5px 0!important;min-height:0!important;}
+#tab-scanner .pfd-name{font-size:13.5px!important;font-weight:700!important;line-height:1.2!important;}
+#tab-scanner .pfd-num{font-size:14px!important;font-weight:800!important;line-height:1.15!important;}
+#tab-scanner .pfd-delta{font-size:12.5px!important;font-weight:800!important;line-height:1.15!important;}
+#tab-scanner .pfd-bar-wrap{padding:2px 0!important;}
+#tab-scanner .pfd-bar{height:10px!important;}
+#tab-scanner .pfd-bar-mid{top:-1px!important;bottom:-1px!important;}
+
+/* Only the Pair Focus section headings are white. The driver values underneath
+   remain green/red/amber/neutral according to their existing meaning. */
+#tab-scanner .pair-focus-section-title{color:#f5f7f5!important;font-size:10px!important;font-weight:900!important;letter-spacing:.75px!important;}
+#tab-scanner .pair-focus-driver.pos{color:var(--bullish-strong)!important;}
+#tab-scanner .pair-focus-driver.neg{color:var(--bearish-strong)!important;}
+#tab-scanner .pair-position-read b{color:inherit!important;}
+
+/* The faint vertical line at the frozen 7D boundary was coming from the shadow
+   on column 5. Remove it without altering the scanner's column widths or fonts. */
+#tab-scanner .scanner-table th:nth-child(5),
+#tab-scanner .scanner-table td:nth-child(5){box-shadow:none!important;border-right:0!important;}
+</style>
+
 </html>
