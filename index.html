@@ -5218,6 +5218,17 @@ function pairBandLabel(s){
   if(s>=-34) return "Bearish";
   return "Very Bearish";
 }
+// Maps a pairBandLabel() string to a CSS class: full-strength green/red for outright
+// Bullish/Bearish (and Very Bullish/Bearish), a lighter tint for the Leaning tiers,
+// nothing (neutral text color) for Neutral. Used anywhere a bias label needs to be
+// colored the same way the rest of the dashboard colors bullish/bearish.
+function pairBandCls(label){
+  if(label==="Very Bullish"||label==="Bullish") return "bandpos";
+  if(label==="Leaning Bullish") return "bandpos-lean";
+  if(label==="Very Bearish"||label==="Bearish") return "bandneg";
+  if(label==="Leaning Bearish") return "bandneg-lean";
+  return "";
+}
 
 // Pair alignment is descriptive, not an extra scoring pillar. It answers:
 // "How much of the weighted evidence is pointing in the same direction as the live pair score?"
@@ -9454,12 +9465,33 @@ function pairFocusHtml(pair,score,animate){
   // and weekly net-flow direction, while keeping crowding separate.
   var cotStock=cot.posLabel&&cot.posLabel!=='Neutral'?cot.posLabel:'Balanced';
   var cotFlow=cot.flowLabel&&cot.flowLabel!=='Neutral'?cot.flowLabel:'No clear weekly lead';
-  var positionPairText=cot.positionAdvantage ? (base+' long / '+quote+' short') : 'No clear pair-side positioning';
+  // positionAdvantage names whichever currency (base OR quote) the reading favors --
+  // it is not always base, so the pair-side reading has to actually branch on which
+  // one it is instead of hardcoding "base long / quote short" regardless.
+  var positionPairText = !cot.positionAdvantage ? 'No clear pair-side positioning'
+    : (cot.positionAdvantage===base ? (base+' long / '+quote+' short') : (quote+' long / '+base+' short'));
   var flowPairText=cot.flowAdvantage ? (cot.flowAdvantage+' leading weekly flow') : 'No clear weekly flow lead';
   var crowdBase=cotCrowding(base), crowdQuote=cotCrowding(quote);
   var crowdLine=[];
   if(crowdBase&&crowdBase.label&&crowdBase.label!=='Neutral'&&crowdBase.label!=='No regime') crowdLine.push(base+' '+crowdBase.label.toLowerCase());
   if(crowdQuote&&crowdQuote.label&&crowdQuote.label!=='Neutral'&&crowdQuote.label!=='No regime') crowdLine.push(quote+' '+crowdQuote.label.toLowerCase());
+  // One synthesized, plain-English read on crowding -- instead of just listing each
+  // currency's raw COT-crowding status side by side (which reads like a data dump),
+  // this combines direction (who's long/short per positionAdvantage) with each leg's
+  // crowding status into a single sentence a trader would actually say out loud.
+  var crowdInsight=(function(){
+    var baseCrowded=crowdBase&&crowdBase.label&&crowdBase.label.indexOf('Crowded')===0;
+    var quoteCrowded=crowdQuote&&crowdQuote.label&&crowdQuote.label.indexOf('Crowded')===0;
+    var adv=cot.positionAdvantage;
+    if(adv && baseCrowded && quoteCrowded){
+      var side=(adv===base ? crowdBase.label : crowdQuote.label).indexOf('Long')>-1 ? 'longs' : 'shorts';
+      return base+'/'+quote+' '+side+' are crowded -- both legs are already stretched the same way, so it is vulnerable to a squeeze if the driver fades';
+    }
+    if(baseCrowded && quoteCrowded) return base+' and '+quote+' are both crowded, but pulling in opposite directions on this pair -- no clean squeeze risk in one leg alone';
+    if(baseCrowded) return base+' positioning is '+crowdBase.label.toLowerCase()+'; '+quote+' isn\'t stretched';
+    if(quoteCrowded) return quote+' positioning is '+crowdQuote.label.toLowerCase()+'; '+base+' isn\'t stretched';
+    return 'neither leg is crowded yet -- positioning has room to build further';
+  })();
   var drivers=dir?scannerLedByDrivers(base,quote,dir).slice(0,3):[];
   var support=drivers.length?drivers.map(function(d){return '<span class="pair-focus-driver '+(d.pts>0?'pos':'neg')+'">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';}).join(' '):'<span class="pair-focus-muted">No directional driver yet</span>';
   var flip=[];
@@ -9470,11 +9502,25 @@ function pairFocusHtml(pair,score,animate){
   // this time -- could be Yield, CB stance, Risk sentiment, Position, any of the seven --
   // is what shows up here, not a hardcoded subset.
   if(dir){
+    var favoredCcy=dir>0?base:quote, otherCcy=dir>0?quote:base;
+    // Spells out the actual mechanism behind each pillar reversing, in plain trader
+    // language, instead of the generic and unreadable "yield turns the other way" --
+    // Parker's own words for what he wants each one to say when it applies.
+    var flipMechanism={
+      'Fundamentals':'the growth/inflation/labour gap starts narrowing, or flips in favour of '+otherCcy,
+      'Yield':'the 2Y yield gap starts narrowing against '+favoredCcy+' -- or the spread flips outright in favour of '+otherCcy,
+      'CB stance':'the '+cb(favoredCcy)+' turns less hawkish than priced, or the '+cb(otherCcy)+' turns more hawkish than priced',
+      'Position':'money starts flowing out of '+favoredCcy+' positioning and into '+otherCcy+', or institutions start shifting their book the other way',
+      'WoW':'the weekly COT flow reverses and starts favouring '+otherCcy+' instead',
+      'Seasonality':'the seasonal tailwind for '+favoredCcy+' fades or the calendar turns against it',
+      'Risk sentiment':'risk appetite flips -- a shift in equities/VIX that starts favouring '+otherCcy+' over '+favoredCcy
+    };
     var flipCandidates=scannerDriverBreakdown(base,quote)
       .filter(function(d){ return ((d.pts>0)===(dir>0)) && Math.abs(d.pts)>=0.5; })
       .sort(function(a,b){ return Math.abs(b.pts)-Math.abs(a.pts); });
     flipCandidates.slice(0,3).forEach(function(d){
-      flip.push(d.name.toLowerCase()+' turns the other way (currently '+d.label.toLowerCase()+')');
+      var mech=flipMechanism[d.name];
+      flip.push(mech ? (d.name+': '+mech+' (currently '+d.label.toLowerCase()+')') : (d.name.toLowerCase()+' turns the other way (currently '+d.label.toLowerCase()+')'));
     });
   }
   if(crowdLine.length) flip.push(crowdLine.join(' and ')+' becomes too crowded');
@@ -9492,7 +9538,7 @@ function pairFocusHtml(pair,score,animate){
     '<div class="pf2-head"><span class="pf2-dot '+(dir>0?'':dir<0?'neg':'neu')+'"></span><b class="pf2-title">Pair focus</b><span class="pf2-crumb"> &middot; '+esc(base)+'/'+esc(quote)+' &middot; Driver breakdown</span></div>'+
     '<div class="pf2-tiles">'+
       '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'/'+esc(quote)+'</span><b class="pf2-tile-val '+pairTileCls+'">'+(pairTileScore>0?'+':'')+pairTileScore.toFixed(1)+'</b></div>'+
-      '<div class="pf2-tile"><span class="pf2-tile-label">Bias</span><b class="pf2-tile-val">'+esc(pairBandLabel(score))+'</b></div>'+
+      '<div class="pf2-tile"><span class="pf2-tile-label">Bias</span><b class="pf2-tile-val '+pairBandCls(pairBandLabel(score))+'">'+esc(pairBandLabel(score))+'</b></div>'+
       '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'</span><b class="pf2-tile-val '+baseTileCls+'">'+(baseOverall>0?'+':'')+baseOverall.toFixed(1)+'</b></div>'+
       '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(quote)+'</span><b class="pf2-tile-val '+quoteTileCls+'">'+(quoteOverall>0?'+':'')+quoteOverall.toFixed(1)+'</b></div>'+
     '</div>'+
@@ -9501,7 +9547,8 @@ function pairFocusHtml(pair,score,animate){
       pairFocusDriverRowsHtml(base,quote,animate)+
     '</div>'+ 
     '<div class="pair-focus-section" data-tip="'+esc('WHAT IS MOVING THE PAIR')+'||The 1-2 pillars with the largest point contribution behind the current score -- recalculated live, not a fixed list."><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
-    '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||CFTC futures positioning is measured separately for each currency. The pair read is a relative comparison: Bullish means the positioning balance favours BASE over QUOTE; it does not mean traders literally hold the spot FX pair. Crowding is the 52-week-extreme status of each currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note pair-position-read"><b>'+esc(cotStock)+'</b> · '+esc(positionPairText)+(crowdLine.length?' · '+esc(crowdLine.join(' · ')):'')+'</div>'+
+    '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||CFTC futures positioning is measured separately for each currency. The pair read is a relative comparison: Bullish means the positioning balance favours BASE over QUOTE; it does not mean traders literally hold the spot FX pair. Crowding is the 52-week-extreme status of each currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note pair-position-read"><b>'+esc(cotStock)+'</b> · '+esc(positionPairText)+'</div>'+
+      '<div class="pair-focus-note pair-crowd-read">'+esc(crowdInsight)+'</div>'+
       '<div class="pair-focus-note pair-flow-read">'+esc(flowPairText)+'</div>'+
       '<div class="pfd-cot-trend-row"><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(base)+'</span>'+pairFocusCotSpark(base)+'</div><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(quote)+'</span>'+pairFocusCotSpark(quote)+'</div></div>'+
     '</div>'+ 
@@ -11938,7 +11985,7 @@ body,html{background:var(--bg);}
 // (driver rows, section headers) rather than one hardcoded spot -- per request, moving
 // the mouse anywhere over a data-tip element shows its tooltip.
 (function(){
-  var tipEl=null;
+  var tipEl=null, lastTarget=null;
   function ensureTip(){
     if(tipEl) return tipEl;
     tipEl=document.createElement('div');
@@ -11961,26 +12008,36 @@ body,html{background:var(--bg);}
     t.style.left=Math.max(6,left)+'px';
     t.style.top=Math.max(6,top)+'px';
   }
-  document.addEventListener('mouseover',function(e){
+  // Re-resolves the hovered data-tip element and re-places the tooltip on every
+  // single pointer move, instead of only placing it once on 'mouseover' and then
+  // trusting a separate 'mousemove'/'mouseout' pair to keep it in sync. The old
+  // split-listener version could get stuck at a stale spot whenever the card's
+  // periodic live-data re-render replaced the DOM node under a stationary cursor
+  // (no real browser mouseover/mouseout fires for that, since the pointer itself
+  // never moved) -- this version doesn't depend on that pairing at all: it just
+  // asks "what's under the cursor right now" on every move and repositions.
+  function update(e){
     var target=findTarget(e.target);
-    if(!target) return;
-    var raw=target.getAttribute('data-tip')||'';
-    var parts=raw.split('||');
-    var title=parts[0]||'', body=parts.slice(1).join('||')||'';
-    var t=ensureTip();
-    t.innerHTML=(title?'<b>'+title+'</b>':'')+body;
-    t.classList.add('show');
+    if(!target){
+      if(tipEl) tipEl.classList.remove('show');
+      lastTarget=null;
+      return;
+    }
+    if(target!==lastTarget){
+      lastTarget=target;
+      var raw=target.getAttribute('data-tip')||'';
+      var parts=raw.split('||');
+      var title=parts[0]||'', body=parts.slice(1).join('||')||'';
+      var t=ensureTip();
+      t.innerHTML=(title?'<b>'+title+'</b>':'')+body;
+      t.classList.add('show');
+    }
     place(e.clientX,e.clientY);
-  });
-  document.addEventListener('mousemove',function(e){
-    if(tipEl && tipEl.classList.contains('show')) place(e.clientX,e.clientY);
-  });
-  document.addEventListener('mouseout',function(e){
-    var target=findTarget(e.target);
-    if(!target) return;
-    var to=e.relatedTarget;
-    if(to && target.contains(to)) return;
+  }
+  document.addEventListener('mousemove',update);
+  document.addEventListener('mouseleave',function(){
     if(tipEl) tipEl.classList.remove('show');
+    lastTarget=null;
   });
 })();
 </script>
@@ -13071,7 +13128,15 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pf2-crumb{font-size:12.5px!important;}
 #tab-scanner .pf2-tile{padding:8px 11px!important;}
 #tab-scanner .pf2-tile-label{font-size:10.5px!important;margin-bottom:3px!important;}
-#tab-scanner .pf2-tile-val{font-size:17px!important;font-weight:800!important;line-height:1.15!important;}
+/* Reduced from 17px -- Parker wants these smaller than before, but still clearly
+   bigger than the driver-row detail numbers (14px) below, not shrunk to match them. */
+#tab-scanner .pf2-tile-val{font-size:15.5px!important;font-weight:800!important;line-height:1.15!important;}
+/* Bias-tile coloring: full-strength green/red for outright Bullish/Bearish,
+   a lighter tint for the Leaning tiers, so the bias label is never left white. */
+#tab-scanner .pf2-tile-val.bandpos{color:var(--bullish-strong)!important;}
+#tab-scanner .pf2-tile-val.bandneg{color:var(--bearish-strong)!important;}
+#tab-scanner .pf2-tile-val.bandpos-lean{color:var(--bullish-lean)!important;}
+#tab-scanner .pf2-tile-val.bandneg-lean{color:var(--bearish-lean)!important;}
 
 /* Driver rows: a little more vertical breathing room and a thicker bar.
    Keep the two currency readings and delta in their existing semantic colours. */
