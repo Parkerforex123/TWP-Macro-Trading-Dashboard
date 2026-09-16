@@ -5334,6 +5334,28 @@ function pairYieldCalc(base, quote){
   return {pair:base+quote,base:base,quote:quote,current:current,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps};
 }
 
+// Generic calendar-anchored spread change: "how much has base-vs-quote 2Y spread
+// moved over the last N calendar days", using the exact same on-or-before lookup
+// as pairYieldCalc's own week (days=7) and month (days=30) fields -- so calling
+// this with days=7 always agrees with pairYieldCalc(...).week, and days=30 always
+// agrees with .month. This is the single source of truth for any "change over a
+// period" figure shown for a pair's spread, so a period selector (1W/1M/3M/1Y)
+// never has to fall back to "count back N stored rows", which silently drifts
+// away from the calendar-day figure whenever the saved history has any gaps.
+function pairSpreadChangeSince(base,quote,days){
+  var y=pairYieldCalc(base,quote);
+  if(y.current==null) return null;
+  if(days===7) return y.week;
+  if(days===30) return y.month;
+  var series=pairSpreadSeries(base,quote);
+  var currentDate=YIELD_ENGINE.currentDate||'';
+  var refDateP=currentDate||(series.length?series[series.length-1].date:"");
+  var histRows=series.filter(function(r){return !currentDate || r.date<currentDate;});
+  var targetDate=refDateP?y2AddDays(refDateP,-days):null;
+  var prev=y2SpreadOnOrBefore(histRows,targetDate);
+  return prev==null?null:y.current-prev;
+}
+
 function pairCompositeFor(base, quote){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
@@ -7142,7 +7164,6 @@ function histSpreadDraw(animate){
   }
 
   var current=vals[vals.length-1], first=vals[0], high=Math.max.apply(null,vals), low=Math.min.apply(null,vals);
-  var change=current-first;
   var spreadStyles=getComputedStyle(document.body);
   var liveEl=document.getElementById("histSpreadLiveValue");
   var liveMeta=document.getElementById("histSpreadLiveMeta");
@@ -7154,7 +7175,26 @@ function histSpreadDraw(animate){
     var p=HIST_SPREAD_PAIRS.find(function(x){return x[0]===code;});
     liveMeta.textContent=(p?p[1]+" / "+p[2]:code)+" · "+rows[rows.length-1].date;
   var liveChange=document.getElementById("histSpreadLiveChange");
-  if(liveChange){ liveChange.innerHTML="Change <span>"+histSpreadFmt(change)+"</span>"; var __chgStyles=getComputedStyle(document.body); liveChange.style.color=change>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#22c98b"):(change<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#f04455"):"var(--text-dim)"); }
+  if(liveChange){
+    // "Change" tracks whichever period button (1W/1M/3M/1Y) is currently
+    // selected -- so picking 1W shows the real 1-week move, picking 1M shows
+    // the real 1-month move, etc. It used to do this by taking current minus
+    // the FIRST of whichever N stored rows the chart happened to be showing
+    // (5/21/63/252 rows for 1W/1M/3M/1Y) -- but "N rows back" only equals "N
+    // calendar days back" if every single day was saved with no gaps. Any
+    // missed update day shifted the row-based figure onto a different date
+    // than the label claimed, which is exactly why the same pair could show
+    // two different "1-week" numbers in different corners of the dashboard.
+    // pairSpreadChangeSince always anchors to the actual calendar date instead
+    // of a row count, so 1W here is guaranteed to match the "week" figure in
+    // the Pair focus tooltip for the same pair, and 1M/3M/1Y are equally exact.
+    var rangeDaysMap={5:7,21:30,63:90,252:365};
+    var changeDays=rangeDaysMap[HIST_SPREAD_RANGE]||7;
+    var periodChange=p?pairSpreadChangeSince(p[1],p[2],changeDays):null;
+    liveChange.innerHTML="Change <span>"+histSpreadFmt(periodChange)+"</span>";
+    var __chgStyles=getComputedStyle(document.body);
+    liveChange.style.color=periodChange>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#22c98b"):(periodChange<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#f04455"):"var(--text-dim)");
+  }
   }
   if(stats) stats.innerHTML="";
 
