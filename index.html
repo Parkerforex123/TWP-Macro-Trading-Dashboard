@@ -195,10 +195,14 @@ select:disabled{background:transparent;border-color:transparent;color:var(--text
 .info-item select{background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:11px;}
 .weight-col{display:none;width:0!important;padding:0!important;border:none!important;}
 body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px!important;border-bottom:1px solid var(--border)!important;}
-.pair-flags{display:inline-flex;align-items:center;margin-right:8px;vertical-align:middle;}
-.pair-flags .flag-a,.pair-flags .flag-b{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:var(--panel3);border:1.5px solid var(--panel);overflow:hidden;}
-.pair-flags .flag-b{margin-left:-8px;}
+.pair-flags{display:inline-flex;align-items:center;margin-right:8px;vertical-align:middle;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08);}
+.pair-flags .flag-a,.pair-flags .flag-b{display:inline-flex;align-items:center;justify-content:center;width:19px;height:15px;background:var(--panel3);overflow:hidden;}
+.pair-flags .flag-a{border-right:1px solid var(--panel);}
 .pair-flags img{width:100%;height:100%;object-fit:cover;display:block;}
+/* Draw-in on Trade Scanner tab open only (animateTrend flag) -- never on the 3s cloud
+   poll re-render, same animate-on-navigation-only rule as the rest of this tab. */
+@keyframes pairFlagsSlideIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
+.pair-flags-animate-in{animation:pairFlagsSlideIn .45s ease both;}
 .pair-table td,.pair-table th{font-size:13.5px!important;}
 .pair-table td,.pair-table th{padding-top:4px!important;padding-bottom:4px!important;padding-left:6px!important;padding-right:6px!important;}
 .pair-table .mono,.pair-table .ccy-name,.pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-size:13.5px!important;font-weight:800!important;}
@@ -5160,11 +5164,11 @@ function pairAlignmentClass(score, alignment){
   return 'align-neutral';
 }
 var CCY_FLAG_ISO = {USD:"us",GBP:"gb",EUR:"eu",JPY:"jp",AUD:"au",NZD:"nz",CAD:"ca",CHF:"ch"};
-function flagPair(base,quote){
+function flagPair(base,quote,animate){
   var a=CCY_FLAG_ISO[base], q=CCY_FLAG_ISO[quote];
   var imgA = a ? '<img src="https://flagcdn.com/w40/'+a+'.png" alt="'+base+'">' : '';
   var imgB = q ? '<img src="https://flagcdn.com/w40/'+q+'.png" alt="'+quote+'">' : '';
-  return '<span class="pair-flags"><span class="flag-a">'+imgA+'</span><span class="flag-b">'+imgB+'</span></span>';
+  return '<span class="pair-flags'+(animate?' pair-flags-animate-in':'')+'"><span class="flag-a">'+imgA+'</span><span class="flag-b">'+imgB+'</span></span>';
 }
 function pairBiasMarkup(label){
   if(label==="Leaning Bullish") return '<span class="pair-bias-stack pair-bias-lean-bull"><span class="lean-word">Leaning</span><strong>Bullish</strong></span>';
@@ -6105,7 +6109,7 @@ function renderScanner(animateTrend){
     rows += '<tr class="rowhover scanner-row" data-pair="'+p.pair+'">'+
       '<td class="scanner-star-td" data-label="Fav"><span class="scanner-star'+(isFav?' active':'')+'" data-star="'+p.pair+'">'+(isFav?'★':'☆')+'</span></td>'+
       '<td data-label="Side">'+scannerSideBadge(p.bias,p.score)+'</td>'+
-      '<td class="scanner-pair-td" data-label="Pair" data-scanner-tip="'+esc(scannerPairTooltipHtml(p.base,p.quote,p.score))+'"><span class="scanner-pair-wrap">'+flagPair(p.base,p.quote)+'<span class="scanner-pair-code">'+p.pair+'</span></span></td>'+
+      '<td class="scanner-pair-td" data-label="Pair" data-scanner-tip="'+esc(scannerPairTooltipHtml(p.base,p.quote,p.score))+'"><span class="scanner-pair-wrap">'+flagPair(p.base,p.quote,animateTrend)+'<span class="scanner-pair-code">'+p.pair+'</span></span></td>'+
       '<td data-label="Score"><div class="scanner-score-wrap"><span class="scanner-score '+scoreCls+'">'+scannerScoreCompact(p.score)+'</span>'+scannerGaugeBar(p.score,scoreCls)+'</div></td>'+
       '<td class="day-delta-cell" data-label="7D &Delta;" data-scanner-tip="'+esc(scanner7dTooltip(p.base,p.quote,p.score))+'">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td data-label="Trend"><div class="scanner-trend-cell">'+scannerTrendSpark(p.pair,animateTrend)+'</div></td>'+
@@ -13726,6 +13730,19 @@ twpShowNameGateIfNeeded();
   line-height:1!important;
 }
 #tab-scanner .pair-crowd-line{color:var(--text-dim)!important;font-size:11px!important;line-height:1.35!important;}
+
+<style id="scanner-pair-flags-size-v1">
+/* Trade Scanner pair-name flags only: slightly smaller than the site-wide
+   default (19x15) so they don't dominate the pair code text, but still
+   clearly legible. Scoped to #tab-scanner so it never touches flags
+   elsewhere (Overview, Currency Detail, Yield tab, etc). */
+#tab-scanner .scanner-pair-wrap .pair-flags{margin-right:6px;}
+#tab-scanner .scanner-pair-wrap .pair-flags .flag-a,
+#tab-scanner .scanner-pair-wrap .pair-flags .flag-b{
+  width:15px!important;
+  height:12px!important;
+}
+</style>
 
 <style id="pair-focus-tooltip-scroll-guard-v1">
 /* A fixed tooltip must never survive a page scroll with a stale cursor target. */
