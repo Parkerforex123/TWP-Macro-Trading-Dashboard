@@ -3470,8 +3470,13 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .day-delta-flat{color:var(--text-faint);}
 
 /* Trend: compact, straight-segment line rather than a long smooth curve. */
-.scanner-trend-cell{display:flex;align-items:center;justify-content:center;}
+.scanner-trend-cell{display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .scanner-trend-cell svg{display:block;}
+/* Click any row's Trend cell to open this -- picking a range applies to every row's
+   sparkline at once (see scannerTrendRange), not just the row that was clicked. */
+.scanner-trend-range-popover{position:fixed;display:none;z-index:20000;gap:5px;padding:6px;
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.38);}
 
 .scanner-pill-td{padding-left:3px!important;padding-right:3px!important;}
 .scanner-pill{display:inline-block;width:32px;height:20px;border-radius:2px;background:var(--panel3);border:1px solid rgba(255,255,255,.06);}
@@ -4068,6 +4073,11 @@ var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=true, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
 var scannerFilters=["All"], scannerFavorites=[], scannerExpandedPair=null;
+// Global range for the Trade Scanner table's own Trend column (separate from expandedRange,
+// which only drives the big chart inside an expanded pair's Pair focus card). Clicking any
+// row's Trend sparkline opens a small popover; picking a range here re-renders every row's
+// sparkline on that same window, not just the one that was clicked.
+var scannerTrendRange="3M", scannerTrendPopoverPair=null;
 // Set true right before a renderScanner() call that should draw-in the big "Overall
 // trend" chart (opening the expanded panel, or switching its 1M/3M/1Y/ALL range) --
 // consumed once per render then reset, so unrelated re-renders (star click, search,
@@ -5650,10 +5660,14 @@ function scannerTrendSpark(pair,animate){
   var w=76,h=20,pad=2;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
   if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:11px;">&mdash;</span>';
-  var loggedDays=trendDaysForKey(pair);
+  // Ranged to scannerTrendRange (1M/3M/1Y/ALL, picked from the Trend-cell popover) instead
+  // of the old fixed 90-calendar-day trendDaysForKey window -- falls back to the full
+  // history if the chosen range is narrower than what's actually logged for this pair.
+  var loggedDays=filterDaysByRange(allDays, scannerTrendRange);
+  if(loggedDays.length<2) loggedDays=allDays;
   var loggedVals=loggedDays.map(function(dt){ return DAILY[dt][pair]; });
   var live=liveValueForTrendKey(pair);
-  var merged=live==null?{days:loggedDays,vals:loggedVals,liveIdx:-1}:withLiveToday(loggedDays,loggedVals,live,TREND_WINDOW_DAYS);
+  var merged=live==null?{days:loggedDays,vals:loggedVals,liveIdx:-1}:withLiveToday(loggedDays,loggedVals,live,null);
   var days=merged.days, vals=merged.vals, liveIdx=merged.liveIdx;
   if(vals.length<2) return '<span style="color:var(--text-faint);font-size:11px;">&mdash;</span>';
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){min-=5;max+=5;}
@@ -5696,6 +5710,51 @@ function animateScannerTrends(){
     });
   });
 }
+// Range popover for the Trade Scanner table's Trend column. Built once and appended to
+// <body> (same pattern as pairScoreTooltip below) so it survives every renderScanner()
+// innerHTML swap instead of getting wiped and rebuilt on each render. Clicking any row's
+// Trend cell opens it anchored under that cell; picking a range sets scannerTrendRange
+// globally and re-renders the whole table, so every row's sparkline switches together --
+// not just the row that was clicked.
+var scannerTrendRangePopoverEl=null;
+function ensureScannerTrendRangePopover(){
+  if(scannerTrendRangePopoverEl) return scannerTrendRangePopoverEl;
+  var el=document.createElement('div');
+  el.className='scanner-trend-range-popover';
+  el.innerHTML=["1M","3M","1Y","ALL"].map(function(r){
+    return '<button type="button" class="srange-btn scanner-trend-range-opt" data-range="'+r+'">'+r+'</button>';
+  }).join('');
+  document.body.appendChild(el);
+  scannerTrendRangePopoverEl=el;
+  el.addEventListener('click',function(e){
+    var btn=e.target.closest && e.target.closest('.scanner-trend-range-opt');
+    if(!btn) return;
+    e.stopPropagation();
+    scannerTrendRange=btn.dataset.range;
+    hideScannerTrendRangePopover();
+    renderScanner(true);
+  });
+  document.addEventListener('click',function(e){
+    if(scannerTrendRangePopoverEl && scannerTrendRangePopoverEl.style.display==='flex' && !scannerTrendRangePopoverEl.contains(e.target)){
+      hideScannerTrendRangePopover();
+    }
+  });
+  return el;
+}
+function hideScannerTrendRangePopover(){
+  if(scannerTrendRangePopoverEl) scannerTrendRangePopoverEl.style.display='none';
+}
+function toggleScannerTrendRangePopover(cellEl){
+  var el=ensureScannerTrendRangePopover();
+  if(el.style.display==='flex'){ hideScannerTrendRangePopover(); return; }
+  var btns=el.querySelectorAll('.scanner-trend-range-opt');
+  for(var i=0;i<btns.length;i++){ btns[i].classList.toggle('active',btns[i].getAttribute('data-range')===scannerTrendRange); }
+  el.style.display='flex';
+  var r=cellEl.getBoundingClientRect(), pop=el.getBoundingClientRect();
+  var left=Math.max(8,Math.min(r.left,window.innerWidth-pop.width-8));
+  el.style.left=left+'px';
+  el.style.top=(r.bottom+6)+'px';
+}
 function animateBigTrend(){
   var lines=document.querySelectorAll('#tab-scanner .pair-big-trend-line');
   requestAnimationFrame(function(){
@@ -5722,8 +5781,38 @@ function pairFocusCotSpark(ccy){
     '<path class="pfd-cot-line" d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .7s ease;"/>'+
   '</svg>';
 }
+// Tiny trend line for the pair's own composite score, shown right beside the score
+// tile at the top of Pair focus -- same 64x18 size/style as the COT net sparkline
+// below it, just fed by DAILY[date][pair] (the same source bigChart/sparkline use)
+// instead of COT history.
+function pairFocusScoreSpark(pair){
+  var w=64,h=18,pad=2;
+  var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
+  if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:10px;">&mdash;</span>';
+  var days=allDays.slice(-14), vals=days.map(function(dt){ return Number(DAILY[dt][pair]); });
+  var live=liveValueForTrendKey(pair);
+  if(live!=null){ var merged=withLiveToday(days,vals,live,null); days=merged.days; vals=merged.vals; }
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){min-=5;max+=5;}
+  var range=max-min;
+  var pts=vals.map(function(v,i){var x=pad+(i/(vals.length-1))*(w-2*pad),y=h-pad-((v-min)/range)*(h-2*pad);return [x,y];});
+  var col=vals[vals.length-1]>=vals[0]?'var(--bullish-strong)':'var(--bearish-strong)';
+  var d=pts.map(function(p,i){return (i===0?'M':'L')+p[0].toFixed(1)+' '+p[1].toFixed(1);}).join(' ');
+  var len=0; for(var i=1;i<pts.length;i++){ var dx=pts[i][0]-pts[i-1][0],dy=pts[i][1]-pts[i-1][1]; len+=Math.sqrt(dx*dx+dy*dy); }
+  var lenStr=(len*1.2).toFixed(1);
+  return '<svg class="pf2-score-spark" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;">'+
+    '<path class="pf2-score-spark-line" d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .7s ease;"/>'+
+  '</svg>';
+}
 function animatePairFocusCotSpark(){
   var lines=document.querySelectorAll('#tab-scanner .pfd-cot-line');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+    });
+  });
+}
+function animatePairFocusScoreSpark(){
+  var lines=document.querySelectorAll('#tab-scanner .pf2-score-spark-line');
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){
       for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
@@ -6055,7 +6144,7 @@ function renderScanner(animateTrend){
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
   document.getElementById("tab-scanner").innerHTML=html;
   if(animateTrend) animateScannerTrends();
-  if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); animatePairFocusDriverBars(); scannerBigTrendAnimate=false; }
+  if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); animatePairFocusScoreSpark(); animatePairFocusDriverBars(); scannerBigTrendAnimate=false; }
 
   var recalcBtn=document.getElementById("recalcBtn");
   if(recalcBtn){ recalcBtn.onclick=async function(){
@@ -6147,6 +6236,8 @@ function renderScanner(animateTrend){
   bindScannerHoverTooltips();
   bindPairTrendHover();
   bindBigPairTrendHover();
+  var trendCells=document.querySelectorAll('#tab-scanner .scanner-trend-cell');
+  for(var tcx=0;tcx<trendCells.length;tcx++){ trendCells[tcx].onclick=function(e){ e.stopPropagation(); toggleScannerTrendRangePopover(this); }; }
   var srows=document.querySelectorAll(".scanner-row");
   for(var sr=0;sr<srows.length;sr++){ srows[sr].onclick=function(e){
     if(e.target && e.target.closest && e.target.closest('[data-star]')) return;
@@ -6387,6 +6478,19 @@ function switchTab(tab){
     // requestAnimationFrame (twice) waits for the browser to finish laying
     // out the now-visible panel before we measure it.
     requestAnimationFrame(function(){ requestAnimationFrame(histSpreadDraw); });
+  }
+  if(tab==="cot" && typeof cotDrawChart==="function"){
+    // Same root cause as the yield2y chart above: renderCotRegime() (and its
+    // requestAnimationFrame'd cotDrawChart call) can run while #tab-cot is still
+    // display:none -- e.g. on initial load, or any renderAllStatic() pass that
+    // happens while a different tab is active -- so getBoundingClientRect() reports
+    // 0 width/height and the chart is drawn into the 340x200 fallback buffer, then
+    // CSS-stretched to fill the real (much larger) container once the tab opens.
+    // That stretch is exactly what makes the current-point marker and line terminus
+    // look wrong/cut-off. Redraw once the tab is actually visible and measurable.
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);
+    }); });
   }
 }
 
@@ -9768,7 +9872,7 @@ function pairFocusHtml(pair,score,animate){
   return '<div class="pair-focus-card">'+
     '<div class="pf2-head"><span class="pf2-dot '+(dir>0?'':dir<0?'neg':'neu')+'"></span><b class="pf2-title">Pair focus</b><span class="pf2-crumb"> &middot; '+esc(base)+'/'+esc(quote)+' &middot; Driver breakdown</span></div>'+
     '<div class="pf2-tiles">'+
-      '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'/'+esc(quote)+'</span><b class="pf2-tile-val '+pairTileCls+'">'+(pairTileScore>0?'+':'')+pairTileScore.toFixed(1)+'</b></div>'+
+      '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'/'+esc(quote)+'</span><div class="pf2-tile-row"><b class="pf2-tile-val '+pairTileCls+'">'+(pairTileScore>0?'+':'')+pairTileScore.toFixed(1)+'</b>'+pairFocusScoreSpark(pair)+'</div></div>'+
       '<div class="pf2-tile"><span class="pf2-tile-label">Bias</span><b class="pf2-tile-val '+pairBandCls(pairBandLabel(score))+'">'+esc(pairBandLabel(score))+'</b></div>'+
       '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(base)+'</span><b class="pf2-tile-val '+baseTileCls+'">'+(baseOverall>0?'+':'')+baseOverall.toFixed(1)+'</b></div>'+
       '<div class="pf2-tile"><span class="pf2-tile-label">'+esc(quote)+'</span><b class="pf2-tile-val '+quoteTileCls+'">'+(quoteOverall>0?'+':'')+quoteOverall.toFixed(1)+'</b></div>'+
@@ -10359,6 +10463,7 @@ function updateComputed(){
 
 function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderScanner(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
+window.addEventListener("resize", function(){ if(document.getElementById("cotRegimeCanvas")) cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy); });
 
 async function init(){
   loadAuthFromStorage();
@@ -13208,13 +13313,18 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pf2-dot.neu{background:var(--text-faint);}
 #tab-scanner .pf2-title{font-weight:800;color:var(--text);}
 #tab-scanner .pf2-crumb{color:var(--text-faint);}
-#tab-scanner .pf2-tiles{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;}
+#tab-scanner .pf2-tiles{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;}
 #tab-scanner .pf2-tile{padding:9px 12px;border-right:1px solid var(--border);}
 #tab-scanner .pf2-tile:last-child{border-right:none;}
 #tab-scanner .pf2-tile-label{display:block;font-size:11.5px;color:var(--text-faint);margin-bottom:4px;}
 #tab-scanner .pf2-tile-val{font-size:18px;font-weight:800;color:var(--text);}
 #tab-scanner .pf2-tile-val.pos{color:var(--bullish-strong);}
 #tab-scanner .pf2-tile-val.neg{color:var(--bearish-strong);}
+/* Pair score tile: value + its own trend spark on the same line, same treatment as
+   the COT net-position sparklines further down this card. Extra column width above
+   (1.7fr vs 1fr) is reserved for this so the spark doesn't crowd the score text. */
+#tab-scanner .pf2-tile-row{display:flex;align-items:center;gap:8px;}
+#tab-scanner .pf2-score-spark{flex:0 0 auto;}
 #tab-scanner .pfd-bar-wrap{position:relative;padding:3px 0;}
 #tab-scanner .pfd-bar{position:relative;height:11px;background:#000;border-radius:0;overflow:visible;}
 #tab-scanner .pfd-bar-fill{position:absolute;top:0;bottom:0;border-radius:0;background:var(--panel3);transition:width .6s cubic-bezier(.22,.9,.35,1);}
