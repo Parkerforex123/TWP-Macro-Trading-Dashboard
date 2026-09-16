@@ -3578,6 +3578,120 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-gauge{width:46px!important;height:5px!important;}
 </style>
 
+
+<style id="pair-focus-layout-refinement-v8">
+/* Pair Focus layout refinement:
+   keep positioning/crowd and the 6/7-pillar alignment read on the same horizontal
+   level, with the COT net/sparklines staying directly under positioning. */
+#tab-scanner .pair-focus-position-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  column-gap:18px!important;
+  align-items:start!important;
+}
+#tab-scanner .pair-focus-position-grid .pair-focus-section{
+  min-width:0!important;
+}
+#tab-scanner .pair-focus-position-grid .pair-focus-position-section,
+#tab-scanner .pair-focus-position-grid .pair-focus-alignment-section{
+  margin-top:4px!important;
+  padding-top:4px!important;
+  border-top:0!important;
+}
+#tab-scanner .pair-focus-alignment-section{
+  padding-left:2px!important;
+}
+#tab-scanner .pair-focus-alignment-read{
+  color:var(--text-dim)!important;
+  line-height:1.3!important;
+}
+#tab-scanner .pair-focus-alignment-read strong{
+  color:var(--text-dim)!important;
+  font-weight:700!important;
+}
+#tab-scanner .pair-position-read{
+  color:var(--text-faint)!important;
+}
+#tab-scanner .pair-position-read b{
+  font-weight:800!important;
+}
+#tab-scanner .pair-flow-read{
+  color:var(--text-faint)!important;
+  font-weight:500!important;
+}
+#tab-scanner .pfd-cot-trend-row{
+  margin-top:5px!important;
+  gap:16px!important;
+}
+#tab-scanner .pfd-cot-trend-item{
+  gap:2px!important;
+}
+#tab-scanner .pfd-bar{
+  height:9px!important;
+}
+#tab-scanner .pfd-bar-wrap{
+  padding:2px 0!important;
+}
+#tab-scanner .pfd-bar-fill{
+  opacity:.92!important;
+}
+#tab-scanner .pfd-bar{
+  background:rgba(0,0,0,.48)!important;
+}
+#tab-scanner .pair-focus-notes{
+  margin-top:4px!important;
+}
+@media(max-width:700px){
+  #tab-scanner .pair-focus-position-grid{
+    grid-template-columns:1fr!important;
+    row-gap:4px!important;
+  }
+}
+</style>
+<style id="pair-focus-v9-final-presentation">
+/* Final presentation pass: make the Pair Focus read in two clean columns. */
+#tab-scanner .pair-focus-position-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  column-gap:18px!important;
+  align-items:start!important;
+}
+#tab-scanner .pair-focus-position-section,
+#tab-scanner .pair-focus-alignment-section{
+  margin-top:4px!important;
+  padding-top:4px!important;
+  border-top:0!important;
+}
+#tab-scanner .pair-focus-position-section{text-align:left!important;}
+#tab-scanner .pair-focus-alignment-section{text-align:left!important;padding-left:2px!important;}
+#tab-scanner .pair-position-read{color:var(--text-dim)!important;}
+#tab-scanner .pair-position-read b{font-size:11px!important;font-weight:800!important;}
+#tab-scanner .pair-flow-read{font-size:11px!important;line-height:1.38!important;color:var(--text-faint)!important;font-weight:500!important;}
+#tab-scanner .pair-focus-alignment-read{font-size:11px!important;line-height:1.38!important;color:var(--text-dim)!important;}
+#tab-scanner .pair-focus-alignment-read strong{font-size:11px!important;color:var(--text-dim)!important;font-weight:800!important;}
+#tab-scanner .pair-focus-alignment-notes{
+  display:grid!important;
+  gap:4px!important;
+  margin-top:7px!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+  color:var(--text-faint)!important;
+  text-align:left!important;
+}
+#tab-scanner .pair-focus-alignment-notes div{font-size:11px!important;line-height:1.35!important;}
+#tab-scanner .pfd-cot-trend-row{margin-top:7px!important;gap:16px!important;}
+#tab-scanner .pfd-cot-trend-item{gap:2px!important;}
+#tab-scanner .pfd-cot-net-label{font-size:9.5px!important;}
+#tab-scanner .pfd-cot-net-val{font-size:14px!important;line-height:1.15!important;}
+#tab-scanner .pfd-cot-trend-item svg{display:block!important;}
+/* The scanner should have one clean header rule; no artificial Long divider beneath it. */
+#tab-scanner .scanner-group-row.long{display:none!important;}
+#tab-scanner .scanner-table thead tr{border-bottom:1px solid var(--border)!important;}
+#tab-scanner .scanner-table th{border-bottom:0!important;}
+/* Small bar thickness increase only: 8px -> 9px, with less black track showing inside the fill. */
+#tab-scanner .pfd-bar{height:9px!important;}
+#tab-scanner .pfd-bar-fill{min-height:9px!important;}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -5437,7 +5551,8 @@ function scannerAgreeTooltip(base,quote,dir){
   return '<div class="stt-kicker">Agree</div><div class="stt-title">'+agree+' of 7 drivers agree with '+side+'</div><div class="stt-note"><b class="stt-note-strong">'+agree+' agree · '+disagree+' disagree · '+neutral+' take no side</b></div>';
 }
 function scannerPillarExplanation(base,quote,name,label){
-  return '<div class="stt-pill-row"><b>'+esc(name)+': '+esc(label||'Neutral')+'</b></div>';
+  var displayName=name==='WoW'?'Core flow':name;
+  return '<div class="stt-pill-row"><b>'+esc(displayName)+': '+esc(label||'Neutral')+'</b></div>';
 }
 function scannerDriverTooltip(base,quote,dir){
   if(!dir) return '<div class="stt-kicker">Led by</div><div class="stt-note"><b class="stt-note-strong">Composite is inside the neutral band. There is no side for a driver to agree with.</b></div>';
@@ -5548,7 +5663,7 @@ function scannerTrendSpark(pair,animate){
   // Delta label next to the line, same idea as the reference dashboard's small +9/-5 number
   // beside each sparkline -- shows exactly what the color is reacting to (the move across
   // this window, start point to end point), instead of making the reader guess at it.
-  var deltaLabel='<span class="scanner-trend-delta-label" style="margin-left:4px;font-size:10.5px;font-weight:700;color:'+col+';font-family:\'IBM Plex Mono\',monospace;">'+(trendDelta>0?'+':'')+Math.round(trendDelta)+'</span>';
+  var deltaLabel='<span class="scanner-trend-delta-label" style="margin-left:4px;font-size:11.5px;font-weight:700;color:'+col+';font-family:\'Inter\',system-ui,sans-serif;">'+(trendDelta>0?'+':'')+Math.round(trendDelta)+'</span>';
   return '<svg class="pair-trend-spark" data-pair="'+esc(pair)+'" data-days="'+esc(days.join(','))+'" data-vals="'+esc(vals.join(','))+'" data-live-idx="'+liveIdx+'" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;overflow:visible;touch-action:none;cursor:crosshair;">'+
     '<path class="pair-trend-line" d="'+lineD+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lenStr+';stroke-dashoffset:'+lenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
     liveDot+
@@ -5631,6 +5746,7 @@ function animateOverviewMacroTrends(){
 }
 function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,dir); }
 function scannerGroupRow(label, cls){
+  if(cls==='long') return '';
   return '<tr class="scanner-group-row"><td colspan="16"><span class="scanner-group-label '+cls+'">'+label+'</span></td></tr>';
 }
 var scannerHoverTooltip=null;
@@ -5697,6 +5813,26 @@ function bindScannerHoverTooltips(){
     el.addEventListener('pointerleave',leave);
   }
 }
+
+// Tooltip lifecycle guard: scrolling can move the hovered row away from the pointer without
+// firing pointerleave. In that case the old fixed tooltip must disappear immediately instead
+// of remaining stuck until the mouse moves again. Pointer movement then reopens the correct
+// tooltip normally. The listener is installed once even though the table itself is rerendered.
+(function installScannerTooltipLifecycleGuard(){
+  if(window.__scannerTooltipLifecycleGuardInstalled) return;
+  window.__scannerTooltipLifecycleGuardInstalled=true;
+  function hideScannerTip(){
+    if(scannerTipHideTimer){clearTimeout(scannerTipHideTimer);scannerTipHideTimer=null;}
+    if(scannerHoverTooltip) scannerHoverTooltip.classList.remove('show');
+  }
+  window.addEventListener('scroll',hideScannerTip,true);
+  window.addEventListener('resize',hideScannerTip,true);
+  window.addEventListener('blur',hideScannerTip,true);
+  document.addEventListener('pointerleave',function(e){
+    if(e.target===document.documentElement) hideScannerTip();
+  },true);
+})();
+
 function scannerScorePrecise(score){
   var n=Number(score)||0;
   return (n>0?'+':'')+n.toFixed(1);
@@ -8908,6 +9044,75 @@ function sortExtremePairs(pairs){
   var bears=pairs.filter(function(p){ return p.bias==="Very Bearish"; }).sort(function(a,b){ return a.score-b.score; });
   return bulls.concat(bears);
 }
+var CB_SHORT_NAMES={USD:'Fed',EUR:'ECB',GBP:'Bank of England',JPY:'Bank of Japan',CHF:'SNB',AUD:'RBA',NZD:'RBNZ',CAD:'Bank of Canada'};
+// Builds the "why this side" and "what could flip it" bullet lists for a pair, both
+// driven off the same ranked pillar contributions (scannerDriverBreakdown) so the two
+// columns are always talking about the same evidence -- one framed as the current
+// case, the other as the condition that would reverse it.
+function pairWhyFlipData(base,quote,dir){
+  var why=[], flip=[];
+  if(!dir) return {
+    why:['The composite is inside the neutral band, so there is no clear directional edge.'],
+    flip:['A meaningful repricing in yields, fundamentals or central-bank expectations would set the direction.']
+  };
+  var favoredCcy=dir>0?base:quote, otherCcy=dir>0?quote:base;
+  function cbn(ccy){return CB_SHORT_NAMES[ccy]||ccy;}
+  var whyMechanism={
+    'Fundamentals':'the growth/inflation/labour mix favours '+favoredCcy+' over '+otherCcy,
+    'Yield':'the 2Y yield gap favours '+favoredCcy,
+    'CB stance':'the '+cbn(favoredCcy)+' is priced more hawkish than the '+cbn(otherCcy),
+    'Position':'futures positioning is tilted toward '+favoredCcy,
+    'WoW':'this week\'s COT flow is moving toward '+favoredCcy,
+    'Seasonality':'the seasonal pattern favours '+favoredCcy+' this month',
+    'Risk sentiment':'the current risk backdrop favours '+favoredCcy
+  };
+  var flipMechanism={
+    'Fundamentals':'the growth/inflation/labour gap starts narrowing, or flips in favour of '+otherCcy,
+    'Yield':'the 2Y yield gap starts narrowing against '+favoredCcy+' -- or the spread flips outright in favour of '+otherCcy,
+    'CB stance':'the '+cbn(favoredCcy)+' turns less hawkish than priced, or the '+cbn(otherCcy)+' turns more hawkish than priced',
+    'Position':'money starts flowing out of '+favoredCcy+' positioning and into '+otherCcy+', or institutions start shifting their book the other way',
+    'WoW':'the weekly COT flow reverses and starts favouring '+otherCcy+' instead',
+    'Seasonality':'the seasonal tailwind for '+favoredCcy+' fades or the calendar turns against it',
+    'Risk sentiment':'risk appetite flips -- a shift in equities/VIX that starts favouring '+otherCcy+' over '+favoredCcy
+  };
+  var supporting=scannerDriverBreakdown(base,quote)
+    .filter(function(d){ return ((d.pts>0)===(dir>0)) && Math.abs(d.pts)>=0.5; })
+    .sort(function(a,b){ return Math.abs(b.pts)-Math.abs(a.pts); })
+    .slice(0,3);
+  supporting.forEach(function(d){
+    var w=whyMechanism[d.name];
+    why.push(w ? (d.name+': '+w+' ('+d.label+', '+(d.pts>0?'+':'')+Math.round(d.pts)+' pts)') : (d.name+': '+d.label+' ('+(d.pts>0?'+':'')+Math.round(d.pts)+' pts)'));
+    var mech=flipMechanism[d.name];
+    flip.push(mech ? (d.name+': '+mech+' (currently '+d.label.toLowerCase()+')') : (d.name.toLowerCase()+' turns the other way (currently '+d.label.toLowerCase()+')'));
+  });
+  var crowdBase=cotCrowding(base), crowdQuote=cotCrowding(quote);
+  var crowdNames=[];
+  if(crowdBase&&crowdBase.label&&crowdBase.label.indexOf('Crowded')===0) crowdNames.push(base+' '+crowdBase.label.toLowerCase());
+  if(crowdQuote&&crowdQuote.label&&crowdQuote.label.indexOf('Crowded')===0) crowdNames.push(quote+' '+crowdQuote.label.toLowerCase());
+  if(crowdNames.length) flip.push(crowdNames.join(' and ')+' becomes too crowded');
+  if(!why.length) why.push('No single pillar is doing the heavy lifting -- the lean comes from a broad, modest majority across the seven.');
+  if(!flip.length) flip.push('a meaningful data, policy or rates repricing changes the balance');
+  return {why:why,flip:flip};
+}
+// Command framing ("Why short") for a developed Bullish/Bearish read, softer
+// monitoring framing ("Why monitor... longs/shorts") for the not-yet-developed
+// Leaning tiers -- per spec, these read differently on purpose.
+function pairWhyFlipHeadings(base,quote,overall){
+  var p=base+'/'+quote;
+  if(overall==='Very Bullish'||overall==='Bullish') return {left:'Why long '+p+'?',leftCls:'strong-pos',right:'What could flip it?'};
+  if(overall==='Leaning Bullish') return {left:'Why monitor '+p+' longs?',leftCls:'lean-pos',right:'What could flip it?'};
+  if(overall==='Very Bearish'||overall==='Bearish') return {left:'Why short '+p+'?',leftCls:'strong-neg',right:'What could flip it?'};
+  if(overall==='Leaning Bearish') return {left:'Why monitor '+p+' shorts?',leftCls:'lean-neg',right:'What could flip it?'};
+  return {left:'Why is '+p+' neutral?',leftCls:'neutral',right:'What would set a direction?'};
+}
+function pairWhyFlipTableHtml(base,quote,dir,overall){
+  var data=pairWhyFlipData(base,quote,dir), head=pairWhyFlipHeadings(base,quote,overall);
+  function col(items){return items.slice(0,3).map(function(t){return '<div class="pwf-item">'+esc(t)+'</div>';}).join('');}
+  return '<div class="pwf-table">'+
+    '<div class="pwf-col pwf-col-left"><div class="pwf-head '+esc(head.leftCls||'')+'">'+esc(head.left)+'</div>'+col(data.why)+'</div>'+
+    '<div class="pwf-col pwf-col-right"><div class="pwf-head">'+esc(head.right)+'</div>'+col(data.flip)+'</div>'+
+  '</div>';
+}
 function pairMacroSummaryHtml(pair, score){
   var base=pair.slice(0,3), quote=pair.slice(3,6);
   var fb=fundFor(base), fq=fundFor(quote);
@@ -9316,21 +9521,9 @@ function pairMacroSummaryHtml(pair, score){
     return head()+driverPhrase;
   }
 
-  var body=[
-    {cls:'lead',html:leadText},
-    {cls:'fund',html:fundamentalRead()},
-    {cls:'cb',html:cbNarrative()},
-    {cls:'rate',html:rateNarrative()},
-    {cls:'cot',html:cotNarrative()},
-    {cls:'risk',html:safe(riskNarrative())+' '+safe(seasonNarrative())},
-    {cls:'align',html:safe(alignmentRead())},
-    {cls:'flip',html:safe(whatChanges())},
-    {cls:'verdict',html:safe(leadText)+' '+safe(whatChanges())}
-  ];
-  function styleBlock(b){return '<div class="pair-macro-'+b.cls+'">'+autoHighlightBrief(b.html)+'</div>';}
   return '<div class="pair-macro-summary">'+
-    '<div class="pair-macro-summary-head"><span>Macro read · analyst brief</span><b class="'+pillarBiasClass(overall)+'">'+overall+'</b></div>'+
-    body.map(styleBlock).join('')+
+    '<div class="pair-macro-summary-head"><span>Macro read · analyst brief</span><b class="'+pairBandCls(overall)+'">'+overall+'</b></div>'+
+    pairWhyFlipTableHtml(base,quote,dir,overall)+
   '</div>';
 }
 // Auto-highlighter for the analyst brief: previously only 2-3 hand-picked phrases
@@ -9408,8 +9601,32 @@ function pairFocusDriverRowsHtml(base,quote,animate){
     var baseScore=pairFocusPillarAbsolute(r.name,base), quoteScore=pairFocusPillarAbsolute(r.name,quote);
     var deltaTxt=(r.pts>0?'+':'')+r.pts.toFixed(2);
     var deltaCls=r.pts>0.05?'pos':r.pts<-0.05?'neg':'';
-    var explain=PAIR_FOCUS_PILLAR_EXPLAIN[r.name]||'';
-    var tip=esc(r.name)+'||'+esc(explain)+' Currently '+esc(r.label||'Neutral')+' ('+esc(base)+' '+baseScore.toFixed(1)+' vs '+esc(quote)+' '+quoteScore.toFixed(1)+', contributing '+esc(deltaTxt)+' composite pts).';
+    var tipLead=(function(){
+      var leader=baseScore>quoteScore+0.5?base:(quoteScore>baseScore+0.5?quote:'neither side');
+      if(r.name==='Fundamentals') return leader==='neither side'
+        ? 'Relative growth, inflation and labour evidence is broadly balanced.'
+        : 'Relative growth, inflation and labour evidence currently favours '+leader+'.';
+      if(r.name==='Yield') return leader==='neither side'
+        ? 'The current 2Y government-bond yield differential is broadly balanced.'
+        : 'The current 2Y government-bond yield differential favours '+leader+'.';
+      if(r.name==='CB stance') return leader==='neither side'
+        ? 'The two central-bank stances are currently broadly aligned.'
+        : 'The relative central-bank stance currently favours '+leader+'.';
+      if(r.name==='Position') return leader==='neither side'
+        ? 'Speculative positioning is broadly balanced between the two currencies.'
+        : 'Speculative positioning currently favours '+leader+'.';
+      if(r.name==='WoW') return leader==='neither side'
+        ? 'Weekly positioning flow is broadly balanced.'
+        : 'Weekly positioning flow currently favours '+leader+'.';
+      if(r.name==='Seasonality') return leader==='neither side'
+        ? 'The seasonal tendency is broadly balanced.'
+        : 'The seasonal tendency currently favours '+leader+'.';
+      if(r.name==='Risk sentiment') return leader==='neither side'
+        ? 'The current risk backdrop is broadly neutral for the pair.'
+        : 'The current risk backdrop favours '+leader+'.';
+      return '';
+    })();
+    var tip=esc(r.name)+'||'+esc(tipLead);
     // Single-color bar: one fill, growing out from the center line toward whichever
     // side is actually ahead -- never both a red segment and a green segment shown
     // at once. Green + grows right (toward base) when base leads; red + grows left
@@ -9428,7 +9645,7 @@ function pairFocusDriverRowsHtml(base,quote,animate){
     // above 50 leans base, below 50 leans quote. Colored only once it clears the same
     // neutral band the rest of the app uses, so a near-50 read prints in neutral gray
     // instead of a false-strength green/red.
-    var numCls=function(v){return v>=55?'pos':v<=45?'neg':'';};
+    var numCls=function(v){return v>50?'pos':v<50?'neg':'';};
     return '<div class="pfd-row" data-tip="'+tip+'">'+
       '<div class="pfd-name">'+esc(r.name)+'</div>'+
       '<div class="pfd-num pfd-num-l '+numCls(baseScore)+'">'+baseScore.toFixed(1)+'</div>'+
@@ -9463,68 +9680,40 @@ function pairFocusHtml(pair,score,animate){
   // Positioning is a currency-level COT reading, not literal trading of the FX pair.
   // We make the pair interpretation explicit by comparing BASE vs QUOTE net positioning
   // and weekly net-flow direction, while keeping crowding separate.
-  var cotStock=cot.posLabel&&cot.posLabel!=='Neutral'?cot.posLabel:'Balanced';
-  var cotFlow=cot.flowLabel&&cot.flowLabel!=='Neutral'?cot.flowLabel:'No clear weekly lead';
   // positionAdvantage names whichever currency (base OR quote) the reading favors --
   // it is not always base, so the pair-side reading has to actually branch on which
   // one it is instead of hardcoding "base long / quote short" regardless.
-  var positionPairText = !cot.positionAdvantage ? 'No clear pair-side positioning'
-    : (cot.positionAdvantage===base ? (base+' long / '+quote+' short') : (quote+' long / '+base+' short'));
-  var flowPairText=cot.flowAdvantage ? (cot.flowAdvantage+' leading weekly flow') : 'No clear weekly flow lead';
+  var positionPairText = !cot.positionAdvantage ? ((base+'/'+quote)+' Neutral')
+    : ((base+'/'+quote)+' '+(cot.posLabel||'Neutral'));
+  var flowPairText=cot.flowAdvantage ? (cot.flowAdvantage+' leading core flow') : 'No clear core flow lead';
   var crowdBase=cotCrowding(base), crowdQuote=cotCrowding(quote);
-  var crowdLine=[];
-  if(crowdBase&&crowdBase.label&&crowdBase.label!=='Neutral'&&crowdBase.label!=='No regime') crowdLine.push(base+' '+crowdBase.label.toLowerCase());
-  if(crowdQuote&&crowdQuote.label&&crowdQuote.label!=='Neutral'&&crowdQuote.label!=='No regime') crowdLine.push(quote+' '+crowdQuote.label.toLowerCase());
+  var baseCrowded=crowdBase&&crowdBase.label&&crowdBase.label.indexOf('Crowded')===0;
+  var quoteCrowded=crowdQuote&&crowdQuote.label&&crowdQuote.label.indexOf('Crowded')===0;
   // One synthesized, plain-English read on crowding -- instead of just listing each
   // currency's raw COT-crowding status side by side (which reads like a data dump),
   // this combines direction (who's long/short per positionAdvantage) with each leg's
   // crowding status into a single sentence a trader would actually say out loud.
   var crowdInsight=(function(){
-    var baseCrowded=crowdBase&&crowdBase.label&&crowdBase.label.indexOf('Crowded')===0;
-    var quoteCrowded=crowdQuote&&crowdQuote.label&&crowdQuote.label.indexOf('Crowded')===0;
     var adv=cot.positionAdvantage;
     if(adv && baseCrowded && quoteCrowded){
       var side=(adv===base ? crowdBase.label : crowdQuote.label).indexOf('Long')>-1 ? 'longs' : 'shorts';
-      return base+'/'+quote+' '+side+' are crowded -- both legs are already stretched the same way, so it is vulnerable to a squeeze if the driver fades';
+      return base+'/'+quote+' '+side+' are crowded. Both legs are stretched, so the pair is vulnerable to a squeeze if the driver fades';
     }
     if(baseCrowded && quoteCrowded) return base+' and '+quote+' are both crowded, but pulling in opposite directions on this pair -- no clean squeeze risk in one leg alone';
     if(baseCrowded) return base+' positioning is '+crowdBase.label.toLowerCase()+'; '+quote+' isn\'t stretched';
     if(quoteCrowded) return quote+' positioning is '+crowdQuote.label.toLowerCase()+'; '+base+' isn\'t stretched';
     return 'neither leg is crowded yet -- positioning has room to build further';
   })();
+  var pairCrowdText=(function(){
+    var ps=Number(cot.posScore)||0;
+    if(Math.abs(ps)>=80){
+      var side=ps>0?base:quote;
+      return 'Positioning is crowded toward '+side;
+    }
+    return 'Positioning is not yet crowded';
+  })();
   var drivers=dir?scannerLedByDrivers(base,quote,dir).slice(0,3):[];
   var support=drivers.length?drivers.map(function(d){return '<span class="pair-focus-driver '+(d.pts>0?'pos':'neg')+'">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';}).join(' '):'<span class="pair-focus-muted">No directional driver yet</span>';
-  var flip=[];
-  // Dynamic, not a fixed fundamentals/yield/crowding checklist: take whichever pillars
-  // are actually propping up the current score right now (ranked by real point size,
-  // same numbers as the driver table above) and phrase each as the condition that
-  // would need to reverse for the pair to flip. Whatever is actually driving the score
-  // this time -- could be Yield, CB stance, Risk sentiment, Position, any of the seven --
-  // is what shows up here, not a hardcoded subset.
-  if(dir){
-    var favoredCcy=dir>0?base:quote, otherCcy=dir>0?quote:base;
-    // Spells out the actual mechanism behind each pillar reversing, in plain trader
-    // language, instead of the generic and unreadable "yield turns the other way" --
-    // Parker's own words for what he wants each one to say when it applies.
-    var flipMechanism={
-      'Fundamentals':'the growth/inflation/labour gap starts narrowing, or flips in favour of '+otherCcy,
-      'Yield':'the 2Y yield gap starts narrowing against '+favoredCcy+' -- or the spread flips outright in favour of '+otherCcy,
-      'CB stance':'the '+cb(favoredCcy)+' turns less hawkish than priced, or the '+cb(otherCcy)+' turns more hawkish than priced',
-      'Position':'money starts flowing out of '+favoredCcy+' positioning and into '+otherCcy+', or institutions start shifting their book the other way',
-      'WoW':'the weekly COT flow reverses and starts favouring '+otherCcy+' instead',
-      'Seasonality':'the seasonal tailwind for '+favoredCcy+' fades or the calendar turns against it',
-      'Risk sentiment':'risk appetite flips -- a shift in equities/VIX that starts favouring '+otherCcy+' over '+favoredCcy
-    };
-    var flipCandidates=scannerDriverBreakdown(base,quote)
-      .filter(function(d){ return ((d.pts>0)===(dir>0)) && Math.abs(d.pts)>=0.5; })
-      .sort(function(a,b){ return Math.abs(b.pts)-Math.abs(a.pts); });
-    flipCandidates.slice(0,3).forEach(function(d){
-      var mech=flipMechanism[d.name];
-      flip.push(mech ? (d.name+': '+mech+' (currently '+d.label.toLowerCase()+')') : (d.name.toLowerCase()+' turns the other way (currently '+d.label.toLowerCase()+')'));
-    });
-  }
-  if(crowdLine.length) flip.push(crowdLine.join(' and ')+' becomes too crowded');
-  if(!flip.length) flip.push('a meaningful data, policy or rates repricing changes the balance');
   var focusNotes=[];
   focusNotes.push(dir ? ('<strong>'+esc(agree)+'/7 pillars support '+esc(dir>0?base:quote)+'</strong>' + (dis ? ' · '+esc(dis)+' against'+(neutral?' · '+esc(neutral)+' neutral':'') : '')) : '<strong>Neutral band</strong> · no side has enough separation to claim the trade');
   if(y.current!=null) focusNotes.push('<strong>2Y '+esc(bps(y.current))+'</strong>'+ (y.week!=null?' · week '+esc(bps(y.week)):'') );
@@ -9546,15 +9735,29 @@ function pairFocusHtml(pair,score,animate){
       '<div class="pfd-head-row"><div class="pfd-name"></div><div class="pfd-num pfd-num-l">'+esc(base)+'</div><div class="pfd-bar-wrap"></div><div class="pfd-num pfd-num-r">'+esc(quote)+'</div><div class="pfd-delta"></div></div>'+
       pairFocusDriverRowsHtml(base,quote,animate)+
     '</div>'+ 
-    '<div class="pair-focus-section" data-tip="'+esc('WHAT IS MOVING THE PAIR')+'||The 1-2 pillars with the largest point contribution behind the current score -- recalculated live, not a fixed list."><div class="pair-focus-section-title">WHAT IS MOVING THE PAIR</div><div class="pair-focus-drivers">'+support+'</div></div>'+ 
-    '<div class="pair-focus-section" data-tip="'+esc('POSITIONING / CROWD')+'||CFTC futures positioning is measured separately for each currency. The pair read is a relative comparison: Bullish means the positioning balance favours BASE over QUOTE; it does not mean traders literally hold the spot FX pair. Crowding is the 52-week-extreme status of each currency."><div class="pair-focus-section-title">POSITIONING / CROWD</div><div class="pair-focus-note pair-position-read"><b>'+esc(cotStock)+'</b> · '+esc(positionPairText)+'</div>'+
-      '<div class="pair-focus-note pair-crowd-read">'+esc(crowdInsight)+'</div>'+
-      '<div class="pair-focus-note pair-flow-read">'+esc(flowPairText)+'</div>'+
-      '<div class="pfd-cot-trend-row"><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(base)+'</span>'+pairFocusCotSpark(base)+'</div><div class="pfd-cot-trend-item"><span class="pfd-cot-trend-ccy">'+esc(quote)+'</span>'+pairFocusCotSpark(quote)+'</div></div>'+
+    '<div class="pair-focus-position-grid">'+
+      '<div class="pair-focus-section pair-focus-position-section" data-tip="'+esc('POSITIONING / CROWD')+'||'+esc((cot.posLabel||'Neutral')+'. '+(cot.positionAdvantage===base?base+'/'+quote+' long':(cot.positionAdvantage===quote?base+'/'+quote+' short':'No clear pair-side positioning'))+'. '+((baseCrowded&&quoteCrowded)?'Keep in mind both legs are stretched, so positioning is crowded and vulnerable to a squeeze if the driver fades.':(baseCrowded?base+' positioning is crowded; '+quote+' is not stretched.':(quoteCrowded?quote+' positioning is crowded; '+base+' is not stretched.':'Positioning is not yet crowded.'))))+'"><div class="pair-focus-section-title">POSITIONING / CROWD</div>'+
+        '<div class="pair-focus-note pair-position-read"><b class="'+pairBandCls(cot.posLabel)+'">'+esc(positionPairText)+'</b></div>'+
+        '<div class="pair-focus-note pair-crowd-line">'+esc(pairCrowdText)+'</div>'+
+        '<div class="pair-focus-note pair-flow-read">'+esc(flowPairText)+'</div>'+
+        '<div class="pfd-cot-trend-row">'+pairFocusCotNetHtml(base)+pairFocusCotNetHtml(quote)+'</div>'+
+      '</div>'+
+      '<div class="pair-focus-section pair-focus-alignment-section">'+
+        '<div class="pair-focus-section-title">ALIGNMENT</div>'+
+        '<div class="pair-focus-note pair-focus-alignment-read">'+(focusNotes[0]||'')+'</div>'+
+        '<div class="pair-focus-notes pair-focus-alignment-notes">'+focusNotes.slice(1).map(function(x){return '<div>'+x+'</div>';}).join('')+'</div>'+
+      '</div>'+
     '</div>'+ 
-    '<div class="pair-focus-section" data-tip="'+esc('WHAT COULD FLIP IT')+'||Generated per pair from whichever pillars are currently closest to reversing -- fundamentals gap, yield spread, COT flow or crowding -- not a fixed list of stock reasons."><div class="pair-focus-section-title">WHAT COULD FLIP IT</div><div class="pair-focus-flip-list">'+flip.slice(0,4).map(function(f){return '<div class="pair-focus-flip-item">'+esc(f)+'</div>';}).join('')+'</div></div>'+ 
-    '<div class="pair-focus-notes">'+focusNotes.map(function(x){return '<div>'+x+'</div>';}).join('')+'</div>'+ 
   '</div>';
+}
+// Currency net-position figure (e.g. "+6.2K") plus its 14-week sparkline, sized to
+// read at a glance rather than the bare ccy-letter label it replaced.
+function pairFocusCotNetHtml(ccy){
+  var d=cotLatest(ccy), net=d&&d.net!=null?Number(d.net):null;
+  var cls=net==null?'':(net>0?'pos':net<0?'neg':'');
+  return '<div class="pfd-cot-trend-item"><div class="pfd-cot-net-label">'+esc(ccy)+' NET</div>'+
+    '<div class="pfd-cot-net-val '+cls+'">'+esc(cotFormat(net))+'</div>'+
+    pairFocusCotSpark(ccy)+'</div>';
 }
 
 var activeCotCcy="ALL";
@@ -11985,7 +12188,7 @@ body,html{background:var(--bg);}
 // (driver rows, section headers) rather than one hardcoded spot -- per request, moving
 // the mouse anywhere over a data-tip element shows its tooltip.
 (function(){
-  var tipEl=null, lastTarget=null;
+  var tipEl=null, lastTarget=null, mouseX=null, mouseY=null, rafRunning=false;
   function ensureTip(){
     if(tipEl) return tipEl;
     tipEl=document.createElement('div');
@@ -11994,9 +12197,11 @@ body,html{background:var(--bg);}
     return tipEl;
   }
   function findTarget(el){
-    while(el && el!==document.body){
+    var hops=0;
+    while(el && el!==document.body && hops<40){
       if(el.hasAttribute && el.hasAttribute('data-tip')) return el;
       el=el.parentElement;
+      hops++;
     }
     return null;
   }
@@ -12008,18 +12213,21 @@ body,html{background:var(--bg);}
     t.style.left=Math.max(6,left)+'px';
     t.style.top=Math.max(6,top)+'px';
   }
-  // Re-resolves the hovered data-tip element and re-places the tooltip on every
-  // single pointer move, instead of only placing it once on 'mouseover' and then
-  // trusting a separate 'mousemove'/'mouseout' pair to keep it in sync. The old
-  // split-listener version could get stuck at a stale spot whenever the card's
-  // periodic live-data re-render replaced the DOM node under a stationary cursor
-  // (no real browser mouseover/mouseout fires for that, since the pointer itself
-  // never moved) -- this version doesn't depend on that pairing at all: it just
-  // asks "what's under the cursor right now" on every move and repositions.
-  function update(e){
-    var target=findTarget(e.target);
+  // The tick doesn't trust e.target or event bubbling at all -- it independently
+  // re-resolves what's physically under the last known cursor position via
+  // elementFromPoint every single frame, and always re-places the tooltip there
+  // whenever one is showing. This is what makes it impossible to get stuck: even
+  // if a mousemove event were ever missed, dropped, or bubbled through something
+  // unexpected (SVG internals, a card that just got replaced by a live-data
+  // refresh, etc.), the very next animation frame re-checks reality from scratch
+  // instead of trusting whatever the last event said.
+  function tick(){
+    rafRunning=false;
+    if(mouseX==null){ return; }
+    var hit=document.elementFromPoint(mouseX,mouseY);
+    var target=hit?findTarget(hit):null;
     if(!target){
-      if(tipEl) tipEl.classList.remove('show');
+      if(tipEl && lastTarget) tipEl.classList.remove('show');
       lastTarget=null;
       return;
     }
@@ -12032,13 +12240,30 @@ body,html{background:var(--bg);}
       t.innerHTML=(title?'<b>'+title+'</b>':'')+body;
       t.classList.add('show');
     }
-    place(e.clientX,e.clientY);
+    place(mouseX,mouseY);
   }
-  document.addEventListener('mousemove',update);
+  function schedule(){
+    if(rafRunning) return;
+    rafRunning=true;
+    requestAnimationFrame(tick);
+  }
+  function onMove(e){
+    mouseX=e.clientX; mouseY=e.clientY;
+    schedule();
+  }
+  document.addEventListener('pointermove',onMove,{capture:true,passive:true});
+  document.addEventListener('mousemove',onMove,{capture:true,passive:true});
   document.addEventListener('mouseleave',function(){
+    mouseX=null; mouseY=null;
     if(tipEl) tipEl.classList.remove('show');
     lastTarget=null;
   });
+  // A live-data refresh can rebuild the card's DOM while the cursor sits
+  // perfectly still (no mousemove fires just because the page changed under
+  // it) -- re-run the check on a slow interval too, purely as a safety net,
+  // so a tooltip that's showing a now-stale target still corrects itself
+  // even with zero cursor movement.
+  setInterval(function(){ if(mouseX!=null) schedule(); },600);
 })();
 </script>
 </body>
@@ -13092,7 +13317,6 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-focus-notes{margin-top:4px!important;font-size:9.5px!important;line-height:1.15!important;}
 #tab-scanner .pair-macro-summary{line-height:1.38!important;}
 #tab-scanner .pair-macro-summary-head{
-  color:var(--bearish-strong)!important;
   font-weight:900!important;
   border-bottom:1px solid var(--border)!important;
   padding-bottom:4px!important;
@@ -13102,7 +13326,13 @@ twpShowNameGateIfNeeded();
   color:var(--bearish-strong)!important;
   font-weight:900!important;
 }
-#tab-scanner .pair-macro-summary-head b{font-weight:800!important;}
+/* Bias badge: colored per tier, with an explicit neutral-text default so a
+   Neutral read isn't left inheriting the kicker's red. */
+#tab-scanner .pair-macro-summary-head b{color:var(--text)!important;font-weight:800!important;}
+#tab-scanner .pair-macro-summary-head b.bandpos{color:var(--bullish-strong)!important;}
+#tab-scanner .pair-macro-summary-head b.bandneg{color:var(--bearish-strong)!important;}
+#tab-scanner .pair-macro-summary-head b.bandpos-lean{color:var(--bullish-lean)!important;}
+#tab-scanner .pair-macro-summary-head b.bandneg-lean{color:var(--bearish-lean)!important;}
 #tab-scanner .pair-macro-key{
   color:inherit!important;
   font-style:normal!important;
@@ -13138,8 +13368,9 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pf2-tile-val.bandpos-lean{color:var(--bullish-lean)!important;}
 #tab-scanner .pf2-tile-val.bandneg-lean{color:var(--bearish-lean)!important;}
 
-/* Driver rows: a little more vertical breathing room and a thicker bar.
-   Keep the two currency readings and delta in their existing semantic colours. */
+/* Driver rows: a little more vertical breathing room. Bar brought back down to a
+   medium thickness -- it was reading heavy/oversized once the Pair Focus column
+   got cramped next to a much wider Macro Read column (fixed below). */
 #tab-scanner .pfd-table{gap:2px!important;}
 #tab-scanner .pfd-head-row,#tab-scanner .pfd-row{gap:6px!important;}
 #tab-scanner .pfd-head-row{font-size:10px!important;padding-bottom:4px!important;margin-bottom:1px!important;}
@@ -13148,15 +13379,52 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pfd-num{font-size:14px!important;font-weight:800!important;line-height:1.15!important;}
 #tab-scanner .pfd-delta{font-size:12.5px!important;font-weight:800!important;line-height:1.15!important;}
 #tab-scanner .pfd-bar-wrap{padding:2px 0!important;}
-#tab-scanner .pfd-bar{height:10px!important;}
+#tab-scanner .pfd-bar{height:8px!important;}
 #tab-scanner .pfd-bar-mid{top:-1px!important;bottom:-1px!important;}
+/* Pair Focus was getting the smaller share (.92fr) against Macro Read's larger
+   share (1.42fr) with only a 10px gap -- that's what was making Pair Focus feel
+   squeezed and Macro Read feel like it was crowding right up against it. Macro
+   Read only needs to hold a compact table now (the long narrative is gone), so
+   give the two columns a closer, more even split and more air between them. */
+#tab-scanner .scanner-expanded-grid{grid-template-columns:minmax(340px,1.15fr) minmax(0,1fr)!important;gap:20px!important;align-items:start!important;}
+#tab-scanner .pair-macro-summary{padding:9px 9px!important;}
 
 /* Only the Pair Focus section headings are white. The driver values underneath
    remain green/red/amber/neutral according to their existing meaning. */
 #tab-scanner .pair-focus-section-title{color:#f5f7f5!important;font-size:10px!important;font-weight:900!important;letter-spacing:.75px!important;}
 #tab-scanner .pair-focus-driver.pos{color:var(--bullish-strong)!important;}
 #tab-scanner .pair-focus-driver.neg{color:var(--bearish-strong)!important;}
-#tab-scanner .pair-position-read b{color:inherit!important;}
+/* Positioning headline: colored per tier (this was being forced back to an
+   inherited neutral color here, undoing the bandpos/bandneg class on the <b>). */
+#tab-scanner .pair-position-read b{font-weight:800!important;}
+#tab-scanner .pair-position-read b.bandpos{color:var(--bullish-strong)!important;}
+#tab-scanner .pair-position-read b.bandneg{color:var(--bearish-strong)!important;}
+#tab-scanner .pair-position-read b.bandpos-lean{color:var(--bullish-lean)!important;}
+#tab-scanner .pair-position-read b.bandneg-lean{color:var(--bearish-lean)!important;}
+#tab-scanner .pfd-crowded-badge{display:inline-block;border:1px solid var(--amber);color:var(--amber);font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 6px;border-radius:4px;margin-left:2px;vertical-align:middle;}
+/* Positioning/crowd copy bumped up a touch -- Parker's ask after the flip section
+   moved out and freed up room here. Kept modest, not blown up. */
+#tab-scanner .pair-focus-note{font-size:11px!important;line-height:1.38!important;}
+#tab-scanner .pair-focus-notes{font-size:10px!important;}
+/* Net-position row: stacked label / big number / sparkline per currency, replacing
+   the old bare ccy-letter + sparkline with an actual readable figure. */
+#tab-scanner .pfd-cot-trend-row{display:flex!important;gap:16px!important;margin-top:6px!important;}
+#tab-scanner .pfd-cot-trend-item{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px!important;}
+#tab-scanner .pfd-cot-net-label{font-size:9.5px;font-weight:800;letter-spacing:.4px;color:var(--text-faint);text-transform:uppercase;}
+#tab-scanner .pfd-cot-net-val{font-size:14px;font-weight:800;font-family:inherit;}
+#tab-scanner .pfd-cot-net-val.pos{color:var(--bullish-strong);}
+#tab-scanner .pfd-cot-net-val.neg{color:var(--bearish-strong);}
+
+/* Why / What-could-flip-it table on the Analyst Brief card: exactly one horizontal
+   rule (separating it from the narrative above) and one vertical rule (between the
+   two columns) -- no per-item boxes or extra lines. */
+#tab-scanner .pwf-table{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border);position:relative;}
+#tab-scanner .pwf-table::before{content:'';position:absolute;top:9px;bottom:0;left:50%;width:1px;background:var(--border);}
+#tab-scanner .pwf-col{min-width:0;}
+#tab-scanner .pwf-head{font-size:10.5px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:#f5f7f5;margin-bottom:6px;}
+#tab-scanner .pwf-col-right .pwf-head{color:var(--amber);}
+#tab-scanner .pwf-item{font-size:11.5px;line-height:1.42;color:var(--text-dim);margin-bottom:6px;}
+#tab-scanner .pwf-col-right .pwf-item{color:var(--text-dim);}
 
 /* The faint vertical line at the frozen 7D boundary was coming from the shadow
    on column 5. Remove it without altering the scanner's column widths or fonts. */
@@ -13164,4 +13432,160 @@ twpShowNameGateIfNeeded();
 #tab-scanner .scanner-table td:nth-child(5){box-shadow:none!important;border-right:0!important;}
 </style>
 
+
+<style id="pair-focus-user-refinement-v1">
+/* Pair Focus refinement:
+   - Driver labels are regular-weight and use the same muted text treatment as
+     the surrounding dashboard copy.
+   - Driver bars are moderately shorter without making the panel feel cramped.
+   - The unfilled bar track is softened from pure black so the colored side reads
+     more cleanly against the dark scanner background.
+*/
+#tab-scanner .pfd-name{
+  color:var(--text-dim)!important;
+  font-weight:500!important;
+  font-style:normal!important;
+  text-decoration:none!important;
+}
+
+#tab-scanner .pfd-bar-wrap{
+  width:84%!important;
+  justify-self:center!important;
+}
+
+#tab-scanner .pfd-bar{
+  background:rgba(0,0,0,.58)!important;
+}
+</style>
+
+
+<style id="pair-focus-driver-number-refinement-v2">
+/* Pair Focus driver scores only:
+   Keep the top Pair Focus summary scores untouched.
+   Driver-row pillar numbers are smaller and regular-weight.
+   50 is neutral/dim; values below 50 are bearish/red; values above 50 are bullish/green.
+*/
+#tab-scanner .pfd-num{
+  font-size:12.5px!important;
+  font-weight:500!important;
+  line-height:1.1!important;
+}
+
+#tab-scanner .pfd-num{
+  color:var(--bearish-strong)!important;
+}
+
+#tab-scanner .pfd-num:has(+ .pfd-bar-wrap) {
+  color:var(--bullish-strong)!important;
+}
+
+/* Apply the currency score's actual 0-100 meaning directly:
+   >50 bullish, <50 bearish, exactly 50 neutral.
+*/
+#tab-scanner .pfd-row .pfd-num.pos{
+  color:var(--bullish-strong)!important;
+}
+#tab-scanner .pfd-row .pfd-num.neg{
+  color:var(--bearish-strong)!important;
+}
+#tab-scanner .pfd-row .pfd-num:not(.pos):not(.neg){
+  color:var(--text-dim)!important;
+}
+</style>
+
+
+<style id="dashboard-square-bars-v3">
+/* Dashboard-wide bar/radar presentation: straight, square-ended tracks and fills. */
+.scanner-gauge,
+.scanner-gauge-fill,
+#tab-overview .ov-bar,
+#tab-overview .ov-bar i,
+#tab-overview .ov-pro-breadth-bar,
+#tab-overview .ov-pro-risk-meter>div,
+#tab-overview .ov-risk-scale,
+#tab-overview .ov-risk-scale>div,
+#tab-risk .risk-scale,
+#tab-risk .strength-bar,
+#tab-overview .ov-pro-risk-meter i{
+  border-radius:0!important;
+}
+
+/* Pair Focus driver bars are also deliberately square-ended. */
+#tab-scanner .pfd-bar,
+#tab-scanner .pfd-bar-fill{
+  border-radius:0!important;
+}
+
+/* Keep the small overview score gauge directly under the score, with no rounded ends. */
+#tab-scanner .scanner-score-wrap{
+  gap:5px!important;
+}
+#tab-scanner .scanner-gauge{
+  width:46px!important;
+  height:5px!important;
+}
+
+/* Composite Ranking: keep the score visually attached to the Strength bar,
+   while leaving the State column clearly separated. */
+#tab-overview .ov-currency-row{
+  row-gap:4px!important;
+}
+
+/* Pair Forecast heading treatment: strong direction = strong color;
+   leaning direction = light directional color; neutral = normal muted text. */
+#tab-scanner .pwf-head.strong-pos{color:var(--bullish-strong)!important;}
+#tab-scanner .pwf-head.lean-pos{color:var(--bullish-lean)!important;}
+#tab-scanner .pwf-head.strong-neg{color:var(--bearish-strong)!important;}
+#tab-scanner .pwf-head.neutral{color:var(--text-dim)!important;}
+</style>
+
+
+<style id="pair-focus-tooltip-compact-v3">
+#pair-focus-tip{
+  max-width:300px!important;
+  padding:7px 9px!important;
+  font-size:10.5px!important;
+  line-height:1.32!important;
+}
+#pair-focus-tip b{
+  font-size:10px!important;
+  margin-bottom:2px!important;
+}
+</style>
+
+
+<style id="pair-focus-tooltip-and-lean-color-v4">
+/* Positioning crowding is now a tooltip-only warning; keep Pair Focus itself focused on direction. */
+#tab-scanner .pair-crowd-read{display:none!important;}
+#tab-scanner .pfd-crowded-badge{display:none!important;}
+/* Leaning bearish monitor language uses the bearish-lean/light-red treatment. */
+#tab-scanner .pwf-head.lean-neg{color:var(--bearish-lean)!important;}
+</style>
+
+
+<style id="scanner-trend-normal-font-v1">
+/* Trend delta uses the same plain UI numerals as 7D / Score. No monospaced or decorative font. */
+#tab-scanner .scanner-trend-delta-label{
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:11.5px!important;
+  font-weight:700!important;
+  font-variant-numeric:normal!important;
+  letter-spacing:0!important;
+  line-height:1!important;
+}
+#tab-scanner .pair-crowd-line{color:var(--text-dim)!important;font-size:11px!important;line-height:1.35!important;}
+
+<style id="pair-focus-tooltip-scroll-guard-v1">
+/* A fixed tooltip must never survive a page scroll with a stale cursor target. */
+</style>
+<script>
+(function(){
+  if(window.__pairFocusTooltipScrollGuardInstalled) return;
+  window.__pairFocusTooltipScrollGuardInstalled=true;
+  window.addEventListener('scroll',function(){
+    var t=document.getElementById('pair-focus-tip');
+    if(t) t.classList.remove('show');
+  },true);
+})();
+</script>
 </html>
