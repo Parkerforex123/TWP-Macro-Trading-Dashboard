@@ -203,6 +203,13 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
    poll re-render, same animate-on-navigation-only rule as the rest of this tab. */
 @keyframes pairFlagsSlideIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
 .pair-flags-animate-in{animation:pairFlagsSlideIn .45s ease both;}
+.scanner-pair-code-animate-in{animation:pairFlagsSlideIn .45s ease both;animation-delay:.05s;}
+.y2-ccy-animate-in{animation:pairFlagsSlideIn .45s ease both;}
+@keyframes y2BarGrow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+.y2-track b.y2-bar-animate-in{animation:y2BarGrow .5s ease both;animation-delay:.08s;}
+.cot-ccy-animate-in{animation:pairFlagsSlideIn .45s ease both;}
+@keyframes cotBarGrow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+.cot-bar-seg.cot-bar-animate-in{animation:cotBarGrow .5s ease both;animation-delay:.08s;}
 .pair-table td,.pair-table th{font-size:13.5px!important;}
 .pair-table td,.pair-table th{padding-top:4px!important;padding-bottom:4px!important;padding-left:6px!important;padding-right:6px!important;}
 .pair-table .mono,.pair-table .ccy-name,.pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-size:13.5px!important;font-weight:800!important;}
@@ -631,7 +638,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-overview .strength-row:last-child{border-bottom:none;}
 #tab-overview .strength-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);text-align:right;}
 #tab-overview .strength-ccy{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
-#tab-overview .strength-bar{height:7px;background:#0c0c0c;position:relative;overflow:hidden;border-radius:2px;}
+#tab-overview .strength-bar{height:7px;background:var(--panel3);position:relative;overflow:hidden;border-radius:2px;}
 #tab-overview .strength-bar i{position:absolute;top:0;bottom:0;border-radius:1px;}
 #tab-overview .strength-score{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:800;text-align:right;}
 #tab-overview .strength-bias{font-size:10.5px;font-weight:700;text-align:right;white-space:nowrap;}
@@ -696,7 +703,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-raw .ss-leg-dir.up{color:var(--bullish-strong);}
 #tab-raw .ss-leg-dir.down{color:var(--bearish-strong);}
 #tab-raw .ss-leg-dir.flat{color:var(--text-faint);}
-#tab-raw .ss-chart{padding:4px 9px 8px;background:#0c0c0c;position:relative;}
+#tab-raw .ss-chart{padding:4px 9px 8px;background:#121216;position:relative;}
 #tab-raw .ss-chart svg{display:block;width:100%;height:auto;min-height:340px;}
 #tab-raw .ss-hover-area{cursor:crosshair;}
 #tab-raw .ss-vline{display:none;stroke:var(--text-faint);stroke-width:1;stroke-dasharray:4 4;opacity:.85;vector-effect:non-scaling-stroke;}
@@ -989,7 +996,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-risk .strength-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);text-align:right;}
 #tab-risk .strength-ccy{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
 #tab-risk .strength-ccy img{width:18px;height:13px;border-radius:2px;object-fit:cover;}
-#tab-risk .strength-bar{height:6px;background:#0c0c0c;position:relative;overflow:hidden;border-radius:2px;}
+#tab-risk .strength-bar{height:6px;background:var(--panel3);position:relative;overflow:hidden;border-radius:2px;}
 #tab-risk .strength-bar i{position:absolute;top:0;bottom:0;border-radius:2px;}
 #tab-risk .strength-score{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:800;text-align:right;}
 #tab-risk .strength-score.strength-pos{color:var(--bullish-strong);}
@@ -2581,7 +2588,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-leg-ccy{font-weight:800;display:flex;align-items:center;gap:4px;}
 #tab-overview .ov-csi-leg-ccy img{width:16px;height:11px;border-radius:1px;object-fit:cover;}
 #tab-overview .ov-csi-leg-dir{font-size:9px;font-weight:800;margin-left:1px;}
-#tab-overview .ov-csi-chart{flex:1;min-height:0;padding:4px 9px 0;background:#0c0c0c;}
+#tab-overview .ov-csi-chart{flex:1;min-height:0;padding:4px 9px 0;background:#121216;}
 #tab-overview .ov-csi-chart svg{display:block;width:100%;height:100%;min-height:170px;}
 #tab-overview .ov-csi-foot{font-size:9.5px;color:var(--text-faint);line-height:1.3;padding:7px 12px 8px;border-top:1px solid var(--border);}
 #tab-overview .ov-csi-empty{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;font-size:12px;color:var(--text-faint);text-align:center;}
@@ -2681,7 +2688,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-swatch{width:13px;height:3px;}
 #tab-overview .ov-csi-leg-ccy{font-weight:800;}
 #tab-overview .ov-csi-leg-ccy img{width:16px;height:11px;}
-#tab-overview .ov-csi-chart{background:#0c0c0c!important;flex:1;min-height:0;padding:4px 9px 0;}
+#tab-overview .ov-csi-chart{background:#121216!important;flex:1;min-height:0;padding:4px 9px 0;}
 #tab-overview .ov-csi-chart svg{width:100%;height:100%;min-height:170px;}
 #tab-overview .ov-csi-foot{font-size:9.5px;padding:6px 12px 7px;line-height:1.25;}
 
@@ -2830,7 +2837,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-head-note{font-size:10.5px!important;}
 #tab-overview .ov-csi-legend-row{display:flex!important;flex-wrap:wrap!important;gap:5px 13px!important;padding:7px 11px 4px!important;}
 #tab-overview .ov-csi-legend{font-family:var(--ui-font)!important;font-size:11px!important;}
-#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:3px 8px 4px!important;background:#0c0c0c!important;}
+#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:3px 8px 4px!important;background:#121216!important;}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:210px!important;}
 #tab-overview .ov-csi-vline{stroke:var(--text-faint)!important;stroke-width:1!important;stroke-dasharray:4 4!important;opacity:.9!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
@@ -3002,7 +3009,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-swatch{width:17px!important;height:3px!important;}
 #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
 #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-#tab-overview .ov-csi-chart{background:#0c0c0c!important;padding:4px 10px 6px!important;}
+#tab-overview .ov-csi-chart{background:#121216!important;padding:4px 10px 6px!important;}
 #tab-overview .ov-csi-chart svg{width:100%!important;height:100%!important;min-height:0!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.70)!important;stroke-width:1.15!important;stroke-dasharray:4 4!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
@@ -3081,7 +3088,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-head .ov-headline{font-size:19px!important;font-weight:800!important;}
 #tab-overview .ov-csi-legend-row{min-height:42px!important;display:flex!important;align-items:center!important;gap:7px 15px!important;padding:7px 12px!important;}
 #tab-overview .ov-csi-legend{font-size:12px!important;font-weight:700!important;}
-#tab-overview .ov-csi-chart{padding:6px 8px 8px!important;background:#0c0c0c!important;}
+#tab-overview .ov-csi-chart{padding:6px 8px 8px!important;background:#121216!important;}
 #tab-overview .ov-csi-chart svg{shape-rendering:geometricPrecision!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;}
 #tab-overview .ov-csi-hover-dot{r:4.4;stroke:var(--panel)!important;stroke-width:1.7!important;}
@@ -3165,7 +3172,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-swatch{width:16px!important;height:3px!important;}
 #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
 #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:5px 8px 6px!important;background:#0c0c0c!important;overflow:hidden!important;}
+#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:5px 8px 6px!important;background:#121216!important;overflow:hidden!important;}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;shape-rendering:geometricPrecision!important;overflow:visible!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{stroke:var(--panel)!important;stroke-width:1.7!important;vector-effect:non-scaling-stroke!important;}
@@ -6109,7 +6116,7 @@ function renderScanner(animateTrend){
     rows += '<tr class="rowhover scanner-row" data-pair="'+p.pair+'">'+
       '<td class="scanner-star-td" data-label="Fav"><span class="scanner-star'+(isFav?' active':'')+'" data-star="'+p.pair+'">'+(isFav?'★':'☆')+'</span></td>'+
       '<td data-label="Side">'+scannerSideBadge(p.bias,p.score)+'</td>'+
-      '<td class="scanner-pair-td" data-label="Pair" data-scanner-tip="'+esc(scannerPairTooltipHtml(p.base,p.quote,p.score))+'"><span class="scanner-pair-wrap">'+flagPair(p.base,p.quote,animateTrend)+'<span class="scanner-pair-code">'+p.pair+'</span></span></td>'+
+      '<td class="scanner-pair-td" data-label="Pair" data-scanner-tip="'+esc(scannerPairTooltipHtml(p.base,p.quote,p.score))+'"><span class="scanner-pair-wrap">'+flagPair(p.base,p.quote,animateTrend)+'<span class="scanner-pair-code'+(animateTrend?' scanner-pair-code-animate-in':'')+'">'+p.pair+'</span></span></td>'+
       '<td data-label="Score"><div class="scanner-score-wrap"><span class="scanner-score '+scoreCls+'">'+scannerScoreCompact(p.score)+'</span>'+scannerGaugeBar(p.score,scoreCls)+'</div></td>'+
       '<td class="day-delta-cell" data-label="7D &Delta;" data-scanner-tip="'+esc(scanner7dTooltip(p.base,p.quote,p.score))+'">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td data-label="Trend"><div class="scanner-trend-cell">'+scannerTrendSpark(p.pair,animateTrend)+'</div></td>'+
@@ -6821,25 +6828,27 @@ function y2ImportCsvText(text){
   };
 }
 
-function y2RenderMonitorRows(){
+function y2RenderMonitorRows(animate){
   var tb=document.getElementById('y2Rows'); if(!tb) return;
   var base=Y2_CCY_ORDER.map(y2Calc), usd=base.find(function(x){return x.ccy==='USD';}), out='';
   base.forEach(function(r){
     var spread=(usd&&usd.current!=null&&r.current!=null&&r.ccy!=='USD')?(r.current-usd.current)*100:null;
     var trackWidth=spread==null?0:Math.min(50,Math.abs(spread)/5);
     var trackStyle=spread==null?'width:0;left:50%;':(spread>=0?'left:50%;width:'+trackWidth+'%;':'left:'+(50-trackWidth)+'%;width:'+trackWidth+'%;');
+    var origin=spread!=null&&spread<0?'right':'left';
+    if(animate) trackStyle+='transform-origin:'+origin+';';
     out+='<tr class="rowhover">'+
-      '<td class="ccy-name y2-ccy-cell">'+flagImg(r.ccy)+' '+r.ccy+'</td>'+
+      '<td class="ccy-name y2-ccy-cell'+(animate?' y2-ccy-animate-in':'')+'">'+flagImg(r.ccy)+' '+r.ccy+'</td>'+
       '<td class="y2-score-view">'+y2ScoreCell(r)+'</td>'+
       '<td class="'+y2TrendClass(r.score)+' y2-direction-view">'+esc(y2TrendLabel(r.score))+'</td>'+
       '<td class="y2-usd-spread '+y2ScoreClass(spread)+'">'+(r.ccy==='USD'?'—':y2FmtBp(spread))+'</td>'+
-      '<td class="y2-spread-view"><div class="y2-track"><i></i><b class="'+(spread!=null&&spread<0?'neg':'')+'" style="'+trackStyle+'"></b></div></td>'+
+      '<td class="y2-spread-view"><div class="y2-track"><i></i><b class="'+(spread!=null&&spread<0?'neg':'')+(animate?' y2-bar-animate-in':'')+'" style="'+trackStyle+'"></b></div></td>'+
       '</tr>';
   });
   tb.innerHTML=out;
 }
-function y2RenderRows(){
-  y2RenderMonitorRows();
+function y2RenderRows(animate){
+  y2RenderMonitorRows(animate);
 }
 
 function y2LoadDemo(){
@@ -6904,7 +6913,7 @@ function renderYield2Y(){
     YIELD_ENGINE.inputDate=(document.getElementById('y2CurrentDate').value||YIELD_ENGINE.inputDate||YIELD_ENGINE.currentDate||new Date().toISOString().slice(0,10));
     YIELD_ENGINE.currentDate=YIELD_ENGINE.inputDate;
     scheduleSave();
-    y2RenderRows();
+    y2RenderRows(true);
     if(activeTab==='detail') renderDetailBody(activeDetailCcy);
     if(activeTab==='overview') renderOverview();
     updateStatus('Current 2Y values saved — '+YIELD_ENGINE.currentDate,'var(--bullish-strong)');
@@ -6956,7 +6965,7 @@ function renderYield2Y(){
       alert(msg);
     }catch(e){alert(e.message);}
   }; reader.readAsText(f);};
-  y2RenderRows();
+  y2RenderRows(true);
   initHistoricalSpreadPanel();
 }
 
@@ -10150,7 +10159,7 @@ function cotRenderScannerRows(animate){
     // target stashed in data-cot-target-w; renderCotRegime then flips them to the
     // real width on the next frame so the CSS width transition actually plays.
     var shortW=animate?0:shortPct, longW=animate?0:longPct;
-    return '<tr>'+      '<td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span class="cot-bar-seg" data-cot-target-w="'+shortPct.toFixed(1)+'" style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortW.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span class="cot-bar-seg" data-cot-target-w="'+longPct.toFixed(1)+'" style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longW.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td class="cot-net '+normCls+'">'+(normOi==null?'—':cotPercent(normOi))+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
+    return '<tr>'+      '<td><div class="cot-ccy'+(animate?' cot-ccy-animate-in':'')+'">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span class="cot-bar-seg" data-cot-target-w="'+shortPct.toFixed(1)+'" style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortW.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span class="cot-bar-seg" data-cot-target-w="'+longPct.toFixed(1)+'" style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longW.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td class="cot-net '+normCls+'">'+(normOi==null?'—':cotPercent(normOi))+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
   }).join('');
 }
 function cotExtremesHtml(){
@@ -10196,8 +10205,13 @@ function renderCotRegime(animate){
       });
     });
   }
-  var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
-  var cotRanges=tab.querySelectorAll('[data-cot-range]'); for(var cr=0;cr<cotRanges.length;cr++){cotRanges[cr].onclick=function(){activeCotRange=this.dataset.cotRange;renderCotRegime();requestAnimationFrame(function(){cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy);});};}
+  // renderCotRegime(true) already schedules its own animated cotDrawChart draw at the
+  // end (see the RAF call at the bottom of this function) -- calling cotDrawChart again
+  // here would just cancel and restart that same animation on the same frame, wasting
+  // a full chart recompute for nothing. Passing animate=true through to renderCotRegime
+  // is enough to animate both the positioning rows and the net-contracts line on switch.
+  var pills=tab.querySelectorAll('[data-cot-select]'); for(var i=0;i<pills.length;i++){pills[i].onclick=function(){activeCotCcy=this.dataset.cotSelect;renderCotRegime(true);};}
+  var cotRanges=tab.querySelectorAll('[data-cot-range]'); for(var cr=0;cr<cotRanges.length;cr++){cotRanges[cr].onclick=function(){activeCotRange=this.dataset.cotRange;renderCotRegime(true);};}
   var inputs=tab.querySelectorAll('[data-cot-field]'); for(var j=0;j<inputs.length;j++){inputs[j].addEventListener('input',function(){isTyping=true;});inputs[j].addEventListener('blur',function(){isTyping=false;});}
   var saveBtns=tab.querySelectorAll('[data-save-ccy]'); for(var k=0;k<saveBtns.length;k++){saveBtns[k].onclick=function(){cotCommitInputs(this.dataset.saveCcy,tab);};}
   var cotDateEl=document.getElementById('cotInputDate'); if(cotDateEl){
@@ -11346,7 +11360,7 @@ body.black .rail, body.ash .rail{
    active theme, and the fixes above (day-count label, 100-base label moved
    off the clipped right edge, added left/bottom axis lines). Nothing else
    on the page touched. */
-#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#050505!important;background-image:none!important;}
+#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#121216!important;background-image:none!important;}
 </style>
 
 
@@ -11392,7 +11406,7 @@ body.black .rail, body.ash .rail{
    were nearly invisible against it. Bring the panel back in line with the
    card it lives in, and the JS-side grid/label opacity bump above now has
    proper contrast to work with. */
-#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:var(--panel2)!important;background-image:none!important;}
+#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#121216!important;background-image:none!important;}
 </style>
 
 <style id="twp-final-premium-v1">
@@ -11535,7 +11549,7 @@ body,html{background:var(--bg);}
 #tab-overview .ov-csi-leg-ccy{font-size:11.5px!important;}
 #tab-overview .ov-csi-leg-ccy img{width:18px!important;height:12px!important;}
 #tab-overview .ov-csi-leg-dir{font-size:9px!important;}
-#tab-overview .ov-csi-chart{background:var(--panel2)!important;background-image:none!important;padding:3px 8px 5px!important;}
+#tab-overview .ov-csi-chart{background:#121216!important;background-image:none!important;padding:3px 8px 5px!important;}
 #tab-overview .ov-csi-chart svg{shape-rendering:geometricPrecision!important;}
 #tab-overview .ov-csi-chart text{font-family:Inter,system-ui,sans-serif!important;fill:#6f756f!important;font-weight:500!important;}
 #tab-overview .ov-csi-chart polyline{stroke-linecap:round!important;stroke-linejoin:round!important;}
@@ -11622,7 +11636,7 @@ body,html{background:var(--bg);}
   #tab-overview .ov-csi-swatch{width:17px!important;height:3px!important;border-radius:2px!important;}
   #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
   #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-  #tab-overview .ov-csi-chart{flex:1 1 auto!important;min-height:0!important;padding:7px 9px 7px!important;background:#101010!important;overflow:hidden!important;}
+  #tab-overview .ov-csi-chart{flex:1 1 auto!important;min-height:0!important;padding:7px 9px 7px!important;background:#121216!important;overflow:hidden!important;}
   #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;overflow:visible!important;shape-rendering:geometricPrecision!important;}
   #tab-overview .ov-csi-chart text{font-size:12px!important;}
 
@@ -13001,7 +13015,7 @@ body,html{background:var(--bg);}
 }
 #tab-raw .ss-legend{flex:0 0 calc(25% - 10px)!important;font-size:12px!important;font-weight:700!important;}
 #tab-raw .ss-chart{
-  background:#0c0c0c!important;
+  background:#121216!important;
   flex:0 0 auto!important;
   display:block!important;
   padding:6px 10px 8px!important;
@@ -13040,7 +13054,7 @@ body,html{background:var(--bg);}
 #twpNameGate .twp-name-gate-brand{color:var(--bullish);font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:13px;letter-spacing:.14em;margin-bottom:10px;}
 #twpNameGate .twp-name-gate-title{color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;}
 #twpNameGate .twp-name-gate-sub{color:var(--text-dim);font-size:12.5px;margin-bottom:16px;}
-#twpNameGate .twp-name-gate-input{width:100%;box-sizing:border-box;background:#0c0c0c;border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:Inter,system-ui,sans-serif;}
+#twpNameGate .twp-name-gate-input{width:100%;box-sizing:border-box;background:var(--panel3);border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:Inter,system-ui,sans-serif;}
 #twpNameGate .twp-name-gate-input:focus{outline:none;border-color:var(--bullish);}
 #twpNameGate .twp-name-gate-btn{width:100%;background:var(--bullish);color:#06110b;border:none;padding:10px 12px;font-weight:800;font-size:13.5px;letter-spacing:.02em;cursor:pointer;font-family:Inter,system-ui,sans-serif;}
 #twpNameGate .twp-name-gate-btn:hover{filter:brightness(1.08);}
