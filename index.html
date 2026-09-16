@@ -4387,10 +4387,28 @@ function cotLatest(ccy){
   var oi=cotNum(current.oi);
   return {date:current.date||((last&&last.date)||''),long:cotNum(current.long),short:cotNum(current.short),longChg:cotNum(current.longChg),shortChg:cotNum(current.shortChg),net:net,netChg:cotNum(current.netChg)!=null?cotNum(current.netChg):(last&&prior?cotNum(last.net)-cotNum(prior.net):null),high:high,low:low,oi:oi};
 }
+// 52-week Net/OI series (percent), used only for crowding. Kept separate from
+// cotLatest's raw-net high/low (those still drive the "52W High/Low" contract-count
+// stats elsewhere) -- this normalizes by open interest so crowding reflects how
+// stretched positioning is relative to market size, not raw contract counts, which
+// drift structurally as OI grows/shrinks over the lookback window regardless of how
+// stretched positioning actually is.
+function cotNetOiSeries(ccy){
+  return cotSortHistory(ccy).slice(-52).map(function(r){
+    var net=cotNum(r.net), oi=cotNum(r.oi);
+    return (net==null||oi==null||!oi)?null:100*net/oi;
+  }).filter(function(v){return v!=null;});
+}
 function cotRangeLocation(ccy){
-  var d=cotLatest(ccy), hi=d.high, lo=d.low, n=d.net;
-  if(n==null||hi==null||lo==null||hi===lo) return null;
-  return Math.max(0,Math.min(100,((n-lo)/(hi-lo))*100));
+  var d=cotLatest(ccy), curOi=cotNum(d.oi), curNet=d.net;
+  var cur=(curNet==null||curOi==null||!curOi)?null:100*curNet/curOi;
+  if(cur==null) return null;
+  var all=cotNetOiSeries(ccy);
+  if(!all.length || Math.abs(all[all.length-1]-cur)>1e-9) all.push(cur);
+  if(all.length<2) return null;
+  var hi=Math.max.apply(null,all), lo=Math.min.apply(null,all);
+  if(hi===lo) return null;
+  return Math.max(0,Math.min(100,((cur-lo)/(hi-lo))*100));
 }
 function cotCrowding(ccy){
   var d=cotLatest(ccy), loc=cotRangeLocation(ccy);
@@ -9598,7 +9616,31 @@ function pairFocusDriverRowsHtml(base,quote,animate){
   return rows.map(function(r){
     var cap=PAIR_FOCUS_PILLAR_CAP[r.name]||10;
     var leanFrac=Math.max(-1,Math.min(1,r.pts/cap));
-    var baseScore=pairFocusPillarAbsolute(r.name,base), quoteScore=pairFocusPillarAbsolute(r.name,quote);
+    var baseScore,quoteScore;
+    if(r.name==='Yield'){
+      // Yield is a single pair-level spread score (pairYieldCalc), not two independent
+      // per-currency reads -- derive both side numbers from that one score so they are
+      // mirror images around 50 and can never show both currencies "hot" (e.g. both
+      // near 100) while the actual base-quote spread is flat or barely moved.
+      var yPts=pairYieldCalc(base,quote).score;
+      baseScore=yPts==null?50:clamp0to100(50+5*yPts);
+      quoteScore=yPts==null?50:clamp0to100(50-5*yPts);
+    } else if(r.name==='Position' || r.name==='WoW'){
+      // Position/WoW absolute numbers previously came from each currency's own coarse,
+      // discrete +/-3 read (cotNetOnlyScore / cotWowMagnitudeScore) -- a completely
+      // different, cruder calculation than the pair-level posScore/flowScore (Net/OI-
+      // ranked for Position, raw-flow-ranked for WoW; see cotPairRegime) that actually
+      // drives this row's bar/label/points. That's why one side could pin at 100 and the
+      // other at 0 -- it was reading currency-level sign, not the pair's real relative
+      // magnitude. Derive both sides from the same pair-level score instead, mirrored
+      // around 50, so the numbers can never disagree with the points column.
+      var cotR=cotPairRegime(base,quote);
+      var pS=r.name==='Position'?cotR.posScore:cotR.flowScore;
+      baseScore=(cotR.insufficient||pS==null)?50:clamp0to100(50+pS/2);
+      quoteScore=(cotR.insufficient||pS==null)?50:clamp0to100(50-pS/2);
+    } else {
+      baseScore=pairFocusPillarAbsolute(r.name,base); quoteScore=pairFocusPillarAbsolute(r.name,quote);
+    }
     var deltaTxt=(r.pts>0?'+':'')+r.pts.toFixed(2);
     var deltaCls=r.pts>0.05?'pos':r.pts<-0.05?'neg':'';
     var tipLead=(function(){
