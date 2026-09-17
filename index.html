@@ -10755,8 +10755,24 @@ async function init(){
       console.error("Cloud sync error:", e);
     }
   }
-  pullCloudState();
-  setInterval(pullCloudState, 3000);
+  // Lightweight sync: check only the row version, and fetch the full payload
+  // only when it has actually changed. This avoids downloading the large
+  // dashboard payload every 3 seconds and sharply reduces Supabase egress.
+  let lastCloudCheckAt = null;
+  async function checkCloudVersion(){
+    try {
+      const rows = await supabaseRequest(SUPABASE_TABLE + "?id=eq." + SUPABASE_ROW_ID + "&select=updated_at", { useAuth: true });
+      if (!rows || !rows.length) return;
+      const updatedAt = rows[0].updated_at || null;
+      if (lastCloudCheckAt === updatedAt) return;
+      lastCloudCheckAt = updatedAt;
+      await pullCloudState();
+    } catch(e) {
+      console.error("Cloud version check error:", e);
+    }
+  }
+  checkCloudVersion();
+  setInterval(checkCloudVersion, 15000);
 
 }
 
