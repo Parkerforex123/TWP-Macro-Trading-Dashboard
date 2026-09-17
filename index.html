@@ -7470,13 +7470,14 @@ function wireOverviewCsiCrosshair(){
     Array.prototype.forEach.call(box.querySelectorAll('.ov-csi-series,.ov-csi-last'),function(el){
       var on=el.getAttribute('data-csi-series')===ccy;
       el.style.opacity=on?'1':'.14';
+      el.style.strokeWidth=on?'3.2':'2';
     });
     Array.prototype.forEach.call(box.querySelectorAll('.ov-csi-legend'),function(el){
       el.classList.toggle('is-focus',el.dataset.csiToggle===ccy);
     });
   }
   function clearFocus(){
-    Array.prototype.forEach.call(box.querySelectorAll('.ov-csi-series,.ov-csi-last'),function(el){el.style.opacity='1';});
+    Array.prototype.forEach.call(box.querySelectorAll('.ov-csi-series,.ov-csi-last'),function(el){el.style.opacity='1';el.style.strokeWidth='2';});
     Array.prototype.forEach.call(box.querySelectorAll('.ov-csi-legend'),function(el){el.classList.remove('is-focus');});
   }
   Array.prototype.forEach.call(box.querySelectorAll('.ov-csi-hit'),function(el){
@@ -8206,13 +8207,14 @@ function wireSurpriseStrengthCrosshair(){
     Array.prototype.forEach.call(box.querySelectorAll('.ss-series'),function(el){
       var on=el.getAttribute('data-ss-series')===ccy;
       el.style.opacity=on?'1':'.14';
+      el.style.strokeWidth=on?'3.2':'2';
     });
     Array.prototype.forEach.call(box.querySelectorAll('.ss-legend'),function(el){
       el.classList.toggle('is-focus',el.dataset.ssToggle===ccy);
     });
   }
   function clearFocus(){
-    Array.prototype.forEach.call(box.querySelectorAll('.ss-series'),function(el){el.style.opacity='1';});
+    Array.prototype.forEach.call(box.querySelectorAll('.ss-series'),function(el){el.style.opacity='1';el.style.strokeWidth='2';});
     Array.prototype.forEach.call(box.querySelectorAll('.ss-legend'),function(el){el.classList.remove('is-focus');});
   }
   Array.prototype.forEach.call(box.querySelectorAll('.ss-hit'),function(el){
@@ -13796,6 +13798,30 @@ twpShowNameGateIfNeeded();
   width:15px!important;
   height:12px!important;
 }
+</style>
+
+<style id="csi-chart-bg-match-card-v1">
+/* The Composite Strength · 90D plot area was hardcoded to a flat #121216 with no
+   gradient, while every other Overview card (Macro Breadth, Risk Sentiment, Economic
+   Calendar, and the .ov-csi card's own header/legend) uses var(--panel) plus the same
+   soft top-light gradient overlay. On the "ash" theme (--panel:#1f1f1f, the default)
+   that hardcoded near-black read as visibly darker/flatter than the card it sits inside,
+   which is what stood out as looking "off" against the rest of the dashboard. Restoring
+   the same panel color + gradient here makes the chart's plot area blend into its own
+   card exactly like every other panel does, on all three themes (ash/black/light).
+   This is the last-in-source-order rule for .ov-csi-chart's background, so it wins the
+   cascade over every earlier hardcoded #121216!important pass. */
+#tab-overview .ov-csi-chart{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 80%),var(--panel)!important;}
+</style>
+
+<style id="csi-ss-hover-thickness-v1">
+/* Composite Strength (Overview) and Surprise Strength (Surprise Index tab) line charts:
+   give the stroke-width change a quick, sensible transition so a currency's line visibly
+   thickens the instant you hover directly over it (pointerenter on its invisible hit-path,
+   wired in wireOverviewCsiCrosshair/wireSurpriseStrengthCrosshair) and returns to its
+   normal 2px weight the moment the cursor leaves -- no toggle needed, no change to the
+   underlying opacity-fade focus behavior that was already there. */
+#tab-overview .ov-csi-series,#tab-raw .ss-series{transition:opacity .14s ease,stroke-width .14s ease;}
 </style>
 
 <style id="pair-focus-tooltip-scroll-guard-v1">
