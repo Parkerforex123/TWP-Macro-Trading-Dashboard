@@ -3708,6 +3708,346 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .pfd-bar{height:9px!important;}
 #tab-scanner .pfd-bar-fill{min-height:9px!important;}
 </style>
+
+<style id="v44-forward-guidance-sheet">
+/* Forward Guidance popup: compact, anchored to the clicked currency label, and animated
+   upward from below the viewport rather than taking over the page. */
+.guidance-trigger{
+  display:block;
+  appearance:none;
+  -webkit-appearance:none;
+  width:auto;
+  padding:0;
+  margin:10px 0 0;
+  border:0;
+  background:transparent;
+  color:var(--bearish-strong);
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  line-height:1.2;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-weight:800;
+  cursor:pointer;
+  text-align:left;
+}
+.guidance-trigger:hover{color:var(--bearish-strong);filter:brightness(1.15);text-decoration:underline;text-underline-offset:3px;}
+.guidance-trigger:focus{outline:none;color:var(--bearish-strong);text-decoration:underline;text-underline-offset:3px;}
+.guidance-sheet-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  background:rgba(0,0,0,.38);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+.guidance-sheet-backdrop.open{
+  opacity:1;
+  pointer-events:auto;
+}
+.guidance-sheet{
+  --sheet-x:50vw;
+  position:fixed;
+  z-index:12001;
+  left:var(--sheet-x);
+  bottom:18px;
+  width:min(960px,calc(100vw - 32px));
+  max-height:min(78vh,720px);
+  transform:translateX(-50%) translateY(110%);
+  transform-origin:center bottom;
+  opacity:0;
+  overflow:hidden;
+  border:1px solid #4a3a2e;
+  border-top:2px solid #FE660F;
+  border-radius:12px;
+  background:linear-gradient(180deg,#17110d 0%,#111111 100%);
+  box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 0 1px rgba(254,102,15,.12);
+  pointer-events:none;
+}
+.guidance-sheet.open{
+  animation:guidanceSheetIn .52s cubic-bezier(.18,.88,.26,1) forwards;
+  pointer-events:auto;
+}
+@keyframes guidanceSheetIn{
+  0%{opacity:0;transform:translateX(-50%) translateY(110%) scale(.985);}
+  55%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1);}
+  78%{transform:translateX(-50%) translateY(2px) scale(1);}
+  100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+}
+@keyframes guidanceSheetGlow{
+  0%{transform:translateX(-100%);opacity:0;}
+  25%{opacity:.3;}
+  70%{opacity:.08;}
+  100%{transform:translateX(220%);opacity:0;}
+}
+.guidance-sheet::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent 0%,rgba(254,102,15,.25) 14%,#FE660F 50%,rgba(254,102,15,.25) 86%,transparent 100%);
+  pointer-events:none;
+}
+.guidance-sheet::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-25%;
+  width:32%;
+  height:2px;
+  background:rgba(255,197,148,.5);
+  animation:guidanceSheetGlow .9s ease-out .08s 1 both;
+  pointer-events:none;
+}
+.guidance-sheet-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.018);
+}
+.guidance-sheet-identity{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+.guidance-sheet-flag{
+  width:30px;
+  height:21px;
+  flex:0 0 auto;
+  object-fit:cover;
+  border-radius:3px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.12);
+}
+.guidance-sheet-title-wrap{min-width:0;}
+.guidance-sheet-code{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.7px;
+  color:var(--text);
+}
+.guidance-sheet-name{
+  margin-top:2px;
+  font-size:10.5px;
+  color:var(--text-faint);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.guidance-sheet-bank{
+  margin-top:3px;
+  font-size:10.5px;
+  color:var(--text-dim);
+}
+.guidance-sheet-close{
+  flex:0 0 auto;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text-dim);
+  width:30px;
+  height:30px;
+  border-radius:7px;
+  cursor:pointer;
+  font-size:17px;
+  line-height:28px;
+}
+.guidance-sheet-close:hover{color:var(--text);border-color:#FE660F;}
+.guidance-sheet-body{
+  display:grid;
+  grid-template-columns:170px minmax(0,1fr);
+  gap:16px;
+  padding:16px;
+  max-height:calc(min(78vh,720px) - 72px);
+  overflow:auto;
+}
+.guidance-sheet-person{
+  min-width:0;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:#121212;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+}
+.guidance-sheet-photo{
+  width:132px;
+  height:154px;
+  object-fit:cover;
+  object-position:center top;
+  border-radius:7px;
+  border:1px solid #3a332e;
+  background:#1a1a1a;
+}
+.guidance-sheet-initials{
+  width:132px;
+  height:154px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  border:1px solid #3a332e;
+  background:linear-gradient(145deg,#1c1c1c,#111111);
+  color:#FE660F;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:38px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+.guidance-sheet-person-name{
+  margin-top:9px;
+  text-align:center;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+}
+.guidance-sheet-person-role{
+  margin-top:3px;
+  text-align:center;
+  font-size:10.5px;
+  line-height:1.35;
+  color:var(--text-dim);
+}
+.guidance-sheet-content{
+  min-width:0;
+}
+.guidance-sheet-kicker{
+  font-size:10px;
+  color:var(--bearish-strong);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+.guidance-sheet-guidance{
+  margin:0;
+  color:#d1d6d0;
+  font-size:14px;
+  line-height:1.58;
+  white-space:pre-wrap;
+}
+.guidance-sheet-editor{
+  width:100%;
+  min-height:170px;
+  resize:vertical;
+  padding:11px 12px;
+  margin:0;
+  border-radius:8px;
+  border:1px solid #7c461f;
+  background:#0e0e0e;
+  color:#d1d6d0;
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  line-height:1.55;
+}
+.guidance-sheet-editor:focus{
+  outline:none;
+  border-color:#FE660F;
+  box-shadow:0 0 0 2px rgba(254,102,15,.1);
+}
+.guidance-sheet-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin-top:12px;
+}
+.guidance-sheet-meta-item{
+  padding:9px 10px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  background:rgba(255,255,255,.018);
+}
+.guidance-sheet-meta-k{
+  font-size:9.5px;
+  color:var(--text-faint);
+  text-transform:uppercase;
+  letter-spacing:.7px;
+}
+.guidance-sheet-meta-v{
+  margin-top:3px;
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:12.5px;
+  font-weight:700;
+  font-variant-numeric:normal;
+  color:var(--text);
+}
+.guidance-sheet-source{
+  display:inline-block;
+  margin-top:12px;
+  font-size:10px;
+  color:var(--text-faint);
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+.guidance-sheet-source:hover{color:#FE660F;}
+.guidance-sheet-hint{
+  margin-top:8px;
+  font-size:10px;
+  color:var(--text-faint);
+  line-height:1.4;
+}
+@media(max-width:720px){
+  .guidance-sheet{
+    width:calc(100vw - 20px);
+    max-height:78vh;
+    bottom:10px;
+  }
+  .guidance-sheet-body{
+    grid-template-columns:1fr;
+    max-height:calc(78vh - 72px);
+  }
+  .guidance-sheet-person{
+    display:grid;
+    grid-template-columns:82px 1fr;
+    align-items:center;
+    gap:8px 10px;
+  }
+  .guidance-sheet-photo,.guidance-sheet-initials{
+    grid-row:1 / span 2;
+    width:82px;
+    height:96px;
+  }
+  .guidance-sheet-person-name,
+  .guidance-sheet-person-role{
+    margin-top:0;
+    text-align:left;
+  }
+}
+@media(max-width:480px){
+  .guidance-sheet-head{padding:12px;}
+  .guidance-sheet-body{padding:12px;gap:12px;}
+  .guidance-sheet-meta{grid-template-columns:1fr;}
+  .guidance-sheet-guidance,.guidance-sheet-editor{font-size:13px;}
+}
+</style>
+
+<style id="v45-stat-row-dividers-and-nav">
+/* Currency-regime stat list: a plain horizontal rule between each row instead of
+   pure whitespace, so the block reads as a list rather than loose floating lines.
+   Rows that link elsewhere (COT, Fundamentals, Yield/2Y, Risk) get a pointer cursor
+   and a soft highlight on hover so it's clear they're clickable. */
+#tab-detail .stat-block{gap:0;}
+#tab-detail .stat-row{
+  padding:7px 2px;
+  border-bottom:1px solid var(--border);
+  margin:0;
+}
+#tab-detail .stat-row:first-child{padding-top:2px;}
+#tab-detail .stat-row:last-child{border-bottom:none;padding-bottom:2px;}
+#tab-detail .stat-row.stat-nav{cursor:pointer;border-radius:5px;transition:background .12s ease;}
+#tab-detail .stat-row.stat-nav:hover{background:var(--panel2);}
+#tab-detail .stat-row.stat-nav:hover span:first-child{color:var(--text);}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -3864,6 +4204,27 @@ setInterval(function(){
 var CCYS = ["USD","GBP","EUR","JPY","AUD","NZD","CAD","CHF"];
 var CCY_ORDER = ["EUR","GBP","AUD","NZD","USD","CAD","CHF","JPY"];
 var CCY_NAME = {USD:"US Dollar Index (DX)",GBP:"British Pound",EUR:"Euro",JPY:"Japanese Yen",AUD:"Australian Dollar",NZD:"New Zealand Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc"};
+var FORWARD_GUIDANCE_PROFILES = {
+  USD:{bank:"Federal Reserve",person:"Kevin Warsh",title:"Chair",image:"https://www.federalreserve.gov/aboutthefed/images/chairman-warsh-130x168.png",source:"https://www.federalreserve.gov/aboutthefed/bios/board/warsh.htm"},
+  GBP:{bank:"Bank of England",person:"Andrew Bailey",title:"Governor",image:"https://www.bankofengland.co.uk/-/media/boe/images/people/andrew-bailey/andrew-bailey-front.jpg?h=515&iar=0&w=521&hash=C0338A66BD70CE3D996DB0EA80350841",source:"https://www.bankofengland.co.uk/about/people/andrew-bailey/biography"},
+  EUR:{bank:"European Central Bank",person:"Christine Lagarde",title:"President",image:"https://assets.weforum.org/author/image/eiLRxiB0GfuQP4MgTanoo6yCPDcO8m6_vB-j7FXw5u4%282%29.jpg",source:"https://www.ecb.europa.eu/ecb/orga/html/index.en.html"},
+  JPY:{bank:"Bank of Japan",person:"Kazuo Ueda",title:"Governor",image:"https://www.boj.or.jp/en/about/organization/policyboard/img/ueda.jpg",source:"https://www.boj.or.jp/en/about/organization/policyboard/gov.htm"},
+  AUD:{bank:"Reserve Bank of Australia",person:"Michele Bullock",title:"Governor",image:"https://www.rba.gov.au/assets/images/people/michele-bullock.jpg",source:"https://www.rba.gov.au/about-rba/people/michele-bullock.html"},
+  NZD:{bank:"Reserve Bank of New Zealand",person:"Anna Breman",title:"Governor",image:"https://www.rbnz.govt.nz/-/media/project/sites/rbnz/images/about-us/our-people/elt/anna-breman-4x3.jpg",source:"https://www.rbnz.govt.nz/about/governance-and-leadership/governor"},
+  CAD:{bank:"Bank of Canada",person:"Tiff Macklem",title:"Governor",image:"https://www.bankofcanada.ca/wp-content/uploads/2014/02/tiff-macklem-250x250.jpg",source:"https://www.bankofcanada.ca/about/governors/tiff-macklem/"},
+  CHF:{bank:"Swiss National Bank",person:"Martin Schlegel",title:"Chairman of the Governing Board",image:"https://www.snb.ch/.imaging/flex/jcr%3Ad9a2af79-178f-492a-b0a7-a8371e3cb400/fillColor/-1/hash/2e0bd156300c2f40cd29b26a0f1f10b8/mode/BOUNDED/ratio/1%3A1/version/1727346506/width/280/msl_2024.jpg",source:"https://www.snb.ch/en/the-snb/organisation/governing-board"}
+};
+
+function forwardGuidanceProfile(ccy){
+  return FORWARD_GUIDANCE_PROFILES[ccy] || {
+    bank:(CB_NAMES && CB_NAMES[ccy]) || "Central bank",
+    person:"Central bank leadership",
+    title:"",
+    image:"",
+    source:""
+  };
+}
+
 var TE_COUNTRY = {USD:"united-states",GBP:"united-kingdom",EUR:"euro-area",JPY:"japan",AUD:"australia",NZD:"new-zealand",CAD:"canada",CHF:"switzerland"};
 var TE_EXACT = {
   "gdp growth rate qoq":"gdp-growth","gdp growth rate":"gdp-growth","gdp m m":"gdp-growth",
@@ -8661,13 +9022,13 @@ function renderDetailBody(ccy, animate){
       '<div class="stat-block">'+
         '<div class="stat-row"><span>Currency regime score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
         '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:190px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
-        '<div class="stat-row"><span>COT net position score</span><span class="mono" id="statCotNet-'+ccy+'" style="'+numColor(cotNetScore)+'">'+(cotNetScore>0?"+":"")+cotNetScore+'</span></div>'+
-        '<div class="stat-row"><span>COT weekly change score</span><span class="mono" id="statCotWow-'+ccy+'" style="'+numColor(cotWowScore)+'">'+(cotWowScore>0?"+":"")+cotWowScore+'</span></div>'+
+        '<div class="stat-row stat-nav" data-goto-tab="cot" data-goto-ccy="'+ccy+'" title="Open COT Regime for '+ccy+'"><span>COT net position score</span><span class="mono" id="statCotNet-'+ccy+'" style="'+numColor(cotNetScore)+'">'+(cotNetScore>0?"+":"")+cotNetScore+'</span></div>'+
+        '<div class="stat-row stat-nav" data-goto-tab="cot" data-goto-ccy="'+ccy+'" title="Open COT Regime for '+ccy+'"><span>COT weekly change score</span><span class="mono" id="statCotWow-'+ccy+'" style="'+numColor(cotWowScore)+'">'+(cotWowScore>0?"+":"")+cotWowScore+'</span></div>'+
         '<div class="stat-row"><span>CB stance score</span><span class="mono" id="statCb-'+ccy+'" style="'+numColor(cbScore)+'">'+(cbScore>0?"+":"")+cbScore+'</span></div>'+
         '<div class="stat-row"><span>Seasonality score</span><span class="mono" id="statSeason-'+ccy+'" style="'+numColor(seasonalitySign(d))+'">'+fmt(seasonalitySign(d))+'</span></div>'+
-        '<div class="stat-row"><span>Risk sentiment contribution</span><span class="mono" id="statRisk-'+ccy+'" style="'+numColor(riskContributionFor(ccy))+'">'+(riskContributionFor(ccy)>0?"+":"")+riskContributionFor(ccy).toFixed(1)+'</span></div>'+
-        '<div class="stat-row"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
-        '<div class="stat-row" style="align-items:flex-start;"><span>Own-history 2Y score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
+        '<div class="stat-row stat-nav" data-goto-tab="risk" data-goto-ccy="'+ccy+'" title="Open Risk Sentiment"><span>Risk sentiment contribution</span><span class="mono" id="statRisk-'+ccy+'" style="'+numColor(riskContributionFor(ccy))+'">'+(riskContributionFor(ccy)>0?"+":"")+riskContributionFor(ccy).toFixed(1)+'</span></div>'+
+        '<div class="stat-row stat-nav" data-goto-tab="raw" data-goto-ccy="'+ccy+'" title="Open Economic Surprise Index for '+ccy+'"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
+        '<div class="stat-row stat-nav" style="align-items:flex-start;" data-goto-tab="yield2y" data-goto-ccy="'+ccy+'" title="Open Bond Yield Spread for '+ccy+'"><span>Own-history 2Y score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
       '</div>'+
       '<div class="rate-box">'+
         '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Interest rate</span>'+
@@ -8682,8 +9043,7 @@ function renderDetailBody(ccy, animate){
             '<select class="conv-select '+d.conviction.split(" ")[0]+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="conviction">'+
             ["High conviction","Medium conviction","Low conviction"].map(function(o){ return '<option '+(o===d.conviction?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
             : '<span class="conv-select '+d.conviction.split(" ")[0]+' static-chip">'+d.conviction+'</span>')+'</div>'+
-        '<div class="field-label">Forward guidance</div>'+
-        '<textarea class="guidance-box" data-role="ccyfield" data-ccy="'+ccy+'" data-field="guidance" '+(unlockedLocally?"":"disabled")+'>'+esc(d.guidance)+'</textarea>'+
+        '<button type="button" class="guidance-trigger" data-ccy="'+ccy+'" aria-label="Open forward guidance for '+ccy+'">Forward guidance</button>'+
       '</div>'+
     '</div>'+
     '<div class="right-col">'+
@@ -8730,11 +9090,165 @@ function renderDetailBody(ccy, animate){
   runGrow(); // also run immediately so it's not blank/collapsed while waiting on fonts
 }
 
+
+var guidanceSheetState={ccy:null,trigger:null};
+
+function guidanceProfileImage(profile){
+  return profile && profile.image ? profile.image : "";
+}
+
+function guidanceInitials(name){
+  var parts=String(name||"").trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return "CB";
+  return (parts[0].charAt(0)+(parts.length>1?parts[parts.length-1].charAt(0):"")).toUpperCase();
+}
+
+function ensureGuidanceSheet(){
+  var backdrop=document.getElementById("guidanceSheetBackdrop");
+  var sheet=document.getElementById("guidanceSheet");
+  if(backdrop && sheet) return {backdrop:backdrop,sheet:sheet};
+
+  backdrop=document.createElement("div");
+  backdrop.id="guidanceSheetBackdrop";
+  backdrop.className="guidance-sheet-backdrop";
+
+  sheet=document.createElement("section");
+  sheet.id="guidanceSheet";
+  sheet.className="guidance-sheet";
+  sheet.setAttribute("role","dialog");
+  sheet.setAttribute("aria-modal","true");
+  sheet.setAttribute("aria-label","Forward guidance");
+  document.body.appendChild(backdrop);
+  document.body.appendChild(sheet);
+
+  backdrop.addEventListener("click",function(e){
+    if(e.target===backdrop) closeGuidanceSheet();
+  });
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Escape" && sheet.classList.contains("open")) closeGuidanceSheet();
+  });
+  return {backdrop:backdrop,sheet:sheet};
+}
+
+function positionGuidanceSheet(trigger){
+  var sheet=document.getElementById("guidanceSheet");
+  if(!sheet) return;
+  var rect=trigger ? trigger.getBoundingClientRect() : null;
+  var anchorX=rect ? (rect.left+rect.width/2) : (window.innerWidth/2);
+  var half=Math.min(450,(window.innerWidth-36)/2);
+  var minX=half+12, maxX=window.innerWidth-half-12;
+  anchorX=Math.max(minX,Math.min(maxX,anchorX));
+  sheet.style.setProperty("--sheet-x",anchorX+"px");
+}
+
+function renderGuidanceSheet(ccy,trigger){
+  if(!DATA || !DATA[ccy]) return;
+  var ui=ensureGuidanceSheet(), sheet=ui.sheet, backdrop=ui.backdrop, d=DATA[ccy], p=forwardGuidanceProfile(ccy);
+  guidanceSheetState.ccy=ccy;
+  guidanceSheetState.trigger=trigger||null;
+  var image=guidanceProfileImage(p);
+  var imageHtml=image
+    ? '<img class="guidance-sheet-photo" src="'+esc(image)+'" alt="'+esc(p.person)+' portrait" loading="eager" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'+
+      '<div class="guidance-sheet-initials" style="display:none;">'+esc(guidanceInitials(p.person))+'</div>'
+    : '<div class="guidance-sheet-initials">'+esc(guidanceInitials(p.person))+'</div>';
+
+  var editorHtml = unlockedLocally
+    ? '<textarea class="guidance-sheet-editor" data-role="ccyfield" data-ccy="'+esc(ccy)+'" data-field="guidance">'+esc(d.guidance||"")+'</textarea>'+
+      '<div class="guidance-sheet-hint">Edit mode is active. Changes sync to the currency detail guidance field.</div>'
+    : '<p class="guidance-sheet-guidance">'+esc(d.guidance||"No forward guidance entered yet.")+'</p>';
+
+  var sourceHtml=p.source
+    ? '<a class="guidance-sheet-source" href="'+esc(p.source)+'" target="_blank" rel="noopener noreferrer">Official central-bank profile</a>'
+    : '';
+
+  sheet.innerHTML =
+    '<div class="guidance-sheet-head">'+
+      '<div class="guidance-sheet-identity">'+
+        flagImg(ccy).replace('class="ccy-flag"','class="guidance-sheet-flag"')+
+        '<div class="guidance-sheet-title-wrap">'+
+          '<div class="guidance-sheet-code">'+esc(ccy)+'</div>'+
+          '<div class="guidance-sheet-name">'+esc(CCY_NAME[ccy]||"")+'</div>'+
+          '<div class="guidance-sheet-bank">'+esc(p.bank||"Central bank")+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<button type="button" class="guidance-sheet-close" aria-label="Close forward guidance">×</button>'+
+    '</div>'+
+    '<div class="guidance-sheet-body">'+
+      '<div class="guidance-sheet-person">'+
+        imageHtml+
+        '<div class="guidance-sheet-person-name">'+esc(p.person||"Central bank leadership")+'</div>'+
+        '<div class="guidance-sheet-person-role">'+esc(p.title||"")+'</div>'+
+      '</div>'+
+      '<div class="guidance-sheet-content">'+
+        '<div class="guidance-sheet-kicker">Forward Guidance</div>'+
+        editorHtml+
+        '<div class="guidance-sheet-meta">'+
+          '<div class="guidance-sheet-meta-item"><div class="guidance-sheet-meta-k">Interest rate</div><div class="guidance-sheet-meta-v">'+esc(d.interestRate||"—")+'</div></div>'+
+          '<div class="guidance-sheet-meta-item"><div class="guidance-sheet-meta-k">Next move</div><div class="guidance-sheet-meta-v">'+esc(d.nextMove||"—")+'</div></div>'+
+          '<div class="guidance-sheet-meta-item"><div class="guidance-sheet-meta-k">Conviction</div><div class="guidance-sheet-meta-v">'+esc(d.conviction||"—")+'</div></div>'+
+        '</div>'+
+        sourceHtml+
+      '</div>'+
+    '</div>';
+
+  sheet.querySelector(".guidance-sheet-close").onclick=closeGuidanceSheet;
+  var editor=sheet.querySelector('.guidance-sheet-editor');
+  if(editor){
+    editor.addEventListener("input",onCcyFieldInput);
+    editor.addEventListener("change",onCcyFieldInput);
+    setTimeout(function(){ try{editor.focus(); editor.setSelectionRange(editor.value.length,editor.value.length);}catch(e){} },120);
+  }
+
+  positionGuidanceSheet(trigger);
+  backdrop.classList.add("open");
+  sheet.classList.remove("open");
+  // Force a clean animation frame whenever the user switches currencies.
+  void sheet.offsetWidth;
+  sheet.classList.add("open");
+  document.body.classList.add("guidance-sheet-open");
+}
+
+function openGuidanceSheet(ccy,trigger){
+  renderGuidanceSheet(ccy,trigger);
+}
+
+function closeGuidanceSheet(){
+  var ui={backdrop:document.getElementById("guidanceSheetBackdrop"),sheet:document.getElementById("guidanceSheet")};
+  if(ui.sheet) ui.sheet.classList.remove("open");
+  if(ui.backdrop) ui.backdrop.classList.remove("open");
+  document.body.classList.remove("guidance-sheet-open");
+  guidanceSheetState.ccy=null;
+  guidanceSheetState.trigger=null;
+}
+
+window.addEventListener("resize",function(){
+  if(guidanceSheetState.trigger && document.getElementById("guidanceSheet") && document.getElementById("guidanceSheet").classList.contains("open")){
+    positionGuidanceSheet(guidanceSheetState.trigger);
+  }
+});
+
 function wireDetailEvents(){
   var body=document.getElementById("detailBody"); if(!body) return;
   body.addEventListener("input", onDetailInput); body.addEventListener("change", onDetailInput);
   body.addEventListener("focusin", function(){ isTyping = true; });
   body.addEventListener("focusout", function(){ isTyping = false; });
+
+  var guidanceBtns=body.querySelectorAll('.guidance-trigger');
+  for(var g=0;g<guidanceBtns.length;g++){
+    guidanceBtns[g].onclick=function(){
+      openGuidanceSheet(this.dataset.ccy,this);
+    };
+  }
+
+  var navRows=body.querySelectorAll('.stat-nav[data-goto-tab]');
+  for(var n=0;n<navRows.length;n++){
+    navRows[n].onclick=function(){
+      var tab=this.dataset.gotoTab, ccy=this.dataset.gotoCcy;
+      if(tab==="cot"){ activeCotCcy=ccy; }
+      else if(tab==="raw"){ expandedSurpriseCcy=ccy; }
+      switchTab(tab);
+    };
+  }
 
   var rmBtns=body.querySelectorAll('[data-action="rm"]');
   for(var i=0;i<rmBtns.length;i++){ rmBtns[i].onclick=function(){
