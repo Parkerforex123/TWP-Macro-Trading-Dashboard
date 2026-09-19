@@ -4301,6 +4301,12 @@ var TE_OVERRIDE = {
   "CAD|cpi trimmed mean yoy":"https://tradingeconomics.com/canada/cpi-trimmed-mean",
   "CAD|cpi median yoy":"https://tradingeconomics.com/canada/cpi-median",
   "CAD|terms of trade":"https://tradingeconomics.com/canada/terms-of-trade",
+  "CAD|gdp mom":"https://tradingeconomics.com/canada/monthly-gdp-mom",
+  "CAD|gdp month over month":"https://tradingeconomics.com/canada/monthly-gdp-mom",
+  "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/average-hourly-earnings",
+  "CAD|average hourly wages yoy":"https://tradingeconomics.com/canada/average-hourly-earnings",
+  "CAD|average hourly earnings yoy":"https://tradingeconomics.com/canada/average-hourly-earnings",
+  "CAD|average hourly earnings":"https://tradingeconomics.com/canada/average-hourly-earnings",
   "CHF|gdp growth rate qoq":"https://tradingeconomics.com/switzerland/gdp-growth",
   "CHF|industrial production yoy":"https://tradingeconomics.com/switzerland/industrial-production",
   "CHF|manufacturing pmi":"https://tradingeconomics.com/switzerland/manufacturing-pmi",
@@ -4376,6 +4382,11 @@ function teLink(ccy, name){
   var key=normalize(name);
   var override=TE_OVERRIDE_C[ccy+"|"+key];
   if(override) return override;
+  // Canada: these two indicators use explicit destinations so their clickable
+  // labels cannot fall through to a generic country indicators page.
+  if(ccy==="CAD" && key==="gdp mom") return "https://tradingeconomics.com/canada/monthly-gdp-mom";
+  if(ccy==="CAD" && (key==="average hourly earnings yoy" || key==="average hr wages yoy" || key==="average hourly wages yoy" || key==="average hourly earnings"))
+    return "https://tradingeconomics.com/canada/average-hourly-earnings";
   var country=TE_COUNTRY[ccy], slug=TE_EXACT_C[key];
   return slug ? ("https://tradingeconomics.com/"+country+"/"+slug) : ("https://tradingeconomics.com/"+country+"/indicators");
 }
@@ -4467,7 +4478,7 @@ function seed(){
     CAD:{seasonalityAvg:"",seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
       interestRate:"2.25%",nextMove:"HOLD",conviction:"High conviction",
       guidance:"BOC held at 2.25% as expected. No clear direction on policy yet, still data dependent.",
-      growth:[{name:"GDP m/m",weight:7,actual:"0.30%",forecast:"0.20%",bias:"Bullish"},
+      growth:[{name:"GDP Month over Month",weight:7,actual:"0.30%",forecast:"0.20%",bias:"Bullish"},
         {name:"Ivey PMI s.a",weight:4,actual:"56.2",forecast:"59.1",bias:"Bearish"},
         {name:"Capacity Utilization",weight:4,actual:"82.5%",forecast:"-",bias:"Bullish"},
         {name:"Retail Sales Ex Autos",weight:6,actual:"1.2%",forecast:"1.4%",bias:"Bearish"}],
@@ -4476,7 +4487,7 @@ function seed(){
         {name:"CPI Median YoY",weight:10,actual:"1.9%",forecast:"2.1%",bias:"Bearish"}],
       labour:[{name:"Employment Change",weight:9,actual:"18.2k",forecast:"10k",bias:"Bullish"},
         {name:"Unemployment Rate",weight:7,actual:"6.5%",forecast:"6.6%",bias:"Bullish"},
-        {name:"Average Hr Wages YoY",weight:8,actual:"3.7%",forecast:"-",bias:"Bullish"}]},
+        {name:"Average Hourly Earnings YoY",weight:8,actual:"2.0%",forecast:"-",bias:"Bullish"}]},
     CHF:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Neutral",cotChangeBias:"Neutral",longPct:"",shortPct:"",changePct:"",
       interestRate:"0%",nextMove:"HOLD",conviction:"Medium conviction",
       guidance:"SNB policy rate is 0%. The SNB has indicated increased willingness to intervene against a rapid and excessive CHF appreciation.",
@@ -8713,11 +8724,40 @@ function y2TrendClass(score){
   return score>0 ? "y2-positive" : "y2-negative";
 }
 
+function repairCanadaIndicators(){
+  if(!DATA || !DATA.CAD) return false;
+  var changed=false;
+  var growth=DATA.CAD.growth||[], labour=DATA.CAD.labour||[];
+  for(var i=0;i<growth.length;i++){
+    var n=normalize(growth[i].name||"");
+    if(n==="gdp mom" || n==="gdp month over month"){
+      if(growth[i].name!=="GDP Month over Month"){growth[i].name="GDP Month over Month";changed=true;}
+      if(growth[i].actual!=="0.30%"){growth[i].actual="0.30%";changed=true;}
+    }
+  }
+  for(var j=0;j<labour.length;j++){
+    var ln=normalize(labour[j].name||"");
+    if(ln==="average hourly earnings yoy" || ln==="average hr wages yoy" || ln==="average hourly wages yoy" || ln==="average hourly earnings"){
+      if(labour[j].name!=="Average Hourly Earnings YoY"){labour[j].name="Average Hourly Earnings YoY";changed=true;}
+      if(labour[j].actual!=="2.0%"){labour[j].actual="2.0%";changed=true;}
+    }
+  }
+  return changed;
+}
+
+function canadaIndicatorLink(name){
+  var key=normalize(name);
+  if(key==="gdp mom") return "https://tradingeconomics.com/canada/monthly-gdp-mom";
+  if(key==="average hourly earnings yoy" || key==="average hr wages yoy" || key==="average hourly wages yoy" || key==="average hourly earnings")
+    return "https://tradingeconomics.com/canada/average-hourly-earnings";
+  return null;
+}
+
 function indicatorRows(ccy, sector, list){
   var rows="";
   for(var i=0;i<list.length;i++){
     var ind=list[i];
-    var link = teLink(ccy,ind.name);
+    var link = (ccy==="CAD" ? canadaIndicatorLink(ind.name) : null) || teLink(ccy,ind.name);
     rows += '<tr class="rowhover">'+
       '<td>'+(unlockedLocally?
         '<input class="ind-name" data-role="indicator" data-ccy="'+ccy+'" data-sector="'+sector+'" data-idx="'+i+'" data-field="name" value="'+esc(ind.name)+'">'
@@ -10749,6 +10789,7 @@ async function init(){
       const parsed = JSON.parse(rows[0].payload);
       if (parsed && parsed.DATA && Object.keys(parsed.DATA).length) {
         DATA = parsed.DATA;
+        repairCanadaIndicators();
         SETTINGS = parsed.SETTINGS || {passwordHash:null};
         DAILY = parsed.DAILY || {};
         LOG = parsed.LOG || [];
@@ -10774,7 +10815,7 @@ async function init(){
     pendingRecovered=applyPendingCloudStateIfNewer(null);
   }
 
-  // First-time migration: if the shared row is still empty, preserve the
+  // Repair the two Canada indicators after every data source is loaded. This is deliberately\n  // applied to loaded local/cloud state as well as seed data, so stale persisted values\n  // cannot resurrect the old Canada labels/values.\n  repairCanadaIndicators();\n\n  // First-time migration: if the shared row is still empty, preserve the
   // existing local dashboard data from this browser and upload it once.
   if (!loaded) {
     if (!pendingRecovered) { if (!loadLocalCache()) DATA = seed(); pendingRecovered=applyPendingCloudStateIfNewer(null); }
@@ -14192,4 +14233,200 @@ twpShowNameGateIfNeeded();
   },true);
 })();
 </script>
+</html>
+
+<style id="currency-detail-spacing-only-v2">
+/*
+  Currency Detail D2 — SPACING ONLY
+  Typography is intentionally untouched.
+  This pass reduces wasted space through geometry: padding, margins, gaps,
+  alignment and panel distribution.
+*/
+@media (min-width:1101px) {
+  #tab-detail {
+    padding-bottom: 4px!important;
+  }
+
+  #tab-detail > .card {
+    padding: 8px 10px!important;
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .ccy-pills {
+    gap: 3px!important;
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .detail-grid {
+    gap: 8px!important;
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .right-col {
+    gap: 6px!important;
+  }
+
+  /* Use the available width rather than leaving large side/column gaps. */
+  #tab-detail .info-trend-row {
+    gap: 7px!important;
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .info-trend-row .info-grid {
+    padding: 7px 11px!important;
+    column-gap: 12px!important;
+    row-gap: 4px!important;
+  }
+
+  #tab-detail .trend-panel {
+    padding: 7px 10px!important;
+    margin: 0!important;
+  }
+
+  #tab-detail .policy-monitor {
+    padding: 8px 11px!important;
+    margin: 0!important;
+  }
+
+  #tab-detail .policy-monitor-head {
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .policy-monitor-grid {
+    gap: 11px!important;
+  }
+
+  #tab-detail .policy-relation {
+    margin-top: 6px!important;
+    padding-top: 6px!important;
+  }
+
+  /*
+    The indicator sections are the main vertical bottleneck.
+    Put the existing panels into three columns and only reduce their
+    surrounding whitespace. No font-size rules are used here.
+  */
+  #tab-detail > .card > .sector-block {
+    display: inline-block!important;
+    vertical-align: top!important;
+    width: calc(33.333% - 7px)!important;
+    margin: 0 8px 0 0!important;
+  }
+
+  #tab-detail > .card > .sector-block:last-child {
+    margin-right: 0!important;
+  }
+
+  #tab-detail .sector-title {
+    margin-top: 0!important;
+    margin-bottom: 3px!important;
+    padding-top: 0!important;
+    padding-bottom: 2px!important;
+  }
+
+  #tab-detail .sector-block table {
+    border-spacing: 2px 0!important;
+    margin: 0!important;
+  }
+
+  /* Preserve the existing text sizes; only tighten cell geometry. */
+  #tab-detail .sector-block table th,
+  #tab-detail .sector-block table td {
+    padding-top: 3px!important;
+    padding-bottom: 3px!important;
+    padding-left: 4px!important;
+    padding-right: 4px!important;
+  }
+
+  #tab-detail .sector-block table tr {
+    height: auto!important;
+  }
+
+  #tab-detail .sector-block .ind-txt {
+    padding-top: 1px!important;
+    padding-bottom: 1px!important;
+  }
+
+  #tab-detail .sector-block .bias-select {
+    padding-top: 1px!important;
+    padding-bottom: 1px!important;
+  }
+
+  #tab-detail .sector-block .add-btn {
+    margin-top: 4px!important;
+  }
+
+  /* Remove accidental vertical breathing room between the three panels. */
+  #tab-detail .sector-block + .sector-block {
+    margin-top: 0!important;
+  }
+
+  /* Keep the lower information areas compact without changing typography. */
+  #tab-detail .signality,
+  #tab-detail .signality-panel,
+  #tab-detail .latest-positioning,
+  #tab-detail .variables,
+  #tab-detail .headlines {
+    margin-top: 5px!important;
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .signality,
+  #tab-detail .signality-panel,
+  #tab-detail .latest-positioning,
+  #tab-detail .variables,
+  #tab-detail .headlines {
+    padding-top: 7px!important;
+    padding-bottom: 7px!important;
+  }
+
+  /* Compact common card interiors by geometry only. */
+  #tab-detail .card-header,
+  #tab-detail .section-header,
+  #tab-detail .panel-header {
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .card-body,
+  #tab-detail .section-body,
+  #tab-detail .panel-body {
+    padding-top: 4px!important;
+    padding-bottom: 4px!important;
+  }
+
+  /* Prevent empty flex distribution from stretching sections vertically. */
+  #tab-detail .policy-monitor,
+  #tab-detail .trend-panel,
+  #tab-detail .info-grid {
+    align-content: start!important;
+  }
+}
+
+@media (min-width:701px) and (max-width:1100px) {
+  #tab-detail > .card {
+    padding: 8px 10px!important;
+  }
+
+  #tab-detail .detail-grid,
+  #tab-detail .info-trend-row {
+    gap: 7px!important;
+  }
+
+  #tab-detail .sector-block {
+    margin-bottom: 5px!important;
+  }
+
+  #tab-detail .sector-title {
+    margin-bottom: 3px!important;
+  }
+
+  #tab-detail .sector-block table th,
+  #tab-detail .sector-block table td {
+    padding-top: 3px!important;
+    padding-bottom: 3px!important;
+  }
+}
+</style>
+
+</body>
 </html>
