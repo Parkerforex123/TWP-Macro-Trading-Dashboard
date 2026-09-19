@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<script>try{var __t=localStorage.getItem('twp_theme_pref');if(__t==="white") __t="ash"; if(__t==="ash"||__t==="black"){document.documentElement.classList.add(__t);}}catch(e){}</script>
+<script>try{document.documentElement.classList.add("black");}catch(e){}</script>
 <title>TWP — Fundamentals Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23181b22%27/%3E%3Ctext x=%2732%27 y=%2742%27 text-anchor=%27middle%27 font-family=%27Arial,sans-serif%27 font-size=%2725%27 font-weight=%27700%27 fill=%27white%27%3ETWP%3C/text%3E%3C/svg%3E">
 <style>
@@ -155,10 +155,10 @@ select.raw-input{width:104px;}
 input:disabled, textarea:disabled{background:transparent;border-color:transparent;opacity:1;cursor:default;padding-left:0;-webkit-text-fill-color:inherit;}
 select:disabled{background:transparent;border-color:transparent;color:var(--text);opacity:1;cursor:default;-webkit-appearance:none;appearance:none;}
 
-.ccy-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.ccy-pill{background:var(--panel);border:1px solid var(--border);color:var(--text-dim);padding:9px 18px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:.5px;}
+.ccy-pills{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:8px;border-bottom:1px solid var(--border);}
+.ccy-pill{background:transparent;border:1px solid transparent;border-bottom:2px solid transparent;color:var(--text-dim);padding:6px 12px;border-radius:4px 4px 0 0;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:.5px;}
 .ccy-pill:hover{color:var(--text);}
-.ccy-pill.active{background:var(--panel3);color:var(--text);border-color:var(--amber);}
+.ccy-pill.active{background:var(--panel2);color:var(--text);border-color:transparent;border-bottom-color:var(--amber);}
 
 .detail-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;}
 @media(max-width:920px){.detail-grid{grid-template-columns:1fr;}}
@@ -238,7 +238,7 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
 .sector-block{margin-bottom:10px;}
 .sector-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
 .sector-title span.label{font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:700;}
-.sector-block table{table-layout:fixed;}
+.sector-block table{table-layout:fixed;border-collapse:separate;border-spacing:3px 0;}
 .sector-block table th,.sector-block table td{vertical-align:middle;}
 .sector-block table th:nth-child(1),.sector-block table td:nth-child(1){width:26%;text-align:left;}
 .sector-block table th:nth-child(2),.sector-block table td:nth-child(2){width:9%;text-align:center;}
@@ -258,7 +258,7 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
 .ind-txt{width:102px;max-width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:5px 6px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:800;text-align:center;}
 .surprise{font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:800;white-space:nowrap;text-align:left;}
 th{font-size:12px;}
-.sector-block table thead th{background:var(--panel2);font-size:12.5px;}
+.sector-block table thead th{background:var(--panel3);border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-dim);padding:6px 8px;}
 .bias-select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-size:13.5px;font-weight:800;min-width:98px;}
 .bias-select.Bullish{color:var(--bullish-strong);} .bias-select.Bearish{color:var(--bearish-strong);} .bias-select.Neutral{color:var(--text-dim);}
 .bias-chip-text{font-weight:800;font-size:13px;}
@@ -374,8 +374,8 @@ th{font-size:12px;}
 .content{padding:18px 20px 36px;max-width:1320px;}
 .page-head{margin-bottom:10px;}
 .detail-grid{gap:14px;}
-.ccy-pills{gap:4px;margin-bottom:10px;}
-.ccy-pill{padding:7px 14px;}
+.ccy-pills{gap:2px;margin-bottom:8px;}
+.ccy-pill{padding:5px 10px;}
 .info-grid{gap:7px 10px;margin-bottom:10px;padding:10px 12px;}
 .info-trend-row{gap:10px;}
 .trend-panel{flex-basis:250px;padding:11px 13px;margin-bottom:10px;}
@@ -396,7 +396,7 @@ th{font-size:12px;}
 /* V13 visual tightening */
 body.ash .brand, body.black .brand, html.ash .brand, html.black .brand{border-color:#c85b16;}
 body.ash .tab-btn.active, body.black .tab-btn.active{border-left-color:#c85b16;background:#181818;}
-body.ash .ccy-pill.active, body.black .ccy-pill.active{border-color:#c85b16;background:#181818;}
+body.ash .ccy-pill.active, body.black .ccy-pill.active{border-bottom-color:#c85b16;background:#181818;}
 body.ash .guidance-box, body.black .guidance-box{background:#111111;}
 body.ash .sector-block table td, body.black .sector-block table td{padding-top:2px;padding-bottom:2px;}
 body.ash .sector-title, body.black .sector-title{margin-bottom:4px;}
@@ -435,8 +435,8 @@ td{padding:6px 8px;}
 .ccy-name{font-size:13px;}
 .chip{font-size:10.5px;padding:3px 9px;}
 .raw-input{font-size:11.5px;padding:6px 7px;}
-.ccy-pills{gap:4px;margin-bottom:9px;}
-.ccy-pill{padding:7px 13px;font-size:11.5px;}
+.ccy-pills{gap:2px;margin-bottom:7px;}
+.ccy-pill{padding:5px 9px;font-size:11.5px;}
 .detail-grid{gap:12px;}
 .left-col .ccy-big{font-size:24px;}
 .left-col .ccy-full{font-size:12px;}
@@ -533,8 +533,8 @@ td{padding:6px 8px;}
 .info-item input,.info-item select{font-size:11.5px;padding:4px 6px;}
 
 /* Compact spacing elsewhere. */
-.ccy-pills{gap:4px;margin-bottom:10px;}
-.ccy-pill{padding:7px 14px;font-size:12.5px;}
+.ccy-pills{gap:2px;margin-bottom:8px;}
+.ccy-pill{padding:5px 10px;font-size:12.5px;}
 .legend-line{font-size:10.5px;margin-top:6px;}
 .chip{font-size:11.5px;padding:3px 10px;}
 .raw-input{font-size:12px;padding:5px 6px;}
@@ -821,6 +821,20 @@ body.black .card,body.ash .card{box-shadow:none;}
   cursor:pointer;
 }
 
+</style>
+
+<style id="seasonality-month-picker-dark-v1">
+/* The Seasonality Avg month field (type="month") is a native browser control -- its
+   text/background follow our CSS, but its calendar-icon glyph and the dropdown/picker
+   popup it opens are drawn by the browser itself using the OS "light" scheme by default.
+   On the ash/black themes that showed up as a jarring blue-and-white popup sitting on
+   top of an otherwise near-black dashboard. Setting color-scheme tells the browser to
+   draw those native pieces (icon + popup) in a dark palette that actually matches the
+   rest of the UI; the light theme keeps the normal light native styling.
+*/
+html, body{color-scheme:light;}
+html.ash, body.ash, html.black, body.black{color-scheme:dark;}
+.seasonality-month-input{color-scheme:inherit;}
 </style>
 
 
@@ -3503,6 +3517,13 @@ body{font-size:var(--twp-body-size);}
 
 .scanner-agree,.scanner-carry{font-family:'Inter',system-ui,sans-serif;font-size:13.5px;font-weight:700;color:var(--text-dim);white-space:nowrap;}
 .scanner-ledby{font-size:13px!important;color:var(--text-dim);white-space:nowrap;font-weight:500!important;}
+.scanner-conviction{font-size:13px;font-weight:700;letter-spacing:.2px;white-space:nowrap;}
+.scanner-conviction-strong{color:var(--bullish-strong);}
+.scanner-conviction-strong.scanner-conviction-short{color:var(--bearish-strong);}
+.scanner-conviction-lean{color:var(--bullish-lean);}
+.scanner-conviction-lean.scanner-conviction-short{color:var(--bearish-lean);}
+.scanner-conviction-caution{color:var(--amber);}
+.scanner-conviction-flat{color:var(--text-dim);font-weight:600;}
 .scanner-row{cursor:pointer;}
 
 /* Long / Neutral / Short section dividers — this is what keeps rows grouped by side
@@ -3753,15 +3774,16 @@ body{font-size:var(--twp-body-size);}
   left:var(--sheet-x);
   bottom:18px;
   width:min(960px,calc(100vw - 32px));
+  height:min(78vh,720px);
   max-height:min(78vh,720px);
   transform:translateX(-50%) translateY(110%);
   transform-origin:center bottom;
   opacity:0;
   overflow:hidden;
-  border:1px solid #4a3a2e;
+  border:1px solid var(--twp-border,rgba(255,255,255,.12));
   border-top:2px solid #FE660F;
   border-radius:12px;
-  background:linear-gradient(180deg,#17110d 0%,#111111 100%);
+  background:var(--twp-bg,#0a0a0c);
   box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 0 1px rgba(254,102,15,.12);
   pointer-events:none;
 }
@@ -3869,9 +3891,9 @@ body{font-size:var(--twp-body-size);}
 }
 .guidance-sheet-person{
   min-width:0;
-  border:1px solid var(--border);
+  border:1px solid var(--twp-border,rgba(255,255,255,.12));
   border-radius:9px;
-  background:#121212;
+  background:var(--twp-panel,#121216);
   padding:10px;
   display:flex;
   flex-direction:column;
@@ -3884,8 +3906,8 @@ body{font-size:var(--twp-body-size);}
   object-fit:cover;
   object-position:center top;
   border-radius:7px;
-  border:1px solid #3a332e;
-  background:#1a1a1a;
+  border:1px solid var(--twp-border,rgba(255,255,255,.12));
+  background:var(--twp-panel2,#191920);
 }
 .guidance-sheet-initials{
   width:132px;
@@ -3894,8 +3916,8 @@ body{font-size:var(--twp-body-size);}
   align-items:center;
   justify-content:center;
   border-radius:7px;
-  border:1px solid #3a332e;
-  background:linear-gradient(145deg,#1c1c1c,#111111);
+  border:1px solid var(--twp-border,rgba(255,255,255,.12));
+  background:var(--twp-panel2,#191920);
   color:#FE660F;
   font-family:'Space Grotesk',sans-serif;
   font-size:38px;
@@ -4053,10 +4075,6 @@ body{font-size:var(--twp-body-size);}
 <div class="shell">
   <aside class="rail">
     <div class="brand"><div class="brand-mark">TWP</div>
-      <div class="theme-switch" id="themeSwitch">
-        <button class="theme-btn" data-theme="ash">Ash</button>
-        <button class="theme-btn" data-theme="black">Black</button>
-      </div>
     </div>
     <nav class="tabs">
       <button class="tab-btn active" data-tab="overview">Overview</button>
@@ -4282,7 +4300,6 @@ var TE_OVERRIDE = {
   "CAD|inflation rate yoy":"https://tradingeconomics.com/canada/inflation-cpi",
   "CAD|cpi trimmed mean yoy":"https://tradingeconomics.com/canada/cpi-trimmed-mean",
   "CAD|cpi median yoy":"https://tradingeconomics.com/canada/cpi-median",
-  "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/wage-growth",
   "CAD|terms of trade":"https://tradingeconomics.com/canada/terms-of-trade",
   "CHF|gdp growth rate qoq":"https://tradingeconomics.com/switzerland/gdp-growth",
   "CHF|industrial production yoy":"https://tradingeconomics.com/switzerland/industrial-production",
@@ -4292,14 +4309,74 @@ var TE_OVERRIDE = {
   "CHF|employment non farm payrolls":"https://tradingeconomics.com/switzerland/non-farm-payrolls",
   "CHF|employment change":"https://tradingeconomics.com/switzerland/employment-change",
   "CHF|unemployment rate adj":"https://tradingeconomics.com/switzerland/unemployment-rate",
-  "CHF|cpi yoy":"https://tradingeconomics.com/switzerland/inflation-cpi"
+  "CHF|cpi yoy":"https://tradingeconomics.com/switzerland/inflation-cpi",
+  "GBP|gdp mom":"https://tradingeconomics.com/united-kingdom/monthly-gdp-mom",
+  "GBP|gdp month over month":"https://tradingeconomics.com/united-kingdom/monthly-gdp-mom",
+  "GBP|ppi output yoy":"https://tradingeconomics.com/united-kingdom/producer-prices-change",
+  "GBP|ppi output mom":"https://tradingeconomics.com/united-kingdom/producer-prices-change-mom",
+  "CAD|gdp mom":"https://tradingeconomics.com/canada/monthly-gdp-mom",
+  "CAD|gdp month over month":"https://tradingeconomics.com/canada/monthly-gdp-mom",
+  "EUR|industrial production yoy":"https://tradingeconomics.com/euro-area/industrial-production",
+  "EUR|industrial production mom":"https://tradingeconomics.com/euro-area/industrial-production-mom",
+  "EUR|wage growth":"https://tradingeconomics.com/euro-area/negotiated-wage-growth",
+  "AUD|ppi yoy":"https://tradingeconomics.com/australia/producer-prices-change",
+  "NZD|services nz psi":"https://tradingeconomics.com/new-zealand/services-pmi",
+  "NZD|nz psi":"https://tradingeconomics.com/new-zealand/services-pmi",
+  "NZD|psi":"https://tradingeconomics.com/new-zealand/services-pmi",
+  "CAD|average hr wages yoy":"https://tradingeconomics.com/canada/average-hourly-earnings",
+  "CAD|average hourly earnings yoy":"https://tradingeconomics.com/canada/average-hourly-earnings",
+  "CAD|average hourly wages yoy":"https://tradingeconomics.com/canada/average-hourly-earnings"
 };
 
-function normalize(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
+// Verified fix: this key used to point at canada/wage-growth, which is Canada's *weekly*
+// earnings series -- a different indicator from "Average Hr Wages YoY" (hourly). Corrected
+// above to canada/average-hourly-earnings, the actual matching page.
+
+// TE also uses a handful of slugs consistently across every country we track -- confirmed
+// against live TE pages for UK/CHF/AUD (PPI Output YoY) and covers whichever currency's
+// exact/override entries don't already claim the name, so PPI/GDP MoM route correctly even
+// for currencies not explicitly listed above.
+TE_EXACT["ppi yoy"]="producer-prices-change";
+TE_EXACT["ppi output yoy"]="producer-prices-change";
+TE_EXACT["ppi mom"]="producer-prices-change-mom";
+TE_EXACT["ppi output mom"]="producer-prices-change-mom";
+
+// Collapses every spelled-out/slashed/spaced way of writing a period modifier (MoM, YoY, QoQ)
+// down to one canonical token, so however an indicator is actually typed in ("GDP MoM",
+// "GDP m/m", "GDP Month over Month", "GDP Month on Month") it lands on the same lookup key.
+// Also strips trailing/leading release-status qualifiers ("Prelim", "Preliminary", "Flash",
+// "Advance", "Final", "Revised", "SA", "NSA") that don't change which TE page an indicator
+// belongs on but do break an exact-string match. Applied to BOTH the live indicator name and
+// the TE_EXACT/TE_OVERRIDE keys below (once, at load, via the _C maps), so existing correct
+// entries keep working exactly as before.
+function periodCanon(n){
+  n = n.replace(/\bmonth (over|on) month\b/g,"mom")
+       .replace(/\byear (over|on) year\b/g,"yoy")
+       .replace(/\bquarter (over|on) quarter\b/g,"qoq")
+       .replace(/\bm m\b/g,"mom")
+       .replace(/\by y\b/g,"yoy")
+       .replace(/\bq q\b/g,"qoq");
+  n = n.replace(/\b(prelim|preliminary|flash|advance|final|revised|adv|s a|nsa|sa)\b/g," ");
+  return n.replace(/\s+/g," ").trim();
+}
+function normalize(s){ return periodCanon(String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim()); }
+var TE_EXACT_C=null, TE_OVERRIDE_C=null;
+function teCanonMaps(){
+  if(TE_EXACT_C) return;
+  TE_EXACT_C={}; TE_OVERRIDE_C={};
+  for(var k in TE_EXACT){ TE_EXACT_C[periodCanon(k)]=TE_EXACT[k]; }
+  for(var k2 in TE_OVERRIDE){
+    var bar=k2.indexOf("|"); var ccyPart=k2.slice(0,bar), namePart=k2.slice(bar+1);
+    TE_OVERRIDE_C[ccyPart+"|"+periodCanon(namePart)]=TE_OVERRIDE[k2];
+
+  }
+}
 function teLink(ccy, name){
-  var override=TE_OVERRIDE[ccy+"|"+normalize(name)];
+  teCanonMaps();
+  var key=normalize(name);
+  var override=TE_OVERRIDE_C[ccy+"|"+key];
   if(override) return override;
-  var country=TE_COUNTRY[ccy], slug=TE_EXACT[normalize(name)];
+  var country=TE_COUNTRY[ccy], slug=TE_EXACT_C[key];
   return slug ? ("https://tradingeconomics.com/"+country+"/"+slug) : ("https://tradingeconomics.com/"+country+"/indicators");
 }
 
@@ -4814,13 +4891,6 @@ function cotFlow(ccy){
   if(sc!=null && sc!==0) return sc>0?'More shorts':'Fewer shorts';
   return 'No weekly change';
 }
-function cotFlowHeadline(ccy){
-  var d=cotLatest(ccy), n=d.netChg;
-  if(n==null) return 'No weekly change';
-  if(n>0) return 'Net positioning improved';
-  if(n<0) return 'Net positioning weakened';
-  return 'Net positioning unchanged';
-}
 function cotFlowClass(ccy){
   var d=cotLatest(ccy), n=d.netChg;
   if(n==null||Math.abs(n)<1e-9) return 'cot-neutral';
@@ -4987,11 +5057,6 @@ function cotPairSeries(base,quote){
     });
   });
   return out;
-}
-function cotPctRank(current,arr){
-  if(current==null || !arr.length) return null;
-  var below=0; for(var i=0;i<arr.length;i++){ if(arr[i]<=current) below++; }
-  return 100*below/arr.length;
 }
 // Pair COT calibration is direction-first and distribution-second.
 // The sign of the underlying relative reading is authoritative:
@@ -5215,7 +5280,6 @@ function seasonalityPairLabelFromSpread(spread){
 function seasonalityPairText(base,quote){
   return seasonalityPairLabelFromSpread(seasonalityPairSpread(base,quote));
 }
-function b_seas(s){ return s && typeof s==="object" ? seasonalitySign(s) : seasonalityBandScoreFromValue(Number(s)); }
 function indicatorIsUsable(ind){
   if(!ind || !Number.isFinite(Number(ind.weight)) || Number(ind.weight)<=0) return false;
   var name=String(ind.name||"").trim();
@@ -5274,13 +5338,6 @@ function riskHistorySorted(){
   RISK_SENTIMENT=normalizeRiskState(RISK_SENTIMENT);
   return RISK_SENTIMENT.history.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
 }
-function riskPrevObservation(){
-  var rows=riskHistorySorted(), cur=RISK_SENTIMENT.current;
-  if(!cur || !cur.date) return null;
-  for(var i=rows.length-1;i>=0;i--){ if(rows[i].date<cur.date) return rows[i]; }
-  return null;
-}
-function riskCurrentClose(ccy){ return ccy==='SPX'?riskInputNum(RISK_SENTIMENT.current.spxClose):riskInputNum(RISK_SENTIMENT.current.vixClose); }
 function riskDailyPct(close, prevClose){
   if(close==null || prevClose==null || prevClose===0) return null;
   return ((close/prevClose)-1)*100;
@@ -5299,12 +5356,6 @@ function riskSaveObservation(spxClose,vixClose,dateOverride){
   return {ok:true,row:row,prior:prior};
 }
 function riskContributionFor(ccy){ return 100*0.03*riskTermFor(ccy); }
-function riskFavoredCurrencies(){
-  var score=riskRegimeScore();
-  if(score>=0.2) return ['AUD','NZD','CAD'];
-  if(score<=-0.2) return ['JPY','CHF','USD'];
-  return [];
-}
 function riskSurfaceHtml(){
   var score=riskRegimeScore(), label=riskRegimeLabel(score);
   var cur=RISK_SENTIMENT.current||{};
@@ -5522,15 +5573,6 @@ function pairScoreClass(score){
   return "score-neutral";
 }
 
-function pairAlignmentClass(score, alignment){
-  var s=Number(score)||0, a=Number(alignment);
-  if(!Number.isFinite(a)) return 'align-neutral';
-  if(a>=80 && s>0) return 'align-bull-strong';
-  if(a>=80 && s<0) return 'align-bear-strong';
-  if(s>0) return 'align-bull';
-  if(s<0) return 'align-bear';
-  return 'align-neutral';
-}
 var CCY_FLAG_ISO = {USD:"us",GBP:"gb",EUR:"eu",JPY:"jp",AUD:"au",NZD:"nz",CAD:"ca",CHF:"ch"};
 function flagPair(base,quote,animate){
   var a=CCY_FLAG_ISO[base], q=CCY_FLAG_ISO[quote];
@@ -5538,31 +5580,11 @@ function flagPair(base,quote,animate){
   var imgB = q ? '<img src="https://flagcdn.com/w40/'+q+'.png" alt="'+quote+'">' : '';
   return '<span class="pair-flags'+(animate?' pair-flags-animate-in':'')+'"><span class="flag-a">'+imgA+'</span><span class="flag-b">'+imgB+'</span></span>';
 }
-function pairBiasMarkup(label){
-  if(label==="Leaning Bullish") return '<span class="pair-bias-stack pair-bias-lean-bull"><span class="lean-word">Leaning</span><strong>Bullish</strong></span>';
-  if(label==="Leaning Bearish") return '<span class="pair-bias-stack pair-bias-lean-bear"><span class="lean-word">Leaning</span><strong>Bearish</strong></span>';
-  if(label==="Very Bullish") return '<span class="pair-bias-stack pair-bias-vbull"><span class="lean-word">Very</span><strong>Bullish</strong></span>';
-  if(label==="Very Bearish") return '<span class="pair-bias-stack pair-bias-vbear"><span class="lean-word">Very</span><strong>Bearish</strong></span>';
-  if(label==="Bullish") return '<span class="pair-bias-single bull">'+label+'</span>';
-  if(label==="Bearish") return '<span class="pair-bias-single bear">'+label+'</span>';
-  return '<span class="pair-bias-single neutral">'+label+'</span>';
-}
-function pairRankingBiasMarkup(label){
-  if(label==="Leaning Bullish") return '<span class="pair-bias-single pair-bias-compact-lean-bull">L.Bullish</span>';
-  if(label==="Leaning Bearish") return '<span class="pair-bias-single pair-bias-compact-lean-bear">L.Bearish</span>';
-  if(label==="Very Bullish") return '<span class="pair-bias-single pair-bias-compact-vbull">V.Bullish</span>';
-  if(label==="Very Bearish") return '<span class="pair-bias-single pair-bias-compact-vbear">V.Bearish</span>';
-  return pairBiasMarkup(label);
-}
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
   if(a<20) label="Neutral"; else if(a<50) label=pct>0?"Strong":"Weak"; else label=pct>0?"Very Strong":"Very Weak"; return {pct:pct,label:label}; }
 function sectorChipClass(label){
   if(label==="Very Strong") return "chip chip-bull strong"; if(label==="Strong") return "chip chip-bull";
   if(label==="Very Weak") return "chip chip-bear strong"; if(label==="Weak") return "chip chip-bear"; return "chip chip-neu"; }
-function sectorCellClass(label){
-  if(label==="Very Strong") return "cell-vstrong"; if(label==="Strong") return "cell-strong";
-  if(label==="Very Weak") return "cell-vweak"; if(label==="Weak") return "cell-weak"; return "cell-neutral"; }
-function cotBiasLabel(cot){ var v=Number(cot)||0; return v>0?"Bullish":(v<0?"Bearish":"Neutral"); }
 function cotInstBand(cot){ var v=Number(cot)||0; if(v>=6) return "Very Bullish"; if(v>=3) return "Bullish"; if(v<=-6) return "Very Bearish"; if(v<=-3) return "Bearish"; return "Neutral"; }
 function instColorStyle(label){
   if(label==="Very Bullish"||label==="Bullish") return "color:var(--bullish-strong);font-weight:700;";
@@ -5840,32 +5862,6 @@ function buildPairs(scores){
 // Same weighted terms as pairCompositeFor(), just kept separate instead of summed,
 // so "Led by" can point at whichever pillar is actually doing the work on a given
 // pair. Any change to pairCompositeFor's weights/formula must be mirrored here.
-function pairCompositeBreakdown(base, quote){
-  var db=DATA[base], dq=DATA[quote];
-  var fb=fundFor(base), fq=fundFor(quote);
-  var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
-  var y=pairYieldCalc(base,quote).score;
-  var yieldTerm=(y==null?0:y/10);
-  var cotRegime=cotPairRegime(base,quote);
-  var cotPosTerm=cotRegime.posScore/100, cotWowTerm=cotRegime.flowScore/100;
-  var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
-  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
-  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
-  var fundPair=(fundBase-fundQuote)/2;
-  var cbPair=(cbBase-cbQuote)/2;
-  var riskPair=(riskBase-riskQuote)/2;
-  var seasPair=(seasBase-seasQuote)/2;
-  var terms=[
-    {name:"Fundamentals",pts:100*0.45*fundPair},
-    {name:"Yield",pts:100*0.18*yieldTerm},
-    {name:"CB stance",pts:100*0.14*cbPair},
-    {name:"COT position",pts:100*0.08*cotPosTerm},
-    {name:"COT weekly change",pts:100*0.07*cotWowTerm},
-    {name:"Risk sentiment",pts:100*0.05*riskPair},
-    {name:"Seasonality",pts:100*0.03*seasPair}
-  ];
-  return {total:terms.reduce(function(s,t){return s+t.pts;},0), terms:terms};
-}
 // "Led by" should only name drivers actually pushing the pair the way its score
 // says it's going -- not just whichever two terms happen to have the biggest raw
 // point value regardless of which side they're on. It only considers terms whose
@@ -5882,13 +5878,6 @@ function pairCompositeBreakdown(base, quote){
 // consistent with what the colored driver strip actually shows -- if Fundamentals
 // and CB stance are both showing "Very Bearish" on the strip, those are the two
 // names that should show up here, not whichever has the bigger raw number.
-function pillarStrengthTier(label){
-  if(!label) return 0;
-  if(label.indexOf("Very")!==-1) return 2;
-  if(label.indexOf("Leaning")!==-1) return 0.5;
-  if(label.indexOf("Bullish")!==-1||label.indexOf("Bearish")!==-1) return 1;
-  return 0;
-}
 function scannerDriverExplanation(base,quote,driver){
   var leader=driver.pts>0?base:quote;
   var other=driver.pts>0?quote:base;
@@ -6025,7 +6014,7 @@ function scannerPillCell(label, tip){
   return '<span class="scanner-pill '+cls+(strong?' strong':'')+'" data-scanner-tip="'+esc(tip||'')+'"></span>';
 }
 function scannerSideBadge(bias, score){
-  if(bias==="Neutral") return '<span class="scanner-side scanner-side-neutral">NEUTRAL</span>';
+  if(bias==="Neutral") return '<span class="scanner-side scanner-side-neutral">FLAT</span>';
   return score>0 ? '<span class="scanner-side scanner-side-long">LONG</span>' : '<span class="scanner-side scanner-side-short">SHORT</span>';
 }
 // Groups rows the same way the Side column labels them: Long first, Neutral in the
@@ -6246,6 +6235,47 @@ function animateOverviewMacroTrends(){
   });
 }
 function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,dir); }
+
+// ===== Conviction (replaces "Led by") =====
+// The old "Led by" column just named which pillars were pushing the score -- it never
+// told you whether the pair was actually worth taking. Parker's own framing: a real
+// trade needs the score itself to be materially strong (>=20, the same Bullish/Bearish
+// threshold the scanner already filters by) AND broad agreement across the 7 drivers.
+// Either one alone can be misleading -- a +25 score with 6/7 agreeing is a genuinely
+// good setup, but a +8 score with 6/7 agreeing is NOT, even though the agreement count
+// looks identical, because the score hasn't cleared a real threshold yet. This function
+// is the single source of truth for that judgment call; scannerConvictionTooltip below
+// explains the "why" using the same two numbers so the label never looks arbitrary.
+function scannerConvictionVerdict(score,agree,dir){
+  if(!dir) return {label:'No Signal',tier:'flat'};
+  var strong=Math.abs(Number(score)||0)>=20; // same Bullish/Bearish threshold scannerBucket() filters by
+  if(strong && agree>=6) return {label:'High Conviction',tier:'strong'};
+  if(strong && agree>=4) return {label:'Building Conviction',tier:'lean'};
+  if(strong) return {label:'Score-Led',tier:'caution'};
+  // 5 or 6 of 7 is a real, solid consensus even when the score itself hasn't cleared
+  // the +/-20 threshold yet -- worth watching and sizing small, not the same as having
+  // nothing at all. Only 4-or-fewer agreeing alongside a weak score is a genuine "no edge".
+  if(agree>=5) return {label:'Early Conviction',tier:'lean'};
+  return {label:'No Edge',tier:'flat'};
+}
+function scannerConvictionCell(score,agree,dir){
+  var v=scannerConvictionVerdict(score,agree,dir);
+  var cls='scanner-conviction-'+v.tier+(dir<0&&v.tier!=='flat'?' scanner-conviction-short':'');
+  return '<span class="scanner-conviction '+cls+'">'+esc(v.label)+'</span>';
+}
+function scannerConvictionTooltip(score,agree,dir){
+  if(!dir) return '<div class="stt-kicker">Conviction</div><div class="stt-note"><b class="stt-note-strong">Composite is inside the neutral band. There is no side to size conviction for.</b></div>';
+  var v=scannerConvictionVerdict(score,agree,dir);
+  var side=dir>0?'the long side':'the short side';
+  var scoreTxt=(score>0?'+':'')+Math.round(score);
+  var reason;
+  if(v.label==='High Conviction') reason='Score is '+scoreTxt+', well past the +/-20 threshold, and '+agree+' of 7 drivers agree with '+side+'. Both the size of the edge and the breadth of evidence line up -- this is what a genuinely convicted setup looks like.';
+  else if(v.label==='Building Conviction') reason='Score is '+scoreTxt+', past the +/-20 threshold, and '+agree+' of 7 drivers agree with '+side+'. The edge is real; the consensus behind it is solid without being overwhelming.';
+  else if(v.label==='Score-Led') reason='Score is '+scoreTxt+', past the +/-20 threshold, but just '+agree+' of 7 drivers actually agree with '+side+'. A strong score with thin consensus usually means one or two drivers are doing all the work -- worth checking which ones before sizing this up.';
+  else if(v.label==='Early Conviction') reason=agree+' of 7 drivers agree with '+side+' -- a solid consensus -- but the score is only '+scoreTxt+', still inside the +/-20 band. The call isn\'t there yet, but the agreement is genuinely strong: worth watching closely, and a smaller starter position rather than full size is reasonable here. If the score strengthens from here while the consensus holds, this is a pair to size up into.';
+  else reason='Score is '+scoreTxt+' and only '+agree+' of 7 drivers agree with '+side+'. Neither the edge nor the consensus is there yet -- little reason to watch this one closely right now.';
+  return '<div class="stt-kicker">Conviction</div><div class="stt-title">'+esc(v.label)+'</div><div class="stt-note"><b class="stt-note-strong">'+esc(reason)+'</b></div>';
+}
 function scannerGroupRow(label, cls){
   if(cls==='long') return '';
   return '<tr class="scanner-group-row"><td colspan="16"><span class="scanner-group-label '+cls+'">'+label+'</span></td></tr>';
@@ -6411,10 +6441,6 @@ function scanner7dTooltip(base,quote,live){
   else { noteText='<b class="stt-note-strong">The short has '+(d7.delta<0?'strengthened':'weakened')+'.</b>'; }
   return '<div class="stt-kicker">7D</div>'+titleHtml+'<div class="stt-note">'+noteText+'</div>';
 }
-function scannerTrendTooltip(base,quote,live){
-  var t=pairTrend30d(base+quote), band=pairBandLabel(live), fromNeutral=Math.abs(live)>7?Math.abs(live)-7:0;
-  return '<div class="stt-kicker">Trend</div><div class="stt-title">Historical composite</div><div class="stt-note">Current '+esc(scannerScorePrecise(live))+' '+esc(band)+' · '+esc(fromNeutral?((live>0?'+':'-')+fromNeutral.toFixed(1)+' pts from neutral'):'inside neutral band')+(t.delta==null?'': ' · '+(t.delta>0?'+':'')+t.delta+' pts across the stored trend window.')+'</div>';
-}
 
 function renderScanner(animateTrend){
   if(!DATA) return;
@@ -6442,7 +6468,7 @@ function renderScanner(animateTrend){
     rows='<tr><td colspan="16" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
   var lastGroup=null;
-  var groupMeta={0:["Long","long"],1:["Neutral","neutral"],2:["Short","short"]};
+  var groupMeta={0:["Long","long"],1:["Flat","neutral"],2:["Short","short"]};
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i];
     var grp=scannerSideGroup(p);
@@ -6479,8 +6505,6 @@ function renderScanner(animateTrend){
         agreeStyle="";
       }
     }
-    var ledByTxt=isNeutral?"—":scannerLedByText(p.base,p.quote,dir);
-    var ledByTip=scannerDriverTooltip(p.base,p.quote,dir);
     var carry=scannerCarryPct(p.base,p.quote);
     var carryTxt=carry==null?"—":((carry>0?"+":"")+carry.toFixed(2)+"%");
     var carryStyle=carry==null?"color:var(--text-dim);":(carry>0?"color:var(--bullish-strong);":(carry<0?"color:var(--bearish-strong);":"color:var(--text-dim);"));
@@ -6512,11 +6536,10 @@ function renderScanner(animateTrend){
       '<td class="scanner-pill-td" data-label="RSK">'+scannerPillCell(riskLbl,scannerPillarExplanation(p.base,p.quote,"Risk Sentiment",riskLbl))+'</td>'+
       '<td class="scanner-agree" data-label="Agree" style="'+agreeStyle+'"'+(agreeTip?' data-scanner-tip="'+esc(agreeTip)+'"':'')+'>'+agreeTxt+'</td>'+
       '<td class="scanner-carry" data-label="Carry" style="'+carryStyle+'" data-scanner-tip="'+esc(carryTip)+'">'+carryTxt+'</td>'+
-      '<td class="scanner-ledby" data-label="Led by"'+(ledByTip?' data-scanner-tip="'+esc(ledByTip)+'"':'')+'><span class="scanner-driver-wrap">'+(isNeutral?'—':scannerLedByBoxes(p.base,p.quote,dir))+'</span></td>'+
       '</tr>';
     if(scannerExpandedPair===p.pair){ rows += scannerPairExpandedHtml(p.pair, scannerBigTrendAnimate); }
   }
-  var filterDefs=[["Very Bullish","Very bullish"],["Bullish","Bullish"],["Neutral","Neutral"],["Bearish","Bearish"],["Very Bearish","Very bearish"]];
+  var filterDefs=[["Very Bullish","Very bullish"],["Bullish","Bullish"],["Neutral","Flat"],["Bearish","Bearish"],["Very Bearish","Very bearish"]];
   var filterBtns=filterDefs.map(function(fb){
     var active=scannerFilters.indexOf(fb[0])!==-1;
     return '<button class="range-btn'+(active?" active":"")+'" data-sfilter="'+fb[0]+'">'+fb[1]+'</button>';
@@ -6534,7 +6557,7 @@ function renderScanner(animateTrend){
     '<th></th><th>Idea</th><th>Pair</th><th>Score</th><th>7D &Delta;</th><th>Trend</th>'+
     '<th title="Fundamentals">FND</th><th title="Yield">YLD</th><th title="CB Stance">CB</th>'+
     '<th title="Net Positioning">POS</th><th title="COT WoW">WOW</th><th title="Seasonality">SSN</th>'+
-    '<th title="Risk Sentiment">RSK</th><th>Agree</th><th>Carry</th><th>Led by</th>'+
+    '<th title="Risk Sentiment">RSK</th><th>Agree</th><th>Carry</th>'+
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
   document.getElementById("tab-scanner").innerHTML=html;
   if(animateTrend) animateScannerTrends();
@@ -6781,10 +6804,6 @@ function applyTheme(name){
   try{ localStorage.setItem('twp_theme_pref', name); }catch(e){}
 }
 
-function syncRiskEditorVisibility(){
-  var btn=document.getElementById("riskTabBtn");
-  if(btn) btn.style.display=unlockedLocally?"":"";
-}
 
 function renderLockBox(){
   var box=document.getElementById("lockBox");
@@ -7106,11 +7125,8 @@ function y2Calc(ccy){
 }
 
 function y2ScoreClass(x){ return x==null?'y2-neutral':x>0?'y2-positive':x<0?'y2-negative':'y2-neutral'; }
-function y2FmtPct(x){ return x==null?'—':x.toFixed(3)+'%'; }
 function y2FmtBp(x){ return x==null?'—':(x>0?'+':'')+x.toFixed(1)+' bp'; }
 function y2ScoreFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
-function y2CompClass(x){ return x==null?'y2-comp miss':(x>0?'y2-comp pos':(x<0?'y2-comp neg':'y2-comp neu')); }
-function y2CompFmt(x){ return x==null?'—':(x>0?'+':'')+x; }
 function y2ScoreCell(r){
   return '<div class="mono '+y2ScoreClass(r.score)+'">'+y2ScoreFmt(r.score)+'</div>';
 }
@@ -7670,20 +7686,6 @@ function overviewCsiHistory(scores){
   return out;
 }
 
-function overviewCsiSparkline(ccy,vals,color){
-  var good=vals.filter(function(v){return v!=null;});
-  if(good.length<2) return '<span class="ov-csi-nohist">—</span>';
-  var w=92,h=24,p=2,min=Math.min.apply(null,good),max=Math.max.apply(null,good);
-  if(min===max){min-=.5;max+=.5;}
-  var pts=[],n=vals.length;
-  vals.forEach(function(v,i){
-    if(v==null) return;
-    var x=p+(i/(Math.max(1,n-1)))*(w-2*p);
-    var y=h-p-((v-min)/(max-min))*(h-2*p);
-    pts.push(x.toFixed(1)+','+y.toFixed(1));
-  });
-  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" class="ov-csi-spark" aria-hidden="true"><polyline fill="none" stroke="'+color+'" stroke-width="1.6" points="'+pts.join(' ')+'"/></svg>';
-}
 function renderOverviewCsi(scores,animate){
   var data=overviewCsiHistory(scores), days=data.days;
   var flags={}; CCYS.forEach(function(c){flags[c]=flagImg(c);});
@@ -7806,7 +7808,6 @@ function renderOverviewCsi(scores,animate){
     '</svg><div class="ov-csi-tooltip"></div></div>'+ 
   '</div>';
 }
-function overviewRiskRowClass(term){return term>0.5?'pos':term<-0.5?'neg':'neu';}
 function wireOverviewCsiCrosshair(){
   var box=document.getElementById('overviewCurrencyIndex'); if(!box) return;
   var svg=box.querySelector('.ov-csi-chart svg'), area=box.querySelector('.ov-csi-hover-area'), vline=box.querySelector('.ov-csi-vline'), tip=box.querySelector('.ov-csi-tooltip');
@@ -7852,23 +7853,13 @@ function wireOverviewCsiCrosshair(){
   function move(ev){var r=area.getBoundingClientRect();if(!r.width)return;var rel=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width));var idx=Math.max(plotFirst,Math.min(plotLast,Math.round(plotFirst+rel*plotSpan)));var x=pl+((idx-plotFirst)/plotSpan)*(W-pl-pr);vline.setAttribute('x1',x);vline.setAttribute('x2',x);vline.style.display='block';var html='<strong>'+esc(formatShortDate(days[idx]))+'</strong>';CCYS.forEach(function(c){var v=(series[c]||[])[idx];if(v==null)return;var y=pt+(max-v)/(max-min)*(H-pt-pb),dot=box.querySelector('.ov-csi-hover-dot[data-csi-dot="'+c+'"]');if(dot){dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.style.display='block';}html+='<div><i style="background:'+colors[c]+'"></i><b>'+c+'</b><span>'+Number(v).toFixed(2)+'</span></div>';});tip.innerHTML=html;var tx=Math.max(8,Math.min(box.clientWidth-tip.offsetWidth-8,ev.clientX-r.left+14));var ty=Math.max(8,ev.clientY-r.top-tip.offsetHeight-12);tip.style.left=tx+'px';tip.style.top=ty+'px';tip.style.display='block';}
   area.addEventListener('pointermove',move);area.addEventListener('mousemove',move);area.addEventListener('pointerleave',hide);area.addEventListener('mouseleave',hide);
 }
-function calendarLocalDate(offsetDays){
-  var d=new Date(); d.setHours(12,0,0,0); if(offsetDays) d.setDate(d.getDate()+offsetDays);
-  while(d.getDay()===0 || d.getDay()===6) d.setDate(d.getDate()+1);
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
 function calendarDateTime(e){ var t=Date.parse((e&&e.date||"")+"T"+(e&&e.time||"00:00")); return Number.isFinite(t)?t:Infinity; }
-function calendarFlag(c){return ({USD:"🇺🇸",EUR:"🇪🇺",GBP:"🇬🇧",JPY:"🇯🇵",AUD:"🇦🇺",NZD:"🇳🇿",CAD:"🇨🇦",CHF:"🇨🇭"})[c]||"";}
 function calendarNum(v){if(v===null||v===undefined)return null;var m=String(v).replace(/,/g,"").match(/[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?/);return m?Number(m[0]):null;}
-function calendarSurprise(e){var a=calendarNum(e.actual),f=calendarNum(e.forecast);return a==null||f==null?null:a-f;}
 function calendarImpactClass(v){return v==="High"?"high":v==="Medium"?"medium":"low";}
-function calendarFriendlyTime(ts){return "";}
 function calendarFriendlyDay(dateStr){
   var d=new Date((dateStr||"")+"T12:00:00"); if(!Number.isFinite(d.getTime())) return dateStr||"";
   return new Intl.DateTimeFormat(undefined,{weekday:"short",month:"short",day:"2-digit"}).format(d);
 }
-function calendarDefaultDraft(){return {id:"",date:calendarLocalDate(0),time:"09:00",ccy:"USD",name:"",previous:"",forecast:"",actual:"",impact:"Medium"};}
-function calendarDraftFrom(e){return e?{id:e.id||"",date:e.date||calendarLocalDate(0),time:e.time||"09:00",ccy:e.ccy||"USD",name:e.name||"",previous:e.previous||"",forecast:e.forecast||"",actual:e.actual||"",impact:e.impact||"Medium"}:calendarDefaultDraft();}
 // The "Recent Releases" week is anchored to Sunday 21:00 UTC (Africa/Accra clock == UTC,
 // so this reads as "Sunday evening, GH time") -- the same moment the FX week itself rolls
 // over (Sydney open). That's the boundary the panel resets on, not a sliding 168-hour
@@ -7901,9 +7892,6 @@ function renderOverviewCalendar(){
   if(!body) body='<div class="ov-cal-empty">No recent releases logged yet.<br><span>Edit an Actual or Forecast in Currency Detail and it will appear here automatically.</span></div>';
   return '<div class="ov-cal-body"><div class="ov-cal-head"><span>RELEASE</span><span>ACTUAL</span><span>FORECAST</span><span></span></div>'+body+'</div>';
 }
-function openCalendarEditor(id){return;}
-function closeCalendarEditor(){calendarEditorOpen=false;calendarEditingId=null;calendarDraft=null;renderOverview();}
-function saveCalendarDraft(){return;}
 function deleteCalendarEvent(id){
   if(!unlockedLocally)return;
   ECON_CALENDAR=ECON_CALENDAR.filter(function(x){return x.id!==id;});
@@ -8058,7 +8046,6 @@ function renderOverview(animate){
 }
 
 
-function labelFromScore(s){return bandLabel(s);}
 // 90-calendar-day trend for a single currency's composite score -- same mechanic as pairTrend30d,
 // just against DATA.MOMENTUM-style daily snapshots stored per-currency in DAILY under the
 // currency's own key (e.g. DAILY[date]["USD"]) if you're logging single-currency composites.
@@ -8849,20 +8836,20 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
     var liveIdx=-1;
     for(var si=0;si<series.length;si++){ if(series[si].live){ liveIdx=si; break; } }
     var liveDot = liveIdx>=0 ? '<circle cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2.4" pointer-events="none"/>' : '';
-    // Single zero reference line, in place of the old +/-14 shaded band -- dashed, dark
-    // goldenrod, so "above this line = improving, below it = deteriorating" reads at a glance
-    // regardless of which currency or scale is on screen. Axis ticks: bound, 0, -bound.
+    // Single zero reference line, in place of the old +/-14 shaded band. Styled as a plain
+    // gridline now -- same faint neutral color/weight as the other axis lines, no dash, no
+    // gold -- so it doesn't pop off the chart; it should just read as the normal zero tick.
     var yZero=yPos(0);
-    var zeroLine='<line x1="'+axisGutter+'" y1="'+yZero.toFixed(1)+'" x2="'+w+'" y2="'+yZero.toFixed(1)+'" stroke="#b8860b" stroke-width="1.6" stroke-dasharray="5 4" opacity=".9" vector-effect="non-scaling-stroke"/>';
+    var zeroLine='<line x1="'+axisGutter+'" y1="'+yZero.toFixed(1)+'" x2="'+w+'" y2="'+yZero.toFixed(1)+'" stroke="var(--text-faint)" stroke-width="1" opacity=".32" vector-effect="non-scaling-stroke"/>';
     var ticks=[max,0,min].filter(function(v,i,a){ return a.indexOf(v)===i; });
     var axisSvg='';
     ticks.forEach(function(gv){
       var gy=yPos(gv);
-      if(gv===0) return; // the zero tick's line is drawn as the goldenrod zeroLine above, not a faint gridline
+      if(gv===0) return; // the zero tick's line is drawn as the plain zeroLine above, not a second gridline
       axisSvg+='<line x1="'+axisGutter+'" y1="'+gy.toFixed(1)+'" x2="'+w+'" y2="'+gy.toFixed(1)+'" stroke="var(--text-faint)" stroke-width="1" opacity=".22" vector-effect="non-scaling-stroke"/>'+
         '<text x="'+(axisGutter-6)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="600" fill="var(--text-faint)" font-family="Inter,system-ui,sans-serif">'+Math.round(gv)+'</text>';
     });
-    axisSvg+='<text x="'+(axisGutter-6)+'" y="'+(yZero+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="700" fill="#b8860b" font-family="Inter,system-ui,sans-serif">0</text>';
+    axisSvg+='<text x="'+(axisGutter-6)+'" y="'+(yZero+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="600" fill="var(--text-faint)" font-family="Inter,system-ui,sans-serif">0</text>';
     spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" data-vals="'+esc(series.map(function(s){return s.val;}).join(','))+'" data-live-idx="'+liveIdx+'" data-axis-gutter="'+axisGutter+'" data-view-w="'+w+'" viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="none" style="overflow:visible;touch-action:none;cursor:crosshair;display:block;">'+
       axisSvg+zeroLine+
       '<polyline class="detail-trend-line" fill="none" stroke="'+fillVar+'" stroke-width="2.4" points="'+linePts+'" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lineLenStr+';stroke-dashoffset:'+lineLenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
@@ -9133,12 +9120,10 @@ function ensureGuidanceSheet(){
 function positionGuidanceSheet(trigger){
   var sheet=document.getElementById("guidanceSheet");
   if(!sheet) return;
-  var rect=trigger ? trigger.getBoundingClientRect() : null;
-  var anchorX=rect ? (rect.left+rect.width/2) : (window.innerWidth/2);
-  var half=Math.min(450,(window.innerWidth-36)/2);
-  var minX=half+12, maxX=window.innerWidth-half-12;
-  anchorX=Math.max(minX,Math.min(maxX,anchorX));
-  sheet.style.setProperty("--sheet-x",anchorX+"px");
+  // Always dead-center in the viewport, regardless of where the trigger button
+  // sits on the page -- previously this anchored to the clicked element's X
+  // position, which is why the sheet opened squeezed to one side.
+  sheet.style.setProperty("--sheet-x",(window.innerWidth/2)+"px");
 }
 
 function renderGuidanceSheet(ccy,trigger){
@@ -9457,34 +9442,6 @@ function pillarBias(score){
   if(s<=-15) return 'Bearish';
   return 'Neutral';
 }
-function simpleRelBias(v){
-  var n=Number(v)||0;
-  return n>=8?'Very Bullish':n>=3?'Bullish':n<=-8?'Very Bearish':n<=-3?'Bearish':'Neutral';
-}
-function netPositionRelBias(v){
-  var n=Number(v)||0;
-  return n>=6?'Very Bullish':n>=3?'Bullish':n<=-6?'Very Bearish':n<=-3?'Bearish':'Neutral';
-}
-function wowRelBias(v){
-  var n=Number(v)||0;
-  return n>=5?'Very Bullish':n>=2?'Bullish':n<=-5?'Very Bearish':n<=-2?'Bearish':'Neutral';
-}
-function pillarBiasClass(label){
-  return label==='Very Bullish'?'yield-vbull':label==='Bullish'?'yield-bull':label==='Very Bearish'?'yield-vbear':label==='Bearish'?'yield-bear':'yield-neutral';
-}
-function pairTrendMarker(pair){
-  var t=pairTrend30d(pair);
-  var symbol=t.dir==="up"?"▲":(t.dir==="down"?"▼":"—");
-  var arrowCls=t.dir==="up"?"pair-trend-arrow trend-up":(t.dir==="down"?"pair-trend-arrow trend-down":"pair-trend-arrow trend-flat");
-  var deltaCls=t.dir==="up"?"delta-up":(t.dir==="down"?"delta-down":"delta-flat");
-  var live=liveValueForTrendKey(pair);
-  var scoreCls=Number(live)>=8?"score-regime-bull":(Number(live)<=-8?"score-regime-bear":"score-regime-neutral");
-  var deltaTxt=t.delta==null?"":((t.delta>0?"+":"")+t.delta);
-  return '<span class="pair-trend-marker '+scoreCls+'" title="'+esc(t.label)+(t.delta==null?'':(' · score change vs 90-calendar-day start: '+(t.delta>0?"+":"")+t.delta+' points'))+'">'+
-    '<span class="'+arrowCls+'">'+symbol+'</span>'+
-    (deltaTxt===""?'':'<span class="pair-trend-delta '+deltaCls+'">'+deltaTxt+'</span>')+
-    '</span>';
-}
 function sparkline(pair){
   var w=110,h=30,pad=3;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
@@ -9725,16 +9682,6 @@ function bigChart(pair, rangeSel, animate){
     '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="transparent" pointer-events="all" class="pair-big-trend-hit pair-trend-hit"/>'+
     '</svg>';
 }
-function pairPassesFilter(bias){
-  if(pairFilters.indexOf("All")!==-1) return true;
-  if(pairFilters.indexOf("Extremes")!==-1 && (bias==="Very Bullish"||bias==="Very Bearish")) return true;
-  return pairFilters.indexOf(bias)!==-1;
-}
-function sortExtremePairs(pairs){
-  var bulls=pairs.filter(function(p){ return p.bias==="Very Bullish"; }).sort(function(a,b){ return b.score-a.score; });
-  var bears=pairs.filter(function(p){ return p.bias==="Very Bearish"; }).sort(function(a,b){ return a.score-b.score; });
-  return bulls.concat(bears);
-}
 var CB_SHORT_NAMES={USD:'Fed',EUR:'ECB',GBP:'Bank of England',JPY:'Bank of Japan',CHF:'SNB',AUD:'RBA',NZD:'RBNZ',CAD:'Bank of Canada'};
 // Builds the "why this side" and "what could flip it" bullet lists for a pair, both
 // driven off the same ranked pillar contributions (scannerDriverBreakdown) so the two
@@ -9823,22 +9770,16 @@ function pairMacroSummaryHtml(pair, score){
   function pick(arr,salt){ return arr[hashWord(pairSeed+'|'+salt)%arr.length]; }
   function strong(txt,cls){ return '<strong class="pair-macro-key '+(cls||'')+'">'+safe(txt)+'</strong>'; }
   function mark(txt,cls){ return '<span class="pair-macro-mark '+(cls||'')+'">'+safe(txt)+'</span>'; }
-  function moneySide(n){ return n>0?base:n<0?quote:'neither'; }
   function pct(v){ if(v==null||!Number.isFinite(Number(v))) return '—'; return (Number(v)>0?'+':'')+Number(v).toFixed(1)+'%'; }
   function bp(v){ if(v==null||!Number.isFinite(Number(v))) return '—'; return (Number(v)>0?'+':'')+Math.round(Number(v))+'bp'; }
   function cap(s){s=clean(s);return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
   function hashWord(str){var h=2166136261;for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 
   var CB_NAMES={USD:'the Fed',EUR:'the ECB',GBP:'the Bank of England',JPY:'the Bank of Japan',CHF:'the SNB',AUD:'the RBA',NZD:'the RBNZ',CAD:'the Bank of Canada'};
-  function cbName(ccy){return CB_NAMES[ccy]||('the '+ccy+' central bank');}
-  function cbMove(ccy){var m=((DATA[ccy]||{}).nextMove||'HOLD').toUpperCase();return m==='HIKE'?'leaning toward a hike':m==='CUT'?'leaning toward a cut':'set to hold';}
-  function cbConv(ccy){return clean((DATA[ccy]||{}).conviction||'');}
   function guidance(ccy){var g=clean((DATA[ccy]||{}).guidance||'');return g;}
-  function guidanceSnippet(ccy){var g=guidance(ccy); if(!g) return ''; return g.length>165?g.slice(0,162).replace(/\s+\S*$/,'')+'…':g;}
   function groupScore(f,g){var x=f[g];return x&&x.max?(100*x.raw/x.max):0;}
   function strongestGroup(f){var a=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];a.sort(function(x,z){return Math.abs(z[1])-Math.abs(x[1]);});return a[0];}
   function weakestGroup(f){var a=[['growth',groupScore(f,'g')],['inflation',groupScore(f,'inf')],['labour',groupScore(f,'l')]];a.sort(function(x,z){return x[1]-z[1];});return a[0];}
-  function gname(g){return g==='inf'?'inflation':g==='l'?'labour':'growth';}
   var fundLeader=fundRel>5?base:fundRel<-5?quote:'neither';
   var leadF=fundLeader===base?fb:fq, lagF=fundLeader===base?fq:fb;
   var leadG=fundLeader==='neither'?null:strongestGroup(leadF);
@@ -9916,291 +9857,14 @@ function pairMacroSummaryHtml(pair, score){
   };
   function head(){if(overall==='Very Bullish')return pick(heads.veryBull,'head');if(overall==='Bullish'||overall==='Leaning Bullish')return pick(heads.bull,'head');if(overall==='Very Bearish')return pick(heads.veryBear,'head');if(overall==='Bearish'||overall==='Leaning Bearish')return pick(heads.bear,'head');return pick(heads.neutral,'head');}
 
-  function fundamentalRead(){
-    if(fundLeader==='neither') return pick([
-      'Growth, inflation and labour are not creating a wide enough gap to hand this pair a clear fundamental winner.',
-      'The economic data is split rather than one-way. None of the three big areas — growth, prices or jobs — is separating the currencies by much.',
-      'Fundamentals are acting more like a balance sheet than a driver here: the two sides are giving mixed signals.',
-      'The real-economy picture is close. The data is not strong enough on either side to carry a directional call by itself.',
-      'Growth, inflation and labour are pulling in different directions, leaving the fundamental pillar near the middle.'
-    ],'fund-neutral')+' '+pick([
-      'That keeps this part of the story secondary for now.',
-      'The next meaningful surprise would matter more than the current small differences.',
-      'A fresh run of stronger or weaker data is what would change the balance.',
-      'For the moment, the macro score has to get its separation elsewhere.'
-    ],'fund-neutral-tail');
-    var strongLead=strong(fundLeader+"'s fundamentals are ahead of "+(fundLeader===base?quote:base)+'.','amber');
-    var gapPhrase=Math.abs(fundRel)<15?pick(['It is a modest lead, not a wide gap.','The advantage is real but still fairly narrow.','That is enough to tilt the score, not enough to own the whole trade.','The difference is noticeable without being overwhelming.'],'fund-gap-small')
-      :Math.abs(fundRel)<30?pick(['The separation is meaningful.','The gap is now large enough to matter to the pair.','This is a proper macro advantage rather than a rounding error.','The distance gives fundamentals a real role in the current move.'],'fund-gap-mid')
-      :pick(['The economic gap is broad and is doing serious work in the score.','This is one of the largest relative differences in the current pair mix.','The fundamental distance is substantial enough to anchor the headline read.','The data gap gives this side a strong base beneath the composite.'],'fund-gap-wide');
-    var leadSentence=pick([
-      gname(leadG[0]).charAt(0).toUpperCase()+gname(leadG[0]).slice(1)+' is the biggest source of that advantage.',
-      'Most of the lift is coming from '+gname(leadG[0])+'.',
-      'The first place to look is '+gname(leadG[0])+', where the relative gap is doing the most work.',
-      gname(leadG[0]).charAt(0).toUpperCase()+gname(leadG[0]).slice(1)+' is carrying more of the fundamental case than the other data groups.',
-      'The strongest part of the economic story sits in '+gname(leadG[0])+'.'
-    ],'fund-driver');
-    var weakSentence=pick([
-      (fundLeader===base?quote:base)+' is less comfortable on '+gname(weakG[0])+'.',
-      'Across the other side, '+gname(weakG[0])+' is the softer patch.',
-      'The weaker leg shows its clearest problem in '+gname(weakG[0])+'.',
-      gname(weakG[0]).charAt(0).toUpperCase()+gname(weakG[0]).slice(1)+' is where '+(fundLeader===base?quote:base)+' is losing the most ground.',
-      'The main drag on '+(fundLeader===base?quote:base)+' comes from '+gname(weakG[0])+'.'
-    ],'fund-weak');
-    var context='';
-    var lg=groupScore(leadF,'g'), li=groupScore(leadF,'inf'), ll=groupScore(leadF,'l');
-    var qg=groupScore(lagF,'g'), qi=groupScore(lagF,'inf'), ql=groupScore(lagF,'l');
-    if(lg>qg && li>qi) context=pick([
-      'Growth and inflation are both stronger on the '+fundLeader+' side, which gives '+cbName(fundLeader)+' more room to stay firm rather than rush toward cuts.',
-      'Both activity and prices are helping '+fundLeader+'. That matters because it supports the case for policy to stay firm for longer.',
-      'The two biggest macro engines are aligned: growth is firmer and inflation is also running hotter on the '+fundLeader+' side.'
-    ],'fund-context-both');
-    else if(lg>qg) context=pick([
-      'The growth side is doing more work than prices here, so the story rests more on the real economy than on inflation.',
-      'Activity is the cleaner part of the argument; inflation is not doing as much of the heavy lifting.',
-      'This is mainly a growth-led advantage, not a pure inflation story.'
-    ],'fund-context-growth');
-    else if(li>qi) context=pick([
-      'Inflation is the stronger support, keeping the higher-for-longer case alive even if growth is not especially strong.',
-      'Prices are doing more of the policy work here. Sticky inflation gives '+cbName(fundLeader)+' less room to ease quickly.',
-      'The inflation side carries the bigger message, even with a less convincing growth backdrop.'
-    ],'fund-context-inflation');
-    else if(ll>ql) context=pick([
-      'Labour is giving the '+fundLeader+' side the extra lift, which can matter quickly for policy expectations.',
-      'The labour market is the clearest point of difference in this cross.',
-      'Jobs are one of the more useful clues here because they help shape how much room the central bank has to move rates.'
-    ],'fund-context-labour');
-    return strongLead+' '+safe(gapPhrase)+' '+safe(leadSentence)+' '+safe(weakSentence)+' '+safe(context);
-  }
 
-  function cbNarrative(){
-    var cbLabel=pairCbStanceLabel(base,quote), b=cbName(base), q=cbName(quote);
-    var winner=cbLabel.indexOf('Bullish')>=0?base:cbLabel.indexOf('Bearish')>=0?quote:'neither';
-    var line='', guidePart='';
-    if(winner==='neither'){
-      line=pick([
-        'Policy is not creating much separation: '+b+' is '+cbMove(base)+' while '+q+' is '+cbMove(quote)+'.',
-        'The central-bank story is close. '+b+' is '+cbMove(base)+' and '+q+' is '+cbMove(quote)+'.',
-        'There is little policy distance between the two sides at the moment. '+b+' is '+cbMove(base)+'; '+q+' is '+cbMove(quote)+'.',
-        'Monetary policy is broadly matched here, with '+b+' '+cbMove(base)+' and '+q+' '+cbMove(quote)+'.'
-      ],'cb-neutral');
-    } else {
-      var wcb=cbName(winner), lcb=cbName(winner===base?quote:base);
-      var guide=guidanceSnippet(winner), guidePart=guide?pick([
-        ' The forward guidance is consistent with that direction: ',
-        ' That is also the line coming through the guidance: ',
-        ' The bank\'s own guidance adds context here: ',
-        ' The written guidance points in the same general direction: '
-      ],'cb-guide-intro')+strong(wcb+' guidance: '+guide,'amber'):'';
-      line=pick([
-        'The policy gap is favouring '+winner+': '+wcb+' is '+cbMove(winner)+' while '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
-        winner+' gets the clearer rate-policy push because '+wcb+' is '+cbMove(winner)+' against '+lcb+' being '+cbMove(winner===base?quote:base)+'.',
-        'Monetary policy is leaning toward '+winner+'. '+wcb+' is '+cbMove(winner)+', while '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
-        'The central banks are not standing at the same point: '+wcb+' is '+cbMove(winner)+' and '+lcb+' is '+cbMove(winner===base?quote:base)+'.',
-        'The rate-setting story gives '+winner+' the advantage. '+wcb+' is '+cbMove(winner)+' versus '+lcb+' being '+cbMove(winner===base?quote:base)+'.'
-      ],'cb-'+winner);
-    }
-    // guidePart already contains raw <strong> markup (built above via strong()), so it must
-    // stay OUTSIDE safeLineWithKeys — that helper escapes everything around the matched key,
-    // and running it over already-built HTML re-escapes the tags into visible literal text.
-    // Highlight the actual decisive fact (the winning bank's stance -- hike/cut/hold),
-    // not just the bank's name -- a name isn't the information that matters here.
-    return safeLineWithKeys(line, [cbMove(winner==='neither'?base:winner),cbName(base),cbName(quote),base,quote]) + guidePart;
-  }
 
-  function safeLineWithKeys(text,keys){
-    var raw=clean(text), hit=null;
-    for(var i=0;i<keys.length;i++){if(raw.indexOf(keys[i])!==-1){hit=keys[i];break;}}
-    if(!hit) return safe(raw);
-    var parts=raw.split(hit); return safe(parts[0])+strong(hit,'amber')+safe(parts.slice(1).join(hit));
-  }
 
-  function rateNarrative(){
-    if(yScore==null||y.current==null) return pick([
-      'The 2Y market does not have a usable current spread here, so rates cannot yet confirm or challenge the pair score.',
-      'There is no clean current 2Y observation to lean on. Treat the yield layer as missing rather than inventing a rate story.',
-      'The short-end rate picture is incomplete at the moment. That leaves data, policy and positioning doing more of the explaining.'
-    ],'rate-missing');
-    var cur=Math.round(y.current), wk=y.week==null?null:Math.round(y.week);
-    var yieldSide=cur>0?base:cur<0?quote:'neither';
-    var carryTxt=carry==null?'':(Math.abs(carry)<0.005?'0.00%':(carry>0?'+':'')+carry.toFixed(2)+'%');
-    var spreadText=cur===0?'flat at 0bp':(cur>0?'+'+cur+'bp for '+base:cur+'bp for '+quote);
-    var moveText=wk==null?'':(Math.abs(wk)<=2?pick([' The spread is almost unchanged from the prior week.',' Week to week, the gap is barely moving.',' The latest weekly move is too small to call a real shift in the rate gap.'],'rate-flat'):wk>0?' The gap has widened by roughly +'+wk+'bp over the week.':' The gap has narrowed by roughly '+wk+'bp over the week.');
-    var alignment=score>7&&yieldSide===base||score<-7&&yieldSide===quote
-      ?pick([' That agrees with the current pair score.',' The bond market is confirming the headline side.',' Rates are pushing in the same direction as the composite.',' That gives the macro read extra support from the short-end market.'],'rate-align')
-      :Math.abs(score)<=7?' Because the pair itself is neutral, this is the direct rate signal rather than proof of a full macro trend.':pick([' That is the part of the picture pushing against the headline score.',' The rate market is not validating the current bias, so the gap deserves close attention.',' This puts rates on the other side of the trade from the composite.',' The spread is a useful counterweight here rather than simple confirmation.'],'rate-conflict');
-    var carryLine=carryTxt?(Math.abs(carry)<0.005?' '+pick(['Policy-rate carry is effectively zero at '+carryTxt+'. There is no payment advantage between the two currencies.','The policy rates are matched, so carry is '+carryTxt+' and neither side is paying a premium to hold.','The carry gap is '+carryTxt+' — effectively flat. The 2Y spread is therefore the more useful rate signal.'],'carry-zero'): ' The policy-rate carry is '+carryTxt+' in favour of '+(carry>0?base:quote)+'.'):'';
-    return strong('2Y spread '+spreadText+'.','amber')+safe(moveText)+safe(alignment)+safe(carryLine);
-  }
 
-  function cotNarrative(){
-    if(cot.insufficient) return pick([
-      'The COT sample is still too thin to make positioning a reliable part of the story.',
-      'There is not enough COT history yet for the positioning layer to carry much weight.',
-      'Futures positioning is still too limited to support a strong read here.'
-    ],'cot-missing');
-    var stockOpeners={
-      [base]:[
-        'The futures book is currently tilted toward '+base,
-        'The standing net position favours '+base,
-        'The current position stock is heavier on the '+base+' side',
-        'The existing net book is still built around '+base,
-        'The futures crowd is carrying more exposure toward '+base,
-        'The accumulated position leans toward '+base,
-        'The live positioning base remains tilted to '+base,
-        'The current net exposure still points toward '+base,
-        'The established futures position is more supportive of '+base,
-        'The position already on the books favours '+base,
-        'The standing COT exposure has a '+base+' bias',
-        'The current futures inventory is weighted toward '+base,
-        'The older positioning still leaves '+base+' on the favoured side',
-        'The book carried into this week still prefers '+base,
-        'The positioning stock entering the latest report leaned toward '+base,
-        'The existing speculative exposure remains more concentrated in '+base,
-        'The futures positioning already in place is tilted to '+base,
-        'The accumulated net exposure gives '+base+' the stronger positioning side',
-        'The current COT stock is still pointing toward '+base,
-        'The standing futures position gives '+base+' the edge in the positioning column'
-      ]
-    };
-    var stock='';
-    if(posLeader!=='neither'){
-      var c=posLeader===base?cotBase:cotQuote, pcent=(c.oi&&c.net!=null)?100*c.net/c.oi:null;
-      var openers=stockOpeners[posLeader] || ['The current COT book leans toward '+posLeader];
-      stock=safe(pick(openers,'cot-stock'))+(pcent!=null?' with net exposure around '+pcent.toFixed(1)+'% of open interest':'')+'.';
-    }
-    var flowPhrases={
-      strong:[
-        'The latest report then shows a large fresh move of '+flowLeader+' '+cotFormat(flowLeader===base?flowB:flowQ)+' contracts.',
-        'Fresh weekly flow is doing more than nudging the book: '+flowLeader+' saw '+cotFormat(flowLeader===base?flowB:flowQ)+' net contracts added.',
-        'This week\'s change is sizeable, with '+cotFormat(flowLeader===base?flowB:flowQ)+' contracts shifting toward '+flowLeader+'.'
-      ],
-      medium:[
-        'The weekly flow has also moved in '+flowLeader+'\'s favour, though the change is more measured.',
-        'The latest report adds a noticeable '+flowLeader+' move rather than a full repositioning wave.',
-        'Week on week, the book has shifted some ground toward '+flowLeader+'.'
-      ],
-      small:[
-        'The newest weekly change is relatively small, so it looks more like a nudge than a new crowd.',
-        'This week\'s flow is modest; it changes the picture at the margin rather than rewriting it.',
-        'The fresh weekly move is limited, so the standing position remains the bigger clue.'
-      ],
-      flat:[
-        'The newest report did not create a meaningful separation in weekly flow.',
-        'This week\'s change is close enough between the two sides that it adds little direction.',
-        'Fresh flow is not giving the pair a new institutional lead yet.'
-      ]
-    };
-    var flowText=flowLeader==='neither'?pick(flowPhrases.flat,'cot-flow-flat'):(Math.abs(flowLeader===base?flowB:flowQ)>50000?pick(flowPhrases.strong,'cot-flow-strong'):Math.abs(flowLeader===base?flowB:flowQ)>15000?pick(flowPhrases.medium,'cot-flow-medium'):pick(flowPhrases.small,'cot-flow-small'));
-    if(!stock && flowLeader==='neither') return pick([
-      'COT is not handing the pair a clean institutional side. The standing book is balanced and the newest report did not break the tie.',
-      'Positioning is close enough between '+base+' and '+quote+' that neither the stock nor the latest flow gives a convincing direction.',
-      'The futures market is fairly balanced here. There is no strong stock-versus-flow signal to lean on yet.'
-    ],'cot-balanced');
-    var split=posLeader!=='neither'&&flowLeader!=='neither'&&posLeader!==flowLeader;
-    var cleanFlow=flowLeader===posLeader&&flowLeader!=='neither';
-    var conclusion=split?pick([
-      'That split is important: the established book is pointing one way while the newest money is moving the other way.',
-      'This is a stock-versus-flow disagreement. The old positioning is one story; the latest contracts are starting another.',
-      'The two COT lenses are no longer saying exactly the same thing, which makes the setup less clean.',
-      'The positioning signal is carrying a warning flag because fresh flow is not simply extending the existing crowd.',
-      'The old book has not flipped, but the new flow is moving against it — the early stage of a possible repositioning story.'
-    ],'cot-split'):cleanFlow?pick([
-      'The stock and the latest flow are broadly aligned, so COT is reinforcing rather than fighting the macro read.',
-      'Both the position already held and the newest weekly change are pointing the same way.',
-      'That gives the futures market a cleaner supporting role in the pair.',
-      'The positioning side is more coherent here because the fresh flow is not pushing against the existing book.',
-      'For now, COT is adding weight rather than creating a contradiction.'
-    ],'cot-clean'):pick([
-      'That leaves the freshest flow as the more useful clue for the next update.',
-      'The key question is whether the next report turns that fresh move into a larger position change.',
-      'Watch the next weekly print to see whether this stays a small adjustment or becomes a real shift in the book.'
-    ],'cot-flow-only');
-    return (stock?stock+' ':'')+safe(flowText)+' '+safe(conclusion);
-  }
 
-  function riskNarrative(){
-    if(!riskHasAnyReading()) return pick([
-      'Risk sentiment is not populated enough to change the pair read yet.',
-      'The risk layer is currently unavailable, so it stays outside the main case.',
-      'There is not enough risk data here to make a clean pair call from the broader market regime.'
-    ],'risk-missing');
-    if(riskState==='Neutral') return pick([
-      'Risk is not separating the two legs enough to matter, so it stays in the background.',
-      'The broader risk regime is balanced for this cross. It is not adding a strong push either way.',
-      'Risk appetite is not creating a meaningful difference between '+base+' and '+quote+' right now.',
-      'The risk backdrop is quiet for this pair; the bigger signals are coming from data, policy and rates.'
-    ],'risk-neutral');
-    return pick([
-      'The wider risk mood is giving '+(riskDiff>0?base:quote)+' some extra support.',
-      'The current risk regime is helping '+(riskDiff>0?base:quote)+' relative to the other side.',
-      'Risk is adding a tailwind for '+(riskDiff>0?base:quote)+' rather than '+(riskDiff>0?quote:base)+'.',
-      'The broader market tone is working more comfortably for '+(riskDiff>0?base:quote)+' in this cross.'
-    ],'risk-active');
-  }
 
-  function seasonNarrative(){
-    var sl=seasonalityBandLabelFromValue(seas);
-    if(sl==='Neutral') return pick([
-      'Seasonality is neutral, so there is no useful calendar push to lean on here.',
-      'The seasonal pattern is not strong enough to add direction.',
-      'Calendar effects are quiet for this cross, leaving the live macro evidence in charge.'
-    ],'season-neutral');
-    return pick([
-      'The seasonal backdrop is '+sl.toLowerCase()+' for '+(seas>0?base:quote)+', which can help the move but should not drive it.',
-      'Seasonality is giving '+(seas>0?base:quote)+' a '+sl.toLowerCase()+' backdrop. Treat that as timing help, not the core reason for the trade.',
-      'The calendar pattern favours '+(seas>0?base:quote)+' at the margin. It is a support layer, not the main thesis.'
-    ],'season-active');
-  }
 
-  function alignmentRead(){
-    if(dir===0) return pick([
-      'With the pair inside the neutral band, there is no directional alignment to celebrate yet. The better signal is whichever pillar breaks away from zero first.',
-      'The setup is still neutral, so the Agree count should not be used to manufacture a long or short. What matters is fresh separation.',
-      'This is a watch condition rather than a conviction trade. A meaningful policy, rates, data or positioning shift would be needed to change that.'
-    ],'align-neutral');
-    var labels={
-      Fundamentals:pillarBias(fundRel),
-      Yield:yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'),
-      'CB stance':pairCbStanceLabel(base,quote),Position:cot.posLabel,WoW:cot.flowLabel,Seasonality:seasonalityPairText(base,quote),'Risk sentiment':riskState
-    };
-    var agree=0,dis=0,neu=0;
-    ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'].forEach(function(n){var sg=pillarSign(labels[n]);if(sg===dir)agree++;else if(sg===0)neu++;else dis++;});
-    if(dis===0) return pick([
-      agree+' of 7 pillars support '+(dir>0?base:quote)+' and none is pushing back. That is a clean alignment of the current evidence.',
-      'The evidence is unusually tidy: '+agree+' of 7 pillars agree with '+(dir>0?base:quote)+', with no clear opposing pillar.',
-      'There is broad agreement behind '+(dir>0?base:quote)+'. '+agree+' of the seven inputs point the same way.'
-    ],'align-clean')+ (neu?(' '+neu+' pillar'+(neu>1?'s':'')+' are neutral rather than negative.'):'');
-    if(agree>=5) return pick([
-      agree+' of 7 pillars back '+(dir>0?base:quote)+'. The disagreement is real, but it is still a minority view inside the model.',
-      'The signal has strong breadth: '+agree+' of 7 pillars support '+(dir>0?base:quote)+', while '+dis+' push the other way.',
-      (dir>0?base:quote)+' still has the weight of the dashboard behind it, with '+agree+' of 7 drivers aligned.'
-    ],'align-strong')+ (neu?(' '+neu+' remain neutral.'):'');
-    return pick([
-      'Only '+agree+' of 7 pillars support '+(dir>0?base:quote)+', so the headline score has more internal tension than it first appears.',
-      'Agreement is limited to '+agree+' of 7 drivers. That leaves '+dis+' active counter-signals to watch.',
-      'The score has a side, but the evidence is not fully behind it: '+agree+' agree and '+dis+' disagree.'
-    ],'align-mixed');
-  }
 
-  function whatChanges(){
-    var risks=[];
-    if(fundRel*score<0 && Math.abs(fundRel)>=7) risks.push(pick(['the fundamental gap closes','growth or inflation data catch up on the weaker side','the data advantage behind the current lead fades'],'flip-fund'));
-    if(yScore!=null && y.current*score<0 && Math.abs(y.current)>=10) risks.push(pick(['the 2Y spread turns back toward the opposing currency','the short-end yield gap narrows sharply','the bond market stops supporting the current rate side'],'flip-rate')); 
-    if(cot.insufficient===false && cot.posScore*score<0 && Math.abs(cot.posScore)>=6) risks.push(pick(['positioning swings back toward the other side','the established futures book unwinds','the COT crowding moves against the current lead'],'flip-pos'));
-    if(cot.insufficient===false && flowLeader!=='neither' && dir!==0 && flowLeader===(dir>0?quote:base)) risks.push(pick(['fresh COT flow keeps building against the current side','weekly positioning continues to move away from the current leader','new contracts keep accumulating on the opposing currency'],'flip-flow'));
-    if(!risks.length){
-      if(dir===0) return pick(['The setup becomes directional if either the 2Y spread, policy stance or fundamentals creates a clear gap.','A clean break would need real separation in data, rates or policy rather than a small score wobble.','The next change should come from a meaningful repricing in the major pillars — not from noise around the neutral line.'],'flip-neutral');
-      risks.push(pick(['the main supporting pillars lose their current advantage','a stronger data or policy repricing pulls the weaker currency closer','the current rates and fundamentals support stops holding','the opposing side starts winning enough pillars to close the gap'],'flip-generic'));
-    }
-    var r1=risks[0], r2=risks.length>1?risks[1]:'';
-    return pick([
-      'What could flip this read? '+r1+(r2?' And a second warning would be '+r2+'.':''),
-      'The first real reversal test is '+r1+(r2?' Another warning sign would be '+r2+'.':''),
-      'This view would come under pressure if '+r1+(r2?' A second pressure point is '+r2+'.':''),
-      'The cleanest route to a different score is '+r1+(r2?'; '+r2+' would add to that pressure.':'')
-    ],'flip-'+pair);
-  }
 
   var leadDrivers=dir?scannerLedByDrivers(base,quote,dir):[];
   var driverName=leadDrivers.length?leadDrivers[0].name:'';
@@ -10227,7 +9891,6 @@ function pairMacroSummaryHtml(pair, score){
 // It only touches text NODES (segments between tags), never tag/attribute content,
 // and skips anything already inside a <strong> from strong()/mark() above so nothing
 // gets double-wrapped.
-function autoHighlightBrief(html){ return html || ''; }
 
 // Per-pillar "driver breakdown" rows for the Pair Focus panel. The bar's fill (which
 // side, how far) is still driven by that pillar's actual point contribution to the
@@ -10274,14 +9937,6 @@ function pairFocusPillarAbsolute(name,ccy){
 // Single per-currency number blending all 7 pillars by their real composite weights
 // (same weights as PAIR_FOCUS_PILLAR_WEIGHT / compositeFor) -- used only for the two
 // "USD"/"CHF" summary tiles at the top of the Pair Focus card, not the per-row table.
-function pairFocusBlendScore(ccy){
-  var total=0, wsum=0;
-  Object.keys(PAIR_FOCUS_PILLAR_WEIGHT).forEach(function(name){
-    var w=PAIR_FOCUS_PILLAR_WEIGHT[name];
-    total+=w*pairFocusPillarAbsolute(name,ccy); wsum+=w;
-  });
-  return wsum?total/wsum:50;
-}
 function pairFocusDriverRowsHtml(base,quote,animate){
   var rows=scannerDriverBreakdown(base,quote);
   var order=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'];
@@ -10718,15 +10373,6 @@ function cotRenderScannerRows(animate){
     return '<tr>'+      '<td><div class="cot-ccy'+(animate?' cot-ccy-animate-in':'')+'">'+flagImg(o.c)+' '+o.c+'</div></td>'+      '<td><div class="cot-bar"><span class="cot-bar-seg" data-cot-target-w="'+shortPct.toFixed(1)+'" style="display:block;position:absolute;left:0;top:0;bottom:0;width:'+shortW.toFixed(1)+'%;background:var(--bearish);opacity:.9;"></span><span class="cot-bar-seg" data-cot-target-w="'+longPct.toFixed(1)+'" style="display:block;position:absolute;right:0;top:0;bottom:0;width:'+longW.toFixed(1)+'%;background:var(--bullish);opacity:.9;"></span></div><div class="cot-split-label"><span>'+shortPct.toFixed(0)+'% short</span><span>'+longPct.toFixed(0)+'% long</span></div></td>'+      '<td class="cot-net '+netCls+'">'+cotFormat(d.net)+'</td>'+      '<td class="cot-net '+(d.netChg>0?'cot-good':d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.netChg)+'</td>'+      '<td class="cot-net '+normCls+'">'+(normOi==null?'—':cotPercent(normOi))+'</td>'+      '<td><div class="cot-regime-cell"><span class="cot-dot '+dot+'"></span><span class="cot-crowd '+(crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral')+'">'+crowd.label+'</span></div></td>'+      '<td class="right"><span class="cot-muted">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'% range')+'</span></td>'+      '</tr>';
   }).join('');
 }
-function cotExtremesHtml(){
-  var rows=CCY_ORDER.map(function(c){var d=cotLatest(c),cr=cotCrowding(c);return {c:c,d:d,cr:cr,ext:cr.loc==null?0:Math.abs(cr.loc-50)*2};});
-  rows.sort(function(a,b){return b.ext-a.ext;});
-  return '<div class="cot-section-pad"><table class="cot-table"><thead><tr><th style="width:26px">#</th><th>Asset</th><th>Range</th><th>Reading</th><th>Net</th><th>1W Δ</th></tr></thead><tbody>'+rows.map(function(o,i){var cl=o.cr.tone==='bull'?'cot-good':o.cr.tone==='bear'?'cot-bad':'cot-neutral';return '<tr><td class="cot-muted">'+(i+1)+'</td><td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td><td class="cot-muted">'+(o.cr.loc==null?'—':o.cr.loc.toFixed(0)+'%')+'</td><td class="cot-crowd '+cl+'">'+o.cr.label+'</td><td class="cot-net '+(o.d.net>0?'cot-good':o.d.net<0?'cot-bad':'cot-neutral')+'">'+cotFormat(o.d.net)+'</td><td class="cot-net '+(o.d.netChg>0?'cot-good':o.d.netChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(o.d.netChg)+'</td></tr>';}).join('')+'</tbody></table></div>';
-}
-function cotWeeklyFlowHtml(){
-  var rows=CCY_ORDER.map(function(c){var d=cotLatest(c);return {c:c,d:d};}).sort(function(a,b){return (a.d.netChg==null?0:a.d.netChg)-(b.d.netChg==null?0:b.d.netChg);});
-  return '<div class="cot-section-pad"><table class="cot-table"><thead><tr><th>Asset</th><th>Long change</th><th>Short change</th><th>Net change</th><th>What changed</th></tr></thead><tbody>'+rows.map(function(o){var d=o.d,n=d.netChg;return '<tr><td><div class="cot-ccy">'+flagImg(o.c)+' '+o.c+'</div></td><td class="cot-net '+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</td><td class="cot-net '+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</td><td class="cot-net '+(n>0?'cot-good':n<0?'cot-bad':'cot-neutral')+'">'+cotFormat(n)+'</td><td><div class="cot-flow-main">'+esc(cotFlow(o.c))+'</div><div class="cot-flow-sub">'+esc(cotFlowHeadline(o.c))+'</div></td></tr>';}).join('')+'</tbody></table></div>';
-}
 function cotDetailHtml(ccy){
   var d=cotLatest(ccy), crowd=cotCrowding(ccy), flow=cotFlow(ccy), hist=cotSortHistory(ccy);
   var netCls=d.net>0?'cot-good':d.net<0?'cot-bad':'cot-neutral';
@@ -11044,9 +10690,7 @@ async function init(){
 
   /* Paint the interface before any network/auth await. A slow or unavailable cloud
      connection must never leave the Overview visually blank. */
-  var savedTheme="ash";
-  try{ savedTheme = localStorage.getItem('twp_theme_pref') || "ash"; }catch(e){}
-  if(savedTheme!=="ash" && savedTheme!=="black") savedTheme="ash";
+  var savedTheme="black";
   applyTheme(savedTheme);
 
   if(!DATA){
@@ -12645,9 +12289,6 @@ body,html{background:var(--bg);}
 #tab-overview .ov-cal-body{flex:1 1 auto!important;min-height:0!important;overflow:auto!important;padding:0 8px 6px!important;}
 #tab-overview .ov-cal-section{font-size:9px!important;font-weight:800!important;letter-spacing:.8px!important;color:var(--text-faint)!important;padding:5px 3px 3px!important;border-bottom:1px solid var(--border)!important;}
 #tab-overview .ov-cal-row{display:grid!important;grid-template-columns:92px minmax(0,1fr) 18px!important;gap:7px!important;align-items:center!important;min-height:40px!important;padding:5px 3px!important;border-bottom:1px solid rgba(127,130,127,.16)!important;cursor:pointer!important;}
-#tab-overview .ov-cal-time{display:flex!important;flex-direction:column!important;gap:1px!important;}
-#tab-overview .ov-cal-time b{font-family:'IBM Plex Mono',monospace!important;font-size:10.5px!important;font-weight:700!important;white-space:nowrap!important;}
-#tab-overview .ov-cal-time span{font-size:8.5px!important;font-weight:800!important;letter-spacing:.55px!important;color:var(--text-faint)!important;}
 #tab-overview .ov-cal-release{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;}
 #tab-overview .ov-cal-ccy{font-size:10.5px!important;font-weight:800!important;min-width:45px!important;}
 #tab-overview .ov-cal-release strong{font-size:11px!important;font-weight:700!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
@@ -12655,26 +12296,12 @@ body,html{background:var(--bg);}
 #tab-overview .ov-cal-impact.high{background:var(--bearish-strong)!important;}
 #tab-overview .ov-cal-impact.medium{background:var(--amber)!important;}
 #tab-overview .ov-cal-impact.low{background:var(--text-faint)!important;}
-#tab-overview .ov-cal-values{display:flex!important;gap:9px!important;align-items:center!important;margin-top:2px!important;min-width:0!important;white-space:nowrap!important;overflow:hidden!important;font-size:9.5px!important;color:var(--text-faint)!important;}
-#tab-overview .ov-cal-values b{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-weight:700!important;}
-#tab-overview .ov-cal-values .pos,#tab-overview .ov-cal-values b.pos{color:var(--bullish-strong)!important;}
-#tab-overview .ov-cal-values .neg,#tab-overview .ov-cal-values b.neg{color:var(--bearish-strong)!important;}
-#tab-overview .ov-cal-values .neutral{color:var(--text-dim)!important;}
 #tab-overview .ov-cal-del{background:transparent!important;border:none!important;color:var(--text-faint)!important;font-size:16px!important;line-height:1!important;padding:0!important;cursor:pointer!important;}
 #tab-overview .ov-cal-empty{display:flex!important;align-items:center!important;justify-content:center!important;height:100%!important;padding:18px!important;text-align:center!important;color:var(--text-faint)!important;font-size:10.5px!important;line-height:1.5!important;}
 #tab-overview .ov-cal-empty span{color:var(--text-dim)!important;}
-#tab-overview .ov-cal-editor{margin:5px 8px 8px!important;padding:8px!important;background:var(--panel2)!important;border:1px solid var(--border)!important;border-radius:7px!important;flex:0 0 auto!important;}
-#tab-overview .ov-cal-editor-head{display:flex!important;justify-content:space-between!important;align-items:center!important;margin-bottom:6px!important;font-size:11px!important;}
-#tab-overview .ov-cal-close{background:transparent!important;border:none!important;color:var(--text-faint)!important;cursor:pointer!important;font-size:16px!important;padding:0!important;}
-#tab-overview .ov-cal-form{display:grid!important;grid-template-columns:80px 66px 55px minmax(0,1.4fr) 72px 72px 72px 70px!important;gap:5px!important;align-items:end!important;}
-#tab-overview .ov-cal-form label{font-size:8px!important;font-weight:800!important;color:var(--text-faint)!important;text-transform:uppercase!important;letter-spacing:.45px!important;min-width:0!important;}
-#tab-overview .ov-cal-form input,#tab-overview .ov-cal-form select{width:100%!important;margin-top:3px!important;height:27px!important;background:var(--panel)!important;border:1px solid var(--border)!important;color:var(--text)!important;border-radius:5px!important;padding:4px 5px!important;font-size:10px!important;box-sizing:border-box!important;}
-#tab-overview .ov-cal-editor-note{font-size:8.5px!important;color:var(--text-faint)!important;line-height:1.3!important;margin-top:5px!important;}
-#tab-overview .ov-cal-editor-actions{display:flex!important;justify-content:flex-end!important;gap:5px!important;margin-top:5px!important;}
-#tab-overview .ov-cal-editor-actions .y2-btn{padding:5px 8px!important;font-size:10px!important;}
 }
 @media(max-width:1249px) and (min-width:800px){#tab-overview .ov-top{grid-template-columns:1fr!important;grid-template-rows:auto!important;}#tab-overview .ov-pro-calendar{min-height:280px!important;}}
-@media(max-width:799px){#tab-overview .ov-pro-calendar{min-height:360px!important;}#tab-overview .ov-cal-form{grid-template-columns:1fr 1fr!important;}#tab-overview .ov-cal-form .wide{grid-column:1 / -1!important;}}
+@media(max-width:799px){#tab-overview .ov-pro-calendar{min-height:360px!important;}}
 </style>
 <style id="yield2y-fit-viewport-final">
 /* FINAL — Bond Yield Spread: fill the viewport by default like Overview does.
@@ -12744,7 +12371,6 @@ body,html{background:var(--bg);}
 #tab-overview .ov-cal-head{display:grid;grid-template-columns:62px minmax(0,1fr) 76px 82px 18px;align-items:center;gap:7px;padding:7px 10px;background:var(--panel2);border-bottom:1px solid var(--border);font-size:10px;font-weight:800;letter-spacing:.7px;color:var(--text-faint);position:sticky;top:0;z-index:2;}
 #tab-overview .ov-cal-section{font-size:10px!important;font-weight:800!important;letter-spacing:.7px!important;color:var(--text-faint)!important;padding:6px 10px 4px!important;border-bottom:1px solid var(--border)!important;background:var(--panel)!important;}
 #tab-overview .ov-cal-row{display:grid!important;grid-template-columns:62px minmax(0,1fr) 76px 82px 18px!important;gap:7px!important;align-items:center!important;min-height:31px!important;padding:5px 10px!important;border-bottom:1px solid rgba(127,130,127,.14)!important;cursor:default!important;}
-#tab-overview .ov-cal-time b{font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;font-weight:700!important;white-space:nowrap!important;color:var(--text)!important;}
 #tab-overview .ov-cal-release{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;}
 #tab-overview .ov-cal-ccy{font-size:11px!important;font-weight:800!important;min-width:44px!important;white-space:nowrap!important;}
 #tab-overview .ov-cal-release strong{font-size:11.5px!important;font-weight:700!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:var(--text)!important;}
@@ -12769,8 +12395,6 @@ body,html{background:var(--bg);}
 <style id="calendar-recent-final-polish">
 #tab-overview .ov-cal-head,#tab-overview .ov-cal-row{grid-template-columns:74px minmax(0,1fr) 76px 82px 18px!important;column-gap:7px!important;align-items:center!important;}
 #tab-overview .ov-cal-head span:nth-child(3),#tab-overview .ov-cal-head span:nth-child(4),#tab-overview .ov-cal-value{text-align:right!important;}
-#tab-overview .ov-cal-date{min-width:0!important;}
-#tab-overview .ov-cal-date b{font-family:'IBM Plex Mono',monospace!important;font-size:10.5px!important;font-weight:700!important;white-space:nowrap!important;color:var(--text)!important;}
 #tab-overview .ov-cal-value{font-variant-numeric:tabular-nums!important;justify-self:stretch!important;}
 #tab-overview .ov-cal-value.pos{color:var(--bullish-strong)!important;}
 #tab-overview .ov-cal-value.neg{color:var(--bearish-strong)!important;}
@@ -12831,7 +12455,6 @@ body,html{background:var(--bg);}
   #tab-overview .ov-cal-head{font-size:11px!important;padding:8px 10px!important;}
   #tab-overview .ov-cal-section{font-size:10.5px!important;padding:6px 10px 4px!important;}
   #tab-overview .ov-cal-row{min-height:34px!important;padding:6px 10px!important;}
-  #tab-overview .ov-cal-date b{font-size:11.5px!important;}
   #tab-overview .ov-cal-ccy{font-size:11.5px!important;min-width:48px!important;}
   #tab-overview .ov-cal-release strong{font-size:12px!important;}
   #tab-overview .ov-cal-value{font-size:12px!important;text-align:right!important;font-variant-numeric:tabular-nums!important;}
@@ -14357,6 +13980,208 @@ twpShowNameGateIfNeeded();
 <style id="pair-focus-tooltip-scroll-guard-v1">
 /* A fixed tooltip must never survive a page scroll with a stale cursor target. */
 </style>
+
+<style id="detail-plain-strip-and-scanner-tight-v2">
+/* ==================================================================
+   CURRENCY DETAIL: one plain band, three sections in a row
+   [ COT / seasonality fields ] [ Policy Monitor ] [ Composite Trend ]
+   No boxes or extra fill. Labels only ever wrap at spaces, never mid-word.
+   ================================================================== */
+#tab-detail .right-col{container-type:inline-size;}
+
+#tab-detail .right-col .info-trend-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.9fr) minmax(0,.9fr) minmax(0,1fr)!important;
+  grid-template-areas:"info policy trend"!important;
+  column-gap:16px!important;row-gap:12px!important;
+  align-items:start!important;
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  padding:4px 2px 0!important;margin:0 0 12px!important;
+}
+#tab-detail .right-col .info-trend-row > .info-grid,
+#tab-detail .right-col .info-trend-row > .policy-monitor,
+#tab-detail .right-col .info-trend-row .trend-panel{
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  padding:0!important;margin:0!important;height:auto!important;min-height:0!important;
+  min-width:0!important;max-width:100%!important;overflow:visible!important;
+}
+#tab-detail .right-col .info-trend-row > .info-grid{grid-area:info!important;}
+#tab-detail .right-col .info-trend-row > .policy-monitor{grid-area:policy!important;}
+#tab-detail .right-col .info-trend-row > [id^="trendPanelWrap-"]{grid-area:trend!important;min-width:0!important;margin:0!important;padding:0!important;}
+#tab-detail .right-col .info-trend-row .trend-panel{flex-basis:auto!important;justify-content:flex-start!important;}
+
+/* Fields: four columns x two rows */
+#tab-detail .right-col .info-trend-row > .info-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr) minmax(0,1fr) minmax(0,1fr)!important;
+  grid-template-areas:"season risk institutional latest" "cotnet cotchg longshort regime"!important;
+  column-gap:12px!important;row-gap:10px!important;
+  align-items:start!important;align-content:start!important;
+}
+#tab-detail .right-col .info-trend-row .info-grid .info-item{
+  border:0!important;padding:0!important;margin:0!important;min-width:0!important;max-width:100%!important;gap:5px!important;
+}
+#tab-detail .right-col .info-trend-row .info-grid .info-item .k{
+  min-height:2.5em!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;line-height:1.25!important;
+}
+/* the three text fields in the top row share one label height so their values sit on one line */
+#tab-detail .right-col .info-trend-row .info-grid .risk-detail-item .k,
+#tab-detail .right-col .info-trend-row .info-grid .institutional-bias-item .k,
+#tab-detail .right-col .info-trend-row .info-grid .latest-position-item .k{min-height:3.75em!important;}
+#tab-detail .right-col .info-trend-row .info-grid .info-item:nth-child(1) .k{min-height:0!important;}
+#tab-detail .right-col .info-trend-row .info-grid .info-item .v{
+  white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;
+}
+#tab-detail .right-col .info-trend-row .info-grid .info-item:nth-child(1) > div{flex-wrap:wrap!important;row-gap:4px!important;}
+#tab-detail .right-col .info-trend-row .seasonality-avg-input{width:78px!important;}
+#tab-detail .right-col .info-trend-row .seasonality-month-input{width:126px!important;min-width:126px!important;font-size:11px!important;}
+#tab-detail .right-col .info-trend-row .seasonality-month{white-space:nowrap!important;margin-top:0!important;}
+
+/* Policy Monitor */
+#tab-detail .right-col .info-trend-row .policy-monitor{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;gap:14px!important;}
+#tab-detail .right-col .info-trend-row .policy-monitor-head{margin:0!important;}
+#tab-detail .right-col .info-trend-row .policy-monitor-title,
+#tab-detail .right-col .info-trend-row .trend-panel .k{
+  font-family:'Inter',system-ui,sans-serif!important;font-size:11.5px!important;letter-spacing:.6px!important;line-height:1.25!important;color:var(--text-dim)!important;
+}
+#tab-detail .right-col .info-trend-row .policy-monitor-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;}
+#tab-detail .right-col .info-trend-row .policy-metric{gap:5px!important;min-width:0!important;}
+#tab-detail .right-col .info-trend-row .policy-k{font-size:11.5px!important;letter-spacing:.6px!important;line-height:1.25!important;overflow-wrap:normal!important;word-break:normal!important;}
+#tab-detail .right-col .info-trend-row .policy-value{font-family:'Inter',system-ui,sans-serif!important;font-size:13.5px!important;overflow-wrap:normal!important;word-break:normal!important;}
+#tab-detail .right-col .info-trend-row .policy-relation{
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;
+  gap:5px!important;border:0!important;margin:0!important;padding:0!important;
+}
+#tab-detail .right-col .info-trend-row .policy-relation > span{font-size:11.5px!important;text-transform:uppercase;letter-spacing:.6px;color:var(--text-faint)!important;}
+#tab-detail .right-col .info-trend-row .policy-relation strong{font-family:'Inter',system-ui,sans-serif!important;font-size:13.5px!important;text-align:left!important;}
+
+/* No bold anywhere in this band */
+#tab-detail .right-col .info-trend-row .seasonality-avg-input,
+#tab-detail .right-col .info-trend-row .seasonality-month-input{font-weight:500!important;}
+#tab-detail .right-col .info-trend-row .info-grid .info-item .v,
+#tab-detail .right-col .info-trend-row .info-grid .info-item .v *,
+#tab-detail .right-col .info-trend-row .seasonality-derived,
+#tab-detail .right-col .info-trend-row .policy-monitor-title,
+#tab-detail .right-col .info-trend-row .policy-value,
+#tab-detail .right-col .info-trend-row .policy-score,
+#tab-detail .right-col .info-trend-row .policy-relation strong,
+#tab-detail .right-col .info-trend-row .trend-panel .trend-score,
+#tab-detail .right-col .info-trend-row .trend-panel .trend-delta{font-weight:500!important;}
+
+/* Column narrower than the dashboard's normal width: fields across the top, the other two side by side under them */
+@container (max-width:879px){
+  #tab-detail .right-col .info-trend-row{
+    grid-template-columns:minmax(160px,1.05fr) minmax(130px,.8fr) minmax(215px,1.25fr) minmax(215px,1.3fr)!important;
+    grid-template-areas:"info info info info" "policy policy trend trend"!important;
+    column-gap:28px!important;row-gap:28px!important;
+  }
+  #tab-detail .right-col .info-trend-row > .info-grid{
+    grid-template-columns:subgrid!important;
+    column-gap:28px!important;row-gap:20px!important;
+  }
+  #tab-detail .right-col .info-trend-row .info-grid .info-item .k,
+  #tab-detail .right-col .info-trend-row .info-grid .risk-detail-item .k,
+  #tab-detail .right-col .info-trend-row .info-grid .institutional-bias-item .k,
+  #tab-detail .right-col .info-trend-row .info-grid .latest-position-item .k{min-height:0!important;white-space:nowrap!important;}
+  #tab-detail .right-col .info-trend-row .seasonality-month-input{width:150px!important;min-width:150px!important;}
+  #tab-detail .right-col .info-trend-row .policy-monitor-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.8fr)!important;gap:28px!important;}
+  #tab-detail .right-col .info-trend-row .trend-panel > :not(:first-child){max-width:340px!important;}
+}
+@container (max-width:829px){
+  #tab-detail .right-col .info-trend-row{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-areas:"info info" "policy trend"!important;
+    column-gap:28px!important;
+  }
+  #tab-detail .right-col .info-trend-row > .info-grid{
+    grid-template-areas:"season risk" "institutional latest" "cotnet cotchg" "longshort regime"!important;
+  }
+  #tab-detail .right-col .info-trend-row .policy-monitor-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:20px!important;}
+}
+@container (max-width:560px){
+  #tab-detail .right-col .info-trend-row{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"info" "policy" "trend"!important;}
+  #tab-detail .right-col .info-trend-row .policy-monitor-grid{grid-template-columns:1fr!important;}
+}
+@media(max-width:700px){
+  #tab-detail .right-col .info-trend-row .info-grid .info-item .k{white-space:normal!important;}
+}
+
+/* Indicator tables: plain weight for names and values (Currency Detail + Economic Surprise Index) */
+#tab-detail .ind-link,#tab-detail .ind-name,
+#tab-raw .ind-link,#tab-raw .ind-name{font-weight:400!important;}
+#tab-detail .ind-num,#tab-detail .ind-txt,#tab-detail .surprise,#tab-detail .bias-select,#tab-detail .bias-chip-text,
+#tab-raw .ind-num,#tab-raw .ind-txt,#tab-raw .surprise,#tab-raw .bias-select,#tab-raw .bias-chip-text{font-weight:500!important;}
+
+/* ==================================================================
+   TRADE SCANNER
+   ================================================================== */
+/* Pillar strip (FND ... RSK) packed tight, rows shorter */
+#tab-scanner .scanner-table th:nth-child(n+7):nth-child(-n+13),
+#tab-scanner .scanner-table td.scanner-pill-td{
+  width:40px!important;min-width:40px!important;max-width:40px!important;
+  padding-left:2px!important;padding-right:2px!important;
+}
+#tab-scanner .scanner-table td{padding-top:4px!important;padding-bottom:4px!important;}
+#tab-scanner .scanner-table th{padding-top:7px!important;padding-bottom:7px!important;}
+#tab-scanner .scanner-score-wrap{gap:3px!important;}
+
+/* Score and 7D get breathing room between them */
+#tab-scanner .scanner-table th:nth-child(4),#tab-scanner .scanner-table td:nth-child(4){width:68px!important;min-width:68px!important;max-width:68px!important;}
+#tab-scanner .scanner-table th:nth-child(5),#tab-scanner .scanner-table td:nth-child(5){
+  width:104px!important;min-width:104px!important;max-width:104px!important;left:264px!important;
+  padding-left:26px!important;padding-right:6px!important;
+}
+/* 7D numbers use the same size and weight as the Trend numbers */
+#tab-scanner .scanner-table .day-delta{font-family:'Inter',system-ui,sans-serif!important;font-size:11.5px!important;font-weight:700!important;}
+
+/* Trend has a fixed width so it sits toward the left instead of floating in the leftover space */
+#tab-scanner .scanner-table th:nth-child(6),#tab-scanner .scanner-table td:nth-child(6){width:250px!important;min-width:250px!important;max-width:250px!important;}
+/* Agree follows the strip; Carry follows Agree. Any spare width goes after Carry, not before it. */
+#tab-scanner .scanner-table th:nth-child(14),#tab-scanner .scanner-table td:nth-child(14){
+  width:112px!important;min-width:112px!important;max-width:112px!important;padding-left:24px!important;padding-right:8px!important;
+}
+#tab-scanner .scanner-table th:nth-child(15),#tab-scanner .scanner-table td:nth-child(15){
+  width:auto!important;min-width:100px!important;max-width:none!important;
+  padding-left:30px!important;padding-right:16px!important;text-align:left!important;
+}
+</style>
+
+<script id="scanner-7d-gap-tip-v1">
+/* The 7D tooltip also opens when the pointer is in the space between the 7D number and the Trend line. */
+(function(){
+  if(window.__scanner7dGapTipInstalled) return;
+  window.__scanner7dGapTipInstalled=true;
+  var gapOn=false;
+  document.addEventListener('pointermove',function(ev){
+    var t=ev.target;
+    var td=(t&&t.closest)?t.closest('#tab-scanner td[data-label="Trend"]'):null;
+    if(td){
+      var row=td.parentElement, dcell=row&&row.querySelector('td.day-delta-cell');
+      var tip=dcell&&dcell.getAttribute('data-scanner-tip');
+      var first=td.querySelector('.scanner-trend-cell > *');
+      if(tip&&first){
+        var r=first.getBoundingClientRect();
+        if(ev.clientX<r.left){
+          if(typeof scannerTipHideTimer!=='undefined'&&scannerTipHideTimer){clearTimeout(scannerTipHideTimer);scannerTipHideTimer=null;}
+          var tt=ensureScannerHoverTooltip();
+          if(!gapOn||tt.__gapTip!==tip){tt.innerHTML=tip;tt.__gapTip=tip;}
+          tt.classList.remove('scanner-pair-hover');
+          tt.classList.add('show');
+          positionScannerHoverTooltip(ev);
+          gapOn=true;
+          return;
+        }
+      }
+    }
+    if(gapOn){
+      gapOn=false;
+      var own=(t&&t.closest)?t.closest('#tab-scanner [data-scanner-tip]:not([data-scanner-tip=""])'):null;
+      if(!own&&typeof scannerHoverTooltip!=='undefined'&&scannerHoverTooltip){scannerHoverTooltip.classList.remove('show');scannerHoverTooltip.__gapTip=null;}
+    }
+  },true);
+})();
+</script>
+
 <script>
 (function(){
   if(window.__pairFocusTooltipScrollGuardInstalled) return;
