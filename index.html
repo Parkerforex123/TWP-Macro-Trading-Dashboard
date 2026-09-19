@@ -4070,6 +4070,365 @@ body{font-size:var(--twp-body-size);}
 #tab-detail .stat-row.stat-nav:hover span:first-child{color:var(--text);}
 </style>
 
+
+<style id="v66-clean-presentation-fixed">
+/* Keep the existing dark dashboard and only clean the requested elements. */
+.guidance-sheet-person{
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.guidance-sheet-photo,
+.guidance-sheet-initials{
+  width:142px!important;
+  height:174px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.guidance-sheet-meta{
+  display:flex!important;
+  gap:26px!important;
+  margin-top:18px!important;
+  padding-top:12px!important;
+  border-top:1px solid var(--border)!important;
+}
+.guidance-sheet-meta-item{
+  min-width:110px;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.guidance-sheet-meta-k{font-size:9.5px!important;}
+.guidance-sheet-meta-v{font-size:14px!important;margin-top:4px!important;}
+.guidance-sheet-date-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:0 0 10px;
+}
+.guidance-sheet-date-label{
+  font-size:10px;
+  color:var(--text-faint);
+  text-transform:uppercase;
+  letter-spacing:.75px;
+  font-weight:700;
+}
+.guidance-sheet-date-input{
+  appearance:none;
+  -webkit-appearance:none;
+  width:145px!important;
+  padding:2px 0!important;
+  border:0!important;
+  border-bottom:1px solid var(--border)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--text)!important;
+  font-family:'IBM Plex Mono',monospace!important;
+  font-size:12px!important;
+  box-shadow:none!important;
+}
+.guidance-sheet-date-input:focus{outline:none!important;border-bottom-color:#FE660F!important;}
+.guidance-sheet-date-display{font:600 11.5px 'IBM Plex Mono',monospace;color:var(--text-dim);}
+/* Currency Detail information strip: eight fields, two clean rows of four. */
+#tab-detail .info-trend-row .info-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-rows:auto auto!important;
+  column-gap:0!important;
+  row-gap:14px!important;
+  padding:3px 0 0!important;
+  background:transparent!important;
+  border-radius:0!important;
+}
+#tab-detail .info-trend-row .info-grid .info-item{
+  min-width:0!important;
+  padding:0 14px!important;
+  border-left:1px solid var(--border)!important;
+}
+#tab-detail .info-trend-row .info-grid .info-item:nth-child(1),
+#tab-detail .info-trend-row .info-grid .info-item:nth-child(5){border-left:0!important;padding-left:0!important;}
+#tab-detail .info-trend-row .info-grid .info-item:nth-child(4),
+#tab-detail .info-trend-row .info-grid .info-item:nth-child(8){padding-right:0!important;}
+#tab-detail .info-trend-row .info-grid .info-item .k{line-height:1.25!important;white-space:normal!important;}
+#tab-detail .info-trend-row .info-grid .info-item .v{margin-top:3px!important;}
+@media(max-width:1050px){
+  #tab-detail .info-trend-row .info-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #tab-detail .info-trend-row .info-grid .info-item:nth-child(odd){border-left:0!important;padding-left:0!important;}
+  #tab-detail .info-trend-row .info-grid .info-item:nth-child(even){padding-right:0!important;}
+}
+@media(max-width:720px){
+  .guidance-sheet-meta{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important;}
+  .guidance-sheet-date-row{flex-wrap:wrap;}
+}
+/* Economic Surprise Index: flat solid bars, no circular/clockwise treatment. */
+#tab-raw .surprise-gauge-card{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;}
+#tab-raw .surprise-gauge-body{display:block!important;}
+#tab-raw .surprise-gauge-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0 28px!important;width:100%!important;}
+#tab-raw .surprise-gauge{width:100%!important;padding:10px 0!important;border-bottom:1px solid var(--border)!important;}
+#tab-raw .surprise-bar-item{display:grid;grid-template-columns:58px minmax(0,1fr) 48px;align-items:center;gap:12px;}
+#tab-raw .surprise-bar-ccy{display:flex;align-items:center;gap:7px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;}
+#tab-raw .surprise-bar-ccy .ccy-flag{width:20px!important;height:14px!important;}
+#tab-raw .surprise-bar-track{height:12px;position:relative;background:var(--panel3);border:1px solid var(--border);border-radius:0!important;overflow:hidden;}
+#tab-raw .surprise-bar-zero{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--text-faint);z-index:2;}
+#tab-raw .surprise-bar-fill{position:absolute;top:0;bottom:0;border-radius:0!important;transition:width .45s ease,left .45s ease;}
+#tab-raw .surprise-bar-fill.pos{background:var(--bullish-strong)!important;}
+#tab-raw .surprise-bar-fill.neg{background:var(--bearish-strong)!important;}
+#tab-raw .surprise-bar-fill.neu{background:var(--text-dim)!important;}
+#tab-raw .surprise-bar-score{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:800;text-align:right;}
+#tab-raw .surprise-bar-score.pos{color:var(--bullish-strong);}
+#tab-raw .surprise-bar-score.neg{color:var(--bearish-strong);}
+#tab-raw .surprise-bar-score.neu{color:var(--text-dim);}
+#tab-raw .surprise-rank-table{display:none!important;}
+@media(max-width:900px){#tab-raw .surprise-gauge-grid{grid-template-columns:1fr!important;gap:0!important;}}
+</style>
+
+<style id="v67-surprise-index-final-solid-bars">
+/* Economic Surprise Index — final presentation. Keep the 8 source currencies and
+   replace the circular blocks with the same flat, rectangular bar language used
+   by Overview -> Composite Ranking. */
+#tab-raw .surprise-gauge-card{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;}
+#tab-raw .surprise-gauge-body{display:block!important;}
+#tab-raw .surprise-gauge-grid{display:grid!important;grid-template-columns:1fr!important;gap:0!important;width:100%!important;}
+#tab-raw .surprise-gauge{display:block!important;width:100%!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--border)!important;border-radius:0!important;padding:7px 0!important;}
+#tab-raw .surprise-bar-item{display:grid!important;grid-template-columns:72px minmax(0,1fr) 58px!important;align-items:center!important;gap:12px!important;}
+#tab-raw .surprise-bar-ccy{display:flex!important;align-items:center!important;gap:7px!important;font-family:'Space Grotesk',sans-serif!important;font-size:14px!important;font-weight:700!important;}
+#tab-raw .surprise-bar-ccy .ccy-flag{width:20px!important;height:14px!important;}
+#tab-raw .surprise-bar-track{height:9px!important;position:relative!important;background:var(--panel3)!important;border:0!important;border-radius:2px!important;overflow:hidden!important;}
+#tab-raw .surprise-bar-zero{position:absolute!important;left:50%!important;top:0!important;bottom:0!important;width:1px!important;background:var(--text-faint)!important;z-index:2!important;}
+#tab-raw .surprise-bar-fill{position:absolute!important;top:0!important;bottom:0!important;border-radius:1px!important;transition:width .45s ease,left .45s ease!important;}
+#tab-raw .surprise-bar-fill.pos{background:var(--bullish-strong)!important;}
+#tab-raw .surprise-bar-fill.neg{background:var(--bearish-strong)!important;}
+#tab-raw .surprise-bar-fill.neu{background:var(--text-dim)!important;}
+#tab-raw .surprise-bar-score{font-family:'IBM Plex Mono',monospace!important;font-size:14px!important;font-weight:800!important;text-align:right!important;}
+#tab-raw .surprise-bar-score.pos{color:var(--bullish-strong)!important;}
+#tab-raw .surprise-bar-score.neg{color:var(--bearish-strong)!important;}
+#tab-raw .surprise-bar-score.neu{color:var(--text-dim)!important;}
+#tab-raw .surprise-rank-table{display:none!important;}
+@media(max-width:700px){#tab-raw .surprise-bar-item{grid-template-columns:64px minmax(0,1fr) 52px!important;gap:8px!important;}#tab-raw .surprise-bar-ccy{font-size:13px!important;}}
+
+/* Forward Guidance — no portrait card and no metric boxes. */
+.guidance-sheet-person{border:0!important;background:transparent!important;padding:0!important;border-radius:0!important;box-shadow:none!important;}
+.guidance-sheet-photo,.guidance-sheet-initials{border:0!important;background:transparent!important;border-radius:6px!important;box-shadow:none!important;}
+.guidance-sheet-meta{display:flex!important;gap:30px!important;margin-top:14px!important;padding-top:10px!important;border-top:1px solid var(--border)!important;}
+.guidance-sheet-meta-item{min-width:110px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;}
+.guidance-sheet-date-row{display:flex!important;align-items:center!important;gap:9px!important;margin:0 0 9px!important;}
+.guidance-sheet-date-label{font-size:9.5px!important;color:var(--text-faint)!important;text-transform:uppercase!important;letter-spacing:.7px!important;font-weight:700!important;}
+.guidance-sheet-date-input{appearance:none!important;-webkit-appearance:none!important;width:145px!important;padding:2px 0 4px!important;border:0!important;border-bottom:1px solid var(--border)!important;border-radius:0!important;background:transparent!important;color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11.5px!important;font-weight:700!important;box-shadow:none!important;color-scheme:dark!important;}
+.guidance-sheet-date-input:focus{outline:none!important;border-bottom-color:#FE660F!important;}
+.guidance-sheet-date-display{font:600 11.5px 'IBM Plex Mono',monospace!important;color:var(--text)!important;}
+</style>
+
+<style id="guidance-normal-numerals-v2">
+/* Forward Guidance: use one normal UI font for all displayed numeric values. */
+.guidance-sheet-meta-v,
+.guidance-sheet-date-input,
+.guidance-sheet-date-display{
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-variant-numeric:normal!important;
+  font-feature-settings:normal!important;
+  letter-spacing:0!important;
+}
+.guidance-sheet-meta-v{font-size:14px!important;font-weight:600!important;}
+.guidance-sheet-date-input,.guidance-sheet-date-display{font-size:13.5px!important;font-weight:600!important;}
+</style>
+
+<style id="surprise-index-table-layout-v2">
+/* Economic Surprise Index: ranked table on the left, Surprise Strength 90D on the right. */
+#tab-raw .surprise-fit-wrap{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.45fr) minmax(420px,.9fr)!important;
+  gap:12px!important;
+  align-items:start!important;
+}
+#tab-raw .surprise-gauge-card{
+  grid-column:1!important;
+  background:var(--panel)!important;
+  border:1px solid var(--border)!important;
+  border-radius:8px!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+#tab-raw .surprise-gauge-body{display:block!important;}
+#tab-raw .surprise-gauge-body:before{
+  content:'ECONOMIC SURPRISE INDEX';
+  display:block;
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--border);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:var(--text-dim);
+}
+#tab-raw .surprise-gauge-grid{
+  display:block!important;
+  width:100%!important;
+}
+#tab-raw .surprise-gauge{
+  display:block!important;
+  width:100%!important;
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid var(--border)!important;
+  border-radius:0!important;
+  padding:8px 12px!important;
+}
+#tab-raw .surprise-gauge:last-child{border-bottom:0!important;}
+#tab-raw .surprise-bar-item{
+  display:grid!important;
+  grid-template-columns:58px minmax(0,1fr) 56px!important;
+  align-items:center!important;
+  gap:10px!important;
+}
+#tab-raw .surprise-bar-ccy{
+  display:flex!important;align-items:center!important;gap:7px!important;
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:13px!important;font-weight:600!important;
+}
+#tab-raw .surprise-bar-ccy .ccy-flag{width:19px!important;height:13px!important;}
+#tab-raw .surprise-bar-track{
+  height:10px!important;
+  position:relative!important;
+  background:var(--panel3)!important;
+  border:0!important;
+  border-radius:1px!important;
+  overflow:hidden!important;
+}
+#tab-raw .surprise-bar-fill{
+  position:absolute!important;top:0!important;bottom:0!important;
+  border-radius:0!important;
+  transition:width .45s ease,left .45s ease!important;
+}
+#tab-raw .surprise-bar-zero{position:absolute!important;left:50%!important;top:0!important;bottom:0!important;width:1px!important;background:var(--text-faint)!important;z-index:2!important;}
+#tab-raw .surprise-bar-score{
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:13px!important;font-weight:600!important;text-align:right!important;
+}
+#tab-raw .surprise-rank-table{display:none!important;}
+#tab-raw .ss-card{
+  grid-column:2!important;
+  grid-row:1!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+@media(max-width:1000px){
+  #tab-raw .surprise-fit-wrap{grid-template-columns:1fr!important;}
+  #tab-raw .surprise-gauge-card,#tab-raw .ss-card{grid-column:1!important;grid-row:auto!important;}
+}
+</style>
+
+
+<style id="v70-user-final-surprise-auth-logo-polish">
+/* Surprise Index: left ranking and right Surprise Strength share the same horizontal
+   level, width, and visual scale. */
+#tab-raw .surprise-fit-wrap{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:14px!important;
+  align-items:start!important;
+}
+#tab-raw .surprise-gauge-card{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.026),transparent 74%),var(--panel)!important;
+  border:1px solid var(--border)!important;
+  border-radius:9px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  overflow:hidden!important;
+}
+#tab-raw .surprise-gauge-body:before{
+  content:'ECONOMIC SURPRISE INDEX'!important;
+  display:block!important;
+  padding:13px 15px 11px!important;
+  border-bottom:1px solid var(--border)!important;
+  font-family:'Space Grotesk',sans-serif!important;
+  font-size:17px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  color:var(--text)!important;
+}
+#tab-raw .surprise-gauge-grid{
+  display:block!important;
+  width:100%!important;
+  padding:0!important;
+}
+#tab-raw .surprise-gauge{
+  display:block!important;
+  width:100%!important;
+  padding:9px 15px!important;
+  border-bottom:1px solid var(--border)!important;
+  background:transparent!important;
+}
+#tab-raw .surprise-gauge:last-child{border-bottom:0!important;}
+#tab-raw .surprise-bar-item{
+  display:grid!important;
+  grid-template-columns:72px minmax(0,1fr) 58px!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-height:27px!important;
+}
+#tab-raw .surprise-bar-ccy{
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:14px!important;
+  font-weight:700!important;
+}
+#tab-raw .surprise-bar-track{
+  height:10px!important;
+  border:0!important;
+  border-radius:1px!important;
+}
+#tab-raw .surprise-bar-score{
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:14px!important;
+  font-weight:600!important;
+  font-variant-numeric:normal!important;
+}
+#tab-raw .ss-card{
+  grid-column:2!important;
+  grid-row:1!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+@media(max-width:1000px){
+  #tab-raw .surprise-fit-wrap{grid-template-columns:1fr!important;}
+  #tab-raw .surprise-gauge-card,#tab-raw .ss-card{grid-column:1!important;grid-row:auto!important;}
+}
+
+/* The LIVE badges are useful only while the dashboard is authenticated. Keep the
+   elements in the DOM and preserve their purpose, but remove them from the signed-out
+   visual state. The existing `editing` body class is the dashboard's authenticated state. */
+.ov-pro-live{display:none!important;}
+body.editing .ov-pro-live{display:block!important;}
+
+/* TWP brand: every 30 seconds the mark slides out to the left edge of the logo area, vanishes,
+   then sweeps back in from the left like a headline, overshoots its spot and settles with a
+   short shake. It stays inside the logo box (nothing crosses the rest of the screen) and only
+   transform/opacity move, so the rail never reflows. */
+.brand{overflow:hidden;}
+.brand-mark.twp-brand-move{animation:twpBrandSweep 1.9s cubic-bezier(.4,0,.2,1) both;will-change:transform,opacity;}
+@keyframes twpBrandSweep{
+  0%   {transform:translate3d(0,0,0) skewX(0);opacity:1;animation-timing-function:cubic-bezier(.55,0,.9,.4);}
+  16%  {transform:translate3d(-78px,0,0) skewX(-14deg);opacity:0;}
+  24%  {transform:translate3d(-78px,0,0) skewX(-14deg);opacity:0;animation-timing-function:cubic-bezier(.1,.7,.2,1);}
+  52%  {transform:translate3d(10px,0,0) skewX(8deg);opacity:1;}
+  62%  {transform:translate3d(-5px,0,0) skewX(-4deg);}
+  71%  {transform:translate3d(4px,0,0) skewX(2deg);}
+  80%  {transform:translate3d(-2.5px,0,0) skewX(-1deg);}
+  90%  {transform:translate3d(1px,0,0) skewX(0);}
+  100% {transform:translate3d(0,0,0) skewX(0);opacity:1;}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -6863,6 +7222,9 @@ function renderLockBox(){
       '<div class="lock-fields"><button id="lockBtn">Sign out</button></div>';
     document.getElementById("lockBtn").onclick=async function(){
       if(saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
+      if(unlockedLocally && DATA){
+        try{ await saveDataNow(); }catch(e){ console.error("Sign-out save failed:",e); }
+      }
       persistLocalState(JSON.stringify(buildPersistedState()));
       if(AUTH.accessToken){
         try{ await fetch(SUPABASE_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+AUTH.accessToken,"Content-Type":"application/json"}}); }catch(e){}
@@ -8259,29 +8621,24 @@ function surpriseHeatColor(pct){
   var fg=pct>=50?'#bdf5e4':'#ffd6da';
   return {bg:'rgba('+c[0]+','+c[1]+','+c[2]+','+alpha.toFixed(2)+')', fg:fg};
 }
+var esiBarScale=30; // points of deviation from 50% that fill one half of the track (set per render)
 function surpriseGaugeSvg(ccy,pct){
-  var cx=75,cy=64,r=40, val=pct==null?50:pct;
-  var tip=pctGaugeAngle(cx,cy,r-9,val), rest=pctGaugeAngle(cx,cy,r-9,0);
-  var nx=tip.x, ny=tip.y, nx0=rest.x, ny0=rest.y;
-  // Needle+ball are drawn at their 0% rest position and swept round to the live
-  // value by animateSurpriseGauges() right after this markup lands in the DOM.
-  // Because renderRaw() rebuilds this HTML from scratch every time the Economic
-  // Surprise Index tab is (re)rendered -- including every time it's switched back
-  // into -- the sweep replays itself each time you return to the tab.
-  // Requested: currency code + percentage drawn INSIDE the dial itself (as SVG text),
-  // not as separate label/value elements sitting above and below it -- that's what
-  // let the reference gauges sit so close together, since there's nothing outside the
-  // circle taking up extra vertical space. The Beating/Missing/Near Forecast chip is
-  // dropped from the gauge entirely per the same request (it duplicates what the
-  // rank table's Score column and colour already show).
-  var svg='<svg viewBox="0 0 150 118" class="surprise-gauge-svg">'+pctGaugeArcs(cx,cy,r)+pctGaugeTicks(cx,cy,r)+
-    '<line class="surprise-needle" data-final-x="'+nx.toFixed(1)+'" data-final-y="'+ny.toFixed(1)+'" x1="'+cx+'" y1="'+cy+'" x2="'+nx0.toFixed(1)+'" y2="'+ny0.toFixed(1)+'" stroke="var(--text-dim)" stroke-width="2" stroke-linecap="round"/>'+
-    '<polygon class="surprise-needle-arrow" data-final-x="'+nx.toFixed(1)+'" data-final-y="'+ny.toFixed(1)+'" points="'+needleArrowPoints(cx,cy,nx0,ny0)+'" fill="var(--text)"/>'+
-    '<circle cx="'+cx+'" cy="'+cy+'" r="2.6" fill="var(--text-dim)"/>'+
-    '<text x="'+cx+'" y="'+(cy-16)+'" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="800" fill="var(--text)">'+esc(ccy)+'</text>'+
-    '<text x="'+cx+'" y="'+(cy+23)+'" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="800" fill="var(--text)">'+(pct==null?'\u2014':pct+'%')+'</text>'+
-    '</svg>';
-  return '<div class="surprise-gauge">'+svg+'</div>';
+  var val=pct==null?50:pct;
+  var cls=val>52?'pos':(val<48?'neg':'neu');
+  // Bars start at the 50% neutral line in the middle of the track and push left (missing) or
+  // right (beating). Half the track = esiBarScale points of deviation.
+  var w=Math.min(50,Math.abs(val-50)/esiBarScale*50);
+  var left=val>=50?50:50-w;
+  return '<div class="surprise-gauge'+(esiSelectedCcy===ccy?' esi-picked':'')+'" data-esi-ccy="'+esc(ccy)+'">'+
+    '<div class="surprise-bar-item">'+
+      '<div class="surprise-bar-ccy">'+flagImg(ccy)+'<span>'+esc(ccy)+'</span></div>'+
+      '<div class="surprise-bar-track">'+
+        '<i class="surprise-bar-zero"></i>'+
+        '<i class="surprise-bar-fill '+cls+'" data-l="'+left.toFixed(2)+'" data-w="'+w.toFixed(2)+'" style="left:'+left.toFixed(2)+'%;width:'+w.toFixed(2)+'%;"></i>'+
+      '</div>'+
+      '<div class="surprise-bar-score '+cls+'">'+(pct==null?'\u2014':pct+'%')+'</div>'+
+    '</div>'+
+  '</div>';
 }
 // Sweeps every Surprise Index needle (line + arrowhead) from its rendered 0% rest
 // position to its real value on an eased timer. Called once after renderRaw() paints
@@ -8493,7 +8850,7 @@ function renderSurpriseStrengthChart(stats,animate){
   // (580) means the render scale stays 1:1 and nothing shrinks -- text, line weight and tick
   // spacing are all identical to before -- only H drops, so the chart occupies far less
   // vertical space while staying just as readable.
-  var W=580,H=300,pl=34,pr=14,pt=14,pb=30,plotW=W-pl-pr,plotH=H-pt-pb;
+  var W=580,H=300,pl=44,pr=14,pt=14,pb=30,plotW=W-pl-pr,plotH=H-pt-pb; // pl=44 leaves room for a 3-digit "100%" label
   function xPos(i){return pl+((i-plotFirst)/plotSpan)*plotW;}
   function yPos(v){return pt+(max-v)/(max-min)*plotH;}
   var grid="", tickCount=5;
@@ -8604,6 +8961,120 @@ function wireSurpriseStrengthCrosshair(){
   area.addEventListener('pointermove',move); area.addEventListener('mousemove',move);
   area.addEventListener('pointerleave',hide); area.addEventListener('mouseleave',hide);
 }
+
+// ===== Economic Surprise Index v71: row tooltip, "biggest surprises" drivers, pair surprise gap =====
+var esiSelectedCcy=null, esiTipEl=null;
+function esiLabelForPct(p){
+  if(p==null) return {t:'No data',c:'neu'};
+  if(p>=70) return {t:'Strongly beating',c:'pos'};
+  if(p>52)  return {t:'Beating',c:'pos'};
+  if(p>=48) return {t:'Mixed',c:'neu'};
+  if(p>30)  return {t:'Missing',c:'neg'};
+  return {t:'Strongly missing',c:'neg'};
+}
+function esiFmtSigned(n,d){ var v=Number(n); if(!Number.isFinite(v)) return '\u2014'; return (v>0?'+':(v<0?'\u2212':''))+Math.abs(v).toFixed(d==null?1:d); }
+function esiShortDate(key){ var d=new Date(key+'T12:00:00'); return Number.isFinite(d.getTime())?new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(d):key; }
+function esiCcyDetail(ccy){
+  var rows=surpriseDataForCurrency(ccy).rows, beat=0, miss=0, inl=0;
+  rows.forEach(function(r){ if(r.ratio>=1) beat++; else if(r.ratio<=-1) miss++; else inl++; });
+  var real=rows.filter(function(r){ return !r.estimated; }).sort(function(a,b){ return (b.ratio*b.weight)-(a.ratio*a.weight); });
+  var top=real[0], worst=real[real.length-1];
+  if(top && top.ratio<1) top=null;
+  if(worst && worst.ratio>-1) worst=null;
+  return {total:rows.length,beat:beat,miss:miss,inl:inl,top:top,worst:worst};
+}
+function esiRelText(r){ return esc(r.name)+' <em>'+esc(r.actual)+' vs '+esc(r.forecast)+'</em>'; }
+function esiTipHtml(ccy){
+  var pct=surpriseWeightedPct(ccy).pct, lab=esiLabelForPct(pct), det=esiCcyDetail(ccy);
+  var out='<div class="esi-tip-head">'+flagImg(ccy)+'<b>'+esc(ccy)+'</b><span class="'+lab.c+'">'+(pct==null?'\u2014':pct+'%')+'</span></div>';
+  out+='<div class="esi-tip-line"><span class="'+lab.c+'">'+lab.t+'</span>'+(pct==null?'':' &middot; '+esiFmtSigned(pct-50,0)+' vs neutral')+'</div>';
+  out+='<div class="esi-tip-line">'+det.total+' releases: <span class="pos">'+det.beat+' beat</span> &middot; '+det.inl+' in line &middot; <span class="neg">'+det.miss+' missed</span></div>';
+  return out;
+}
+function esiPairTipHtml(base,quote){
+  var pb=surpriseWeightedPct(base).pct, pq=surpriseWeightedPct(quote).pct;
+  if(pb==null||pq==null) return '<div class="esi-tip-line">No score yet.</div>';
+  var gap=pb-pq, cls=gap>0?'pos':(gap<0?'neg':'neu');
+  var out='<div class="esi-tip-head">'+flagImg(base)+flagImg(quote)+'<b>'+esc(base+quote)+'</b><span class="'+cls+'">'+esiFmtSigned(gap,0)+'</span></div>';
+  out+='<div class="esi-tip-line">'+esc(base)+' '+pb+'% &minus; '+esc(quote)+' '+pq+'%</div>';
+  if(gap===0) out+='<div class="esi-tip-line">Both currencies are surprising equally.</div>';
+  else out+='<div class="esi-tip-line">'+esc(gap>0?base:quote)+' data is beating forecasts by more than '+esc(gap>0?quote:base)+' (<span class="'+cls+'">'+(gap>0?'bullish ':'bearish ')+esc(base+quote)+'</span>)</div>';
+  return out;
+}
+function esiTip(){
+  if(!esiTipEl){ esiTipEl=document.createElement('div'); esiTipEl.className='esi-tip'; esiTipEl.style.display='none'; document.body.appendChild(esiTipEl); }
+  return esiTipEl;
+}
+// One tooltip that follows the pointer along a whole list: the nearest row to the pointer's
+// height is used, so the empty part of a row and the gaps between rows still show it.
+function esiBindRowTip(area,rowSel,htmlFn,onPick){
+  if(!area) return;
+  var tip=esiTip(), hot=null;
+  function rowAt(y){
+    var rows=area.querySelectorAll(rowSel), best=null, bd=1e9;
+    for(var i=0;i<rows.length;i++){ var r=rows[i].getBoundingClientRect(), d=y<r.top?r.top-y:(y>r.bottom?y-r.bottom:0); if(d<bd){bd=d;best=rows[i];} }
+    return best;
+  }
+  function hide(){ tip.style.display='none'; if(hot){ hot.classList.remove('esi-hot'); hot=null; } }
+  function move(ev){
+    var row=rowAt(ev.clientY); if(!row){ hide(); return; }
+    if(row!==hot){ if(hot) hot.classList.remove('esi-hot'); hot=row; row.classList.add('esi-hot'); tip.innerHTML=htmlFn(row); }
+    tip.style.display='block';
+    var w=tip.offsetWidth, h=tip.offsetHeight, x=ev.clientX+16, y=ev.clientY+14;
+    if(x+w>window.innerWidth-10) x=ev.clientX-w-16;
+    if(y+h>window.innerHeight-10) y=window.innerHeight-h-10;
+    tip.style.left=Math.max(8,x)+'px'; tip.style.top=Math.max(8,y)+'px';
+  }
+  area.addEventListener('mousemove',move);
+  area.addEventListener('mouseenter',move);
+  area.addEventListener('mouseleave',hide);
+  if(onPick) area.addEventListener('click',function(ev){ var row=rowAt(ev.clientY); if(row){ hide(); onPick(row); } });
+}
+function bindEsiHover(){
+  esiBindRowTip(document.querySelector('#tab-raw .surprise-gauge-grid'),'.surprise-gauge',
+    function(row){ return esiTipHtml(row.getAttribute('data-esi-ccy')); },
+    function(row){ var c=row.getAttribute('data-esi-ccy'); esiSelectedCcy=(esiSelectedCcy===c)?null:c; renderRaw(); });
+  esiBindRowTip(document.querySelector('#tab-raw .esi-pairs .esi-panel-body'),'.esi-pair-row',
+    function(row){ return esiPairTipHtml(row.getAttribute('data-base'),row.getAttribute('data-quote')); });
+}
+function esiDriverRow(r){
+  var cls=r.ratio>0?'pos':'neg';
+  return '<div class="esi-drv-row"><span class="esi-drv-ccy">'+flagImg(r.ccy)+'<b>'+esc(r.ccy)+'</b></span>'+
+    '<span class="esi-drv-name" title="'+esc(r.name)+'">'+esc(r.name)+'</span>'+
+    '<span class="esi-drv-vals">'+esc(r.actual)+' <i>vs</i> '+esc(r.forecast)+'</span>'+
+    '<span class="esi-drv-chip '+cls+'">'+esiFmtSigned(r.ratio,1)+'%</span></div>';
+}
+function esiDriversHtml(){
+  var pool=[]; CCYS.forEach(function(c){ surpriseDataForCurrency(c).rows.forEach(function(r){ if(!r.estimated) pool.push(r); }); });
+  var sel=esiSelectedCcy, n=sel?6:5;
+  if(sel) pool=pool.filter(function(r){ return r.ccy===sel; });
+  var beats=pool.filter(function(r){ return r.ratio>=1; }).sort(function(a,b){ return (b.ratio*b.weight)-(a.ratio*a.weight); }).slice(0,n);
+  var misses=pool.filter(function(r){ return r.ratio<=-1; }).sort(function(a,b){ return (a.ratio*a.weight)-(b.ratio*b.weight); }).slice(0,n);
+  function block(title,list,cls){
+    return '<div class="esi-drv-sub '+cls+'">'+title+'</div>'+(list.length?list.map(esiDriverRow).join(''):'<div class="esi-empty">None with an actual and forecast logged.</div>');
+  }
+  var note=sel?(flagImg(sel)+' '+esc(sel)+' only &middot; click the bar again to show all'):'All currencies, ranked by weighted impact';
+  return '<section class="esi-panel esi-drivers"><div class="esi-panel-head"><div><div class="esi-panel-eyebrow">DRIVERS</div><div class="esi-panel-title">Biggest surprises</div></div><div class="esi-panel-note">'+note+'</div></div>'+
+    '<div class="esi-panel-body">'+block('Beats',beats,'pos')+block('Misses',misses,'neg')+'</div></section>';
+}
+function esiPairsHtml(){
+  var pct={}; CCYS.forEach(function(c){ pct[c]=surpriseWeightedPct(c).pct; });
+  var list=[];
+  for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
+    var b=CCY_ORDER[i], q=CCY_ORDER[j]; if(pct[b]==null||pct[q]==null) continue;
+    list.push({pair:b+q,base:b,quote:q,gap:pct[b]-pct[q]});
+  } }
+  list.sort(function(a,b){ return Math.abs(b.gap)-Math.abs(a.gap); });
+  var top=list.slice(0,8), full=Math.max(10,(top.length?Math.abs(top[0].gap):0)/0.92);
+  var rows=top.map(function(x){
+    var cls=x.gap>0?'pos':(x.gap<0?'neg':'neu'), w=Math.min(50,Math.abs(x.gap)/full*50), l=x.gap>=0?50:50-w;
+    return '<div class="esi-pair-row" data-base="'+x.base+'" data-quote="'+x.quote+'"><span class="esi-pair-name">'+flagImg(x.base)+flagImg(x.quote)+'<b>'+esc(x.pair)+'</b></span>'+
+      '<span class="esi-pair-track"><u></u><i class="'+cls+'" data-l="'+l.toFixed(2)+'" data-w="'+w.toFixed(2)+'" style="left:'+l.toFixed(2)+'%;width:'+w.toFixed(2)+'%"></i></span>'+
+      '<span class="esi-pair-val '+cls+'">'+esiFmtSigned(x.gap,0)+' <em>'+(x.gap>0?'Bullish':(x.gap<0?'Bearish':'Flat'))+'</em></span></div>';
+  }).join('');
+  return '<section class="esi-panel esi-pairs"><div class="esi-panel-head"><div><div class="esi-panel-eyebrow">PAIRS</div><div class="esi-panel-title">Surprise gap by pair</div></div><div class="esi-panel-note">First currency&rsquo;s score minus the second&rsquo;s</div></div>'+
+    '<div class="esi-panel-body">'+(rows||'<div class="esi-empty">Not enough logged data yet.</div>')+'</div></section>';
+}
 function renderRaw(animate){
   if(!DATA)return;
   var stats=CCYS.map(function(c){return {ccy:c,data:surpriseDataForCurrency(c)};});
@@ -8641,7 +9112,9 @@ function renderRaw(animate){
   var bestSc=Math.round(best.data.avg*10)/10, worstSc=Math.round(worst.data.avg*10)/10;
   var gaugeStats=CCYS.map(function(c){ return {ccy:c, br:surpriseWeightedPct(c)}; });
   var gaugeRanked=gaugeStats.slice().sort(function(a,b){ var av=a.br.pct==null?-1:a.br.pct, bv=b.br.pct==null?-1:b.br.pct; return bv-av; });
-  var gaugesHtml=gaugeStats.map(function(x){ return surpriseGaugeSvg(x.ccy,x.br.pct); }).join('');
+  var esiDevMax=0; gaugeStats.forEach(function(x){ if(x.br.pct!=null) esiDevMax=Math.max(esiDevMax,Math.abs(x.br.pct-50)); });
+  esiBarScale=Math.max(30,esiDevMax/0.92);
+  var gaugesHtml=gaugeRanked.map(function(x){ return surpriseGaugeSvg(x.ccy,x.br.pct); }).join(''); // strongest -> weakest, every render
   var rankRowsHtml=gaugeRanked.map(function(x){
     var pct=x.br.pct, hc=surpriseHeatColor(pct);
     return '<div class="surprise-rank-row"><span>'+esc(x.ccy)+'</span><span class="heat-chip" style="background:'+hc.bg+';color:'+hc.fg+';">'+(pct==null?'\u2014':pct+'%')+'</span></div>';
@@ -8651,8 +9124,26 @@ function renderRaw(animate){
     '<div class="surprise-gauge-grid">'+gaugesHtml+'</div>'+
     '<div class="surprise-rank-table"><div class="surprise-rank-head"><span>Currency</span><span>Score</span></div>'+rankRowsHtml+'</div>'+
     '</div></div>';
-  var html='<div class="surprise-fit-wrap">'+gaugeSectionHtml+expandedHtml+renderSurpriseStrengthChart(stats,animate)+'</div>';
+  var html='<div class="surprise-fit-wrap esi-v71">'+
+    '<div class="esi-col">'+gaugeSectionHtml+esiDriversHtml()+'</div>'+
+    '<div class="esi-col">'+esiPairsHtml()+renderSurpriseStrengthChart(stats,animate)+'</div>'+
+    (expandedHtml?'<div class="esi-expanded">'+expandedHtml+'</div>':'')+'</div>';
   document.getElementById("tab-raw").innerHTML=html;
+  bindEsiHover();
+  if(animate){
+    var esiFills=document.querySelectorAll('#tab-raw .surprise-bar-fill, #tab-raw .esi-pair-track i[data-w]');
+    for(var ef=0;ef<esiFills.length;ef++){
+      var f0=esiFills[ef]; f0.style.setProperty('transition','none','important'); f0.style.left='50%'; f0.style.width='0%';
+    }
+    void document.getElementById("tab-raw").offsetWidth;
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      for(var ef2=0;ef2<esiFills.length;ef2++){
+        var f=esiFills[ef2], k=ef2%8;
+        f.style.setProperty('transition','left .8s cubic-bezier(.22,.7,.2,1) '+(k*50)+'ms, width .8s cubic-bezier(.22,.7,.2,1) '+(k*50)+'ms','important');
+        f.style.left=f.getAttribute('data-l')+'%'; f.style.width=f.getAttribute('data-w')+'%';
+      }
+    }); });
+  }
   animateSurpriseGauges();
   if(animate) animateSurpriseStrengthChart();
   var gotos=document.querySelectorAll("#tab-raw [data-goto]");
@@ -9166,6 +9657,15 @@ function positionGuidanceSheet(trigger){
   sheet.style.setProperty("--sheet-x",(window.innerWidth/2)+"px");
 }
 
+function formatGuidanceDate(value){
+  if(!value) return "No date";
+  var m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return String(value);
+  var d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  if(!Number.isFinite(d.getTime())) return String(value);
+  return d.toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
+}
+
 function renderGuidanceSheet(ccy,trigger){
   if(!DATA || !DATA[ccy]) return;
   var ui=ensureGuidanceSheet(), sheet=ui.sheet, backdrop=ui.backdrop, d=DATA[ccy], p=forwardGuidanceProfile(ccy);
@@ -9206,6 +9706,12 @@ function renderGuidanceSheet(ccy,trigger){
       '</div>'+
       '<div class="guidance-sheet-content">'+
         '<div class="guidance-sheet-kicker">Forward Guidance</div>'+
+        '<div class="guidance-sheet-date-row">'+
+          '<span class="guidance-sheet-date-label">Date</span>'+
+          (unlockedLocally
+            ? '<input class="guidance-sheet-date-input" type="date" data-role="ccyfield" data-ccy="'+esc(ccy)+'" data-field="guidanceDate" value="'+esc(d.guidanceDate||"")+'" aria-label="Forward guidance date">'
+            : '<span class="guidance-sheet-date-display">'+esc(formatGuidanceDate(d.guidanceDate))+'</span>')+
+        '</div>'+
         editorHtml+
         '<div class="guidance-sheet-meta">'+
           '<div class="guidance-sheet-meta-item"><div class="guidance-sheet-meta-k">Interest rate</div><div class="guidance-sheet-meta-v">'+esc(d.interestRate||"—")+'</div></div>'+
@@ -9222,6 +9728,12 @@ function renderGuidanceSheet(ccy,trigger){
     editor.addEventListener("input",onCcyFieldInput);
     editor.addEventListener("change",onCcyFieldInput);
     setTimeout(function(){ try{editor.focus(); editor.setSelectionRange(editor.value.length,editor.value.length);}catch(e){} },120);
+  }
+  var guidanceDateInput=sheet.querySelector('.guidance-sheet-date-input');
+  if(guidanceDateInput){
+    guidanceDateInput.addEventListener("focus",function(){isTyping=true;});
+    guidanceDateInput.addEventListener("change",onCcyFieldInput);
+    guidanceDateInput.addEventListener("blur",function(){isTyping=false;});
   }
 
   positionGuidanceSheet(trigger);
@@ -12667,6 +13179,23 @@ body,html{background:var(--bg);}
   setInterval(function(){ if(mouseX!=null) schedule(); },600);
 })();
 </script>
+
+<script id="v70-brand-periodic-motion">
+/* TWP brand motion: every 30 seconds the mark sweeps out to the left and back in (see
+   @keyframes twpBrandSweep). Transform/opacity only, so the rail never reflows. */
+(function(){
+  function pulseBrand(){
+    var mark=document.querySelector('.brand-mark');
+    if(!mark || document.hidden) return;
+    mark.classList.remove('twp-brand-move');
+    void mark.offsetWidth;
+    mark.classList.add('twp-brand-move');
+    setTimeout(function(){ mark.classList.remove('twp-brand-move'); },2100);
+  }
+  setInterval(pulseBrand,30000);
+})();
+</script>
+
 </body>
 <style id="overview-kpi-trend-arrows-final">
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow{font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:900;margin-left:5px;display:inline-block;vertical-align:middle;}
@@ -14426,6 +14955,98 @@ twpShowNameGateIfNeeded();
     padding-bottom: 3px!important;
   }
 }
+</style>
+
+
+<style id="v71-scanner-strip-gap-and-surprise-bar-layout">
+/* Trade Scanner: the first row of FND / YLD / CB / POS / WOW / SSN / RSK boxes sat almost
+   flush against the sticky header line. Give that first row a little air; every other row
+   keeps its compact spacing. */
+#tab-scanner .scanner-table tbody > tr:first-child > td{padding-top:14px!important;}
+
+/* ---------- Economic Surprise Index tab: two side-by-side columns ---------- */
+#tab-raw .surprise-fit-wrap.esi-v71{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,600px))!important;
+  gap:14px!important;
+  align-items:stretch!important;
+  justify-content:start!important;
+  height:auto!important;
+  min-height:0!important;
+}
+#tab-raw .esi-col{display:flex;flex-direction:column;gap:14px;min-width:0;}
+#tab-raw .esi-col > .surprise-gauge-card,
+#tab-raw .esi-col > .ss-card{width:100%!important;max-width:none!important;box-sizing:border-box!important;align-self:stretch!important;flex:0 0 auto!important;}
+#tab-raw .esi-col > .esi-panel{flex:1 1 auto;}
+#tab-raw .esi-expanded{grid-column:1 / -1;}
+@media(max-width:900px){
+  #tab-raw .surprise-fit-wrap.esi-v71{grid-template-columns:minmax(0,1fr)!important;}
+}
+
+/* Bars start at the 50% line in the middle of the track and push left or right. */
+/* Centre line: a thin, quiet 1px marker exactly on the 50% point, the same height as the bars.
+   It is opaque and centred on the point where the bars start, so the bars' inner ends sit
+   under it and no dark sliver can show between a bar and the line. */
+#tab-raw .esi-v71 .surprise-bar-track,#tab-raw .esi-pair-track{overflow:visible!important;}
+#tab-raw .surprise-bar-zero{display:block!important;position:absolute!important;left:calc(50% - .5px)!important;width:1px!important;top:0!important;bottom:0!important;background:#7a7d87!important;border-radius:0!important;z-index:3!important;}
+#tab-raw .surprise-bar-fill{transition:none;}
+#tab-raw .surprise-gauge{cursor:pointer;transition:background .12s ease;}
+#tab-raw .surprise-gauge.esi-hot{background:rgba(255,255,255,.035)!important;}
+#tab-raw .surprise-gauge.esi-picked{background:rgba(255,255,255,.055)!important;box-shadow:inset 3px 0 0 var(--text-dim);}
+
+/* ---------- Row tooltip (small; one tooltip that follows the pointer down the whole list) ---------- */
+.esi-tip{position:fixed;z-index:9000;min-width:190px;max-width:250px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:rgba(16,17,21,.97);box-shadow:0 6px 18px rgba(0,0,0,.4);pointer-events:none;font-family:'Inter',system-ui,sans-serif;font-size:11.5px;color:var(--text);line-height:1.4;}
+.esi-tip-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.esi-tip-head .ccy-flag{width:16px;height:11px;object-fit:cover;}
+.esi-tip-head b{font-size:12.5px;font-weight:700;}
+.esi-tip-head > span{margin-left:auto;font-size:13px;font-weight:700;}
+.esi-tip .pos{color:var(--bullish-strong);}
+.esi-tip .neg{color:var(--bearish-strong);}
+.esi-tip .neu{color:var(--text-dim);}
+.esi-tip-line{color:var(--text-dim);}
+.esi-tip-line > span{font-weight:600;}
+
+/* ---------- Drivers + pair panels ---------- */
+#tab-raw .esi-panel{background:linear-gradient(180deg,rgba(255,255,255,.026),transparent 74%),var(--panel);border:1px solid var(--border);border-radius:9px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+#tab-raw .esi-panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:13px 15px 11px;border-bottom:1px solid var(--border);}
+#tab-raw .esi-panel-eyebrow{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--text-faint);}
+#tab-raw .esi-panel-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;margin-top:2px;}
+#tab-raw .esi-panel-note{font-size:10.5px;color:var(--text-faint);text-align:right;display:flex;align-items:center;gap:5px;}
+#tab-raw .esi-panel-note .ccy-flag{width:16px;height:11px;object-fit:cover;}
+#tab-raw .esi-panel-body{padding:4px 15px 12px;}
+#tab-raw .esi-empty{padding:9px 0;font-size:12px;color:var(--text-faint);}
+#tab-raw .esi-drv-sub{margin:10px 0 2px;font-size:11px;font-weight:700;}
+#tab-raw .esi-drv-sub.pos{color:var(--bullish-strong);}
+#tab-raw .esi-drv-sub.neg{color:var(--bearish-strong);}
+#tab-raw .esi-drv-row{display:grid;grid-template-columns:62px minmax(0,1fr) 108px 62px;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+#tab-raw .esi-drv-row:last-child{border-bottom:0;}
+#tab-raw .esi-drv-ccy{display:flex;align-items:center;gap:6px;}
+#tab-raw .esi-drv-ccy .ccy-flag{width:18px;height:12px;object-fit:cover;}
+#tab-raw .esi-drv-ccy b{font-weight:700;}
+#tab-raw .esi-drv-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);}
+#tab-raw .esi-drv-vals{color:var(--text-dim);text-align:right;white-space:nowrap;font-size:12px;}
+#tab-raw .esi-drv-vals i{font-style:normal;color:var(--text-faint);}
+#tab-raw .esi-drv-chip{text-align:right;font-weight:700;}
+#tab-raw .esi-drv-chip.pos{color:var(--bullish-strong);}
+#tab-raw .esi-drv-chip.neg{color:var(--bearish-strong);}
+#tab-raw .esi-pair-row{display:grid;grid-template-columns:128px minmax(0,1fr) 92px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);}
+#tab-raw .esi-pair-row:last-child{border-bottom:0;}
+#tab-raw .esi-pair-name{display:flex;align-items:center;gap:4px;font-size:13px;}
+#tab-raw .esi-pair-name .ccy-flag{width:18px;height:12px;object-fit:cover;}
+#tab-raw .esi-pair-name b{font-weight:700;margin-left:5px;}
+#tab-raw .esi-pair-track{height:10px;background:var(--panel3);border-radius:1px;overflow:hidden;position:relative;}
+#tab-raw .esi-pair-track i{position:absolute;top:0;bottom:0;}
+#tab-raw .esi-pair-track u{position:absolute;left:calc(50% - .5px);top:0;bottom:0;width:1px;background:#7a7d87;z-index:3;}
+#tab-raw .esi-pair-row{cursor:default;transition:background .12s ease;}
+#tab-raw .esi-pair-row.esi-hot{background:rgba(255,255,255,.035);}
+#tab-raw .esi-pair-track i.pos{background:var(--bullish-strong);}
+#tab-raw .esi-pair-track i.neg{background:var(--bearish-strong);}
+#tab-raw .esi-pair-track i.neu{background:var(--text-dim);}
+#tab-raw .esi-pair-val{text-align:right;font-size:13px;font-weight:700;white-space:nowrap;}
+#tab-raw .esi-pair-val em{font-style:normal;font-weight:600;font-size:11.5px;margin-left:4px;}
+#tab-raw .esi-pair-val.pos{color:var(--bullish-strong);}
+#tab-raw .esi-pair-val.neg{color:var(--bearish-strong);}
+#tab-raw .esi-pair-val.neu{color:var(--text-dim);}
 </style>
 
 </body>
