@@ -9334,7 +9334,14 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
     // "today, live" rather than another logged day.
     var liveIdx=-1;
     for(var si=0;si<series.length;si++){ if(series[si].live){ liveIdx=si; break; } }
-    var liveDot = liveIdx>=0 ? '<circle cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2.4" pointer-events="none"/>' : '';
+    // Round-fix: the SVG is stretched non-uniformly (viewBox w=300 vs a fluid,
+    // usually-wider rendered width, preserveAspectRatio="none"), which turns a plain
+    // <circle> into a fat horizontal ellipse. detail-trend-round-fix gets an inverse
+    // x-scale applied post-render (fixTrendDotAspect) so it draws as a true small
+    // circle instead. When animating, the dot starts invisible and is faded in by
+    // animateDetailTrend() timed to land right as the line finishes drawing in --
+    // it should not just sit there fully-formed while the line is still catching up to it.
+    var liveDot = liveIdx>=0 ? '<circle class="detail-trend-live-dot detail-trend-round-fix" cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2.4" pointer-events="none"'+(animate?' style="opacity:0;transition:opacity .22s ease .66s;"':'')+'/>' : '';
     // Single zero reference line, in place of the old +/-14 shaded band. Styled as a plain
     // gridline now -- same faint neutral color/weight as the other axis lines, no dash, no
     // gold -- so it doesn't pop off the chart; it should just read as the normal zero tick.
@@ -9353,7 +9360,7 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
       axisSvg+zeroLine+
       '<polyline class="detail-trend-line" fill="none" stroke="'+fillVar+'" stroke-width="2.4" points="'+linePts+'" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lineLenStr+';stroke-dashoffset:'+lineLenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
       liveDot+
-      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="4.6" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2"/></g>'+
+      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot detail-trend-round-fix" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="4.6" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2"/></g>'+
       hitPts+
       '<rect x="'+axisGutter+'" y="0" width="'+plotW+'" height="'+h+'" fill="transparent" pointer-events="all" class="detail-trend-hitbox"/>'+
       '</svg>';
@@ -9435,12 +9442,46 @@ function renderDetail(){
 }
 function animateDetailTrend(){
   var lines=document.querySelectorAll('#tab-detail .detail-trend-line');
+  var liveDots=document.querySelectorAll('#tab-detail .detail-trend-live-dot');
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){
       for(var i=0;i<lines.length;i++){ lines[i].style.strokeDashoffset='0'; }
+      // Fade the endpoint dot in on the same clock as the line draw (see the
+      // transition-delay set on it above) so it visibly arrives WITH the line
+      // instead of sitting there already-drawn while the line catches up to it.
+      for(var j=0;j<liveDots.length;j++){ liveDots[j].style.opacity='1'; }
     });
   });
+  fixTrendDotAspect();
 }
+// The trend-panel SVGs use a fixed viewBox width (w=300 in renderDetailTrendPanel)
+// stretched with preserveAspectRatio="none" to whatever the fluid panel width actually
+// renders at. That non-uniform x/y scale turns any plain <circle> into a fat horizontal
+// ellipse -- most visible on the endpoint dot and the hover dot. Elements flagged
+// .detail-trend-round-fix get an inverse x-only scale applied here, once real layout
+// dimensions are known, so they draw as true small circles instead of stretched blobs.
+function fixTrendDotAspect(){
+  var svgs=document.querySelectorAll('#tab-detail .detail-trend-spark');
+  for(var i=0;i<svgs.length;i++){
+    var svg=svgs[i];
+    var vb=svg.viewBox && svg.viewBox.baseVal;
+    if(!vb || !vb.width) continue;
+    var r=svg.getBoundingClientRect();
+    if(!r.width) continue;
+    var scaleX=r.width/vb.width;
+    if(!isFinite(scaleX) || scaleX<=0) continue;
+    var inv=(1/scaleX).toFixed(4);
+    var dots=svg.querySelectorAll('.detail-trend-round-fix');
+    for(var j=0;j<dots.length;j++){
+      dots[j].style.transformBox='fill-box';
+      dots[j].style.transformOrigin='center';
+      dots[j].style.transform='scaleX('+inv+')';
+    }
+  }
+}
+window.addEventListener('resize', function(){
+  if(document.getElementById('tab-detail') && document.getElementById('tab-detail').style.display!=='none') fixTrendDotAspect();
+});
 function policyStanceInfo(ccy){
   var d=DATA[ccy]||{};
   var move=(d.nextMove||"HOLD").toUpperCase();
@@ -10660,6 +10701,17 @@ function cotDrawChart(ccy,animate){
   if(COT_CHART_ANIM_ID){ cancelAnimationFrame(COT_CHART_ANIM_ID); COT_CHART_ANIM_ID=null; }
   var canvas=document.getElementById('cotRegimeCanvas'), empty=document.getElementById('cotRegimeEmpty'), tip=document.getElementById('cotCrosshairTip'), zoneNote=document.getElementById('cotChartZoneNote');
   if(!canvas) return;
+  var precheckRect=canvas.getBoundingClientRect();
+  if(!precheckRect.width){
+    // Root cause of the terminal-point marker looking cut off/wrong: if this canvas is
+    // measured while its panel is still display:none (or mid-layout), getBoundingClientRect
+    // reports 0 and drawing falls back to the 340x200 buffer size, which CSS then stretches
+    // to the real, larger container once the panel opens -- warping the line terminus and
+    // its dot right at the edge. Guard this centrally (every call site, not just tab-switch)
+    // by waiting two frames for real layout and retrying instead of drawing blind.
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ cotDrawChart(ccy,animate); }); });
+    return;
+  }
   var allRows=cotSortHistory(ccy), limit=cotRangeLimit(activeCotRange);
   var rows=(limit?allRows.slice(-limit):allRows), d=cotLatest(ccy), crowd=cotCrowding(ccy);
   var rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
@@ -10676,7 +10728,12 @@ function cotDrawChart(ccy,animate){
 
   var vals=rows.map(function(r){return Number(r.net);}), min=Math.min.apply(null,vals.concat([0])), max=Math.max.apply(null,vals.concat([0]));
   if(min===max){min-=1000;max+=1000;}
-  var pad={l:54,r:14,t:16,b:34}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  // r was 14 -- only ~11px clear of the terminal-point marker (radius 3.2, or up to
+  // 4.5+stroke on hover). .cot-chart wraps the canvas with overflow:hidden, so on a
+  // fractional-DPR canvas that razor-thin gap could visually crowd or shave the very
+  // last dot against the container edge. Widened so the current/most-recent point
+  // always sits fully clear, never looking cut off.
+  var pad={l:54,r:22,t:16,b:34}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
   var extra=(max-min)*0.12; min-=extra; max+=extra;
   function X(i){return pad.l+(i/(rows.length-1))*pw;}
   function Y(v){return pad.t+(max-v)/(max-min)*ph;}
@@ -10739,7 +10796,14 @@ function cotDrawChart(ccy,animate){
     drawCrowdingZone();
     ctx.save();
     ctx.beginPath();
-    ctx.rect(pad.l,0,Math.max(0,pw*reveal),H);
+    // THE ACTUAL BUG: this clip's right edge was pad.l+pw*reveal, and the last
+    // point's own X(i) is ALSO pad.l+pw -- so at reveal=1 the terminal dot's
+    // center sits exactly ON the clip boundary and its outer half was sliced
+    // off by ctx.clip(), every single render, regardless of pad.r. Padding moves
+    // the boundary and the point together -- it can never close this gap. Give
+    // the clip a fixed few px of slack past the sweep so the terminal marker
+    // (radius up to 3.2, plus the 4.5+stroke hover dot drawn later) has room.
+    ctx.rect(pad.l,0,Math.max(0,pw*reveal+8),H);
     ctx.clip();
     ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.lineJoin='miter';ctx.lineCap='butt';ctx.beginPath();
     vals.forEach(function(v,i){var x=X(i),y=Y(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
