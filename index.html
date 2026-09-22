@@ -5930,16 +5930,16 @@ function regimeColorClass(label){
 }
 function pairScoreClass(score){
   // Bands match pairBandLabel() exactly, so the Score column's color always agrees
-  // with the pair's actual Bullish/Bearish/Neutral bias: +/-7 is genuinely Neutral
-  // and stays ash gray (not tinted green or red), 8-19 is the lighter "Leaning"
-  // shade, 20+ is full strength. (Previously this had no neutral cutoff at all --
-  // any nonzero score got tinted, so a score of 2 or 3 showed up leaning green/red
-  // even though it's well inside the neutral zone.)
+  // with the pair's actual Bullish/Bearish/Neutral bias: +/-4 is genuinely Neutral
+  // and stays ash gray (not tinted green or red), 5-14 is the lighter "Leaning"
+  // shade, 15+ is full strength. (Tightened from the original +/-7 / 8-19 / 20+
+  // calibration on 2026-09-22 once live board data showed nothing ever reached
+  // the old 20+ cutoff.)
   var s=Math.round(Number(score)||0);
-  if(s>=20) return "score-bull";
-  if(s>=8) return "score-lean-bull";
-  if(s<=-20) return "score-bear";
-  if(s<=-8) return "score-lean-bear";
+  if(s>=15) return "score-bull";
+  if(s>=5) return "score-lean-bull";
+  if(s<=-15) return "score-bear";
+  if(s<=-5) return "score-lean-bear";
   return "score-neutral";
 }
 
@@ -6138,12 +6138,12 @@ function pairCompositeFor(base, quote){
 // relative edges are visible instead of being flattened into Neutral.
 function pairBandLabel(s){
   s=Math.round(Number(s)||0);
-  if(s>=35) return "Very Bullish";
-  if(s>=20) return "Bullish";
-  if(s>=8) return "Leaning Bullish";
-  if(s>=-7) return "Neutral";
-  if(s>=-19) return "Leaning Bearish";
-  if(s>=-34) return "Bearish";
+  if(s>=30) return "Very Bullish";
+  if(s>=15) return "Bullish";
+  if(s>=5) return "Leaning Bullish";
+  if(s>=-4) return "Neutral";
+  if(s>=-14) return "Leaning Bearish";
+  if(s>=-29) return "Bearish";
   return "Very Bearish";
 }
 // Maps a pairBandLabel() string to a CSS class: full-strength green/red for outright
@@ -6365,16 +6365,17 @@ function pillarSign(label){
   if(label.indexOf("Bearish")!==-1) return -1;
   return 0;
 }
-// Score bands the Trade Scanner filters and colors by. These read directly off the
-// live composite score (not the 7-tier Pair Ranking bias label), matching the ranges
-// actually in use: |score|>=35 is Very Bullish/Bearish, |score|>=20 is Bullish/Bearish,
-// everything inside +/-20 is Neutral for filtering purposes.
+// Score bands the Trade Scanner filters and colors by. Kept identical to pairBandLabel()'s
+// own cutoffs on purpose -- these two must never drift apart, or a row can display "Bullish"
+// while the Bullish filter button fails to catch it. Tightened alongside pairBandLabel on
+// 2026-09-22: |score|>=30 Very Bullish/Bearish, |score|>=15 Bullish/Bearish, else Neutral
+// for filtering purposes (the Leaning tiers fold into Neutral here, same as before).
 function scannerBucket(score){
   var s=Math.round(Number(score)||0);
-  if(s>=35) return "Very Bullish";
-  if(s>=20) return "Bullish";
-  if(s<=-35) return "Very Bearish";
-  if(s<=-20) return "Bearish";
+  if(s>=30) return "Very Bullish";
+  if(s>=15) return "Bullish";
+  if(s<=-30) return "Very Bearish";
+  if(s<=-15) return "Bearish";
   return "Neutral";
 }
 function scannerPillCell(label, tip){
@@ -6609,8 +6610,9 @@ function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,d
 // ===== Conviction (replaces "Led by") =====
 // The old "Led by" column just named which pillars were pushing the score -- it never
 // told you whether the pair was actually worth taking. Parker's own framing: a real
-// trade needs the score itself to be materially strong (>=20, the same Bullish/Bearish
-// threshold the scanner already filters by) AND broad agreement across the 7 drivers.
+// trade needs the score itself to be materially strong (>=15, the same Bullish/Bearish
+// threshold the scanner already filters by, tightened from >=20 on 2026-09-22) AND
+// broad agreement across the 7 drivers.
 // Either one alone can be misleading -- a +25 score with 6/7 agreeing is a genuinely
 // good setup, but a +8 score with 6/7 agreeing is NOT, even though the agreement count
 // looks identical, because the score hasn't cleared a real threshold yet. This function
@@ -6618,12 +6620,12 @@ function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,d
 // explains the "why" using the same two numbers so the label never looks arbitrary.
 function scannerConvictionVerdict(score,agree,dir){
   if(!dir) return {label:'No Signal',tier:'flat'};
-  var strong=Math.abs(Number(score)||0)>=20; // same Bullish/Bearish threshold scannerBucket() filters by
+  var strong=Math.abs(Number(score)||0)>=15; // same Bullish/Bearish threshold scannerBucket() filters by -- tightened 2026-09-22
   if(strong && agree>=6) return {label:'High Conviction',tier:'strong'};
   if(strong && agree>=4) return {label:'Building Conviction',tier:'lean'};
   if(strong) return {label:'Score-Led',tier:'caution'};
   // 5 or 6 of 7 is a real, solid consensus even when the score itself hasn't cleared
-  // the +/-20 threshold yet -- worth watching and sizing small, not the same as having
+  // the +/-15 threshold yet -- worth watching and sizing small, not the same as having
   // nothing at all. Only 4-or-fewer agreeing alongside a weak score is a genuine "no edge".
   if(agree>=5) return {label:'Early Conviction',tier:'lean'};
   return {label:'No Edge',tier:'flat'};
@@ -8303,8 +8305,8 @@ function renderOverview(animate){
 
   /* ---- Pair radar: explicitly split bullish and bearish setups ---- */
   var pairs=buildPairs(scores).slice().sort(function(a,b){return b.score-a.score;});
-  var pairTop=pairs.filter(function(p){return Number(p.score)>=20;}).slice(0,3);
-  var pairBottom=pairs.filter(function(p){return Number(p.score)<=-20;}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
+  var pairTop=pairs.filter(function(p){return Number(p.score)>=15;}).slice(0,3);
+  var pairBottom=pairs.filter(function(p){return Number(p.score)<=-15;}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
   function miniPair(p){
     var trend=pairTrend30d(p.pair), cls=pairScoreClass(p.score);
     return '<div class="ov-pair-row" data-pair="'+esc(p.pair)+'" title="Open '+esc(p.pair)+' in Trade Scanner">'+
@@ -9357,7 +9359,13 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
     var lineLen=0;
     for(var pl=1;pl<xy.length;pl++){ var dxp=xy[pl][0]-xy[pl-1][0], dyp=xy[pl][1]-xy[pl-1][1]; lineLen+=Math.sqrt(dxp*dxp+dyp*dyp); }
     var lineLenStr=lineLen.toFixed(1);
-    var fillVar = Number(liveScore)>=15 ? "var(--bullish-strong)" : (Number(liveScore)<=-15 ? "var(--bearish-strong)" : "var(--text-faint)");
+    // Line color follows the SAME 7-day move the arrow/delta text below it already reports
+    // (t.dir, computed above via last7DayDelta) -- not the currency's current absolute score
+    // level. A currency can be sitting comfortably positive (e.g. +27) while actively losing
+    // ground over the last week; that should draw red, matching the down arrow, not green
+    // just because the level itself is still above zero. Same logic in reverse: a currency
+    // still inside the Neutral zone but climbing over the week draws green, not gray.
+    var fillVar = t.dir==="up" ? "var(--bullish-strong)" : (t.dir==="down" ? "var(--bearish-strong)" : "var(--text-faint)");
     var hitPts=series.map(function(s,i){
       var p=xy[i];
       return '<circle class="detail-trend-hit" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="10" fill="transparent" stroke="transparent" pointer-events="all"/>';
@@ -10012,7 +10020,7 @@ function sparkline(pair){
   // the separate "7D Δ" column is for). A deeply bearish score that ticked up today should
   // still read red here, not flip green because of one day's move.
   var scoreForColor = live==null ? vals[vals.length-1] : live;
-  var col = scoreForColor>=8 ? "var(--bullish)" : scoreForColor<=-8 ? "var(--bearish)" : "var(--text-faint)";
+  var col = scoreForColor>=5 ? "var(--bullish)" : scoreForColor<=-5 ? "var(--bearish)" : "var(--text-faint)"; // matches pairBandLabel's Leaning cutoff, tightened 2026-09-22
   var gradId="spark-"+pair.replace(/[^A-Za-z0-9]/g,"");
   var linePath=smoothPath(pts), baseY=h-pad;
   var areaPath=linePath+' L '+pts[pts.length-1][0].toFixed(1)+','+baseY+' L '+pts[0][0].toFixed(1)+','+baseY+' Z';
@@ -10188,7 +10196,7 @@ function bigChart(pair, rangeSel, animate){
   var range=max-min;
   var pts=vals.map(function(v,i){ var x=pad+(i/(vals.length-1))*(w-2*pad), y=h-pad-((v-min)/range)*(h-2*pad); return [x,y]; });
   var liveScoreForColor=live==null ? Number(vals[vals.length-1]) : Number(live);
-  var col = liveScoreForColor>=8 ? "var(--bullish)" : liveScoreForColor<=-8 ? "var(--bearish)" : "var(--text-faint)";
+  var col = liveScoreForColor>=5 ? "var(--bullish)" : liveScoreForColor<=-5 ? "var(--bearish)" : "var(--text-faint)"; // matches pairBandLabel's Leaning cutoff, tightened 2026-09-22
   var colStrong = col;
   var labels="";
   var mobileView = (typeof window !== "undefined" && window.innerWidth <= 700);
