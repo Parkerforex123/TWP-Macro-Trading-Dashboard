@@ -3517,13 +3517,6 @@ body{font-size:var(--twp-body-size);}
 
 .scanner-agree,.scanner-carry{font-family:'Inter',system-ui,sans-serif;font-size:13.5px;font-weight:700;color:var(--text-dim);white-space:nowrap;}
 .scanner-ledby{font-size:13px!important;color:var(--text-dim);white-space:nowrap;font-weight:500!important;}
-.scanner-conviction{font-size:13px;font-weight:700;letter-spacing:.2px;white-space:nowrap;}
-.scanner-conviction-strong{color:var(--bullish-strong);}
-.scanner-conviction-strong.scanner-conviction-short{color:var(--bearish-strong);}
-.scanner-conviction-lean{color:var(--bullish-lean);}
-.scanner-conviction-lean.scanner-conviction-short{color:var(--bearish-lean);}
-.scanner-conviction-caution{color:var(--amber);}
-.scanner-conviction-flat{color:var(--text-dim);font-weight:600;}
 .scanner-row{cursor:pointer;}
 
 /* Long / Neutral / Short section dividers — this is what keeps rows grouped by side
@@ -6630,11 +6623,6 @@ function scannerConvictionVerdict(score,agree,dir){
   if(agree>=5) return {label:'Early Conviction',tier:'lean'};
   return {label:'No Edge',tier:'flat'};
 }
-function scannerConvictionCell(score,agree,dir){
-  var v=scannerConvictionVerdict(score,agree,dir);
-  var cls='scanner-conviction-'+v.tier+(dir<0&&v.tier!=='flat'?' scanner-conviction-short':'');
-  return '<span class="scanner-conviction '+cls+'">'+esc(v.label)+'</span>';
-}
 function scannerConvictionTooltip(score,agree,dir){
   if(!dir) return '<div class="stt-kicker">Conviction</div><div class="stt-note"><b class="stt-note-strong">Composite is inside the neutral band. There is no side to size conviction for.</b></div>';
   var v=scannerConvictionVerdict(score,agree,dir);
@@ -8563,11 +8551,6 @@ function surpriseWeightedPct(ccy){
   var norm=Math.max(-1,Math.min(1, f.raw/f.max));
   return {pct:Math.round(50+norm*50),raw:f.raw,max:f.max};
 }
-// Full-circle dial gauge (0-100%), ~270deg sweep with a gap at the bottom: a solid, fully
-// filled red(low)->grey(mid)->blue(high) diverging heat map (not a thin outline ring), with
-// a small arrow marker at the needle tip -- matching the reference dashboard style. cx/cy/r
-// sized per gauge.
-function pctGaugeAngle(cx,cy,r,v){ var angle=225-(v/100*270), rad=angle*Math.PI/180; return {x:cx+r*Math.cos(rad), y:cy-r*Math.sin(rad)}; }
 // Small arrowhead marker at the needle tip, pointing outward along the needle's own
 // direction, in place of the old large ball marker.
 function needleArrowPoints(cx,cy,tx,ty){
@@ -8591,28 +8574,6 @@ function pctDivergingRgbArr(pct){
   var a,b,k;
   if(t<=0.5){ a=lo; b=mid; k=(t-0.3)/0.2; } else { a=mid; b=hi; k=(t-0.5)/0.2; }
   return [Math.round(a[0]+(b[0]-a[0])*k), Math.round(a[1]+(b[1]-a[1])*k), Math.round(a[2]+(b[2]-a[2])*k)];
-}
-function pctDivergingRgb(pct,alpha){ var c=pctDivergingRgbArr(pct); return 'rgba('+c[0]+','+c[1]+','+c[2]+','+(alpha==null?1:alpha)+')'; }
-function pctGaugeArcs(cx,cy,r){
-  var N=40, out="";
-  for(var i=0;i<N;i++){
-    var v0=i*(100/N), v1=(i+1)*(100/N);
-    var p0=pctGaugeAngle(cx,cy,r,v0), p1=pctGaugeAngle(cx,cy,r,v1);
-    // Filled pie wedge from the centre out to the rim (not a thin stroked ring) so the whole
-    // dial reads as a solid heat map instead of a coloured outline around a black centre.
-    out += '<path d="M '+cx+' '+cy+' L '+p0.x.toFixed(2)+' '+p0.y.toFixed(2)+' A '+r+' '+r+' 0 0 1 '+p1.x.toFixed(2)+' '+p1.y.toFixed(2)+' Z" fill="'+pctDivergingRgb((v0+v1)/2,0.88)+'" stroke="none"/>';
-  }
-  return out;
-}
-// Minimal end-cap ticks only (no 0/20/40/60/80/100 labels) -- keeps the dial clean
-// like the reference gauge, which just shows small marks at the two extremes.
-function pctGaugeTicks(cx,cy,r){
-  var vals=[0,100], out="";
-  for(var i=0;i<vals.length;i++){
-    var v=vals[i], p1=pctGaugeAngle(cx,cy,r+2,v), p2=pctGaugeAngle(cx,cy,r+8,v);
-    out += '<line x1="'+p1.x.toFixed(2)+'" y1="'+p1.y.toFixed(2)+'" x2="'+p2.x.toFixed(2)+'" y2="'+p2.y.toFixed(2)+'" stroke="var(--text-faint)" stroke-width="1.4"/>';
-  }
-  return out;
 }
 // Heat colour for the rank table's Score chip: reads the same brand-colour value the
 // gauge track uses at that percentage (single source of truth for both), just
@@ -8975,7 +8936,6 @@ function esiLabelForPct(p){
   return {t:'Strongly missing',c:'neg'};
 }
 function esiFmtSigned(n,d){ var v=Number(n); if(!Number.isFinite(v)) return '\u2014'; return (v>0?'+':(v<0?'\u2212':''))+Math.abs(v).toFixed(d==null?1:d); }
-function esiShortDate(key){ var d=new Date(key+'T12:00:00'); return Number.isFinite(d.getTime())?new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(d):key; }
 function esiCcyDetail(ccy){
   var rows=surpriseDataForCurrency(ccy).rows, beat=0, miss=0, inl=0;
   rows.forEach(function(r){ if(r.ratio>=1) beat++; else if(r.ratio<=-1) miss++; else inl++; });
@@ -8985,7 +8945,6 @@ function esiCcyDetail(ccy){
   if(worst && worst.ratio>-1) worst=null;
   return {total:rows.length,beat:beat,miss:miss,inl:inl,top:top,worst:worst};
 }
-function esiRelText(r){ return esc(r.name)+' <em>'+esc(r.actual)+' vs '+esc(r.forecast)+'</em>'; }
 function esiTipHtml(ccy){
   var pct=surpriseWeightedPct(ccy).pct, lab=esiLabelForPct(pct), det=esiCcyDetail(ccy);
   var out='<div class="esi-tip-head">'+flagImg(ccy)+'<b>'+esc(ccy)+'</b><span class="'+lab.c+'">'+(pct==null?'\u2014':pct+'%')+'</span></div>';
