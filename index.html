@@ -5923,17 +5923,14 @@ function regimeColorClass(label){
   return "strength-neu";
 }
 function pairScoreClass(score){
-  // Bands match pairBandLabel() exactly, so the Score column's color always agrees
-  // with the pair's actual Bullish/Bearish/Neutral bias: +/-4 is genuinely Neutral
-  // and stays ash gray (not tinted green or red), 5-14 is the lighter "Leaning"
-  // shade, 15+ is full strength. (Tightened from the original +/-7 / 8-19 / 20+
-  // calibration on 2026-09-22 once live board data showed nothing ever reached
-  // the old 20+ cutoff.)
+  // Bands match pairBandLabel() exactly: +/-13 is genuinely Neutral, 14-20
+  // is the lighter Leaning shade, 21-29 is full-strength Bullish/Bearish,
+  // and 30+ is Very Bullish/Very Bearish.
   var s=Math.round(Number(score)||0);
-  if(s>=15) return "score-bull";
-  if(s>=5) return "score-lean-bull";
-  if(s<=-15) return "score-bear";
-  if(s<=-5) return "score-lean-bear";
+  if(s>=21) return "score-bull";
+  if(s>=14) return "score-lean-bull";
+  if(s<=-21) return "score-bear";
+  if(s<=-14) return "score-lean-bear";
   return "score-neutral";
 }
 
@@ -6103,7 +6100,30 @@ function pairSpreadChangeSince(base,quote,days){
   return prev==null?null:y.current-prev;
 }
 
-function pairCompositeFor(base, quote){
+// Pair "ruler" for the two pillars that used to be measured against a perfect-vs-perfect
+// maximum (one currency at +100 and the other at -100), which almost never happens. A pair's
+// Fundamentals gap of PAIR_FUND_FULL_GAP (on the -200..+200 scale the labels use) and a CB
+// stance gap of PAIR_CB_FULL_GAP (on the -20..+20 scale) now count as FULL strength, so
+// a "Very Bullish" Fundamentals label fills about half of its 45-point bucket instead of a
+// fifth. Anything past full strength is capped at 1. Weights are unchanged.
+// legacy=true gives the previous formula (gap / 2) for the old-vs-new scoring check.
+var PAIR_FUND_FULL_GAP=80, PAIR_CB_FULL_GAP=10;
+// Pair-score weights (points out of 100). The three rate-path pillars lead: Fundamentals 35 +
+// Yield 25 + CB Stance 17 = 77, so Yield and CB together (42) can outweigh Fundamentals (35)
+// when they agree, and Fundamentals alone can no longer beat both. The other four pillars add
+// on top and are unchanged. PAIR_W_OLD is the previous split, kept for the old-vs-new check.
+var PAIR_W_NEW={fund:35,yield:25,cb:17,pos:8,wow:7,risk:5,seas:3};
+var PAIR_W_OLD={fund:45,yield:18,cb:14,pos:8,wow:7,risk:5,seas:3};
+function pairW(legacy){ return legacy?PAIR_W_OLD:PAIR_W_NEW; }
+function pairFundTerm(fundBase,fundQuote,legacy){
+  if(legacy) return (fundBase-fundQuote)/2;
+  return Math.max(-1,Math.min(1,(fundBase-fundQuote)*100/PAIR_FUND_FULL_GAP));
+}
+function pairCbTerm(cbBase,cbQuote,legacy){
+  if(legacy) return (cbBase-cbQuote)/2;
+  return Math.max(-1,Math.min(1,(cbBase-cbQuote)*10/PAIR_CB_FULL_GAP));
+}
+function pairCompositeFor(base, quote, legacy){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
   var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
@@ -6118,12 +6138,14 @@ function pairCompositeFor(base, quote){
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
   // All Base-vs-Quote differentials are normalized back to -1..1 before weighting.
-  var fundPair=(fundBase-fundQuote)/2;
-  var cbPair=(cbBase-cbQuote)/2;
+  var fundPair=pairFundTerm(fundBase,fundQuote,legacy);
+  var cbPair=pairCbTerm(cbBase,cbQuote,legacy);
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Shared macro hierarchy: Fundamentals 45% + Yield 18% + CB Stance 14% + COT Position 8% + COT Weekly Change 7% + Risk Sentiment 5% + Seasonality 3%.
-  return 100*(0.45*fundPair+0.18*yieldTerm+0.14*cbPair+0.08*cotPosTerm+0.07*cotWowTerm+0.05*riskPair+0.03*seasPair);
+  // Pair weights: Fundamentals 35 + Yield 25 + CB Stance 17 + COT Position 8 + COT Weekly Change 7 + Risk Sentiment 5 + Seasonality 3 (see PAIR_W_NEW).
+  // Fundamentals and CB gaps use the practical-full-strength ruler above (see pairFundTerm / pairCbTerm).
+  var W=pairW(legacy);
+  return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.risk*riskPair+W.seas*seasPair;
 }
 
 
@@ -6132,11 +6154,13 @@ function pairCompositeFor(base, quote){
 // relative edges are visible instead of being flattened into Neutral.
 function pairBandLabel(s){
   s=Math.round(Number(s)||0);
+  // Pair regimes: 14/21/30 thresholds. The composite score already combines
+  // all seven weighted pillars, so small +/-5..13 readings stay genuinely Neutral.
   if(s>=30) return "Very Bullish";
-  if(s>=15) return "Bullish";
-  if(s>=5) return "Leaning Bullish";
-  if(s>=-4) return "Neutral";
-  if(s>=-14) return "Leaning Bearish";
+  if(s>=21) return "Bullish";
+  if(s>=14) return "Leaning Bullish";
+  if(s>=-13) return "Neutral";
+  if(s>=-20) return "Leaning Bearish";
   if(s>=-29) return "Bearish";
   return "Very Bearish";
 }
@@ -6172,8 +6196,8 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 45% of the total model. Each underlying indicator keeps its
-  // existing importance inside that pillar; the pillar is normalized to 45 total points.
+  // Fundamentals occupy 35% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
+  // existing importance inside that pillar; the pillar is normalized to its total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
     var d=DATA[ccy]||{};
@@ -6188,21 +6212,21 @@ function pairAlignmentFor(base, quote, score){
     });
   });
   if(fundWeightSum>0){
-    total += 45;
-    agree += 45*(fundAgreeWeight/fundWeightSum);
+    total += pairW(false).fund;
+    agree += pairW(false).fund*(fundAgreeWeight/fundWeightSum);
   }
-  // Yield = 18% of the model.
+  // Yield = 25% of the pair model.
   var y=pairYieldCalc(base,quote).score;
-  if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,18);
+  if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,pairW(false).yield);
   // COT Position = 8%, COT Weekly Change = 7%. Voted separately instead of blending
   // into .combined, so a pair with position and flow disagreeing shows that split
   // instead of cancelling into one vote.
   var cot=cotPairRegime(base,quote);
   if(!cot.insufficient && Number(cot.posScore)!==0) vote(Number(cot.posScore)>0?1:-1,8);
   if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,7);
-  // CB stance = 14%. HOLD remains exactly neutral/zero by design.
+  // CB stance = 17% of the pair model. HOLD remains exactly neutral/zero by design.
   var cbDiff=cbStanceScore(base)-cbStanceScore(quote);
-  if(cbDiff!==0) vote(cbDiff>0?1:-1,14);
+  if(cbDiff!==0) vote(cbDiff>0?1:-1,pairW(false).cb);
   // Risk = 5%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
   if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,5);
@@ -6280,13 +6304,14 @@ function scannerDriverBreakdown(base,quote){
   // The previous scanner breakdown used 25/7.5/2.5 point caps for Fundamentals/Position/WoW,
   // while the live composite actually uses 45/8/7. This made the displayed Bias and driver
   // contribution disagree with the real pair score.
-  push('Fundamentals',45*((fundBase-fundQuote)/2),pillarBias((fundBase-fundQuote)*100));
-  push('Yield',yScore==null?0:1.8*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
-  push('CB stance',14*((cbBase-cbQuote)/2),pairCbStanceLabel(base,quote));
-  push('Position',cot.insufficient?0:0.08*cot.posScore,cot.posLabel);
-  push('WoW',cot.insufficient?0:0.07*cot.flowScore,cot.flowLabel);
-  push('Seasonality',3*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
-  push('Risk sentiment',5*((riskBase-riskQuote)/2),riskPairState(base,quote));
+  var W=pairW(false);
+  push('Fundamentals',W.fund*pairFundTerm(fundBase,fundQuote),pillarBias((fundBase-fundQuote)*100));
+  push('Yield',yScore==null?0:(W.yield/10)*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
+  push('CB stance',W.cb*pairCbTerm(cbBase,cbQuote),pairCbStanceLabel(base,quote));
+  push('Position',cot.insufficient?0:(W.pos/100)*cot.posScore,cot.posLabel);
+  push('WoW',cot.insufficient?0:(W.wow/100)*cot.flowScore,cot.flowLabel);
+  push('Seasonality',W.seas*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
+  push('Risk sentiment',W.risk*((riskBase-riskQuote)/2),riskPairState(base,quote));
   return out;
 }
 function scannerLedByDrivers(base,quote,dir){
@@ -6359,17 +6384,18 @@ function pillarSign(label){
   if(label.indexOf("Bearish")!==-1) return -1;
   return 0;
 }
-// Score bands the Trade Scanner filters and colors by. Kept identical to pairBandLabel()'s
-// own cutoffs on purpose -- these two must never drift apart, or a row can display "Bullish"
-// while the Bullish filter button fails to catch it. Tightened alongside pairBandLabel on
-// 2026-09-22: |score|>=30 Very Bullish/Bearish, |score|>=15 Bullish/Bearish, else Neutral
-// for filtering purposes (the Leaning tiers fold into Neutral here, same as before).
+// Scanner filter buckets use the same pair regime thresholds as pairBandLabel().
+// Leaning tiers remain their own filter buckets (and keep their lighter colour), but
+// for the trade-side column and grouping they now count as a side: +14 and above is
+// LONG, -14 and below is SHORT, and only the Neutral band (-13..+13) is FLAT.
 function scannerBucket(score){
   var s=Math.round(Number(score)||0);
   if(s>=30) return "Very Bullish";
-  if(s>=15) return "Bullish";
+  if(s>=21) return "Bullish";
+  if(s>=14) return "Leaning Bullish";
   if(s<=-30) return "Very Bearish";
-  if(s<=-15) return "Bearish";
+  if(s<=-21) return "Bearish";
+  if(s<=-14) return "Leaning Bearish";
   return "Neutral";
 }
 function scannerPillCell(label, tip){
@@ -6379,14 +6405,22 @@ function scannerPillCell(label, tip){
   return '<span class="scanner-pill '+cls+(strong?' strong':'')+'" data-scanner-tip="'+esc(tip||'')+'"></span>';
 }
 function scannerSideBadge(bias, score){
-  if(bias==="Neutral") return '<span class="scanner-side scanner-side-neutral">FLAT</span>';
+  // The side starts at the Leaning band: Leaning Bullish (+14 and up) is LONG and
+  // Leaning Bearish (-14 and down) is SHORT. Only the Neutral band is FLAT.
+  var sideBiases={"Leaning Bullish":1,"Bullish":1,"Very Bullish":1,"Leaning Bearish":1,"Bearish":1,"Very Bearish":1};
+  if(!sideBiases[bias]){
+    return '<span class="scanner-side scanner-side-neutral">FLAT</span>';
+  }
   return score>0 ? '<span class="scanner-side scanner-side-long">LONG</span>' : '<span class="scanner-side scanner-side-short">SHORT</span>';
 }
-// Groups rows the same way the Side column labels them: Long first, Neutral in the
-// middle, Short last -- never interleaved.
+// Groups rows the same way the Side column labels them: Long first (Leaning Bullish
+// and up), Flat in the middle (Neutral band only), Short last (Leaning Bearish and
+// down) -- never interleaved.
 function scannerSideGroup(p){
-  if(p.bias==="Neutral") return 1;
-  return p.score>0 ? 0 : 2;
+  var b=scannerBucket(p.score);
+  if(b==="Leaning Bullish"||b==="Bullish"||b==="Very Bullish") return 0;
+  if(b==="Leaning Bearish"||b==="Bearish"||b==="Very Bearish") return 2;
+  return 1;
 }
 // Small left/right gauge under the score -- fill length is proportional to conviction
 // (scaled against the full -100 to +100 composite-score range), colored to match the score band,
@@ -6603,9 +6637,9 @@ function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,d
 
 // ===== Conviction (replaces "Led by") =====
 // The old "Led by" column just named which pillars were pushing the score -- it never
-// told you whether the pair was actually worth taking. Parker's own framing: a real
-// trade needs the score itself to be materially strong (>=15, the same Bullish/Bearish
-// threshold the scanner already filters by, tightened from >=20 on 2026-09-22) AND
+// told you whether the pair was actually worth taking. The current framework treats
+// +/-21 as the first full Bullish/Bearish band; 14-20 is the Leaning band, which now
+// counts as LONG/SHORT in the trade-side scanner. Broad agreement is still useful context.
 // broad agreement across the 7 drivers.
 // Either one alone can be misleading -- a +25 score with 6/7 agreeing is a genuinely
 // good setup, but a +8 score with 6/7 agreeing is NOT, even though the agreement count
@@ -6614,13 +6648,13 @@ function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,d
 // explains the "why" using the same two numbers so the label never looks arbitrary.
 function scannerConvictionVerdict(score,agree,dir){
   if(!dir) return {label:'No Signal',tier:'flat'};
-  var strong=Math.abs(Number(score)||0)>=15; // same Bullish/Bearish threshold scannerBucket() filters by -- tightened 2026-09-22
+  var strong=Math.abs(Number(score)||0)>=21; // actual Bullish/Bearish scanner threshold
   if(strong && agree>=6) return {label:'High Conviction',tier:'strong'};
   if(strong && agree>=4) return {label:'Building Conviction',tier:'lean'};
   if(strong) return {label:'Score-Led',tier:'caution'};
-  // 5 or 6 of 7 is a real, solid consensus even when the score itself hasn't cleared
-  // the +/-15 threshold yet -- worth watching and sizing small, not the same as having
-  // nothing at all. Only 4-or-fewer agreeing alongside a weak score is a genuine "no edge".
+  // 5 or 6 of 7 can be a solid consensus even when the score itself hasn't cleared
+  // the +/-21 trade threshold yet. That is useful development information, not a trade
+  // signal. Only 4-or-fewer agreeing alongside a weak score is a genuine "no edge".
   if(agree>=5) return {label:'Early Conviction',tier:'lean'};
   return {label:'No Edge',tier:'flat'};
 }
@@ -6630,10 +6664,10 @@ function scannerConvictionTooltip(score,agree,dir){
   var side=dir>0?'the long side':'the short side';
   var scoreTxt=(score>0?'+':'')+Math.round(score);
   var reason;
-  if(v.label==='High Conviction') reason='Score is '+scoreTxt+', well past the +/-20 threshold, and '+agree+' of 7 drivers agree with '+side+'. Both the size of the edge and the breadth of evidence line up -- this is what a genuinely convicted setup looks like.';
-  else if(v.label==='Building Conviction') reason='Score is '+scoreTxt+', past the +/-20 threshold, and '+agree+' of 7 drivers agree with '+side+'. The edge is real; the consensus behind it is solid without being overwhelming.';
-  else if(v.label==='Score-Led') reason='Score is '+scoreTxt+', past the +/-20 threshold, but just '+agree+' of 7 drivers actually agree with '+side+'. A strong score with thin consensus usually means one or two drivers are doing all the work -- worth checking which ones before sizing this up.';
-  else if(v.label==='Early Conviction') reason=agree+' of 7 drivers agree with '+side+' -- a solid consensus -- but the score is only '+scoreTxt+', still inside the +/-20 band. The call isn\'t there yet, but the agreement is genuinely strong: worth watching closely, and a smaller starter position rather than full size is reasonable here. If the score strengthens from here while the consensus holds, this is a pair to size up into.';
+  if(v.label==='High Conviction') reason='Score is '+scoreTxt+', at or beyond the +/−21 Bullish/Bearish threshold, and '+agree+' of 7 drivers agree with '+side+'. Both the size of the edge and the breadth of evidence line up.';
+  else if(v.label==='Building Conviction') reason='Score is '+scoreTxt+', at or beyond the +/−21 threshold, and '+agree+' of 7 drivers agree with '+side+'. The edge is established and the consensus behind it is solid without being overwhelming.';
+  else if(v.label==='Score-Led') reason='Score is '+scoreTxt+', at or beyond the +/−21 threshold, but just '+agree+' of 7 drivers actually agree with '+side+'. The composite is strong, but the evidence is concentrated in fewer pillars, so inspect the drivers before sizing.';
+  else if(v.label==='Early Conviction') reason=agree+' of 7 drivers agree with '+side+', but the score is only '+scoreTxt+', still inside the +/-21 trade threshold. This is a developing setup to monitor, not a LONG/SHORT signal yet.';
   else reason='Score is '+scoreTxt+' and only '+agree+' of 7 drivers agree with '+side+'. Neither the edge nor the consensus is there yet -- little reason to watch this one closely right now.';
   return '<div class="stt-kicker">Conviction</div><div class="stt-title">'+esc(v.label)+'</div><div class="stt-note"><b class="stt-note-strong">'+esc(reason)+'</b></div>';
 }
@@ -6779,7 +6813,7 @@ function scanner7dTooltip(base,quote,live){
   if(d7.delta==null) return '<div class="stt-kicker">7D</div><div class="stt-note">No logged score at least 7 calendar days back yet.</div>';
   var prior=live-d7.delta;
   var titleHtml='<div class="stt-title">Score now '+esc(scannerScorePrecise(live))+' · prior '+esc(scannerScorePrecise(prior))+' from 7 days ago</div>';
-  // Neutral band (-7..+7): there's no long/short thesis to gain or lose conviction, so no
+  // Neutral band (-13..+13): there's no long/short thesis to gain or lose conviction, so no
   // strengthened/weakened language belongs here at all -- just the two numbers, plain.
   if(Math.abs(Math.round(Number(live)||0))<=7){
     return '<div class="stt-kicker">7D</div>'+titleHtml;
@@ -6803,12 +6837,51 @@ function scanner7dTooltip(base,quote,live){
   return '<div class="stt-kicker">7D</div>'+titleHtml+'<div class="stt-note">'+noteText+'</div>';
 }
 
+// The scanner filter row no longer has Leaning buttons. Leaning pairs stay in the score, bands
+// and colours, and still count as LONG / SHORT, so for filtering they ride with the button next
+// to them: Leaning Bullish under "Bullish", Leaning Bearish under "Bearish". That way no pair
+// becomes impossible to reach with a filter.
+function scannerFilterKey(score){
+  var b=scannerBucket(score);
+  if(b==="Leaning Bullish") return "Bullish";
+  if(b==="Leaning Bearish") return "Bearish";
+  return b;
+}
+
+// Admin-only check: every pair scored with the previous formula vs the current one, so the
+// effect of the Fundamentals / CB ruler change can be judged on real numbers.
+function scannerScoringCompareHtml(){
+  var side=function(sc){ return sc>=14?"Long":(sc<=-14?"Short":"Flat"); };
+  var rowsArr=[], cOld={Long:0,Flat:0,Short:0}, cNew={Long:0,Flat:0,Short:0};
+  for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
+    var b=CCY_ORDER[i], q=CCY_ORDER[j];
+    var o=Math.round(pairCompositeFor(b,q,true)), n=Math.round(pairCompositeFor(b,q));
+    cOld[side(o)]++; cNew[side(n)]++;
+    rowsArr.push({pair:b+q,o:o,n:n});
+  } }
+  rowsArr.sort(function(a,b){ return Math.abs(b.n-b.o)-Math.abs(a.n-a.o) || b.n-a.n; });
+  var fmt=function(v){ return (v>0?"+":"")+v; };
+  var body=rowsArr.map(function(r){
+    var ob=pairBandLabel(r.o), nb=pairBandLabel(r.n), moved=ob!==nb;
+    return '<tr><td style="text-align:left;padding:3px 10px 3px 0;font-weight:600;">'+r.pair+'</td>'+
+      '<td style="padding:3px 10px;">'+fmt(r.o)+'</td>'+
+      '<td style="padding:3px 10px;">'+fmt(r.n)+'</td>'+
+      '<td style="padding:3px 10px;color:var(--text-dim);">'+fmt(r.n-r.o)+'</td>'+
+      '<td style="text-align:left;padding:3px 10px;color:var(--text-dim);">'+esc(ob)+'</td>'+
+      '<td style="text-align:left;padding:3px 10px;'+(moved?'color:var(--amber);font-weight:600;':'color:var(--text-dim);')+'">'+esc(nb)+'</td></tr>';
+  }).join("");
+  return '<details class="card" style="margin-bottom:6px;"><summary style="cursor:pointer;font-size:12.5px;color:var(--text-dim);">Scoring check (admin only): old vs new pair scores &mdash; '+
+    'Long '+cOld.Long+' &rarr; '+cNew.Long+' &middot; Flat '+cOld.Flat+' &rarr; '+cNew.Flat+' &middot; Short '+cOld.Short+' &rarr; '+cNew.Short+'</summary>'+
+    '<div style="padding:8px 2px 2px;font-size:12px;"><div style="color:var(--text-faint);margin-bottom:6px;">Old = previous formula (weights Fundamentals '+PAIR_W_OLD.fund+' / Yield '+PAIR_W_OLD.yield+' / CB '+PAIR_W_OLD.cb+', gaps halved). New = weights Fundamentals '+PAIR_W_NEW.fund+' / Yield '+PAIR_W_NEW.yield+' / CB '+PAIR_W_NEW.cb+', and a Fundamentals gap of '+PAIR_FUND_FULL_GAP+' and CB gap of '+PAIR_CB_FULL_GAP+' count as full strength. Sorted by biggest change.</div>'+
+    '<table style="border-collapse:collapse;text-align:right;"><thead><tr style="color:var(--text-faint);"><th style="text-align:left;padding:3px 10px 3px 0;">Pair</th><th style="padding:3px 10px;">Old</th><th style="padding:3px 10px;">New</th><th style="padding:3px 10px;">Change</th><th style="text-align:left;padding:3px 10px;">Old band</th><th style="text-align:left;padding:3px 10px;">New band</th></tr></thead><tbody>'+body+'</tbody></table></div></details>';
+}
+
 function renderScanner(animateTrend){
   if(!DATA) return;
   var pairsAll=buildPairs(allScores());
   var pairs=pairsAll.filter(function(p){
     if(scannerFilters.indexOf("All")!==-1) return true;
-    return scannerFilters.indexOf(scannerBucket(p.score))!==-1;
+    return scannerFilters.indexOf(scannerFilterKey(p.score))!==-1;
   });
   // Grouped Long -> Neutral -> Short (never mixed), ranked by conviction within each group.
   // Within each Long/Neutral/Short group, always rank highest score to lowest.
@@ -6829,7 +6902,7 @@ function renderScanner(animateTrend){
     rows='<tr><td colspan="16" style="text-align:center;color:var(--text-faint);padding:18px 0;">No pairs match this filter right now.</td></tr>';
   }
   var lastGroup=null;
-  var groupMeta={0:["Long","long"],1:["Flat","neutral"],2:["Short","short"]};
+  var groupMeta={0:["Longs","long"],1:["Flat","neutral"],2:["Shorts","short"]};
   for(var i=0;i<pairs.length;i++){
     var p=pairs[i];
     var grp=scannerSideGroup(p);
@@ -6910,7 +6983,7 @@ function renderScanner(animateTrend){
       '<button class="recalc-btn" id="exportTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Export trend history</button>'+
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button>'+
       '<button class="recalc-btn" id="clearPairTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear pair trend only</button></div>'+'</div>') : '');
-  var html=recalcRow+'<div class="card"><div class="scanner-head">'+
+  var html=recalcRow+(unlockedLocally?scannerScoringCompareHtml():'')+'<div class="card"><div class="scanner-head">'+
     '<div class="scanner-head-left"><h3 class="scanner-title" style="margin:0;">Trade Scanner</h3></div>'+
     '<div class="scanner-head-right"><div class="range-switch">'+filterBtns+'</div></div>'+
     '</div>'+
@@ -10463,8 +10536,8 @@ function pairMacroSummaryHtml(pair, score){
 // seasonalityValue, riskTermFor), each independently rescaled to 0-100. They are two
 // real, separate readings now, not a mirrored pair -- so they will not generally sum
 // to ~100 the way the old fake ones always did.
-var PAIR_FOCUS_PILLAR_CAP={Fundamentals:45,Yield:18,'CB stance':14,Position:8,WoW:7,Seasonality:3,'Risk sentiment':5};
-// Matches the weights actually used in compositeFor() -- Fundamentals 45% + Yield 18%
+var PAIR_FOCUS_PILLAR_CAP={Fundamentals:PAIR_W_NEW.fund,Yield:PAIR_W_NEW.yield,'CB stance':PAIR_W_NEW.cb,Position:PAIR_W_NEW.pos,WoW:PAIR_W_NEW.wow,Seasonality:PAIR_W_NEW.seas,'Risk sentiment':PAIR_W_NEW.risk};
+// Matches the pair weights in PAIR_W_NEW (Fundamentals 35 + Yield 25 + CB 17 + ...); older note: Fundamentals 45% + Yield 18%
 // + CB stance 14% + Position 8% + WoW 7% + Risk sentiment 5% + Seasonality 3%. Shown
 // under each pillar name in the driver table, and used to blend the per-currency
 // "USD"/"CHF" summary-tile numbers at the top of the card.
@@ -14746,6 +14819,59 @@ twpShowNameGateIfNeeded();
   width:auto!important;min-width:100px!important;max-width:none!important;
   padding-left:30px!important;padding-right:16px!important;text-align:left!important;
 }
+</style>
+
+<style id="scanner-group-spacing-ref">
+/* Trade Scanner lines + group headers, matched to the reference screenshot.
+   Measured from it: every row divider is a 1px line in the normal border colour, and the
+   line under the header plus the line above a new section (FLAT / SHORTS) is also 1px but
+   a little brighter. The group header draws no border of its own; the section line is the
+   bottom line of the last row above it, so nothing doubles up.
+   Header label: small spaced-out caps in a quiet grey, ~18px below the line. */
+#tab-scanner{--scanner-line-strong:color-mix(in srgb, var(--border) 93%, #fff);}
+#tab-scanner .scanner-table tbody tr.scanner-row td{
+  border-bottom:1px solid var(--border)!important;
+}
+/* Last row before a new section: brighter 1px line. */
+#tab-scanner .scanner-table tbody tr:has(+ tr.scanner-group-row) td{
+  border-bottom:1px solid var(--scanner-line-strong)!important;
+}
+/* Line under the column header: same brighter 1px. */
+#tab-scanner .scanner-table thead:before{
+  box-shadow:0 1px 0 var(--scanner-line-strong),0 4px 10px rgba(0,0,0,.16)!important;
+}
+#tab-scanner .scanner-table tr.scanner-group-row td{
+  padding:11px 8px 14px 8px!important;
+  border-top:0!important;
+  border-bottom:0!important;
+  background:transparent!important;
+  text-align:left!important;
+  line-height:14px;
+}
+/* If an expanded pair panel sits right above a group header, keep the line there too. */
+#tab-scanner .scanner-table tr.scanner-expanded-row + tr.scanner-group-row td{
+  border-top:1px solid var(--scanner-line-strong)!important;
+}
+#tab-scanner .scanner-table tr.scanner-group-row:hover td{background:transparent!important;}
+/* Scanner filter buttons: square, solid corners (no rounded pills). */
+#tab-scanner .range-btn,#tab-scanner .range-btn.active{border-radius:0!important;}
+#tab-scanner .scanner-group-label,
+#tab-scanner .scanner-group-label.long,
+#tab-scanner .scanner-group-label.short{
+  display:inline-block;
+  font-family:'Inter',system-ui,sans-serif!important;
+  font-size:12px!important;
+  font-weight:600!important;
+  letter-spacing:1px!important;
+  line-height:14px!important;
+  text-transform:uppercase;
+  color:#84848a!important;
+}
+</style>
+
+<style id="square-corners-nav">
+/* Sidebar tabs (Overview, Trade Scanner, ...): square corners, no rounding, desktop and mobile. */
+.tab-btn,.tab-btn:hover,.tab-btn.active{border-radius:0!important;}
 </style>
 
 <script id="scanner-7d-gap-tip-v1">
