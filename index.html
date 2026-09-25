@@ -283,7 +283,7 @@ th{font-size:12px;}
 .trend-panel .trend-up{color:var(--bullish-strong);}
 .trend-panel .trend-down{color:var(--bearish-strong);}
 .trend-panel .trend-flat{color:var(--text-faint);}
-.pair-score-tooltip{position:fixed;z-index:10000;display:none;pointer-events:none;min-width:118px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.28);font-family:'Inter',system-ui,sans-serif;font-size:11px;line-height:1.35;color:var(--text);white-space:nowrap;}
+.pair-score-tooltip{position:fixed;z-index:10000;display:none;pointer-events:none;min-width:118px;padding:7px 9px;border:1px solid var(--border);border-radius:0;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.28);font-family:'Inter',system-ui,sans-serif;font-size:11px;line-height:1.35;color:var(--text);white-space:nowrap;}
 .pair-score-tooltip .tt-date{color:var(--text-faint);font-family:'IBM Plex Mono',monospace;font-size:10px;}
 .pair-score-tooltip .tt-score{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:800;margin-top:2px;}
 .pair-score-tooltip .tt-regime{font-weight:700;margin-top:2px;}
@@ -708,7 +708,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-raw .ss-hover-area{cursor:crosshair;}
 #tab-raw .ss-vline{display:none;stroke:var(--text-faint);stroke-width:1;stroke-dasharray:4 4;opacity:.85;vector-effect:non-scaling-stroke;}
 #tab-raw .ss-hover-dot{display:none;stroke:var(--panel);stroke-width:1.6;vector-effect:non-scaling-stroke;}
-#tab-raw .ss-tooltip{display:none;position:absolute;z-index:20;min-width:150px;padding:8px 9px;border:1px solid var(--border);border-radius:7px;background:rgba(16,19,15,.96);box-shadow:0 8px 24px rgba(0,0,0,.32);font-size:11px;pointer-events:none;}
+#tab-raw .ss-tooltip{display:none;position:absolute;z-index:20;min-width:150px;padding:8px 9px;border:1px solid var(--border);border-radius:0;background:rgba(16,19,15,.96);box-shadow:0 8px 24px rgba(0,0,0,.32);font-size:11px;pointer-events:none;}
 #tab-raw .ss-tooltip strong{display:block;font-size:11px;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--border);}
 #tab-raw .ss-tooltip div{display:grid;grid-template-columns:8px 1fr auto;gap:6px;align-items:center;line-height:1.45;}
 #tab-raw .ss-tooltip i{display:block;width:7px;height:2px;border-radius:2px;}
@@ -1492,7 +1492,7 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
 #tab-cot .cot-chart-zone-note{position:absolute;right:8px;top:7px;z-index:2;pointer-events:none;display:none;padding:3px 5px;border:1px solid currentColor;border-radius:4px;background:rgba(10,12,11,.72);font:8.5px 'IBM Plex Mono',monospace;font-weight:800;letter-spacing:.55px;text-transform:uppercase;}
 #tab-cot .cot-chart-zone-note.warn{display:block;color:var(--bearish-strong);}
 #tab-cot .cot-chart-zone-note.bounce{display:block;color:var(--bullish-strong);}
-#tab-cot .cot-crosshair-tip{position:absolute;display:none;z-index:5;pointer-events:none;min-width:128px;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:rgba(10,12,11,.94);box-shadow:0 5px 18px rgba(0,0,0,.35);font:10px 'IBM Plex Mono',monospace;color:var(--text);white-space:nowrap;}
+#tab-cot .cot-crosshair-tip{position:absolute;display:none;z-index:5;pointer-events:none;min-width:128px;padding:5px 7px;border:1px solid var(--border);border-radius:0;background:rgba(10,12,11,.94);box-shadow:0 5px 18px rgba(0,0,0,.35);font:10px 'IBM Plex Mono',monospace;color:var(--text);white-space:nowrap;}
 #tab-cot .cot-crosshair-tip .k{color:var(--text-faint);margin-right:5px;}
 #tab-cot .cot-crosshair-tip .v{font-weight:700;}
 #tab-cot .cot-export-btn{font:10px 'IBM Plex Mono',monospace;padding:5px 8px;border:1px solid var(--border);border-radius:5px;background:var(--panel3);color:var(--text-dim);cursor:pointer;}
@@ -2793,7 +2793,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-vline{display:none;stroke:var(--text-faint);stroke-width:1;stroke-dasharray:4 4;opacity:.85;vector-effect:non-scaling-stroke;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel);stroke-width:1.6;vector-effect:non-scaling-stroke;}
 #tab-overview .ov-csi-hover-area{cursor:crosshair;}
-#tab-overview .ov-csi-tooltip{display:none;position:absolute;z-index:20;min-width:160px;padding:8px 9px;border:1px solid var(--border);border-radius:7px;background:rgba(16,19,15,.96);box-shadow:0 8px 24px rgba(0,0,0,.32);font-size:11px!important;pointer-events:none;}
+#tab-overview .ov-csi-tooltip{display:none;position:absolute;z-index:20;min-width:160px;padding:8px 9px;border:1px solid var(--border);border-radius:0;background:rgba(16,19,15,.96);box-shadow:0 8px 24px rgba(0,0,0,.32);font-size:11px!important;pointer-events:none;}
 #tab-overview .ov-csi-tooltip strong{display:block;font-size:11px!important;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--border);}
 #tab-overview .ov-csi-tooltip div{display:grid;grid-template-columns:8px 1fr auto;gap:6px;align-items:center;line-height:1.45;}
 #tab-overview .ov-csi-tooltip i{display:block;width:7px;height:2px;border-radius:2px;}
@@ -3027,7 +3027,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-chart svg{width:100%!important;height:100%!important;min-height:0!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.70)!important;stroke-width:1.15!important;stroke-dasharray:4 4!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
-#tab-overview .ov-csi-tooltip{font-size:12px!important;min-width:168px!important;padding:9px 10px!important;border-radius:7px!important;}
+#tab-overview .ov-csi-tooltip{font-size:12px!important;min-width:168px!important;padding:9px 10px!important;border-radius:0!important;}
 #tab-overview .ov-csi-tooltip strong{font-size:12px!important;}
 #tab-overview .ov-csi-tooltip b,#tab-overview .ov-csi-tooltip span{font-size:11px!important;}
 /* Risk board: all 8 currencies always visible. */
@@ -3190,7 +3190,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;shape-rendering:geometricPrecision!important;overflow:visible!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{stroke:var(--panel)!important;stroke-width:1.7!important;vector-effect:non-scaling-stroke!important;}
-#tab-overview .ov-csi-tooltip{font-family:var(--ui-font)!important;font-size:12px!important;min-width:172px!important;padding:9px 10px!important;border-radius:7px!important;}
+#tab-overview .ov-csi-tooltip{font-family:var(--ui-font)!important;font-size:12px!important;min-width:172px!important;padding:9px 10px!important;border-radius:0!important;}
 #tab-overview .ov-csi-tooltip strong{font-size:12.5px!important;}
 #tab-overview .ov-csi-tooltip b,#tab-overview .ov-csi-tooltip span{font-size:11px!important;}
 /* Setup board: bullish and bearish are stacked vertically so each row has room for score + bias + trend. */
@@ -3433,7 +3433,7 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-table th:nth-child(16),#tab-scanner .scanner-table td:nth-child(16){padding-left:16px;}
 #tab-scanner .scanner-table th:nth-child(16){text-align:left;}
 #tab-scanner .scanner-table td{
-  text-align:center;padding:7px 6px;border-bottom:1px solid var(--border);
+  text-align:center;padding:6px 6px;border-bottom:1px solid var(--border);
   font-family:'Inter',system-ui,sans-serif;font-size:12.5px;font-weight:500;vertical-align:middle;
 }
 #tab-scanner .scanner-table td.scanner-pair-td,#tab-scanner .scanner-table td[data-label="Side"],#tab-scanner .scanner-table td.scanner-ledby{text-align:left;}
@@ -3464,7 +3464,7 @@ body{font-size:var(--twp-body-size);}
 .scanner-star.active{color:var(--amber);}
 
 /* Side: plain colored text — no pill, no border, no background box, ever. */
-.scanner-side{font-family:'Inter',system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:none!important;border:none!important;padding:0!important;border-radius:0!important;}
+.scanner-side{font-family:'Inter',system-ui,sans-serif;font-size:11.5px;font-weight:500;letter-spacing:.2px;white-space:nowrap;background:none!important;border:none!important;padding:0!important;border-radius:0!important;}
 .scanner-side-short{color:var(--bearish-strong);}
 .scanner-side-long{color:var(--bullish-strong);}
 .scanner-side-neutral{color:var(--text-faint);}
@@ -3472,12 +3472,12 @@ body{font-size:var(--twp-body-size);}
 /* Pair name + flags: normal weight, small and tidy — not bold. */
 .scanner-pair-td{white-space:nowrap;}
 .scanner-pair-wrap{display:inline-flex;align-items:center;gap:6px;}
-.scanner-pair-code{font-family:'Inter',system-ui,sans-serif;font-size:12.5px;font-weight:600;color:var(--text);letter-spacing:0;}
+.scanner-pair-code{font-family:'Inter',system-ui,sans-serif;font-size:12.5px;font-weight:400;color:var(--text);letter-spacing:0;}
 
 /* Score + small left/right conviction gauge underneath it. Score is a touch bigger
    than the row text (it's the headline number) but nowhere near display-size. */
 .scanner-score-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.scanner-score{font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:700;line-height:1;}
+.scanner-score{font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:400;line-height:1;}
 .scanner-score.score-bull{color:var(--bullish-strong);}
 .scanner-score.score-lean-bull{color:var(--bullish-lean);}
 .scanner-score.score-bear{color:var(--bearish-strong);}
@@ -3522,7 +3522,7 @@ body{font-size:var(--twp-body-size);}
 /* Long / Neutral / Short section dividers — this is what keeps rows grouped by side
    (Long, then Neutral, then Short) instead of interleaved by raw score. Just a small
    label, no card/box around the group. */
-.scanner-group-row td{padding:6px 6px 4px!important;border-bottom:none!important;background:transparent!important;}
+.scanner-group-row td{padding:4px 6px 2px!important;border-bottom:none!important;background:transparent!important;}
 .scanner-group-label{font-family:'Inter',system-ui,sans-serif;font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text-faint);}
 .scanner-group-label.long{color:var(--bullish-lean);}
 .scanner-group-label.short{color:var(--bearish-lean);}
@@ -3537,11 +3537,11 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-driver-box{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--panel2);font-size:10.5px;font-weight:700;line-height:1;color:var(--text-dim);}
 #tab-scanner .scanner-driver-box.pos{color:var(--bullish-strong);border-color:rgba(56,227,165,.28);}
 #tab-scanner .scanner-driver-box.neg{color:var(--bearish-strong);border-color:rgba(255,112,125,.28);}
-.scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;max-width:430px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.38);font-family:'Inter',system-ui,sans-serif;font-size:11.5px;line-height:1.45;color:var(--text);white-space:normal;}
+.scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;max-width:430px;padding:8px 10px;border:1px solid var(--border);border-radius:0;background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.38);font-family:'Inter',system-ui,sans-serif;font-size:11.5px;line-height:1.45;color:var(--text);white-space:normal;}
 .scanner-hover-tooltip.show{display:block;}
 .scanner-hover-tooltip b{font-family:'IBM Plex Mono',monospace;}
 .scanner-tip-driver-grid{display:flex;gap:7px;align-items:stretch;flex-wrap:wrap;max-width:760px;}
-.scanner-tip-driver{min-width:150px;flex:1 1 150px;padding:6px 7px;border:1px solid var(--border);border-radius:5px;background:var(--panel2);}
+.scanner-tip-driver{min-width:150px;flex:1 1 150px;padding:6px 7px;border:1px solid var(--border);border-radius:0;background:var(--panel2);}
 .scanner-tip-driver.pos{border-color:rgba(56,227,165,.28);}.scanner-tip-driver.neg{border-color:rgba(255,112,125,.28);}
 .scanner-tip-driver-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:3px;}
 .scanner-tip-driver-head b{font-family:'Inter',system-ui,sans-serif;font-size:11px!important;}
@@ -3551,19 +3551,21 @@ body{font-size:var(--twp-body-size);}
 #tab-scanner .scanner-table td.scanner-ledby,#tab-scanner .scanner-table td.scanner-carry,#tab-scanner .scanner-table .scanner-pill{cursor:help;}
 </style>
 <style id="scanner-expanded-fixes">
-#tab-scanner .scanner-expanded-row td{padding:0 6px 8px!important;border-bottom:1px solid var(--border);background:var(--panel)!important;}
-#tab-scanner .scanner-expanded-panel{padding:10px 12px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);}
+#tab-scanner .scanner-expand-backdrop{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:scannerBackdropIn .14s ease-out;}
+@keyframes scannerBackdropIn{from{opacity:0;}to{opacity:1;}}
+@keyframes scannerModalIn{from{opacity:0;transform:scale(.97) translateY(6px);}to{opacity:1;transform:scale(1) translateY(0);}}
+#tab-scanner .scanner-expanded-panel{padding:10px 12px 12px;border:1px solid var(--border);border-radius:0;background:var(--panel2);width:100%;max-width:980px;max-height:88vh;overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:scannerModalIn .16s cubic-bezier(.2,.8,.2,1);}
 #tab-scanner .scanner-expanded-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 #tab-scanner .scanner-expanded-pair{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;}
 #tab-scanner .scanner-expanded-score{margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;}
 #tab-scanner .scanner-expanded-score.pos{color:var(--bullish-strong);}.scanner-expanded-score.neg{color:var(--bearish-strong);}.scanner-expanded-score.neu{color:var(--text-dim);}
-#tab-scanner .scanner-expanded-close{border:1px solid var(--border);background:transparent;color:var(--text-faint);border-radius:4px;padding:2px 7px;cursor:pointer;font-size:14px;}
+#tab-scanner .scanner-expanded-close{border:1px solid var(--border);background:transparent;color:var(--text-faint);border-radius:0;padding:2px 7px;cursor:pointer;font-size:14px;}
 #tab-scanner .scanner-expanded-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:10px;align-items:start;}
 #tab-scanner .scanner-expanded-trend,#tab-scanner .scanner-expanded-macro{min-width:0;}
 #tab-scanner .scanner-expanded-label{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 #tab-scanner .scanner-expanded-label .range-switch{display:flex;gap:5px;text-transform:none;letter-spacing:normal;}
 #tab-scanner .scanner-trend-range-btn{padding:3px 8px;font-size:10px;}
-#tab-scanner .scanner-expanded-trend-wrap{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:7px 9px;}
+#tab-scanner .scanner-expanded-trend-wrap{background:var(--panel);border:1px solid var(--border);border-radius:0;padding:7px 9px;}
 #tab-scanner .scanner-expanded-trend-wrap .bigchart{margin-top:0;padding:0;background:transparent;}
 #tab-scanner .scanner-expanded-trend-wrap .bigchart-head{display:none;}
 #tab-scanner .scanner-expanded-trend-note{margin-top:5px;font-size:10.5px;color:var(--text-faint);}
@@ -3574,13 +3576,16 @@ body{font-size:var(--twp-body-size);}
 </style>
 
 <style id="v9-hover-square-and-score-gauge">
-/* Scanner hover notes: charcoal black, visibly distinct from the main black surface. */
+/* Scanner hover notes: charcoal black, visibly distinct from the main black surface.
+   The left/top transition below was fighting the JS, which already repositions the
+   tooltip on every pointermove -- the CSS transition made it visibly lag half a beat
+   behind the cursor, which is the "breaking"/janky feel reported. Position now
+   updates instantly with the cursor, same as the reference dashboard. */
 .scanner-hover-tooltip{
   background:#252525!important;
   border:1px solid #393939!important;
   box-shadow:0 10px 28px rgba(0,0,0,.42)!important;
   color:#eef1ee!important;
-  transition:left .05s linear,top .05s linear!important;
 }
 /* Individual pillar explanations are intentionally square rather than wide cards. */
 .scanner-hover-tooltip:not(.scanner-pair-hover){
@@ -3600,7 +3605,7 @@ body{font-size:var(--twp-body-size);}
   max-width:340px!important;
   min-height:0!important;
 }
-.scanner-hover-tooltip .stt-driver{background:#1d1d1d!important;border:1px solid #343434!important;border-radius:5px!important;padding:7px 8px!important;margin:0 0 6px!important;}
+.scanner-hover-tooltip .stt-driver{background:#1d1d1d!important;border:1px solid #343434!important;border-radius:0!important;padding:7px 8px!important;margin:0 0 6px!important;}
 .scanner-hover-tooltip.scanner-pair-hover .stt-driver{min-width:150px!important;}
 .scanner-hover-tooltip .stt-driver:last-child{margin-bottom:0!important;}
 /* The visible score gauge uses the full theoretical pair-score range: -100..+100. */
@@ -5900,12 +5905,13 @@ function alignmentLabel(a){
   return "Low";
 }
 function bandLabel(s){
+  // Leaning Bullish / Leaning Bearish removed by request: a currency either clears
+  // the outright Bullish/Bearish threshold or it reads Neutral. Nothing sits in a
+  // soft "leaning" tier anymore.
   s=Math.round(s);
   if(s>=40) return "Very Bullish";
   if(s>=21) return "Bullish";
-  if(s>=15) return "Leaning Bullish";
-  if(s>=-14) return "Neutral";
-  if(s>=-20) return "Leaning Bearish";
+  if(s>=-20) return "Neutral";
   if(s>=-39) return "Bearish";
   return "Very Bearish";
 }
@@ -5923,14 +5929,14 @@ function regimeColorClass(label){
   return "strength-neu";
 }
 function pairScoreClass(score){
-  // Bands match pairBandLabel() exactly: +/-13 is genuinely Neutral, 14-20
-  // is the lighter Leaning shade, 21-29 is full-strength Bullish/Bearish,
-  // and 30+ is Very Bullish/Very Bearish.
+  // Bands match pairBandLabel() exactly: anything inside +/-20 is genuinely
+  // Neutral and stays ash-colored (no green/red tint). Only a score that clears
+  // +/-21 gets colored -- there is no lighter "Leaning" tint anymore, since a
+  // Flat/Neutral pair showing a faint green or red was the exact bug reported
+  // (a pair can't be "Neutral" and colored bullish-green at the same time).
   var s=Math.round(Number(score)||0);
   if(s>=21) return "score-bull";
-  if(s>=14) return "score-lean-bull";
   if(s<=-21) return "score-bear";
-  if(s<=-14) return "score-lean-bear";
   return "score-neutral";
 }
 
@@ -6153,14 +6159,12 @@ function pairCompositeFor(base, quote, legacy){
 // currency bands above, while pairs get a narrower neutral zone so small but meaningful
 // relative edges are visible instead of being flattened into Neutral.
 function pairBandLabel(s){
+  // Leaning Bullish / Leaning Bearish removed by request. A pair is either genuinely
+  // Bullish/Bearish (score clears +/-21) or it is Neutral -- nothing in between.
   s=Math.round(Number(s)||0);
-  // Pair regimes: 14/21/30 thresholds. The composite score already combines
-  // all seven weighted pillars, so small +/-5..13 readings stay genuinely Neutral.
   if(s>=30) return "Very Bullish";
   if(s>=21) return "Bullish";
-  if(s>=14) return "Leaning Bullish";
-  if(s>=-13) return "Neutral";
-  if(s>=-20) return "Leaning Bearish";
+  if(s>=-20) return "Neutral";
   if(s>=-29) return "Bearish";
   return "Very Bearish";
 }
@@ -6236,11 +6240,57 @@ function pairAlignmentFor(base, quote, score){
   return total ? Math.round((agree/total)*100) : null;
 }
 
+// Final scanner regime gate.
+// The composite score always uses all seven weighted pillars. The gate does not
+// change that score; it decides whether the score is sufficiently macro-confirmed
+// to receive a directional regime. Fundamentals, Yield and CB stance are the
+// primary macro pillars. Positioning, COT WoW, Risk and Seasonality can reinforce
+// a directional score, but cannot create the directional regime on their own.
+// At least 2 of the 3 primary pillars must agree with the score's direction.
+// Otherwise the pair remains Neutral/FLAT regardless of how large the raw score is.
+function pairMacroGate(base,quote,score){
+  var s=Math.round(Number(score)||0);
+  if(s===0) return false;
+  var dir=s>0?1:-1;
+  var fb=fundFor(base), fq=fundFor(quote);
+  var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
+  var fSign=fundRel>0?1:(fundRel<0?-1:0);
+  var y=pairYieldCalc(base,quote).score;
+  var ySign=y==null?0:(y>0?1:(y<0?-1:0));
+  var cbLabel=pairCbStanceLabel(base,quote);
+  var cbSign=pillarSign(cbLabel);
+
+  // Fundamentals are the anchor, but a neutral Fundamentals reading is not a
+  // veto when BOTH Yield and CB stance independently confirm the same direction.
+  // An opposing Fundamentals reading remains a hard veto: Yield/CB cannot override it.
+  // Thus: directional Fundamentals + one macro confirmation qualifies; neutral
+  // Fundamentals requires both Yield and CB to qualify; opposing Fundamentals blocks.
+  if(fSign===-dir) return false;
+  if(fSign===dir) return ySign===dir || cbSign===dir;
+  return ySign===dir && cbSign===dir;
+}
+function pairFinalBandLabel(base,quote,score){
+  // Fixed: this used to run every pair through pairMacroGate() first, which forced
+  // a pair back to Neutral/Flat any time 2 of the 3 primary pillars didn't line up
+  // with the score's direction -- even when the score itself was solidly Bullish or
+  // Bearish. That is what was quietly dumping genuinely bullish pairs (e.g. a pair
+  // clearing +21 on Fundamentals+CB alone, with Yield flat) into the Flat bucket,
+  // so the Scanner's "Bullish" filter under-counted real setups. The gate is
+  // removed: the regime now comes straight from the score, same threshold as
+  // pairBandLabel(), with no separate "leaning" tier.
+  var s=Math.round(Number(score)||0);
+  if(s>=30) return "Very Bullish";
+  if(s>=21) return "Bullish";
+  if(s<=-30) return "Very Bearish";
+  if(s<=-21) return "Bearish";
+  return "Neutral";
+}
+
 function buildPairs(scores){
   var pairs=[];
   for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
     var base=CCY_ORDER[i], quote=CCY_ORDER[j], raw=pairCompositeFor(base,quote), sc=Math.round(raw), y=pairYieldCalc(base,quote);
-    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:pairBandLabel(sc),alignment:pairAlignmentFor(base,quote,sc),yieldScore:y.score,yieldSpread:y.current});
+    pairs.push({pair:base+quote,base:base,quote:quote,score:sc,bias:pairFinalBandLabel(base,quote,sc),alignment:pairAlignmentFor(base,quote,sc),yieldScore:y.score,yieldSpread:y.current});
   } }
   pairs.sort(function(a,b){ return b.score-a.score; });
   return pairs;
@@ -6388,14 +6438,15 @@ function pillarSign(label){
 // Leaning tiers remain their own filter buckets (and keep their lighter colour), but
 // for the trade-side column and grouping they now count as a side: +14 and above is
 // LONG, -14 and below is SHORT, and only the Neutral band (-13..+13) is FLAT.
-function scannerBucket(score){
+function scannerBucket(score, bias){
+  // The scanner has no actionable Leaning buckets. If a final regime is supplied,
+  // use it directly. Raw scores in the old Leaning ranges remain Neutral.
+  if(typeof bias==="string") return bias;
   var s=Math.round(Number(score)||0);
   if(s>=30) return "Very Bullish";
   if(s>=21) return "Bullish";
-  if(s>=14) return "Leaning Bullish";
   if(s<=-30) return "Very Bearish";
   if(s<=-21) return "Bearish";
-  if(s<=-14) return "Leaning Bearish";
   return "Neutral";
 }
 function scannerPillCell(label, tip){
@@ -6405,21 +6456,26 @@ function scannerPillCell(label, tip){
   return '<span class="scanner-pill '+cls+(strong?' strong':'')+'" data-scanner-tip="'+esc(tip||'')+'"></span>';
 }
 function scannerSideBadge(bias, score){
-  // The side starts at the Leaning band: Leaning Bullish (+14 and up) is LONG and
-  // Leaning Bearish (-14 and down) is SHORT. Only the Neutral band is FLAT.
-  var sideBiases={"Leaning Bullish":1,"Bullish":1,"Very Bullish":1,"Leaning Bearish":1,"Bearish":1,"Very Bearish":1};
-  if(!sideBiases[bias]){
+  // Side is driven by the FINAL regime, not the raw score. A raw +/- score can
+  // therefore remain visible while the trade state is FLAT when macro confirmation
+  // is insufficient.
+  if(bias==="Neutral"){
     return '<span class="scanner-side scanner-side-neutral">FLAT</span>';
   }
-  return score>0 ? '<span class="scanner-side scanner-side-long">LONG</span>' : '<span class="scanner-side scanner-side-short">SHORT</span>';
+  if(bias==="Bullish"||bias==="Very Bullish"){
+    return '<span class="scanner-side scanner-side-long">LONG</span>';
+  }
+  if(bias==="Bearish"||bias==="Very Bearish"){
+    return '<span class="scanner-side scanner-side-short">SHORT</span>';
+  }
+  return '<span class="scanner-side scanner-side-neutral">FLAT</span>';
 }
-// Groups rows the same way the Side column labels them: Long first (Leaning Bullish
-// and up), Flat in the middle (Neutral band only), Short last (Leaning Bearish and
-// down) -- never interleaved.
+// Groups rows by final actionable regime: Long first, Flat in the middle, Short last.
+// There are no Leaning scanner regimes.
 function scannerSideGroup(p){
-  var b=scannerBucket(p.score);
-  if(b==="Leaning Bullish"||b==="Bullish"||b==="Very Bullish") return 0;
-  if(b==="Leaning Bearish"||b==="Bearish"||b==="Very Bearish") return 2;
+  var b=scannerBucket(p.score,p.bias);
+  if(b==="Bullish"||b==="Very Bullish") return 0;
+  if(b==="Bearish"||b==="Very Bearish") return 2;
   return 1;
 }
 // Small left/right gauge under the score -- fill length is proportional to conviction
@@ -6799,14 +6855,25 @@ function scannerPairTooltipHtml(base,quote,score){
 function scannerPairExpandedHtml(pair,animate){
   var base=pair.slice(0,3), quote=pair.slice(3,6);
   var score=pairCompositeFor(base,quote);
-  return '<tr class="scanner-expanded-row"><td colspan="16">'+
+  return '<div class="scanner-expand-backdrop" data-scanner-backdrop>'+
     '<div class="scanner-expanded-panel">'+
       '<div class="scanner-expanded-head"><div></div><button type="button" class="scanner-expanded-close" data-scanner-close="'+esc(pair)+'">&times;</button></div>'+ 
       '<div class="scanner-expanded-grid">'+
         '<div class="scanner-expanded-focus">'+pairFocusHtml(pair,score,animate)+'</div>'+ 
         '<div class="scanner-expanded-macro">'+pairMacroSummaryHtml(pair,score)+'</div>'+ 
       '</div>'+ 
-    '</div></td></tr>';
+    '</div></div>';
+}
+// Any hover tooltip left in its "show" state (from a cell the cursor was still over the
+// instant the pair got clicked) is a fixed, high-z-index element that survives the
+// renderScanner() re-render untouched -- it just keeps floating at its last screen
+// position, now on top of the new modal instead of the table. Explicitly hiding every
+// known floating tooltip the moment the modal opens (or closes) guarantees none of them
+// are left stuck over the Pair Focus panel.
+function hideAllScannerFloatingTooltips(){
+  if(typeof scannerHoverTooltip!=='undefined' && scannerHoverTooltip) scannerHoverTooltip.classList.remove('show');
+  if(typeof hidePairScoreTooltip==='function') hidePairScoreTooltip();
+  var pft=document.getElementById('pair-focus-tip'); if(pft) pft.classList.remove('show');
 }
 function scanner7dTooltip(base,quote,live){
   var d7=last7DayDelta(base+quote,live);
@@ -6837,15 +6904,12 @@ function scanner7dTooltip(base,quote,live){
   return '<div class="stt-kicker">7D</div>'+titleHtml+'<div class="stt-note">'+noteText+'</div>';
 }
 
-// The scanner filter row no longer has Leaning buttons. Leaning pairs stay in the score, bands
-// and colours, and still count as LONG / SHORT, so for filtering they ride with the button next
-// to them: Leaning Bullish under "Bullish", Leaning Bearish under "Bearish". That way no pair
-// becomes impossible to reach with a filter.
-function scannerFilterKey(score){
-  var b=scannerBucket(score);
-  if(b==="Leaning Bullish") return "Bullish";
-  if(b==="Leaning Bearish") return "Bearish";
-  return b;
+// The scanner filter row has no Leaning buttons because Leaning is not an actionable
+// scanner regime. Scores in the old Leaning ranges remain Neutral/Flat.
+function scannerFilterKey(score, bias){
+  // Filters are exact regime filters. Leaning tiers are intentionally NOT folded
+  // into Bullish/Bearish, and Neutral is the only Flat bucket.
+  return scannerBucket(score,bias);
 }
 
 // Admin-only check: every pair scored with the previous formula vs the current one, so the
@@ -6881,7 +6945,7 @@ function renderScanner(animateTrend){
   var pairsAll=buildPairs(allScores());
   var pairs=pairsAll.filter(function(p){
     if(scannerFilters.indexOf("All")!==-1) return true;
-    return scannerFilters.indexOf(scannerFilterKey(p.score))!==-1;
+    return scannerFilters.indexOf(scannerFilterKey(p.score,p.bias))!==-1;
   });
   // Grouped Long -> Neutral -> Short (never mixed), ranked by conviction within each group.
   // Within each Long/Neutral/Short group, always rank highest score to lowest.
@@ -6971,7 +7035,6 @@ function renderScanner(animateTrend){
       '<td class="scanner-agree" data-label="Agree" style="'+agreeStyle+'"'+(agreeTip?' data-scanner-tip="'+esc(agreeTip)+'"':'')+'>'+agreeTxt+'</td>'+
       '<td class="scanner-carry" data-label="Carry" style="'+carryStyle+'" data-scanner-tip="'+esc(carryTip)+'">'+carryTxt+'</td>'+
       '</tr>';
-    if(scannerExpandedPair===p.pair){ rows += scannerPairExpandedHtml(p.pair, scannerBigTrendAnimate); }
   }
   var filterDefs=[["Very Bullish","Very bullish"],["Bullish","Bullish"],["Neutral","Flat"],["Bearish","Bearish"],["Very Bearish","Very bearish"]];
   var filterBtns=filterDefs.map(function(fb){
@@ -6992,8 +7055,10 @@ function renderScanner(animateTrend){
     '<th title="Fundamentals">FND</th><th title="Yield">YLD</th><th title="CB Stance">CB</th>'+
     '<th title="Net Positioning">POS</th><th title="COT WoW">WOW</th><th title="Seasonality">SSN</th>'+
     '<th title="Risk Sentiment">RSK</th><th>Agree</th><th>Carry</th>'+
-    '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>';
+    '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>'+
+    (scannerExpandedPair ? scannerPairExpandedHtml(scannerExpandedPair, scannerBigTrendAnimate) : '');
   document.getElementById("tab-scanner").innerHTML=html;
+  document.body.style.overflow = scannerExpandedPair ? 'hidden' : '';
   if(animateTrend) animateScannerTrends();
   if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); animatePairFocusScoreSpark(); animatePairFocusDriverBars(); scannerBigTrendAnimate=false; }
 
@@ -7097,10 +7162,19 @@ function renderScanner(animateTrend){
     var pr=this.dataset.pair;
     scannerExpandedPair=(scannerExpandedPair===pr)?null:pr;
     if(scannerExpandedPair) scannerBigTrendAnimate=true;
+    hideAllScannerFloatingTooltips();
     renderScanner();
   }; }
   var closeBtns=document.querySelectorAll('[data-scanner-close]');
-  for(var cb=0;cb<closeBtns.length;cb++){ closeBtns[cb].onclick=function(){ scannerExpandedPair=null; renderScanner(); }; }
+  for(var cb=0;cb<closeBtns.length;cb++){ closeBtns[cb].onclick=function(){ scannerExpandedPair=null; hideAllScannerFloatingTooltips(); renderScanner(); }; }
+  var scannerBackdrop=document.querySelector('[data-scanner-backdrop]');
+  if(scannerBackdrop){ scannerBackdrop.onclick=function(e){ if(e.target===this){ scannerExpandedPair=null; hideAllScannerFloatingTooltips(); renderScanner(); } }; }
+  if(!window.__scannerModalEscGuardInstalled){
+    window.__scannerModalEscGuardInstalled=true;
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape' && scannerExpandedPair){ scannerExpandedPair=null; hideAllScannerFloatingTooltips(); renderScanner(); }
+    });
+  }
   var scannerRangeBtns=document.querySelectorAll('.scanner-trend-range-btn');
   for(var srb=0;srb<scannerRangeBtns.length;srb++){ scannerRangeBtns[srb].onclick=function(e){
     e.stopPropagation();
@@ -7310,6 +7384,7 @@ var TAB_META={
 };
 function switchTab(tab){
   activeTab=tab;
+  if(tab!=="scanner" && scannerExpandedPair){ scannerExpandedPair=null; document.body.style.overflow=''; if(typeof hideAllScannerFloatingTooltips==='function')hideAllScannerFloatingTooltips(); }
   var btns=document.querySelectorAll(".tab-btn"); for(var i=0;i<btns.length;i++){ btns[i].classList.toggle("active", btns[i].dataset.tab===tab); }
   var panels=document.querySelectorAll(".tab-panel"); for(var j=0;j<panels.length;j++){ panels[j].classList.toggle("active", panels[j].id==="tab-"+tab); }
   document.getElementById("pageTitle").textContent=TAB_META[tab].title;
@@ -8472,7 +8547,7 @@ function renderOverview(animate){
   var riskGotos=document.querySelectorAll('#tab-overview [data-ccy]');
   for(var j=0;j<riskGotos.length;j++)riskGotos[j].onclick=function(){activeDetailCcy=this.dataset.ccy;switchTab('detail');renderDetail();};
   var pairGotos=document.querySelectorAll('#tab-overview [data-pair]');
-  for(var k=0;k<pairGotos.length;k++)pairGotos[k].onclick=function(){scannerExpandedPair=this.dataset.pair;switchTab('scanner');renderScanner();};
+  for(var k=0;k<pairGotos.length;k++)pairGotos[k].onclick=function(){scannerExpandedPair=this.dataset.pair;if(typeof hideAllScannerFloatingTooltips==='function')hideAllScannerFloatingTooltips();switchTab('scanner');renderScanner();};
   var openBtns=document.querySelectorAll('#tab-overview [data-open-tab]');
   for(var m=0;m<openBtns.length;m++)openBtns[m].onclick=function(e){e.stopPropagation();switchTab(this.dataset.openTab);};
   var csiBtns=document.querySelectorAll('#tab-overview [data-csi-toggle]');
@@ -13323,7 +13398,7 @@ body,html{background:var(--bg);}
   font-family:'Inter',system-ui,sans-serif!important;
   font-size:10.5px!important;
   line-height:1.32!important;
-  border-radius:5px!important;
+  border-radius:0!important;
 }
 .scanner-hover-tooltip .stt-kicker{
   font-size:8.5px!important;
@@ -13390,7 +13465,7 @@ body,html{background:var(--bg);}
   color:#e9ede9!important;
   max-width:340px!important;
   padding:7px 9px!important;
-  border-radius:5px!important;
+  border-radius:0!important;
   box-shadow:0 8px 22px rgba(0,0,0,.48)!important;
 }
 .scanner-hover-tooltip .stt-title{
@@ -13509,7 +13584,7 @@ body,html{background:var(--bg);}
 <style id="scanner-v4-ui-final">
 #tab-scanner .scanner-driver-box,#tab-scanner .scanner-driver-box.pos,#tab-scanner .scanner-driver-box.neg{display:inline!important;font-size:13px!important;font-weight:500!important;line-height:1.1!important;color:var(--text-dim)!important;padding:0!important;border:0!important;background:transparent!important;border-radius:0!important;}
 #tab-scanner .scanner-driver-sep{color:var(--text-faint)!important;font-weight:400!important;}
-.scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;width:max-content;max-width:300px;min-width:0;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.34);font-family:'Inter',system-ui,sans-serif;font-size:12px;line-height:1.4;color:var(--text);white-space:normal;}
+.scanner-hover-tooltip{position:fixed;z-index:20000;display:none;pointer-events:none;width:max-content;max-width:300px;min-width:0;padding:7px 9px;border:1px solid var(--border);border-radius:0;background:var(--panel);box-shadow:0 8px 22px rgba(0,0,0,.34);font-family:'Inter',system-ui,sans-serif;font-size:12px;line-height:1.4;color:var(--text);white-space:normal;}
 .scanner-hover-tooltip.show{display:block;}
 .scanner-hover-tooltip .stt-kicker{font-size:9.5px!important;letter-spacing:.75px;text-transform:uppercase;color:var(--text-faint);margin-bottom:2px;}
 .scanner-hover-tooltip .stt-title{font-family:'Inter',system-ui,sans-serif!important;font-size:12.5px!important;font-weight:600;margin-bottom:3px;}
@@ -13575,7 +13650,7 @@ body,html{background:var(--bg);}
   width:230px!important;
   max-width:230px!important;
   min-width:230px!important;
-  border-radius:10px!important;
+  border-radius:0!important;
 }
 .scanner-hover-tooltip b{font-family:'Inter',system-ui,sans-serif!important;font-style:normal!important;text-decoration:none!important;font-weight:700!important;}
 </style>
@@ -14133,7 +14208,7 @@ twpShowNameGateIfNeeded();
 <style id="pair-focus-and-macro-highlight-v70">
 /* Pair Focus replaces the generic Overall Trend card inside an expanded scanner row. */
 #tab-scanner .scanner-expanded-grid{grid-template-columns:minmax(320px,.92fr) minmax(0,1.42fr)!important;gap:10px!important;align-items:start!important;}
-#tab-scanner .pair-focus-card{background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:10px 11px;color:var(--text);}
+#tab-scanner .pair-focus-card{background:var(--panel);border:1px solid var(--border);border-radius:0;padding:10px 11px;color:var(--text);}
 #tab-scanner .pair-focus-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
 #tab-scanner .pair-focus-kicker{font-size:9.5px;letter-spacing:.9px;text-transform:uppercase;color:var(--amber);font-weight:800;}
 #tab-scanner .pair-focus-title{font-size:15px;font-weight:800;margin-top:2px;}
@@ -14149,7 +14224,7 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-focus-caption{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;}
 #tab-scanner .pair-focus-mini{font-size:11px;font-weight:700;margin-top:2px;}
 #tab-scanner .pair-focus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}
-#tab-scanner .pair-focus-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 7px;background:var(--panel2);border:1px solid var(--border);border-radius:5px;min-width:0;}
+#tab-scanner .pair-focus-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 7px;background:var(--panel2);border:1px solid var(--border);border-radius:0;min-width:0;}
 #tab-scanner .pair-focus-item span{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.45px;}
 #tab-scanner .pair-focus-item b{font-size:11px;text-align:right;white-space:nowrap;}
 #tab-scanner .pair-focus-item b.pos{color:var(--bullish-strong)}
@@ -14168,7 +14243,7 @@ twpShowNameGateIfNeeded();
 #tab-scanner .pair-focus-flip-item{color:var(--amber);font-weight:700;font-size:10.5px;line-height:1.4;}
 #tab-scanner .pair-focus-flip-item:before{content:'\2022';margin-right:5px;color:var(--text-faint);}
 #tab-scanner .pair-focus-dual{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-#tab-scanner .pair-focus-dual span{padding:5px 7px;background:var(--panel2);border-radius:4px;font-size:10.5px;color:var(--text-dim);}
+#tab-scanner .pair-focus-dual span{padding:5px 7px;background:var(--panel2);border-radius:0;font-size:10.5px;color:var(--text-dim);}
 #tab-scanner .pair-focus-dual b{float:right;color:var(--text);}
 #tab-scanner .pair-focus-flip{color:var(--amber);font-weight:700;}
 #tab-scanner .pair-focus-notes{display:grid;gap:3px;margin-top:8px;font-size:9.5px;color:var(--text-faint);line-height:1.35;}
@@ -14228,7 +14303,7 @@ twpShowNameGateIfNeeded();
    the DATA/SURPRISE and POSITIONING sections) so the tooltip works no matter where
    in the card the mouse enters, per request -- not just on one hardcoded spot. */
 #pair-focus-tip{position:fixed;z-index:9999;max-width:260px;background:var(--panel);border:1px solid var(--border);
-  border-radius:6px;padding:8px 10px;font-size:11px;line-height:1.45;color:var(--text);
+  border-radius:0;padding:8px 10px;font-size:11px;line-height:1.45;color:var(--text);
   box-shadow:0 6px 18px rgba(0,0,0,.28);pointer-events:none;opacity:0;transform:translateY(3px);
   transition:opacity .12s ease,transform .12s ease;}
 #pair-focus-tip.show{opacity:1;transform:translateY(0);}
@@ -14841,7 +14916,7 @@ twpShowNameGateIfNeeded();
   box-shadow:0 1px 0 var(--scanner-line-strong),0 4px 10px rgba(0,0,0,.16)!important;
 }
 #tab-scanner .scanner-table tr.scanner-group-row td{
-  padding:11px 8px 14px 8px!important;
+  padding:5px 8px 7px 8px!important;
   border-top:0!important;
   border-bottom:0!important;
   background:transparent!important;
@@ -15153,7 +15228,7 @@ twpShowNameGateIfNeeded();
 #tab-raw .surprise-gauge.esi-picked{background:rgba(255,255,255,.055)!important;box-shadow:inset 3px 0 0 var(--text-dim);}
 
 /* ---------- Row tooltip (small; one tooltip that follows the pointer down the whole list) ---------- */
-.esi-tip{position:fixed;z-index:9000;min-width:190px;max-width:250px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:rgba(16,17,21,.97);box-shadow:0 6px 18px rgba(0,0,0,.4);pointer-events:none;font-family:'Inter',system-ui,sans-serif;font-size:11.5px;color:var(--text);line-height:1.4;}
+.esi-tip{position:fixed;z-index:9000;min-width:190px;max-width:250px;padding:8px 10px;border:1px solid var(--border);border-radius:0;background:rgba(16,17,21,.97);box-shadow:0 6px 18px rgba(0,0,0,.4);pointer-events:none;font-family:'Inter',system-ui,sans-serif;font-size:11.5px;color:var(--text);line-height:1.4;}
 .esi-tip-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
 .esi-tip-head .ccy-flag{width:16px;height:11px;object-fit:cover;}
 .esi-tip-head b{font-size:12.5px;font-weight:700;}
@@ -15209,3 +15284,15 @@ twpShowNameGateIfNeeded();
 
 </body>
 </html>
+
+<style id="scanner-final-typography-v2">
+/* Final scanner typography: pair codes and scores stay regular; trade idea labels
+   retain only slight emphasis. Group separators (the "FLAT" divider row) and the
+   LONG/SHORT/FLAT idea badges are only nudged up from the original 9.5px/11px --
+   the first attempt at 12px/13px ran too big, this settles back down closer to
+   original with just a touch more size. */
+#tab-scanner .scanner-pair-code{font-weight:400!important;font-style:normal!important;text-decoration:none!important;}
+#tab-scanner .scanner-score{font-weight:400!important;font-style:normal!important;text-decoration:none!important;}
+#tab-scanner .scanner-side{font-weight:500!important;font-style:normal!important;text-decoration:none!important;font-size:11.5px!important;}
+#tab-scanner .scanner-group-label{font-family:'Inter',system-ui,sans-serif!important;font-size:11.5px!important;font-weight:500!important;letter-spacing:.2px!important;}
+</style>
