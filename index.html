@@ -7772,20 +7772,22 @@ function y2LoadDemo(){
 function renderYield2Y(){
   var rows=y2SortedHistory(), latest=rows.length?rows[rows.length-1].date:'—';
   var html='<div class="y2-grid">'+
+    (unlockedLocally?(
     '<div class="card"><h3>Current 2Y Yield Input</h3><div class="y2-input-grid">'+
     Y2_CCY_ORDER.map(function(c){
       var curVal=YIELD_ENGINE.current[c], prev=y2PrevClose(c);
       var dir=(curVal!=null&&prev!=null)?(curVal>prev?1:(curVal<prev?-1:0)):null;
       var arrow=dir==null?'':(dir>0?'<span class="y2-chg-arrow up">&#9650;</span>':(dir<0?'<span class="y2-chg-arrow down">&#9660;</span>':'<span class="y2-chg-arrow flat">&#9679;</span>'));
       var inputStyle=dir==null?'':(dir>0?'color:var(--bullish-strong);font-weight:700;':(dir<0?'color:var(--bearish-strong);font-weight:700;':''));
-      return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'" '+(unlockedLocally?'':'disabled')+'></label>';
+      return '<label class="y2-small">'+c+' '+arrow+'<input class="y2-input" style="'+inputStyle+'" data-y2-current="'+c+'" type="number" step="0.001" placeholder="e.g. 4.080" value="'+(curVal!=null?curVal:'')+'"></label>';
     }).join('')+
-    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.inputDate || YIELD_ENGINE.currentDate || (rows.length?rows[rows.length-1].date:''))+'" '+(unlockedLocally?'':'disabled')+'></label>'+'</div>'+
-    (unlockedLocally?'<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update snapshot</button><button class="y2-btn" id="y2SaveAsClose">Record daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo" style="display:none">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>':'')+
-    (unlockedLocally?'<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>':'')+'</div>'+ 
+    '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><label class="y2-small">Current observation date<input class="y2-input" id="y2CurrentDate" type="date" value="'+(YIELD_ENGINE.inputDate || YIELD_ENGINE.currentDate || (rows.length?rows[rows.length-1].date:''))+'"></label>'+'</div>'+
+    '<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update snapshot</button><button class="y2-btn" id="y2SaveAsClose">Record daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo" style="display:none">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>'+
+    '<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>'+'</div>'
+    ):'')+
     '<div class="card"><h3>Rate Differential Monitor</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>2Y Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div class="hist-spread-title"><div><h3>Bond Yield Spread</h3><div class="hist-spread-sub">Base 2Y yield − quote 2Y yield · basis points</div></div><div class="hist-spread-live"><div><div class="hist-live-label">Current spread</div><div id="histSpreadLiveValue" class="hist-live-value">—</div><div id="histSpreadLiveMeta" class="hist-live-meta">Select a pair</div><div id="histSpreadLiveChange" class="hist-live-change"></div></div></div></div>'+
-    '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div></div></div>'+
+    '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
     '</div>';
@@ -8152,6 +8154,67 @@ function initHistoricalSpreadPanel(){
     }
   }
   setTimeout(histSpreadDraw,0);
+}
+
+/* Bond Yield Spread: click-to-expand. Relocates the WHOLE card -- title,
+   live spread readout, pair selector, 1W/1M/3M/1Y range buttons, and the
+   chart itself -- into a fullscreen modal, so the expanded view stays fully
+   usable (switch pairs, switch range). The real nodes move, nothing is
+   cloned, so every id and every already-bound listener keeps working;
+   closing is a straight DOM re-insertion back to the original spot. */
+var HIST_SPREAD_EXPAND_PLACEHOLDER=null;
+function openHistSpreadExpand(){
+  var card=document.querySelector('#tab-yield2y .hist-spread-card');
+  if(!card || card.__inExpandModal) return;
+  var chartEl=card.querySelector('.hist-spread-chart');
+  var placeholder=document.createElement('div');
+  placeholder.style.display='none';
+  card.parentNode.insertBefore(placeholder,card);
+  HIST_SPREAD_EXPAND_PLACEHOLDER=placeholder;
+
+  var backdrop=document.createElement('div');
+  backdrop.className='hist-spread-expand-backdrop';
+  var panel=document.createElement('div');
+  panel.className='hist-spread-expand-panel';
+  var closeBtn=document.createElement('button');
+  closeBtn.type='button';
+  closeBtn.className='hist-spread-expand-close';
+  closeBtn.setAttribute('aria-label','Close');
+  closeBtn.innerHTML='&times;';
+  panel.appendChild(closeBtn);
+  panel.appendChild(card);
+  backdrop.appendChild(panel);
+  document.body.appendChild(backdrop);
+
+  card.classList.add('hist-spread-card-expanded');
+  if(chartEl) chartEl.classList.add('hist-spread-chart-expanded');
+  card.__inExpandModal=true;
+  histSpreadDraw(true);
+
+  function closeHistSpreadExpand(){
+    card.classList.remove('hist-spread-card-expanded');
+    if(chartEl) chartEl.classList.remove('hist-spread-chart-expanded');
+    card.__inExpandModal=false;
+    if(HIST_SPREAD_EXPAND_PLACEHOLDER && HIST_SPREAD_EXPAND_PLACEHOLDER.parentNode){
+      HIST_SPREAD_EXPAND_PLACEHOLDER.parentNode.insertBefore(card,HIST_SPREAD_EXPAND_PLACEHOLDER);
+      HIST_SPREAD_EXPAND_PLACEHOLDER.parentNode.removeChild(HIST_SPREAD_EXPAND_PLACEHOLDER);
+    }
+    HIST_SPREAD_EXPAND_PLACEHOLDER=null;
+    backdrop.parentNode.removeChild(backdrop);
+    document.removeEventListener('keydown',onEsc);
+    histSpreadDraw(true);
+  }
+  function onEsc(e){ if(e.key==='Escape') closeHistSpreadExpand(); }
+  document.addEventListener('keydown',onEsc);
+  backdrop.addEventListener('click',function(e){ if(e.target===backdrop) closeHistSpreadExpand(); });
+  closeBtn.onclick=closeHistSpreadExpand;
+}
+if(!window.__histSpreadExpandBound){
+  window.__histSpreadExpandBound=true;
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest && e.target.closest('#histSpreadExpandBtn');
+    if(btn) openHistSpreadExpand();
+  });
 }
 
 function flagImg(ccy){
@@ -15295,4 +15358,124 @@ twpShowNameGateIfNeeded();
 #tab-scanner .scanner-score{font-weight:400!important;font-style:normal!important;text-decoration:none!important;}
 #tab-scanner .scanner-side{font-weight:500!important;font-style:normal!important;text-decoration:none!important;font-size:11.5px!important;}
 #tab-scanner .scanner-group-label{font-family:'Inter',system-ui,sans-serif!important;font-size:11.5px!important;font-weight:500!important;letter-spacing:.2px!important;}
+</style>
+
+<style id="v72-rate-differential-monitor-clean-borders-square-track">
+/* Rate Differential Monitor table: many earlier passes each redefined column
+   widths and borders for this table, and those layers didn't agree with each
+   other -- that's what made the divider lines look broken/cut off partway
+   down. This block is the single final word on it: one consistent border
+   around the table, full-height column dividers, clean row separators, and
+   column widths that add up to 100%. */
+#tab-yield2y .y2-score-table{
+  border-collapse:collapse!important;
+  border-spacing:0!important;
+  width:100%!important;
+  table-layout:fixed!important;
+  border:1px solid var(--border)!important;
+}
+#tab-yield2y .y2-score-table thead th{
+  border-bottom:1px solid var(--border)!important;
+  border-right:1px solid var(--border)!important;
+  border-top:none!important;
+  border-left:none!important;
+}
+#tab-yield2y .y2-score-table thead th:last-child{border-right:none!important;}
+#tab-yield2y .y2-score-table td{
+  border-bottom:1px solid var(--border)!important;
+  border-right:1px solid var(--border)!important;
+  border-top:none!important;
+  border-left:none!important;
+}
+#tab-yield2y .y2-score-table td:last-child{border-right:none!important;}
+#tab-yield2y .y2-score-table tr:last-child td{border-bottom:none!important;}
+#tab-yield2y .y2-score-table th:nth-child(1),#tab-yield2y .y2-score-table td:nth-child(1){width:22%!important;}
+#tab-yield2y .y2-score-table th:nth-child(2),#tab-yield2y .y2-score-table td:nth-child(2){width:16%!important;}
+#tab-yield2y .y2-score-table th:nth-child(3),#tab-yield2y .y2-score-table td:nth-child(3){width:20%!important;}
+#tab-yield2y .y2-score-table th:nth-child(4),#tab-yield2y .y2-score-table td:nth-child(4){width:20%!important;}
+#tab-yield2y .y2-score-table th:nth-child(5),#tab-yield2y .y2-score-table td:nth-child(5){width:22%!important;}
+
+/* Spread bar: the track container previously had border-radius:4px with
+   overflow:hidden, which clipped the fill bar's ends into a rounded/pill
+   shape. Flattened to solid square edges as requested, for the track, the
+   centre marker, and the fill bar itself. */
+#tab-yield2y .y2-track,
+#tab-yield2y .y2-track i,
+#tab-yield2y .y2-track b{border-radius:0!important;}
+</style>
+
+<style id="v73-horizontal-lines-only-no-size-change">
+/* Rate Differential Monitor: horizontal lines only, no vertical column
+   dividers, no outer table border. Nothing here touches padding, column
+   widths, or any height -- borders only, exactly as instructed. */
+#tab-yield2y .y2-score-table{border:none!important;}
+#tab-yield2y .y2-score-table th,
+#tab-yield2y .y2-score-table td{
+  border-left:none!important;
+  border-right:none!important;
+  border-top:none!important;
+}
+#tab-yield2y .y2-score-table thead th{
+  border-bottom:1px solid var(--border)!important;
+}
+#tab-yield2y .y2-score-table td{
+  border-bottom:1px solid var(--border)!important;
+}
+#tab-yield2y .y2-score-table tr:last-child td{border-bottom:none!important;}
+</style>
+
+<style id="v74-hist-spread-expand-single-frame">
+/* Bond Yield Spread expand button. Square edges, matches the dashboard's
+   flat design language -- nothing here touches the default (collapsed)
+   card, its chart, or any size/padding elsewhere. */
+#tab-yield2y .hist-spread-controls{align-items:center!important;}
+#tab-yield2y .hist-spread-expand-btn{
+  display:inline-flex!important;align-items:center;justify-content:center;
+  width:26px;height:26px;margin-left:auto;
+  border:1px solid var(--border);border-radius:0!important;
+  background:var(--panel2);color:var(--text-faint);cursor:pointer;
+  flex:0 0 auto;transition:color .12s,border-color .12s;
+}
+#tab-yield2y .hist-spread-expand-btn:hover{color:var(--text);border-color:var(--text-faint);}
+
+.hist-spread-expand-backdrop{
+  position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;
+  padding:28px;background:rgba(0,0,0,.72);
+}
+/* One single outer frame for the expanded view -- this panel border is the
+   only "edge" around the whole thing. The card that moves inside it gets
+   its own border/background/radius/padding/margin stripped right below,
+   so you're not looking at a card-inside-a-panel double (or triple, once
+   the chart's own box is counted) outline anymore -- just one frame, with
+   the chart's own box as the only thing inside it. */
+.hist-spread-expand-panel{
+  position:relative;width:100%;max-width:1180px;
+  border:1px solid var(--border);border-radius:0;
+  background:var(--panel);padding:20px 20px 18px;
+  box-shadow:0 24px 60px rgba(0,0,0,.5);
+  max-height:92vh;overflow:auto;
+}
+.hist-spread-expand-close{
+  position:absolute;top:10px;right:10px;z-index:2;
+  border:1px solid var(--border);border-radius:0;background:var(--panel2);
+  color:var(--text-faint);padding:2px 9px;font-size:16px;line-height:1.4;cursor:pointer;
+}
+.hist-spread-expand-close:hover{color:var(--text);}
+
+.hist-spread-card.hist-spread-card-expanded{
+  background:transparent!important;
+  border:none!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+}
+.hist-spread-chart.hist-spread-chart-expanded{
+  height:65vh!important;min-height:420px!important;max-height:620px!important;
+  margin-top:14px!important;width:100%!important;
+}
+@media(max-width:700px){
+  .hist-spread-expand-panel{padding:36px 10px 12px;}
+  .hist-spread-chart.hist-spread-chart-expanded{height:55vh!important;min-height:300px!important;}
+}
 </style>
