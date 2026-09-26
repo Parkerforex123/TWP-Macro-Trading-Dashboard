@@ -4455,7 +4455,6 @@ body.editing .ov-pro-live{display:block!important;}
   </button>
   <div class="session-popover" id="sessionPopover" hidden></div>
 </div>
-        <button id="manualSaveBtn" style="display:none;background:var(--amber);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;">Force Save</button>
       </div>
     </div>
     <section class="tab-panel active" id="tab-overview"></section>
@@ -5104,7 +5103,12 @@ async function saveDataNow(){
 
 function scheduleSave(){
   if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(function(){ saveTimer=null; saveDataNow(); }, 300);
+  // Every edit that used to just queue a save now also re-locks today's Trade
+  // Scanner / trend-history snapshot first, via autoLogToday() (defined further
+  // down, hoisted here as a plain function declaration). This is what replaced
+  // the old manual "Recalculate & log today" button -- the snapshot now updates
+  // itself on every change instead of waiting for a click.
+  saveTimer = setTimeout(function(){ saveTimer=null; autoLogToday(); saveDataNow(); }, 300);
 }
 
 
@@ -6912,32 +6916,48 @@ function scannerFilterKey(score, bias){
   return scannerBucket(score,bias);
 }
 
-// Admin-only check: every pair scored with the previous formula vs the current one, so the
-// effect of the Fundamentals / CB ruler change can be judged on real numbers.
-function scannerScoringCompareHtml(){
-  var side=function(sc){ return sc>=14?"Long":(sc<=-14?"Short":"Flat"); };
-  var rowsArr=[], cOld={Long:0,Flat:0,Short:0}, cNew={Long:0,Flat:0,Short:0};
-  for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
-    var b=CCY_ORDER[i], q=CCY_ORDER[j];
-    var o=Math.round(pairCompositeFor(b,q,true)), n=Math.round(pairCompositeFor(b,q));
-    cOld[side(o)]++; cNew[side(n)]++;
-    rowsArr.push({pair:b+q,o:o,n:n});
-  } }
-  rowsArr.sort(function(a,b){ return Math.abs(b.n-b.o)-Math.abs(a.n-a.o) || b.n-a.n; });
-  var fmt=function(v){ return (v>0?"+":"")+v; };
-  var body=rowsArr.map(function(r){
-    var ob=pairBandLabel(r.o), nb=pairBandLabel(r.n), moved=ob!==nb;
-    return '<tr><td style="text-align:left;padding:3px 10px 3px 0;font-weight:600;">'+r.pair+'</td>'+
-      '<td style="padding:3px 10px;">'+fmt(r.o)+'</td>'+
-      '<td style="padding:3px 10px;">'+fmt(r.n)+'</td>'+
-      '<td style="padding:3px 10px;color:var(--text-dim);">'+fmt(r.n-r.o)+'</td>'+
-      '<td style="text-align:left;padding:3px 10px;color:var(--text-dim);">'+esc(ob)+'</td>'+
-      '<td style="text-align:left;padding:3px 10px;'+(moved?'color:var(--amber);font-weight:600;':'color:var(--text-dim);')+'">'+esc(nb)+'</td></tr>';
-  }).join("");
-  return '<details class="card" style="margin-bottom:6px;"><summary style="cursor:pointer;font-size:12.5px;color:var(--text-dim);">Scoring check (admin only): old vs new pair scores &mdash; '+
-    'Long '+cOld.Long+' &rarr; '+cNew.Long+' &middot; Flat '+cOld.Flat+' &rarr; '+cNew.Flat+' &middot; Short '+cOld.Short+' &rarr; '+cNew.Short+'</summary>'+
-    '<div style="padding:8px 2px 2px;font-size:12px;"><div style="color:var(--text-faint);margin-bottom:6px;">Old = previous formula (weights Fundamentals '+PAIR_W_OLD.fund+' / Yield '+PAIR_W_OLD.yield+' / CB '+PAIR_W_OLD.cb+', gaps halved). New = weights Fundamentals '+PAIR_W_NEW.fund+' / Yield '+PAIR_W_NEW.yield+' / CB '+PAIR_W_NEW.cb+', and a Fundamentals gap of '+PAIR_FUND_FULL_GAP+' and CB gap of '+PAIR_CB_FULL_GAP+' count as full strength. Sorted by biggest change.</div>'+
-    '<table style="border-collapse:collapse;text-align:right;"><thead><tr style="color:var(--text-faint);"><th style="text-align:left;padding:3px 10px 3px 0;">Pair</th><th style="padding:3px 10px;">Old</th><th style="padding:3px 10px;">New</th><th style="padding:3px 10px;">Change</th><th style="text-align:left;padding:3px 10px;">Old band</th><th style="text-align:left;padding:3px 10px;">New band</th></tr></thead><tbody>'+body+'</tbody></table></div></details>';
+// Builds today's live Trade Scanner / composite / fundamentals / COT / Surprise Index
+// snapshot and writes it into DAILY[todayKey] -- exactly what the old manual
+// "Recalculate & log today" button used to do on click. Nothing calls this by hand
+// anymore: scheduleSave() runs it on every edit (so today's numbers stay current as
+// you type), init() runs it once on load to catch up if a new calendar day has
+// started since anyone last had the dashboard open, and a once-a-minute day-rollover
+// watcher runs it if the dashboard is simply left open across midnight with no edits.
+// DAILY always reflects the latest same-day numbers; only SIGNAL_LOG (used purely to
+// dedupe the bullish/bearish LOG entries below) is gated to "first time today".
+function autoLogToday(){
+  if(!DATA) return false;
+  try{
+    var sc=allScores(), pr=buildPairs(sc);
+    if(!pr || !pr.length) return false;
+    var todayKey=new Date().toISOString().slice(0,10), snap={};
+    for(var k=0;k<pr.length;k++){ snap[pr[k].pair]=pr[k].score; }
+    for(var ci=0;ci<CCYS.length;ci++){
+      var cc=CCYS[ci], ff=fundFor(cc);
+      snap[cc]=sc[cc];                                   // composite (used by Desk Board trend arrow)
+      snap["FUND_"+cc]=ff.max?(100*ff.raw/ff.max):0;      // fundamentals %, own key so it doesn't collide with pair scores
+      snap["COT_"+cc]=getCotScore(cc);
+      snap["SURPRISE_"+cc]=Math.round(surpriseDataForCurrency(cc).avg*10)/10; // Surprise Index snapshot, own key too
+    }
+    var nowTs=new Date().toISOString();
+    var isFirstSignal=!SIGNAL_LOG[todayKey];
+    DAILY[todayKey]=snap;
+    if(isFirstSignal){ SIGNAL_LOG[todayKey]={ts:nowTs}; }
+    var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
+    var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
+      && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
+    if(sameAsTop){
+      // Result hasn't changed since the last log entry — just refresh its timestamp instead of stacking a duplicate row.
+      LOG[0].ts = nowTs;
+    } else {
+      LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
+    }
+    if(LOG.length>50) LOG=LOG.slice(0,50);
+    // Only touch the Trade Scanner DOM if it's actually the tab on screen right now --
+    // this can fire from an edit made on any tab (Currency Detail, Bond Yields, etc.).
+    if(activeTab==='scanner') renderScanner();
+    return true;
+  }catch(e){ console.warn("Auto daily log skipped:", e); return false; }
 }
 
 function renderScanner(animateTrend){
@@ -7042,11 +7062,11 @@ function renderScanner(animateTrend){
     return '<button class="range-btn'+(active?" active":"")+'" data-sfilter="'+fb[0]+'">'+fb[1]+'</button>';
   }).join("");
   var recalcRow = (unlockedLocally ? ('<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
-    '<div style="display:flex;gap:8px;"><button class="recalc-btn" id="recalcBtn">Recalculate &amp; log today</button>'+
+    '<div style="display:flex;gap:8px;">'+
       '<button class="recalc-btn" id="exportTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Export trend history</button>'+
       '<button class="recalc-btn" id="clearHistBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear history</button>'+
       '<button class="recalc-btn" id="clearPairTrendBtn" style="background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);">Clear pair trend only</button></div>'+'</div>') : '');
-  var html=recalcRow+(unlockedLocally?scannerScoringCompareHtml():'')+'<div class="card"><div class="scanner-head">'+
+  var html=recalcRow+'<div class="card"><div class="scanner-head">'+
     '<div class="scanner-head-left"><h3 class="scanner-title" style="margin:0;">Trade Scanner</h3></div>'+
     '<div class="scanner-head-right"><div class="range-switch">'+filterBtns+'</div></div>'+
     '</div>'+
@@ -7062,43 +7082,6 @@ function renderScanner(animateTrend){
   if(animateTrend) animateScannerTrends();
   if(scannerBigTrendAnimate){ animateBigTrend(); animatePairFocusCotSpark(); animatePairFocusScoreSpark(); animatePairFocusDriverBars(); scannerBigTrendAnimate=false; }
 
-  var recalcBtn=document.getElementById("recalcBtn");
-  if(recalcBtn){ recalcBtn.onclick=async function(){
-    var sc=allScores(), pr=buildPairs(sc), todayKey=new Date().toISOString().slice(0,10), snap={};
-    for(var k=0;k<pr.length;k++){ snap[pr[k].pair]=pr[k].score; }
-    for(var ci=0;ci<CCYS.length;ci++){
-      var cc=CCYS[ci], ff=fundFor(cc);
-      snap[cc]=sc[cc];                                   // composite (used by Desk Board trend arrow)
-      snap["FUND_"+cc]=ff.max?(100*ff.raw/ff.max):0;      // fundamentals %, own key so it doesn't collide with pair scores
-      snap["COT_"+cc]=getCotScore(cc);
-      snap["SURPRISE_"+cc]=Math.round(surpriseDataForCurrency(cc).avg*10)/10; // Surprise Index snapshot, own key too
-    }
-    var nowTs=new Date().toISOString();
-    var isFirstSignal=!SIGNAL_LOG[todayKey];
-    // DAILY should always reflect the latest same-day numbers; only SIGNAL_LOG (used purely to
-    // dedupe the bullish/bearish LOG entries below) needs to be "first time today" gated.
-    DAILY[todayKey]=snap;
-    if(isFirstSignal){ SIGNAL_LOG[todayKey]={ts:nowTs}; }
-    var newBull={pair:pr[0].pair,score:pr[0].score}, newBear={pair:pr[pr.length-1].pair,score:pr[pr.length-1].score};
-    var sameAsTop = LOG.length && LOG[0].mostBullish.pair===newBull.pair && LOG[0].mostBullish.score===newBull.score
-      && LOG[0].mostBearish.pair===newBear.pair && LOG[0].mostBearish.score===newBear.score;
-    if(sameAsTop){
-      // Result hasn't changed since the last log entry — just refresh its timestamp instead of stacking a duplicate row.
-      LOG[0].ts = nowTs;
-    } else {
-      LOG.unshift({ts:nowTs, mostBullish:newBull, mostBearish:newBear});
-    }
-    if(LOG.length>50) LOG=LOG.slice(0,50);
-    // Re-render before awaiting cloud persistence. The score, trend arrow and sparkline
-    // are live UI state and must respond immediately to Recalculate; saving must never
-    // block the visual update.
-    renderScanner();
-    var saved=await saveDataNow();
-    updateStatus(saved
-      ? (isFirstSignal ? ('Signal locked for '+todayKey+' · trend history saved') : ('Live recalculated · today\'s locked history refreshed'))
-      : (isFirstSignal ? ('Signal calculated · local copy queued for cloud save') : ('Live recalculated · cloud save queued')),
-      saved ? (isFirstSignal ? 'var(--bullish-strong)' : 'var(--text-dim)') : 'var(--amber)');
-  }; }
   var exportTrendBtn=document.getElementById("exportTrendBtn");
   if(exportTrendBtn){ exportTrendBtn.onclick=dailyExportCsv; }
   var clearHistBtn=document.getElementById("clearHistBtn");
@@ -8867,7 +8850,7 @@ function surpriseBigChart(ccy, rangeSel){
   var days=filterDaysByRange(allDays, rangeSel);
   if(days.length<1){
     var msg = allDays.length<1
-      ? "No saved Surprise Index history yet. Use \"Recalculate & log today\" on Trade Scanner to start the series."
+      ? "No saved Surprise Index history yet. It logs itself once there's at least a day of data to compare."
       : "No logged data falls inside this window — try a wider range.";
     return '<div class="building">'+msg+'</div>';
   }
@@ -9582,7 +9565,7 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
       '<span>'+formatShortDate(series[midIdx].date)+'</span>'+
       '<span>'+lastLabel+'</span></div>';
   } else {
-    spark='<div style="font-size:11.5px;color:var(--text-faint);margin-top:14px;line-height:1.4;">No history logged yet — hit Recalculate a few times to start building this line.</div>';
+    spark='<div style="font-size:11.5px;color:var(--text-faint);margin-top:14px;line-height:1.4;">No history logged yet — it builds itself day by day as the dashboard stays in use.</div>';
   }
   return '<div class="trend-panel"><div><span class="k">Composite trend ('+TREND_WINDOW_DAYS+'d)</span>'+
     '<div class="trend-score">'+fmt(liveScore)+'</div>'+
@@ -10391,7 +10374,7 @@ function bigChart(pair, rangeSel, animate){
   var days=filterDaysByRange(allDays, rangeSel);
   if(days.length<2){
     var msg = allDays.length<2
-      ? "Not enough history yet — click Recalculate on at least two different days to start a trend line."
+      ? "Not enough history yet — it needs at least two different logged days to draw a trend line."
       : "No logged data falls inside this window — try a wider range.";
     return '<div class="building">'+msg+'</div>';
   }
@@ -11107,7 +11090,7 @@ function cotCsvEscape(v){
 // change over time and a tidy export never needs its columns rebuilt to match.
 function dailyExportCsv(){
   var dates=Object.keys(DAILY).sort();
-  if(!dates.length){ updateStatus('No trend history logged yet — use "Recalculate & log today" first.','var(--amber)'); return; }
+  if(!dates.length){ updateStatus('No trend history logged yet — it logs itself automatically once there is data to score.','var(--amber)'); return; }
   var header=['Date','Signal Timestamp','Metric','Type','Value'];
   var lines=[header.join(',')];
   var rowCount=0;
@@ -11651,6 +11634,12 @@ async function init(){
   renderLockBox();
   renderAllStatic();
 
+  // Catch-up snapshot: runs once real (cloud-synced) data is in memory, so if a new
+  // calendar day started since anyone last had this open, today's opening numbers get
+  // locked into the trend history immediately -- no click needed. Only fires for a
+  // signed-in editor session, since that's the only session allowed to write back.
+  if(AUTH.accessToken){ if(autoLogToday()) saveDataNow(); }
+
   updateStatus("Connecting to cloud...", "var(--text-dim)");
   // Poll for changes so every open dashboard receives the shared state.
   // This avoids requiring any paid realtime service and works on GitHub Pages.
@@ -11727,6 +11716,20 @@ async function init(){
   }
   checkCloudVersion();
   setInterval(checkCloudVersion, 15000);
+
+  // Day-rollover watcher: if the dashboard is simply left open overnight with zero
+  // edits, this is what locks today's snapshot in at the moment the date actually
+  // flips, so there's still a closed entry for that day rather than a gap. Checked
+  // every minute rather than tied to a precise midnight timer -- cheap, and it can
+  // never miss the rollover by more than ~60 seconds.
+  var lastSeenDayKey = new Date().toISOString().slice(0,10);
+  setInterval(function(){
+    var nowKey = new Date().toISOString().slice(0,10);
+    if(nowKey !== lastSeenDayKey){
+      lastSeenDayKey = nowKey;
+      if(AUTH.accessToken && autoLogToday()) saveDataNow();
+    }
+  }, 60000);
 
 }
 
