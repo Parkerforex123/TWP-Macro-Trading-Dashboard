@@ -1316,6 +1316,14 @@ body.black, html.black{
 #tab-detail .stat-row .stat-chip{font-size:15px!important;}
 #tab-detail .left-col .ccy-full{font-size:14px!important;}
 #tab-detail .guidance-box{font-size:14px!important;}
+
+/* CB stance read beside the forward-guidance date. */
+.guidance-sheet-date-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.guidance-sheet-cb-read{font-size:13px;font-weight:700;letter-spacing:.15px;text-transform:none;padding:0;border:0;border-radius:0;background:none;white-space:nowrap;}
+.guidance-sheet-cb-read.hawkish{color:var(--bullish-strong);}
+.guidance-sheet-cb-read.dovish{color:var(--bearish-strong);}
+.guidance-sheet-cb-read.neutral{color:var(--text-dim);}
+
 #tab-raw .ind-link,#tab-raw .ind-name{font-size:14px!important;}
 #tab-raw .ind-num,#tab-raw .ind-txt,#tab-raw .surprise{font-size:14px!important;}
 #tab-raw .bias-select{font-size:14px!important;}
@@ -4751,8 +4759,9 @@ function teLink(ccy, name){
 function seed(){
   return {
     USD:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bullish",cotChangeBias:"Bullish",longPct:"",shortPct:"",changePct:"",
-      interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
-      guidance:"Fed held rates at 3.50-3.75%. Prioritizing inflation control over a solid growth backdrop.",
+      interestRate:"4.00%",nextMove:"HIKE",conviction:"High conviction",policyAction:"HIKE",
+      guidance:"The Fed raised rates by 25 basis points and made clear that inflation remains too high for comfort. Economic activity expanded at a solid pace, domestic spending is resilient, productivity growth is strong and the labour market has not deteriorated materially. The Committee does not see enough weakness to justify backing away from its inflation objective. The September projections put the median policy rate at 4.1% at year-end, implying continued restraint rather than the beginning of an easing cycle.",
+      guidanceAnalysis:{score:7.5,label:"Hawkish",confidence:0.93,dimensions:{inflation:3,growth:2,labour:1.5,policyPath:4,reaction:3,risks:1,projection:3,dissent:0,uncertainty:1,actionContext:0.75},summary:"The Fed tightened policy while describing inflation as too high and economic conditions as resilient, with projections consistent with continued restraint."},
       growth:[{name:"GDP Growth Rate QoQ",weight:6,actual:"1.50%",forecast:"2.0%",bias:"Bearish"},
         {name:"ISM Manufacturing PMI",weight:5,actual:"55.6",forecast:"53.9",bias:"Bullish"},
         {name:"ISM Services PMI",weight:8,actual:"54.0",forecast:"54.2",bias:"Bearish"},
@@ -4765,8 +4774,8 @@ function seed(){
         {name:"Unemployment Rate",weight:9,actual:"4.2%",forecast:"4.3%",bias:"Bullish"},
         {name:"Average Hr Earnings YoY",weight:9,actual:"3.5%",forecast:"3.5%",bias:"Neutral"}]},
     GBP:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
-      interestRate:"3.75%",nextMove:"HOLD",conviction:"High conviction",
-      guidance:"BOE held at 3.75%. More members are leaning hawkish as their focus shifts to inflation.",
+      interestRate:"3.75%",nextMove:"HIKE",conviction:"Medium conviction",policyAction:"HOLD",
+      guidance:"The Bank of England left Bank Rate unchanged in a six to three vote, with three members preferring a 25 basis point increase. Inflation has risen to 3.1% and is expected to remain elevated. The Committee is balancing persistent inflation pressure against the risk that tighter policy could weaken activity. The dissent shows that a significant minority already sees a case for higher rates. The majority held at this meeting, but the reaction function remains biased toward restraint and further tightening if inflation persistence warrants it.",
       growth:[{name:"GDP Growth Rate",weight:5,actual:"0.60%",forecast:"0.60%",bias:"Neutral"},
         {name:"Composite PMI Flash",weight:6,actual:"52.1",forecast:"49.7",bias:"Bullish"},
         {name:"Services PMI",weight:8,actual:"51.8",forecast:"49.4",bias:"Bullish"},
@@ -4779,8 +4788,8 @@ function seed(){
         {name:"Claimant Count Change",weight:5,actual:"6.7k",forecast:"29.4k",bias:"Bullish"},
         {name:"Average Earnings",weight:10,actual:"4.3%",forecast:"4.5%",bias:"Bearish"}]},
     EUR:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
-      interestRate:"2.4%",nextMove:"HOLD",conviction:"High conviction",
-      guidance:"ECB hiked rates by 0.25%. Their focus still remains on inflation.",
+      interestRate:"2.4%",nextMove:"HOLD",conviction:"High conviction",policyAction:"HIKE",
+      guidance:"The ECB raised rates by 25 basis points. The Governing Council continues to monitor inflation closely, with attention to persistent price pressures and the risk that inflation does not return smoothly to target. The decision was accompanied by a continued emphasis on the inflation objective rather than an automatic shift toward easing. Policy remains restrictive enough to keep inflation risks contained while the Council stays data dependent.",
       growth:[{name:"GDP Growth Rate",weight:5,actual:"0.40%",forecast:"0.20%",bias:"Bullish"},
         {name:"Services PMI",weight:7,actual:"51.6",forecast:"49.8",bias:"Bullish"},
         {name:"Composite PMI",weight:7,actual:"51.9",forecast:"50.3",bias:"Bullish"},
@@ -4792,8 +4801,8 @@ function seed(){
       labour:[{name:"Unemployment Rate",weight:5,actual:"6.3%",forecast:"6.2%",bias:"Bearish"},
         {name:"Negotiated Wages",weight:10,actual:"2.46%",forecast:"-",bias:"Bearish"}]},
     JPY:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
-      interestRate:"1.0%",nextMove:"HOLD",conviction:"High conviction",
-      guidance:"BOJ hiked rates to 1.0%, and cites more hikes coming.",
+      interestRate:"1.0%",nextMove:"HIKE",conviction:"High conviction",policyAction:"HIKE",
+      guidance:"The BOJ raised rates and Governor Ueda deliberately avoided giving the market a fixed timetable for further hikes. The reaction function is shifting from trying to generate inflation toward preventing inflation from becoming excessively persistent. The committee remains data dependent, but the policy direction is toward normalization and ensuring inflation does not become entrenched.",
       growth:[{name:"GDP Growth Rate",weight:5,actual:"0.50%",forecast:"0.40%",bias:"Bullish"},
         {name:"Tankan Manufacturers",weight:8,actual:"22",forecast:"16",bias:"Bullish"},
         {name:"Industrial Prod MoM",weight:5,actual:"1.3%",forecast:"0.70%",bias:"Bullish"},
@@ -4806,8 +4815,8 @@ function seed(){
         {name:"Jobs/applications ratio",weight:4,actual:"1.18",forecast:"1.17",bias:"Bullish"},
         {name:"Average Earnings y/y",weight:10,actual:"3.2%",forecast:"3.4%",bias:"Bullish"}]},
     AUD:{seasonalityAvg:"",seasonality:"Neutral",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
-      interestRate:"4.35%",nextMove:"HOLD",conviction:"High conviction",
-      guidance:"RBA held at 4.35%. Would hike again if inflation rises further.",
+      interestRate:"4.35%",nextMove:"HIKE",conviction:"High conviction",policyAction:"HOLD",
+      guidance:"The RBA left rates unchanged after three increases earlier in the year, but the message was not dovish. Inflation remains too high, underlying inflation is still elevated and the economy continues to operate above capacity. Domestic spending and investment remain resilient and the labour market is still somewhat tight. Financial conditions are already somewhat restrictive, so the Board wants to assess how earlier hikes are flowing through before tightening again. The major risk is that inflation becomes embedded, particularly if firms continue passing higher costs into prices. The RBA expects inflation to return to the middle of its 2–3% target range only in early 2028.",
       growth:[{name:"GDP Growth Rate",weight:6,actual:"0.40%",forecast:"0.30%",bias:"Bullish"},
         {name:"Household Spending YoY",weight:5,actual:"5.5%",forecast:"-",bias:"Bullish"},
         {name:"NAB Business Confidence",weight:4,actual:"-5",forecast:"-",bias:"Bullish"},
@@ -4819,8 +4828,8 @@ function seed(){
         {name:"Unemployment Rate",weight:8,actual:"4.4%",forecast:"4.4%",bias:"Neutral"},
         {name:"Wage Price Index YoY",weight:9,actual:"3.3%",forecast:"3.3%",bias:"Neutral"}]},
     NZD:{seasonalityAvg:"",seasonality:"Bearish",cotNet:"Bearish",cotChangeBias:"Bearish",longPct:"",shortPct:"",changePct:"",
-      interestRate:"2.50%",nextMove:"HIKE",conviction:"High conviction",
-      guidance:"The RBNZ just raised its official interest rate by 25 basis points to 2.50%.",
+      interestRate:"2.50%",nextMove:"HIKE",conviction:"High conviction",policyAction:"HIKE",
+      guidance:"The RBNZ raised the OCR by 25 basis points. The central economic outlook could require further increases, although the future path is not predetermined and the response to data is not mechanical. Inflation remained rigid at 4.1% in the June quarter because of higher fuel prices linked to the Middle East conflict, but the Bank still expects medium-term inflation to return towards the 2% midpoint. The Bank is balancing two risks: allowing the oil shock to become embedded in broader price-setting behaviour versus tightening too aggressively and damaging the economic recovery. The Bank judged its current path appropriate and consistent with containing inflation while limiting unnecessary instability in output and employment.",
       growth:[{name:"GDP Growth Rate",weight:5,actual:"0.80%",forecast:"0.80%",bias:"Neutral"},
         {name:"ANZ Business Confidence",weight:4,actual:"56.1",forecast:"-",bias:"Bullish"},
         {name:"Retail Sales MoM",weight:5,actual:"0.90%",forecast:"0.50%",bias:"Bullish"},
@@ -4861,6 +4870,25 @@ function seed(){
 
 var CHF_YIELD_HISTORY = [{"date":"2026-05-01","CHF":0.158},{"date":"2026-05-04","CHF":0.174},{"date":"2026-05-05","CHF":0.146},{"date":"2026-05-06","CHF":0.094},{"date":"2026-05-07","CHF":0.088},{"date":"2026-05-08","CHF":0.085},{"date":"2026-05-11","CHF":0.108},{"date":"2026-05-12","CHF":0.149},{"date":"2026-05-13","CHF":0.138},{"date":"2026-05-14","CHF":0.174},{"date":"2026-05-15","CHF":0.211},{"date":"2026-05-18","CHF":0.228},{"date":"2026-05-19","CHF":0.248},{"date":"2026-05-20","CHF":0.198},{"date":"2026-05-21","CHF":0.226},{"date":"2026-05-22","CHF":0.199},{"date":"2026-05-26","CHF":0.154},{"date":"2026-05-27","CHF":0.113},{"date":"2026-05-28","CHF":0.078},{"date":"2026-05-29","CHF":0.064},{"date":"2026-06-01","CHF":0.098},{"date":"2026-06-02","CHF":0.091},{"date":"2026-06-03","CHF":0.131},{"date":"2026-06-04","CHF":0.111},{"date":"2026-06-05","CHF":0.144},{"date":"2026-06-08","CHF":0.142},{"date":"2026-06-09","CHF":0.134},{"date":"2026-06-10","CHF":0.134},{"date":"2026-06-11","CHF":0.149},{"date":"2026-06-12","CHF":0.071},{"date":"2026-06-15","CHF":0.048},{"date":"2026-06-16","CHF":0.043},{"date":"2026-06-17","CHF":0.048},{"date":"2026-06-18","CHF":0.035},{"date":"2026-06-22","CHF":0.03},{"date":"2026-06-23","CHF":0.018},{"date":"2026-06-24","CHF":0.013},{"date":"2026-06-25","CHF":0.004},{"date":"2026-06-26","CHF":0.012},{"date":"2026-06-29","CHF":0.034},{"date":"2026-06-30","CHF":0.04},{"date":"2026-07-01","CHF":0.038},{"date":"2026-07-02","CHF":0.038},{"date":"2026-07-06","CHF":0.034},{"date":"2026-07-07","CHF":0.047},{"date":"2026-07-08","CHF":0.077},{"date":"2026-07-09","CHF":0.073},{"date":"2026-07-10","CHF":0.083},{"date":"2026-07-13","CHF":0.11},{"date":"2026-07-14","CHF":0.116},{"date":"2026-07-15","CHF":0.113},{"date":"2026-07-16","CHF":0.131},{"date":"2026-07-17","CHF":0.136},{"date":"2026-07-20","CHF":0.157},{"date":"2026-07-21","CHF":0.152},{"date":"2026-07-22","CHF":0.168},{"date":"2026-07-23","CHF":0.23},{"date":"2026-07-24","CHF":0.198},{"date":"2026-07-27","CHF":0.132},{"date":"2026-07-28","CHF":0.087},{"date":"2026-07-29","CHF":0.132},{"date":"2026-07-30","CHF":0.118},{"date":"2026-07-31","CHF":0.135},{"date":"2026-08-03","CHF":0.101},{"date":"2026-08-04","CHF":0.078},{"date":"2026-08-05","CHF":0.073},{"date":"2026-08-06","CHF":0.065},{"date":"2026-08-07","CHF":0.076},{"date":"2026-08-10","CHF":0.115},{"date":"2026-08-11","CHF":0.109},{"date":"2026-08-12","CHF":0.097},{"date":"2026-08-13","CHF":0.077},{"date":"2026-08-14","CHF":0.087},{"date":"2026-08-17","CHF":0.086},{"date":"2026-08-18","CHF":0.101},{"date":"2026-08-19","CHF":0.097}];
 
+/* Central-bank source registry. These are official-source targets for the automatic macro reader.
+ * A static HTML file cannot safely call arbitrary central-bank pages or an LLM directly because of
+ * browser CORS and API-key constraints. The dashboard therefore supports a backend/AI feed through
+ * SETTINGS.cbMacroEndpoint; when populated, returned guidanceAnalysis objects can be merged into DATA.
+ */
+var CB_SOURCE_REGISTRY={
+  USD:{bank:"Federal Reserve",statement:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",press:"https://www.federalreserve.gov/monetarypolicy/fomc.htm",projections:"https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm"},
+  GBP:{bank:"Bank of England",statement:"https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes",report:"https://www.bankofengland.co.uk/monetary-policy-report"},
+  EUR:{bank:"European Central Bank",statement:"https://www.ecb.europa.eu/press/govcdec/mopo/html/index.en.html",press:"https://www.ecb.europa.eu/press/pressconf/html/index.en.html"},
+  JPY:{bank:"Bank of Japan",statement:"https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/index.htm",outlook:"https://www.boj.or.jp/en/mopo/outlook/index.htm"},
+  AUD:{bank:"Reserve Bank of Australia",statement:"https://www.rba.gov.au/media-releases/",monetary:"https://www.rba.gov.au/publications/smp/"},
+  NZD:{bank:"Reserve Bank of New Zealand",statement:"https://www.rbnz.govt.nz/monetary-policy/official-cash-rate-decisions",statementArchive:"https://www.rbnz.govt.nz/monetary-policy/monetary-policy-statements"},
+  CAD:{bank:"Bank of Canada",statement:"https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/",press:"https://www.bankofcanada.ca/2026/"},
+  CHF:{bank:"Swiss National Bank",statement:"https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy",press:"https://www.snb.ch/en/publications/communication/press-releases"}
+};
+function cbMacroPrompt(ccy,sourceText){
+  var src=CB_SOURCE_REGISTRY[ccy]||{};
+  return {role:"system",task:"Read the complete official central-bank communication as a macro strategist. Do not use nextMove to determine guidance. Identify actual meeting action, inflation regime, growth/labour backdrop, reaction function, policy-path language, balance of risks, dissent, projections, uncertainty and the costs of overtightening. Then return JSON with meetingAction HIKE/HOLD/CUT, guidanceTone Hawkish/Neutral/Dovish, guidanceScore -10..10, confidence 0..1, summary, evidence and dimensions. Do not infer direction from a single keyword.",currency:ccy,officialSource:src,sourceText:sourceText||""};
+}
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[], SIGNAL_LOG={};
 var CLOUD_UPDATED_AT=null; // server version last observed for optimistic concurrency
 var RISK_SENTIMENT={history:[],current:{spxClose:null,vixClose:null,spxPct:null,vixPct:null,date:""}};
@@ -5844,9 +5872,155 @@ function riskPairState(base,quote){
   if(Math.abs(diff)<0.06) return 'Neutral';
   return diff>0 ? 'Bullish' : 'Bearish';
 }
-function cbStanceScore(ccy){
-  // Mechanical CB stance score. HOLD is always 0 (a hold is confidence in neutrality,
-  // not a directional lean). HIKE/CUT magnitude is set by conviction: Low=3, Medium=6, High=10.
+/*
+ * CB STANCE ENGINE
+ *
+ * HIKE/CUT remain exactly as before: the user's rate-probability / conviction
+ * workflow controls the policy-action score (Low=3, Medium=6, High=10).
+ *
+ * HOLD is no longer forced to zero. Instead, the existing Forward Guidance field
+ * is parsed into a directional communication score. This deliberately does NOT
+ * promote a HOLD into a HIKE/CUT. It only answers: "which direction is the
+ * central bank's communication leaning while policy is unchanged?"
+ *
+ * Native guidance score: -10 .. +10
+ *   -10 = strongly dovish communication
+ *     0 = no directional guidance signal / genuinely neutral hold
+ *   +10 = strongly hawkish communication
+ *
+ * The parser uses phrases and context rather than isolated keywords. Inflation
+ * pressure and policy-path language carry the most weight; growth and FX language
+ * are secondary context. Mixed guidance can therefore remain near zero.
+ */
+function cbGuidanceText(ccy){
+  var d=DATA[ccy]||{};
+  return String(d.guidance||"").replace(/\s+/g," ").trim();
+}
+
+/*
+ * MACRO-LEVEL CENTRAL-BANK READER
+ *
+ * This is intentionally a structured reading of the whole communication,
+ * rather than a simple keyword counter.  It separates the reaction function
+ * from the meeting action and treats dissent, projections, trade-offs,
+ * uncertainty and the policy-path language as evidence about the stance.
+ *
+ * It returns an auditable object so the UI and the CB score use the same
+ * interpretation.  An externally generated analysis can be supplied later
+ * through d.guidanceAnalysis; when present, that analysis is authoritative.
+ */
+function macroGuidanceAnalysis(ccy){
+  var d=DATA[ccy]||{};
+  if(d.guidanceAnalysis && typeof d.guidanceAnalysis==='object' && Number.isFinite(Number(d.guidanceAnalysis.score))){
+    return d.guidanceAnalysis;
+  }
+  var raw=cbGuidanceText(ccy);
+  if(!raw) return {score:0,label:"Neutral",confidence:0,dimensions:{},summary:"No central-bank communication supplied."};
+  var t=raw.toLowerCase();
+  var out={
+    inflation:0,growth:0,labour:0,policyPath:0,reaction:0,risks:0,uncertainty:0,projection:0,dissent:0,actionContext:0
+  };
+  var evidence=[];
+  function add(dim,pts,why){ out[dim]+=pts; if(why && evidence.length<12) evidence.push(why); }
+  function has(re){ return re.test(t); }
+  function addIf(dim,re,pts,why){ if(has(re)) add(dim,pts,why); }
+
+  /* Policy path and reaction-function language carry the greatest weight. */
+  addIf('policyPath',/(?:further|additional|more)\s+(?:rate\s+)?(?:hike|hikes|hiking|increase|increases|tightening)|additional tightening|further tightening|could require further increases|further increases may be required|prepared to tighten|prepared to raise|willing to tighten|higher(?:\s+policy)?\s+rates?\s+for longer|higher for longer|keep rates? restrictive|maintain(?:ing)?\s+(?:a\s+)?restrictive stance|policy remains restrictive/,4.0,'Policy path retains or permits further restriction.');
+  addIf('policyPath',/(?:further|additional|more)\s+(?:rate\s+)?(?:cut|cuts|cutting|easing)|additional easing|further easing|prepared to ease|prepared to cut|willing to ease|less restrictive|reduce(?:d|s)?\s+(?:the\s+)?restrictiveness|policy can become less restrictive/, -4.0,'Policy path points toward additional easing.');
+
+  /* Inflation regime: level, persistence and second-round risk. */
+  addIf('inflation',/(?:inflation|price pressures?)[^.]{0,160}(?:elevated|high|persistent|sticky|stubborn|rigid|too high|above target|embedded|reaccelerat|accelerat|upside|risen|rising|remains)/,3.0,'Inflation remains a material constraint on policy.');
+  addIf('inflation',/(?:inflation|price pressures?)[^.]{0,140}(?:moderating|falling|declining|easing|cooling|return(?:ing)? to target|near(?:ing)? target|below target)/,-3.0,'Inflation is described as moderating or returning toward target.');
+  addIf('inflation',/(?:oil|energy|fuel)[^.]{0,150}(?:pass[- ]through|embedded|become embedded|broader price|price-setting|second-round)/,1.5,'The bank is concerned about second-round inflation from a supply shock.');
+
+  /* Real economy and labour are contextual evidence, not automatic rate calls. */
+  addIf('growth',/(?:economic activity|activity|growth|demand|spending|investment|economy)[^.]{0,120}(?:solid|strong|resilient|robust|firm|above capacity|above potential|expanding)/,2.0,'Economic activity is described as resilient or strong.');
+  addIf('growth',/(?:economic activity|activity|growth|demand|spending|investment|economy)[^.]{0,120}(?:weak|soft|sluggish|slow(?:ing)?|contract|fragile|subdued|downside)/,-2.0,'Economic activity is described as weak or subdued.');
+  addIf('labour',/(?:labou?r|employment|wages?|job gains?)[^.]{0,120}(?:tight|strong|resilient|robust|firm|solid|not deteriorated|not materially deteriorated)/,1.5,'Labour conditions do not provide a strong reason to ease.');
+  addIf('labour',/(?:labou?r|employment|wages?|job gains?)[^.]{0,120}(?:weak|slack|deteriorat|cool(?:ing)?|soft|unemployment rising)/,-1.5,'Labour conditions are weakening and reduce the case for restraint.');
+
+  /* Explicit reaction-function language is more important than generic tone. */
+  addIf('reaction',/(?:not|does not|do not)\s+(?:see|currently see)\s+(?:enough|any)\s+(?:weakness|deterioration)|no (?:reason|need) to (?:back away|ease)|continue(?:d|s|ing)?\s+(?:to\s+)?(?:restrict|tighten)|maintain(?:ed|s)?\s+(?:its|the)\s+(?:restrictive|current)\s+(?:stance|path)|no evidence of weakness|no weakness to justify|not enough weakness/,3.0,'The reaction function does not point toward an easing pivot.');
+  addIf('reaction',/(?:future path|policy path)[^.]{0,100}(?:not predetermined|not mechanical|data dependent|data-driven|uncertain)/,0,'The bank stresses optionality/data dependence rather than committing to a fixed path.');
+  addIf('reaction',/(?:current path|current stance|current settings?)[^.]{0,120}(?:appropriate|sufficient|consistent with containing inflation)/,1.5,'The bank judges current restraint appropriate for its objectives.');
+  addIf('reaction',/(?:current path|current stance|current settings?)[^.]{0,120}(?:too restrictive|too tight|damaging the recovery|unnecessarily restrictive)/,-1.5,'The bank flags the cost of excessive restraint.');
+
+  /* Balance of risks / explicit trade-offs. */
+  addIf('risks',/(?:risk|risks|balance of risks)[^.]{0,150}(?:inflation|price)[^.]{0,100}(?:upside|embedded|persistent|higher)/,2.0,'Inflation risk is treated as an important policy risk.');
+  addIf('risks',/(?:risk|risks|balance of risks)[^.]{0,150}(?:growth|output|employment|recovery)[^.]{0,100}(?:downside|weak|damage|instability)/,-1.5,'Growth/employment downside is a meaningful constraint on tightening.');
+  addIf('risks',/(?:balancing two risks|balance(?:s|d)? two risks|trade[- ]off|versus tightening too aggressively)/,0,'The bank explicitly frames the decision as a policy trade-off.');
+
+  /* Projections / expected policy path. */
+  addIf('projection',/(?:projection|projections|forecast|median)[^.]{0,180}(?:policy rate|rate path|rates?)[^.]{0,100}(?:higher|increase|hike|tightening|4\.1|above current)/,3.0,'Official projections point to continued policy restraint or a higher rate path.');
+  addIf('projection',/(?:projection|projections|forecast|median)[^.]{0,180}(?:policy rate|rate path|rates?)[^.]{0,100}(?:lower|cut|easing|decline)/,-3.0,'Official projections point toward lower rates or easing.');
+
+  /* Dissent: direction and breadth matter. A small dissent does not erase the majority decision. */
+  var md=t.match(/(\d+)\s*[-–]\s*(\d+)\s*(?:vote|voted)/);
+  if(md){
+    var a=Number(md[1]), b=Number(md[2]);
+    if(a+b>0){
+      var dissentShare=b/(a+b);
+      if(dissentShare>0 && dissentShare<=0.45){ add('dissent', dissentShare*2,'There is a meaningful but minority policy dissent.'); }
+      else if(dissentShare>0.45){ add('dissent', dissentShare*3,'The policy vote is materially divided.'); }
+    }
+  }
+  addIf('dissent',/(?:three|two|several|some)\s+(?:members?|policymakers?)[^.]{0,120}(?:preferred|voted for|wanted|look(?:ed)? forward to)\s+(?:a\s+)?(?:hike|increase|tightening)/,2.0,'Multiple members preferred tighter policy.');
+  addIf('dissent',/(?:members?|policymakers?)[^.]{0,80}(?:preferred|voted for|wanted)\s+(?:a\s+)?(?:cut|reduction|easing)/,-1.5,'Multiple members preferred easier policy.');
+
+  /* Uncertainty is neutral unless it is attached to a directional reaction function. */
+  if(has(/(?:future path|policy path)[^.]{0,120}(?:not predetermined|not mechanical|data dependent|uncertain|no fixed timetable)/)){
+    out.uncertainty += 1;
+    evidence.push('The bank preserves policy optionality and avoids a fixed timetable.');
+  }
+
+  /* Actual action is context, never the source of guidance tone. */
+  var action=cbPolicyAction(ccy);
+  if(action==='HIKE' && out.inflation>=2) out.actionContext += 0.75;
+  if(action==='CUT' && out.inflation<=-2) out.actionContext -= 0.75;
+
+  var rawScore = out.inflation + out.growth + out.labour + out.policyPath + out.reaction + out.risks + out.projection + out.dissent + out.actionContext;
+
+  /* Strong directional reaction-function evidence should not be diluted by
+   * several generic neutral/data-dependent phrases. */
+  if(out.policyPath>=4 && out.inflation>=2) rawScore=Math.max(rawScore,7);
+  if(out.policyPath<=-4 && out.inflation<=-2) rawScore=Math.min(rawScore,-7);
+
+  rawScore=Math.max(-10,Math.min(10,rawScore));
+  var abs=Math.abs(rawScore);
+  var label=abs>=8?'Strongly ':abs>=4?'':'Mildly ';
+  label += rawScore>0?'Hawkish':rawScore<0?'Dovish':'Neutral';
+  if(rawScore>0 && abs>=4) label='Hawkish';
+  if(rawScore<0 && abs>=4) label='Dovish';
+  if(rawScore===0) label='Neutral';
+  var confidence=Math.min(0.98,0.55 + Math.min(0.35, evidence.length*0.035));
+  return {
+    score:Number(rawScore.toFixed(2)),
+    label:label,
+    confidence:Number(confidence.toFixed(2)),
+    dimensions:out,
+    evidence:evidence.slice(0,8),
+    summary: rawScore>0 ? 'The communication leans toward maintaining or increasing policy restraint.' : rawScore<0 ? 'The communication leans toward reducing or easing policy restraint.' : 'The communication does not establish a clear directional policy bias.'
+  };
+}
+function cbGuidanceScore(ccy){
+  return Number(macroGuidanceAnalysis(ccy).score)||0;
+}
+function cbGuidanceLabel(score){
+  score=Number(score)||0;
+  if(score>=9) return "Strongly Hawkish";
+  if(score>=4) return "Hawkish";
+  if(score>=1) return "Mildly Hawkish";
+  if(score<=-9) return "Strongly Dovish";
+  if(score<=-4) return "Dovish";
+  if(score<=-1) return "Mildly Dovish";
+  return "Neutral";
+}
+function cbHoldLabel(score){
+  var read=cbGuidanceLabel(score);
+  return read==="Neutral" ? "Neutral Hold" : read+" Hold";
+}
+function cbNextMoveScore(ccy){
   var d=DATA[ccy]||{};
   var move=(d.nextMove||"HOLD").toUpperCase();
   if(move!=="HIKE" && move!=="CUT") return 0;
@@ -5854,10 +6028,88 @@ function cbStanceScore(ccy){
   var mag = conv.indexOf("high")>=0 ? 10 : (conv.indexOf("low")>=0 ? 3 : 6);
   return move==="HIKE" ? mag : -mag;
 }
+/* Read the ACTION THAT ACTUALLY HAPPENED at the latest central-bank meeting.
+ * This is deliberately independent of d.nextMove.
+ *
+ * nextMove = what the dashboard expects the bank to do next.
+ * policyAction = what the bank actually did at the meeting described by guidance.
+ *
+ * The forward-guidance label must describe the meeting itself, so a bank can be
+ * HAWKISH HOLD even when nextMove is HIKE.  We first honour an explicit
+ * policyAction field if one exists; otherwise we infer the meeting action from
+ * the central-bank wording, not from nextMove.
+ */
+function cbPolicyAction(ccy){
+  var d=DATA[ccy]||{};
+  /* An explicit meeting-action field is authoritative when supplied. It is
+   * deliberately separate from nextMove. */
+  var explicit=String(d.policyAction||"").toUpperCase().trim();
+  if(explicit==="HIKE" || explicit==="HOLD" || explicit==="CUT") return explicit;
+
+  var raw=String(d.guidance||"").replace(/\s+/g," ").trim();
+  if(!raw) return "HOLD";
+  var t=raw.toLowerCase();
+
+  /*
+   * Determine WHAT HAPPENED AT THE MEETING, not what is expected next.
+   * These patterns deliberately recognise central-bank terminology such as
+   * OCR, policy rate, cash rate, Bank Rate, and "basis points".
+   *
+   * HOLD is checked only against explicit unchanged/held language. A mention
+   * of an earlier hike must never turn the current meeting into HOLD.
+   */
+  var holdNow = [
+    /\b(?:held|kept|left|maintained)\b[^.]{0,120}\b(?:rates?|ocr|policy rate|cash rate|bank rate|interest rates?)\b[^.]{0,120}\b(?:unchanged|steady|on hold|at)\b/,
+    /\b(?:rates?|ocr|policy rate|cash rate|bank rate|interest rates?)\b[^.]{0,100}\b(?:unchanged|steady|on hold)\b/,
+    /\bno change in (?:the )?(?:rates?|ocr|policy rate|cash rate|bank rate)\b/,
+    /\bleft (?:the )?(?:ocr|policy rate|cash rate|bank rate|interest rate)\b[^.]{0,100}\bunchanged\b/
+  ];
+  var hikeNow = [
+    /\b(?:raised|increased|lifted|hiked)\b[^.]{0,100}\b(?:the )?(?:ocr|official cash rate|policy rate|cash rate|bank rate|interest rate|interest rates)\b/,
+    /\b(?:the )?(?:ocr|official cash rate|policy rate|cash rate|bank rate|interest rate|interest rates)\b[^.]{0,100}\b(?:was|were|has been|have been)\b[^.]{0,50}\b(?:raised|increased|lifted|hiked)\b/,
+    /\b(?:raised|increased|lifted|hiked)\b[^.]{0,60}\b(?:by|to)\b[^.]{0,40}\b(?:\d+(?:\.\d+)?\s*(?:bp|bps|basis points?|%))\b/,
+    /\b(?:a|the)\s+(?:\d+(?:\.\d+)?\s*(?:bp|bps|basis points?))\s+(?:hike|increase)\b/,
+    /\b(?:rate|ocr|policy rate)\s+(?:hike|increase)\s+(?:of|by)\b/
+  ];
+  var cutNow = [
+    /\b(?:cut|lowered|reduced)\b[^.]{0,100}\b(?:the )?(?:ocr|official cash rate|policy rate|cash rate|bank rate|interest rate|interest rates)\b/,
+    /\b(?:the )?(?:ocr|official cash rate|policy rate|cash rate|bank rate|interest rate|interest rates)\b[^.]{0,100}\b(?:was|were|has been|have been)\b[^.]{0,50}\b(?:cut|lowered|reduced)\b/,
+    /\b(?:cut|lowered|reduced)\b[^.]{0,60}\b(?:by|to)\b[^.]{0,40}\b(?:\d+(?:\.\d+)?\s*(?:bp|bps|basis points?|%))\b/,
+    /\b(?:a|the)\s+(?:\d+(?:\.\d+)?\s*(?:bp|bps|basis points?))\s+(?:cut|reduction)\b/
+  ];
+
+  /* Prefer explicit present-meeting action. If a text contains both an old
+   * move and the current decision, the strongest current-decision wording wins. */
+  var currentHike=/\b(?:just|today|this meeting|at this meeting|at its latest meeting|announced today)\b[^.]{0,100}(?:raised|increased|lifted|hiked)\b/.test(t) || hikeNow.some(function(re){return re.test(t);});
+  var currentCut=/\b(?:just|today|this meeting|at this meeting|at its latest meeting|announced today)\b[^.]{0,100}(?:cut|lowered|reduced)\b/.test(t) || cutNow.some(function(re){return re.test(t);});
+  var currentHold=holdNow.some(function(re){return re.test(t);});
+
+  /* If the same sentence explicitly says the current decision was a hold, that
+   * wins over references to previous hikes/cuts elsewhere in the release. */
+  if(currentHold && /\b(?:held|kept|left|maintained)\b[^.]{0,80}\b(?:unchanged|steady|on hold)\b/.test(t)) return "HOLD";
+  if(currentHike && !currentHold) return "HIKE";
+  if(currentCut && !currentHold) return "CUT";
+  if(currentHold) return "HOLD";
+
+  return "HOLD";
+}
+function cbStanceLabel(ccy){
+  return cbGuidanceLabel(cbGuidanceScore(ccy))+" "+cbPolicyAction(ccy).replace("HIKE","Hike").replace("HOLD","Hold").replace("CUT","Cut");
+}
+function cbCombinedPolicyRead(ccy){
+  /* IMPORTANT: this is a meeting read, NOT the next-move read. */
+  return cbStanceLabel(ccy);
+}
+/* Currency-level CB score: 50% next-move signal + 50% guidance signal.
+ * Each native signal is -10..+10, so the combined score remains -10..+10. */
+function cbStanceScore(ccy){
+  return (cbNextMoveScore(ccy)+cbGuidanceScore(ccy))/2;
+}
 function pairCbStanceLabel(base,quote){
   var diff=cbStanceScore(base)-cbStanceScore(quote);
   return diff>=7?'Very Bullish':diff>=3?'Bullish':diff<=-7?'Very Bearish':diff<=-3?'Bearish':'Neutral';
 }
+
 function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
   // COT is split into two independently-weighted legs instead of being summed first:
@@ -5865,7 +6117,7 @@ function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   // cotWowMagnitudeScore -- bigger weekly contract swings score higher instead of every
   // nonzero change flattening to the same +/-1).
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotNetTerm=cotNetOnlyScore(ccy)/3, cotWowTerm=cotWowMagnitudeScore(ccy)/3, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Weights: Fundamentals 45% + Yield 18% + CB Stance 14% + COT Net Position 8% + COT Weekly Change 7% + Risk Sentiment 5% + Seasonality 3%
+  // Weights: Fundamentals 35% + Yield 25% + CB Stance 17% + COT Net Position 8% + COT Weekly Change 7% + Risk Sentiment 5% + Seasonality 3%
   return 100*(0.45*fundTerm+0.18*yieldTerm+0.14*cbTerm+0.08*cotNetTerm+0.07*cotWowTerm+0.05*riskTerm+0.03*seasTerm); }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
@@ -6146,10 +6398,18 @@ function pairCompositeFor(base, quote, legacy){
   var cotPosTerm=cotRegime.posScore/100, cotWowTerm=cotRegime.flowScore/100;
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
-  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
+  var cbNextBase=cbNextMoveScore(base)/10, cbNextQuote=cbNextMoveScore(quote)/10;
+  var cbGuideBase=cbGuidanceScore(base)/10, cbGuideQuote=cbGuidanceScore(quote)/10;
+  // The 17-point CB bucket is split 8.5/8.5:
+  //   8.5 points = expected next move + conviction
+  //   8.5 points = what the central bank actually communicated
+  // Each side is calculated as BASE minus QUOTE. If both agree, the full 17 points
+  // can be earned; if they conflict, the two halves offset rather than double-counting.
+  var cbNextPair=pairCbTerm(cbNextBase,cbNextQuote,legacy);
+  var cbGuidePair=pairCbTerm(cbGuideBase,cbGuideQuote,legacy);
+  var cbPair=legacy ? cbNextPair : (0.5*cbNextPair + 0.5*cbGuidePair);
   // All Base-vs-Quote differentials are normalized back to -1..1 before weighting.
   var fundPair=pairFundTerm(fundBase,fundQuote,legacy);
-  var cbPair=pairCbTerm(cbBase,cbQuote,legacy);
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
   // Pair weights: Fundamentals 35 + Yield 25 + CB Stance 17 + COT Position 8 + COT Weekly Change 7 + Risk Sentiment 5 + Seasonality 3 (see PAIR_W_NEW).
@@ -6232,9 +6492,12 @@ function pairAlignmentFor(base, quote, score){
   var cot=cotPairRegime(base,quote);
   if(!cot.insufficient && Number(cot.posScore)!==0) vote(Number(cot.posScore)>0?1:-1,8);
   if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,7);
-  // CB stance = 17% of the pair model. HOLD remains exactly neutral/zero by design.
-  var cbDiff=cbStanceScore(base)-cbStanceScore(quote);
-  if(cbDiff!==0) vote(cbDiff>0?1:-1,pairW(false).cb);
+  // CB stance = 17% split into two independent 8.5-point votes:
+  // next move/conviction and forward-guidance direction.
+  var cbNextDiff=cbNextMoveScore(base)-cbNextMoveScore(quote);
+  if(cbNextDiff!==0) vote(cbNextDiff>0?1:-1,pairW(false).cb/2);
+  var cbGuideDiff=cbGuidanceScore(base)-cbGuidanceScore(quote);
+  if(cbGuideDiff!==0) vote(cbGuideDiff>0?1:-1,pairW(false).cb/2);
   // Risk = 5%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
   if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,5);
@@ -6340,8 +6603,8 @@ function scannerDriverExplanation(base,quote,driver){
 // table and the Pair Focus panel. An earlier duplicate of this function existed
 // above with different weights (45/8%/7% vs the 50/7.5%/2.5% actually used here) --
 // it was dead code (later declaration wins), removed for clarity, not a scoring change.
-// Weights: Fundamentals max 25pts, Yield max 18pts, CB stance max 14pts, Position max
-// 7.5pts, WoW max 2.5pts, Seasonality max 3pts, Risk sentiment max 5pts -- these match
+// Weights: Fundamentals max 35pts, Yield max 25pts, CB stance max 17pts, Position max
+// 8pts, WoW max 7pts, Seasonality max 3pts, Risk sentiment max 5pts -- these match
 // PAIR_FOCUS_PILLAR_CAP used to normalize the driver bars.
 function scannerDriverBreakdown(base,quote){
   var db=DATA[base], dq=DATA[quote];
@@ -6351,7 +6614,8 @@ function scannerDriverBreakdown(base,quote){
   var cot=cotPairRegime(base,quote);
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
-  var cbBase=cbStanceScore(base)/10, cbQuote=cbStanceScore(quote)/10;
+  var cbNextBase=cbNextMoveScore(base)/10, cbNextQuote=cbNextMoveScore(quote)/10;
+  var cbGuideBase=cbGuidanceScore(base)/10, cbGuideQuote=cbGuidanceScore(quote)/10;
   var out=[];
   function push(name,pts,label){out.push({name:name,pts:Number(pts)||0,label:label||'Neutral'});}
   // IMPORTANT: keep every driver contribution exactly aligned with pairCompositeFor().
@@ -6361,7 +6625,7 @@ function scannerDriverBreakdown(base,quote){
   var W=pairW(false);
   push('Fundamentals',W.fund*pairFundTerm(fundBase,fundQuote),pillarBias((fundBase-fundQuote)*100));
   push('Yield',yScore==null?0:(W.yield/10)*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
-  push('CB stance',W.cb*pairCbTerm(cbBase,cbQuote),pairCbStanceLabel(base,quote));
+  push('CB stance',W.cb*(0.5*pairCbTerm(cbNextBase,cbNextQuote)+0.5*pairCbTerm(cbGuideBase,cbGuideQuote)),pairCbStanceLabel(base,quote));
   push('Position',cot.insufficient?0:(W.pos/100)*cot.posScore,cot.posLabel);
   push('WoW',cot.insufficient?0:(W.wow/100)*cot.flowScore,cot.flowLabel);
   push('Seasonality',W.seas*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
@@ -9707,7 +9971,7 @@ function renderPolicyMonitor(ccy){
   return '<div class="policy-monitor" id="policyMonitor-'+ccy+'">'+
     '<div class="policy-monitor-head"><span class="policy-monitor-title">Policy Monitor</span></div>'+
     '<div class="policy-monitor-grid">'+
-      '<div class="policy-metric"><span class="policy-k">Policy stance</span><span id="policyStance-'+ccy+'" class="policy-value '+p.cls+'">'+p.label+'</span><span class="policy-sub">Next move: '+p.move+' · '+esc(p.conviction)+'</span></div>'+
+      '<div class="policy-metric"><span class="policy-k">Policy stance</span><span id="policyStance-'+ccy+'" class="policy-value '+p.cls+'">'+p.label+'</span><span class="policy-sub">Next move: '+p.move+' · '+esc(p.conviction)+'</span><span class="policy-sub" id="policyGuidanceStance-'+ccy+'">'+esc(cbStanceLabel(ccy))+'</span></div>'+
       '<div class="policy-metric"><span class="policy-k">2Y market signal</span><span id="policyMarket-'+ccy+'" class="policy-value '+(x.y==null?'policy-neutral':(x.y>1?'policy-bull':x.y<-1?'policy-bear':'policy-neutral'))+'">'+x.market+' <span class="policy-score">'+yTxt+'</span></span><span class="policy-sub">Own-history 2Y score</span></div>'+ 
     '</div>'+
     '<div class="policy-relation '+x.relationCls+'"><span>Policy vs market</span><strong id="policyRelation-'+ccy+'">'+x.relation+'</strong></div>'+
@@ -9717,6 +9981,7 @@ function updatePolicyMonitor(ccy){
   var root=document.getElementById("policyMonitor-"+ccy); if(!root) return;
   var x=policyMarketInfo(ccy), p=x.policy;
   var st=document.getElementById("policyStance-"+ccy); if(st){ st.textContent=p.label; st.className="policy-value "+p.cls; }
+  var gs=document.getElementById("policyGuidanceStance-"+ccy); if(gs){ gs.textContent=cbStanceLabel(ccy); }
   var mk=document.getElementById("policyMarket-"+ccy); if(mk){ var yTxt=x.y==null?"—":((x.y>0?"+":"")+x.y); mk.innerHTML=x.market+' <span class="policy-score">'+yTxt+'</span>'; mk.className="policy-value "+(x.y==null||Math.abs(x.y)<=1?"policy-neutral":x.y>0?"policy-bull":"policy-bear"); }
   var rel=document.getElementById("policyRelation-"+ccy); if(rel){ rel.textContent=x.relation; rel.parentElement.className="policy-relation "+x.relationCls; }
 }
@@ -9745,7 +10010,7 @@ function renderDetailBody(ccy, animate){
         '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:190px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
         '<div class="stat-row stat-nav" data-goto-tab="cot" data-goto-ccy="'+ccy+'" title="Open COT Regime for '+ccy+'"><span>COT net position score</span><span class="mono" id="statCotNet-'+ccy+'" style="'+numColor(cotNetScore)+'">'+(cotNetScore>0?"+":"")+cotNetScore+'</span></div>'+
         '<div class="stat-row stat-nav" data-goto-tab="cot" data-goto-ccy="'+ccy+'" title="Open COT Regime for '+ccy+'"><span>COT weekly change score</span><span class="mono" id="statCotWow-'+ccy+'" style="'+numColor(cotWowScore)+'">'+(cotWowScore>0?"+":"")+cotWowScore+'</span></div>'+
-        '<div class="stat-row"><span>CB stance score</span><span class="mono" id="statCb-'+ccy+'" style="'+numColor(cbScore)+'">'+(cbScore>0?"+":"")+cbScore+'</span></div>'+
+        '<div class="stat-row"><span>CB stance score</span><span class="mono" id="statCb-'+ccy+'" style="'+numColor(cbScore)+'">'+(cbScore>0?"+":"")+Math.round(cbScore)+'</span></div>'+        '<div class="stat-row"><span>CB stance read</span><span class="mono" id="statCbRead-'+ccy+'" style="'+numColor(cbScore)+'">'+esc(cbStanceLabel(ccy))+'</span></div>'+
         '<div class="stat-row"><span>Seasonality score</span><span class="mono" id="statSeason-'+ccy+'" style="'+numColor(seasonalitySign(d))+'">'+fmt(seasonalitySign(d))+'</span></div>'+
         '<div class="stat-row stat-nav" data-goto-tab="risk" data-goto-ccy="'+ccy+'" title="Open Risk Sentiment"><span>Risk sentiment contribution</span><span class="mono" id="statRisk-'+ccy+'" style="'+numColor(riskContributionFor(ccy))+'">'+(riskContributionFor(ccy)>0?"+":"")+riskContributionFor(ccy).toFixed(1)+'</span></div>'+
         '<div class="stat-row stat-nav" data-goto-tab="raw" data-goto-ccy="'+ccy+'" title="Open Economic Surprise Index for '+ccy+'"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
@@ -9914,6 +10179,7 @@ function renderGuidanceSheet(ccy,trigger){
           (unlockedLocally
             ? '<input class="guidance-sheet-date-input" type="date" data-role="ccyfield" data-ccy="'+esc(ccy)+'" data-field="guidanceDate" value="'+esc(d.guidanceDate||"")+'" aria-label="Forward guidance date">'
             : '<span class="guidance-sheet-date-display">'+esc(formatGuidanceDate(d.guidanceDate))+'</span>')+
+          '<span class="guidance-sheet-cb-read '+(cbGuidanceScore(ccy)>0?'hawkish':cbGuidanceScore(ccy)<0?'dovish':'neutral')+'">'+esc(cbCombinedPolicyRead(ccy))+'</span>'+
         '</div>'+
         editorHtml+
         '<div class="guidance-sheet-meta">'+
@@ -10658,11 +10924,11 @@ function pairMacroSummaryHtml(pair, score){
 // real, separate readings now, not a mirrored pair -- so they will not generally sum
 // to ~100 the way the old fake ones always did.
 var PAIR_FOCUS_PILLAR_CAP={Fundamentals:PAIR_W_NEW.fund,Yield:PAIR_W_NEW.yield,'CB stance':PAIR_W_NEW.cb,Position:PAIR_W_NEW.pos,WoW:PAIR_W_NEW.wow,Seasonality:PAIR_W_NEW.seas,'Risk sentiment':PAIR_W_NEW.risk};
-// Matches the pair weights in PAIR_W_NEW (Fundamentals 35 + Yield 25 + CB 17 + ...); older note: Fundamentals 45% + Yield 18%
-// + CB stance 14% + Position 8% + WoW 7% + Risk sentiment 5% + Seasonality 3%. Shown
+// Matches the live pair weights in PAIR_W_NEW: Fundamentals 35% + Yield 25% + CB stance 17%
+// + Position 8% + WoW 7% + Risk sentiment 5% + Seasonality 3%. Shown
 // under each pillar name in the driver table, and used to blend the per-currency
 // "USD"/"CHF" summary-tile numbers at the top of the card.
-var PAIR_FOCUS_PILLAR_WEIGHT={Fundamentals:45,Yield:18,'CB stance':14,Position:8,WoW:7,Seasonality:3,'Risk sentiment':5};
+var PAIR_FOCUS_PILLAR_WEIGHT={Fundamentals:35,Yield:25,'CB stance':17,Position:8,WoW:7,Seasonality:3,'Risk sentiment':5};
 // One-line explanation per pillar, used only in the hover tooltip -- kept out of the
 // row markup itself since the request was to keep the table dense, not to add copy.
 var PAIR_FOCUS_PILLAR_EXPLAIN={
@@ -11400,7 +11666,7 @@ function updateComputed(){
   var so=document.getElementById("statOverall-"+c); if(so){ var lbl2=bandLabel(sc); so.className="stat-chip "+chipClass(lbl2); so.textContent=fmt(sc); }
   var statCotNet=document.getElementById("statCotNet-"+c); if(statCotNet){ var cotNetNow=cotNetOnlyScore(c); statCotNet.textContent=(cotNetNow>0?"+":"")+cotNetNow; statCotNet.setAttribute("style",numColor(cotNetNow)); }
   var statCotWow=document.getElementById("statCotWow-"+c); if(statCotWow){ var cotWowNow=cotWowMagnitudeScore(c); statCotWow.textContent=(cotWowNow>0?"+":"")+cotWowNow; statCotWow.setAttribute("style",numColor(cotWowNow)); }
-  var statCb=document.getElementById("statCb-"+c); if(statCb){ var cbNow=cbStanceScore(c); statCb.textContent=(cbNow>0?"+":"")+cbNow; statCb.setAttribute("style",numColor(cbNow)); }
+  var statCb=document.getElementById("statCb-"+c); if(statCb){ var cbNow=cbStanceScore(c); statCb.textContent=(cbNow>0?"+":"")+Math.round(cbNow); statCb.setAttribute("style",numColor(cbNow)); }
   var statSeason=document.getElementById("statSeason-"+c); if(statSeason){ var seasScoreNow=seasonalitySign(DATA[c]); statSeason.textContent=seasonalityScoreFmt(seasScoreNow); statSeason.setAttribute("style",numColor(seasScoreNow)); }
   var statRisk=document.getElementById("statRisk-"+c); if(statRisk){ var riskPtsNow=riskContributionFor(c); statRisk.textContent=(riskPtsNow>0?"+":"")+riskPtsNow.toFixed(1); statRisk.setAttribute("style",numColor(riskPtsNow)); }
   var sf=document.getElementById("statFund-"+c); if(sf){ var f2=fundFor(c); sf.textContent=(f2.raw>0?"+":"")+f2.raw; sf.setAttribute("style",numColor(f2.raw)); }
