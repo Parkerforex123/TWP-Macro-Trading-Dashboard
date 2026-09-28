@@ -4462,6 +4462,60 @@ body.editing .ov-pro-live{display:block!important;}
 .cot-pt-line{stroke-dasharray:1;stroke-dashoffset:0;animation:cotPmDraw .9s ease-out;}
 .cot-pt-end{animation:cotPmDot .3s ease-out .8s backwards;}
 </style>
+<style id="cot-one-screen-layout">
+/* COT Regime: one-screen layout (desktop). Positioning table + selected regime side by side, pair grid directly underneath. */
+@media (min-width:1101px){
+#tab-cot .cot-selector{padding:4px 8px!important;gap:4px!important;margin-bottom:6px!important;}
+#tab-cot .cot-pill{padding:3px 9px!important;font-size:11px!important;}
+#tab-cot .cot-grid{grid-template-columns:minmax(0,1.02fr) minmax(0,1fr)!important;gap:8px!important;align-items:stretch;}
+#tab-cot .cot-card-head{padding:6px 12px!important;}
+#tab-cot .cot-card-head .cot-sub{display:none;}
+#tab-cot .cot-section-pad{padding:4px 8px!important;}
+#tab-cot .cot-table th,#tab-cot .cot-table td{padding:4px 5px!important;}
+#tab-cot .cot-table td{font-size:12.5px!important;}
+#tab-cot .cot-hero{grid-template-columns:200px minmax(0,1fr)!important;min-height:0!important;}
+#tab-cot .cot-side{padding:8px 10px!important;border-right:1px solid var(--border)!important;border-bottom:none!important;}
+#tab-cot .cot-side .big{font-size:24px!important;}
+#tab-cot .cot-side .name{font-size:11.5px!important;margin-top:2px!important;}
+#tab-cot .cot-range-read{margin-top:6px!important;padding:4px 8px!important;}
+#tab-cot .cot-side .badge{margin-top:5px!important;padding:3px 8px!important;}
+#tab-cot .cot-side .stat{margin-top:4px!important;font-size:11px!important;}
+#tab-cot .cot-side .stat span[style*="display:block"]{display:none!important;}
+#tab-cot .cot-chart-wrap{padding:8px 10px!important;}
+#tab-cot .cot-chart-head{margin-bottom:4px!important;}
+#tab-cot .cot-chart{height:190px!important;}
+#tab-cot .cot-mini-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;margin-top:6px!important;}
+#tab-cot .cot-mini{padding:4px 6px!important;}
+#tab-cot .cot-mini .v{font-size:12.5px!important;margin-top:1px!important;}
+#tab-cot #cotPairGridWrap{margin-top:8px!important;}
+#tab-cot #cotPairGridWrap .cot-section-pad>div{grid-template-columns:repeat(10,minmax(0,1fr))!important;gap:3px!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile{padding:5px 3px!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile>div:first-child{font-size:11.5px!important;}
+#tab-cot #cotPairGridWrap .cot-pair-val{font-size:12.5px!important;margin-top:0!important;}
+}
+@media (min-width:1101px) and (max-width:1500px){
+#tab-cot #cotPairGridWrap .cot-section-pad>div{grid-template-columns:repeat(7,minmax(0,1fr))!important;}
+}
+</style>
+<style id="cot-square-heatmap">
+/* COT Regime: square corners everywhere, heat map as one solid mosaic (no gaps, no rounding). */
+#tab-cot .cot-card,#tab-cot .cot-mini,#tab-cot .cot-range-read,#tab-cot .cot-chart,#tab-cot .cot-pill,#tab-cot .cot-side .badge,#tab-cot .cot-range-btn,#tab-cot .cot-input,#tab-cot .cot-save{border-radius:0!important;}
+#tab-cot #cotPairGridWrap .cot-section-pad>div{gap:0!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile{border-radius:0!important;outline:none!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile:hover{filter:brightness(1.18);}
+</style>
+<style id="cot-heatmap-14x2">
+@media (min-width:1101px){
+#tab-cot #cotPairGridWrap .cot-section-pad>div{grid-template-columns:repeat(14,minmax(0,1fr))!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile{padding:8px 2px!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile>div:first-child{font-size:11px!important;}
+#tab-cot #cotPairGridWrap .cot-pair-val{font-size:12px!important;}
+}
+@media (min-width:1101px) and (max-width:1600px){
+#tab-cot #cotPairGridWrap .cot-section-pad>div{grid-template-columns:repeat(7,minmax(0,1fr))!important;}
+#tab-cot #cotPairGridWrap .cot-pair-tile{padding:6px 3px!important;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
