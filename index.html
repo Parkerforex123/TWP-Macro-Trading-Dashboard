@@ -5613,7 +5613,7 @@ function cotPairStrength(base,quote){
   return (b-q)/2;
 }
 // Fixed boundaries on the raw Strength Index (not adaptive to current data).
-var COT_STRENGTH_BOUNDS={veryBull:35, bull:15}; // LF-OI scale: >=35 Very Bullish, >=15 Bullish, (-15,15) Neutral, <=-15 Bearish, <=-35 Very Bearish (recalibrated from 15/5 when denominator changed from total OI to LF OI)
+var COT_STRENGTH_BOUNDS={veryBull:35, bull:15}; // legacy fixed bands (kept for fallback when a pair has <8 weeks of history)
 function cotPairStrengthBand(x){
   var n=Number(x);
   if(x==null || !Number.isFinite(n)) return 'Neutral';
@@ -5621,6 +5621,24 @@ function cotPairStrengthBand(x){
   if(n>=COT_STRENGTH_BOUNDS.bull) return 'Bullish';
   if(n<=-COT_STRENGTH_BOUNDS.veryBull) return 'Very Bearish';
   if(n<=-COT_STRENGTH_BOUNDS.bull) return 'Bearish';
+  return 'Neutral';
+}
+// History-based judgement: where today's LF Strength Index sits inside THIS pair's own trailing
+// 52-week range (0% = weakest reading of the year, 100% = strongest). score = (rangePos-50)*2 on -100..+100.
+var __cotRankMemo={};
+function cotPairRank(base,quote){
+  var cur=cotPairStrength(base,quote); if(cur==null) return {n:0};
+  var key=base+quote+'|'+(COT_ENGINE&&COT_ENGINE.currentDate)+'|'+((COT_ENGINE&&COT_ENGINE.history&&COT_ENGINE.history.length)||0)+'|'+cur.toFixed(3);
+  if(__cotRankMemo[key]) return __cotRankMemo[key];
+  var ser=cotPairHistorySeries(base+quote), vals=ser.map(function(o){return o.v;}); vals.push(cur);
+  var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals), r={n:ser.length,cur:cur,lo:lo,hi:hi};
+  if(ser.length>=8 && hi-lo>1e-9){ r.rangePos=Math.max(0,Math.min(100,100*(cur-lo)/(hi-lo))); r.score=Math.round((r.rangePos-50)*2*100)/100; }
+  if(Object.keys(__cotRankMemo).length>200) __cotRankMemo={}; __cotRankMemo[key]=r; return r;
+}
+function cotPairRankBand(score){
+  var n=Number(score); if(!Number.isFinite(n)) return 'Neutral';
+  if(n>=60) return 'Very Bullish'; if(n>=20) return 'Bullish';
+  if(n<=-60) return 'Very Bearish'; if(n<=-20) return 'Bearish';
   return 'Neutral';
 }
 // Common Pair COT engine. Every BASE/QUOTE pair uses the same calculation.
@@ -5641,8 +5659,11 @@ function cotPairRegime(base,quote){
     flowScore=cotHistoricalMagnitudeScore(cur.relFlow,flowArr);
     flowAdvantage=flowScore>0?base:(flowScore<0?quote:null);
   }
-  var posScore=Math.round(strength*100)/100;
-  var posLabel=cotPairStrengthBand(strength); // fixed -100..+100 scale, no history (same as the reference site)
+  // Position is now judged against the pair's OWN 52-week history (see cotPairRank); falls back to the raw
+  // strength + fixed bands only when the pair has fewer than 8 weeks of history.
+  var rk=cotPairRank(base,quote);
+  var posScore=(rk.score!=null)?rk.score:Math.round(strength*100)/100;
+  var posLabel=(rk.score!=null)?cotPairRankBand(rk.score):cotPairStrengthBand(strength);
   return {
     label:posLabel,
     posLabel:posLabel,
@@ -11340,7 +11361,12 @@ function cotDrawChart(ccy,animate){
   // last dot against the container edge. Widened so the current/most-recent point
   // always sits fully clear, never looking cut off.
   var pad={l:54,r:22,t:16,b:34}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
-  var extra=(max-min)*0.12; min-=extra; max+=extra;
+  // Evenly spaced axis ticks sized to THIS currency's own range (e.g. every 10K or 20K), scale snapped outward to them.
+  var ntRng=Math.max(max-min,1), ntSteps=[1000,2000,2500,5000,10000,20000,25000,50000,100000,200000], ntStep=ntSteps[ntSteps.length-1];
+  for(var nsi=0;nsi<ntSteps.length;nsi++){ if(ntRng/ntSteps[nsi]<=7){ntStep=ntSteps[nsi];break;} }
+  var ntHi=max, ntLo=min; max=Math.ceil(ntHi/ntStep)*ntStep; min=Math.floor(ntLo/ntStep)*ntStep;
+  if(max-ntHi<ntStep*0.12) max+=ntStep*0.25; if(ntLo-min<ntStep*0.12) min-=ntStep*0.25;
+  function ntFmt(v){ if(Math.abs(v)<1e-9) return '0'; var a=Math.abs(v), t=(a>=1000000)?(a/1000000)+'M':(a>=1000?(a/1000)+'K':String(a)); return (v>0?'+':'\u2212')+t; }
   function X(i){return pad.l+(i/(rows.length-1))*pw;}
   function Y(v){return pad.t+(max-v)/(max-min)*ph;}
   var styles=getComputedStyle(document.body), td=styles.getPropertyValue('--text-dim').trim()||'#8b93a8', tf=styles.getPropertyValue('--text-faint').trim()||'#5c6478';
@@ -11397,8 +11423,12 @@ function cotDrawChart(ccy,animate){
     if(reveal==null) reveal=1;
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
     ctx.font='10px Inter, system-ui, sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillStyle=td;
-    [max,min,0].forEach(function(v){var y=Y(v); if(y<10||y>H-25) return; ctx.fillText(cotFormat(v),pad.l-7,y);});
-    if(0>=min && 0<=max){ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(pad.l,Y(0));ctx.lineTo(W-pad.r,Y(0));ctx.stroke();}
+    for(var tk=Math.ceil(min/ntStep)*ntStep; tk<=max+1e-6; tk+=ntStep){
+      var ty=Y(tk); if(ty<8||ty>H-22) continue;
+      ctx.strokeStyle=(Math.abs(tk)<1e-6)?'rgba(255,255,255,.28)':'rgba(255,255,255,.08)'; ctx.lineWidth=1; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(pad.l,ty); ctx.lineTo(W-pad.r,ty); ctx.stroke();
+      ctx.fillStyle=td; ctx.fillText(ntFmt(tk),pad.l-7,ty);
+    }
     drawCrowdingZone();
     ctx.save();
     ctx.beginPath();
@@ -11582,70 +11612,80 @@ function cotPairHistorySeries(pair){
   return ds.map(function(d){return {date:d,v:(map[d].b-map[d].q)/2,b:map[d].b,q:map[d].q};});
 }
 function cotFmtPct(v,dp){return (v>=0?'+':'\u2212')+Math.abs(v).toFixed(dp==null?1:dp)+'%';}
-var COT_PT={W:680,H:280,L:46,R:16,T:16,B:28};
+function cotRankOfValue(v,ser){var vals=ser.map(function(o){return o.v;}), lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals); return hi>lo?Math.max(0,Math.min(100,100*(v-lo)/(hi-lo))):50;}
+var COT_PT={W:680,H:280,L:52,R:16,T:16,B:28};
 function cotPtScale(ser){
-  var vals=ser.map(function(o){return o.v;}), mx=Math.max.apply(null,vals), mn=Math.min.apply(null,vals);
-  mx=Math.max(mx,0)+6; mn=Math.min(mn,0)-6; return {mx:mx,mn:mn};
+  var vals=ser.map(function(o){return o.v;}).concat([0]), hi=Math.max.apply(null,vals), lo=Math.min.apply(null,vals), rng=Math.max(hi-lo,1);
+  var steps=[5,10,20,25,50,100], step=100; for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=7){step=steps[i];break;} }
+  var mx=Math.ceil(hi/step)*step, mn=Math.floor(lo/step)*step;
+  if(mx-hi<step*0.12) mx+=step*0.25; if(lo-mn<step*0.12) mn-=step*0.25; // keep the extreme point off the frame edge
+  return {mx:mx,mn:mn,step:step,hi:hi,lo:lo};
 }
 function cotPairTrendSvg(pair,ser){
   var P=COT_PT, sc=cotPtScale(ser);
   function X(i){return P.L+(P.W-P.L-P.R)*i/(ser.length-1);} function Y(v){return P.T+(P.H-P.T-P.B)*(sc.mx-v)/(sc.mx-sc.mn);}
-  var vals=ser.map(function(o){return o.v;}), hi=Math.max.apply(null,vals), lo=Math.min.apply(null,vals);
+  // Clean, evenly spaced horizontals: every multiple of `step` (0, +/-10, +/-20 ...), each labelled with its own value.
   var g='';
-  [35,15,0,-15,-35].forEach(function(v){
-    if(v>sc.mx||v<sc.mn) return;
-    var zero=(v===0), c=zero?'rgba(255,255,255,.22)':(v>0?'rgba(34,201,139,.30)':'rgba(240,68,85,.30)');
-    g+='<line x1="'+P.L+'" x2="'+(P.W-P.R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="'+c+'"'+(zero?'':' stroke-dasharray="4 5"')+'/>'+
-       '<text x="'+(P.L-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" font-weight="600" fill="#8b8b93">'+(zero?'0':(v>0?'+':'\u2212')+Math.abs(v)+'%')+'</text>';
-  });
+  for(var tv=Math.ceil(sc.mn/sc.step)*sc.step; tv<=sc.mx+1e-9; tv+=sc.step){
+    var zero=Math.abs(tv)<1e-9, y=Y(tv);
+    g+='<line x1="'+P.L+'" x2="'+(P.W-P.R)+'" y1="'+y+'" y2="'+y+'" stroke="'+(zero?'rgba(255,255,255,.28)':'rgba(255,255,255,.08)')+'"/>'+
+       '<text x="'+(P.L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" font-weight="600" fill="#8b8b93">'+(zero?'0':(tv>0?'+':'\u2212')+Math.abs(tv))+'</text>';
+  }
   var pts=ser.map(function(o,i){return X(i).toFixed(1)+','+Y(o.v).toFixed(1);}).join(' ');
-  var last=ser[ser.length-1], col=last.v>=0?'#22c98b':'#f04455', xl='';
-  var n=ser.length, idx=[0,Math.round(n*.2),Math.round(n*.4),Math.round(n*.6),Math.round(n*.8),n-1];
-  idx.forEach(function(i){xl+='<text x="'+X(i)+'" y="'+(P.H-8)+'" text-anchor="middle" font-size="11" fill="#8b8b93">'+ser[i].date.slice(5)+'</text>';});
+  var last=ser[ser.length-1], col=last.v>=0?'#22c98b':'#f04455', xl='', n=ser.length;
+  [0,Math.round(n*.2),Math.round(n*.4),Math.round(n*.6),Math.round(n*.8),n-1].forEach(function(i){xl+='<text x="'+X(i)+'" y="'+(P.H-8)+'" text-anchor="middle" font-size="11" fill="#8b8b93">'+ser[i].date.slice(5)+'</text>';});
   return '<svg id="cotPairTrendSvg" viewBox="0 0 '+P.W+' '+P.H+'" data-pair="'+pair+'" style="width:100%;height:auto;display:block;">'+g+
    '<polyline class="cot-pt-line" pathLength="1" points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'+
    '<circle class="cot-pt-end" cx="'+X(n-1)+'" cy="'+Y(last.v)+'" r="4.5" fill="'+col+'"/>'+xl+
+   '<g id="cotAxTag" data-y="'+Y(last.v).toFixed(1)+'" data-v="'+last.v+'"><rect id="cotAxTagR" x="1" width="'+(P.L-8)+'" height="18" rx="0" y="'+(Y(last.v)-9).toFixed(1)+'" fill="'+col+'"/><text id="cotAxTagT" x="'+((P.L-8)/2+1)+'" y="'+(Y(last.v)+4).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#0b0b0d">'+cotFmtPct(last.v,1)+'</text></g>'+
    '<line id="cotPtX" x1="0" x2="0" y1="'+P.T+'" y2="'+(P.H-P.B)+'" stroke="rgba(255,255,255,.3)" style="display:none"/><circle id="cotPtDot" r="4" fill="#fff" style="display:none"/></svg>';
 }
 function cotOpenPairTrend(pair){
-  activeCotPair=pair; cotClosePairTrend();
-  var ser=cotPairHistorySeries(pair), b=pair.slice(0,3), q=pair.slice(3,6);
-  var cur=ser.length?ser[ser.length-1]:null;
+  activeCotPair=pair; cotClosePairTrend(); activeCotPair=pair;
+  var ser=cotPairHistorySeries(pair), b=pair.slice(0,3), q=pair.slice(3,6), rk=cotPairRank(b,q);
+  var band=rk.score!=null?cotPairRankBand(rk.score):(rk.cur!=null?cotPairStrengthBand(rk.cur):'');
+  var bcol=/Bullish/.test(band)?'#22c98b':/Bearish/.test(band)?'#f04455':'var(--text-dim)';
   var bd=document.createElement('div'); bd.id='cotPairModal';
   bd.innerHTML='<div class="cot-pm-panel"><div class="cot-pm-head"><div><span class="cot-pm-pair">'+pair+'</span>'+
-    (cur?'<span class="cot-pm-val" style="color:'+(cur.v>=0?'#22c98b':'#f04455')+'">'+cotFmtPct(cur.v,1)+' \u00b7 '+cotPairStrengthBand(cur.v)+'</span>':'')+
-    '<div class="cot-pm-sub">LF Strength Index \u00b7 '+ser.length+' rolling weekly readings'+(cur?' \u00b7 '+ser[0].date+' to '+cur.date:'')+'</div></div><button class="cot-pm-x" type="button">\u00d7</button></div>'+
+    (rk.cur!=null?'<span class="cot-pm-val" style="color:'+bcol+'">'+band+' \u00b7 '+cotFmtPct(rk.cur,1)+(rk.rangePos!=null?' \u00b7 '+Math.round(rk.rangePos)+'% of 52w range':'')+'</span>':'')+
+    '<div class="cot-pm-sub">LF Strength Index \u00b7 '+ser.length+' rolling weekly readings'+(ser.length?' \u00b7 '+ser[0].date+' to '+ser[ser.length-1].date:'')+' \u00b7 rated against its own history</div></div><button class="cot-pm-x" type="button">\u00d7</button></div>'+
     (ser.length>=2?cotPairTrendSvg(pair,ser):'<div class="cot-pm-sub" style="padding:24px 0;">Not enough weekly history yet.</div>')+'</div>';
   document.body.appendChild(bd);
   var t=document.getElementById('cotPairTip'); if(t) t.style.display='none';
   bd.addEventListener('click',function(e){ if(e.target===bd||(e.target.closest&&e.target.closest('.cot-pm-x'))) cotClosePairTrend(); });
 }
+function cotSetAxisTag(svg,y,v){
+  var r=svg&&svg.querySelector('#cotAxTagR'), t=svg&&svg.querySelector('#cotAxTagT'); if(!r||!t) return;
+  var c=v>=0?'#22c98b':'#f04455'; r.setAttribute('y',(y-9).toFixed(1)); r.setAttribute('fill',c); t.setAttribute('y',(y+4).toFixed(1)); t.textContent=cotFmtPct(v,1);
+}
 function cotClosePairTrend(){var m=document.getElementById('cotPairModal'); if(m) m.remove(); activeCotPair=null;}
 function cotPairGridHtml(){
   var items=[];
   COT_GRID_PAIRS.forEach(function(pr){
-    var v=cotPairStrength(pr.slice(0,3),pr.slice(3,6));
-    if(v!=null && Number.isFinite(v)) items.push({pair:pr,v:v});
+    var b=pr.slice(0,3), q=pr.slice(3,6), v=cotPairStrength(b,q); if(v==null||!Number.isFinite(v)) return;
+    var rk=cotPairRank(b,q); items.push({pair:pr,v:v,score:(rk.score!=null?rk.score:v*2)});
   });
-  items.sort(function(a,b){return b.v-a.v;});
+  items.sort(function(a,b){return b.score-a.score;});
   var tiles=items.map(function(o){
-    var a=0.16+0.72*Math.min(Math.abs(o.v)/65,1);
-    var bg=o.v>=0?'rgba(38,166,154,'+a.toFixed(2)+')':'rgba(239,83,80,'+a.toFixed(2)+')';
-    var col=o.v>=0?'#7ee0d6':'#ff8a87';
+    var a=0.16+0.72*Math.min(Math.abs(o.score)/100,1);
+    var bg=o.score>=0?'rgba(38,166,154,'+a.toFixed(2)+')':'rgba(239,83,80,'+a.toFixed(2)+')';
+    var col=o.score>=0?'#7ee0d6':'#ff8a87';
     return '<div class="cot-pair-tile" data-cot-pair="'+o.pair+'" style="background:'+bg+';padding:10px 8px;text-align:center;border-radius:3px;">'+
       '<div style="font-size:12px;font-weight:700;color:var(--text);">'+o.pair+'</div>'+
       '<div class="cot-pair-val" style="font-size:13px;font-weight:800;color:'+col+';margin-top:2px;">'+cotFmtPct(o.v,1)+'</div></div>';
   }).join('');
   return '<div id="cotPairGridWrap" class="cot-card" style="margin-top:12px;"><div class="cot-card-head"><div><div class="cot-title">Currency Pairs \u2014 LF Strength Index</div></div>'+
     '<div class="cot-chart-meta">Week '+(COT_ENGINE.currentDate||'\u2014')+'</div></div>'+
-    '<div class="cot-section-pad"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px;">'+tiles+'</div></div>'+'</div>';
+    '<div class="cot-section-pad"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px;">'+tiles+'</div></div></div>';
 }
 function cotPairTipHtml(pair){
-  var b=pair.slice(0,3), q=pair.slice(3,6), v=cotPairStrength(b,q), nb=cotNetPctOI(b), nq=cotNetPctOI(q);
+  var b=pair.slice(0,3), q=pair.slice(3,6), v=cotPairStrength(b,q), nb=cotNetPctOI(b), nq=cotNetPctOI(q), rk=cotPairRank(b,q);
   if(v==null) return '<b>'+pair+'</b>';
-  var band=cotPairStrengthBand(v), pts=(v/100)*PAIR_W_NEW.pos;
-  var adv=v>0?b:(v<0?q:'neither side');
-  return '<b>'+pair+'</b> \u00b7 '+band+'<br>Strength '+cotFmtPct(v,1)+'<br><span class="d">'+b+' '+cotFmtPct(nb,1)+' vs '+q+' '+cotFmtPct(nq,1)+' (net % of LF)</span><br>Funds lean toward '+adv+'.<br>Adds '+(pts>=0?'+':'\u2212')+Math.abs(pts).toFixed(1)+' pts to the pair score.<br><span class="d">Click for weekly trend.</span>';
+  var score=rk.score!=null?rk.score:null, band=score!=null?cotPairRankBand(score):cotPairStrengthBand(v);
+  var pts=((score!=null?score:v)/100)*PAIR_W_NEW.pos, adv=v>0?b:(v<0?q:'neither side');
+  return '<b>'+pair+'</b> \u00b7 '+band+'<br>Strength '+cotFmtPct(v,1)+(rk.rangePos!=null?' \u00b7 '+Math.round(rk.rangePos)+'% of its 52-week range':'')+
+    (rk.rangePos!=null?'<br><span class="d">52w low '+cotFmtPct(rk.lo,1)+' \u00b7 high '+cotFmtPct(rk.hi,1)+'</span>':'')+
+    '<br><span class="d">'+b+' '+cotFmtPct(nb,1)+' vs '+q+' '+cotFmtPct(nq,1)+' (net % of LF)</span><br>Funds lean toward '+adv+'.<br>Adds '+(pts>=0?'+':'\u2212')+Math.abs(pts).toFixed(1)+' pts to the pair score.<br><span class="d">Click for weekly trend.</span>';
 }
 (function cotPairInteractions(){
   if(window.__cotPairInit) return; window.__cotPairInit=true;
@@ -11661,12 +11701,13 @@ function cotPairTipHtml(pair){
       var px=(e.clientX-r.left)/r.width*P.W, i=Math.round((px-P.L)/(P.W-P.L-P.R)*(ser.length-1)); i=Math.max(0,Math.min(ser.length-1,i));
       var o=ser[i], sc=cotPtScale(ser);
       var cx=P.L+(P.W-P.L-P.R)*i/(ser.length-1), cy=P.T+(P.H-P.T-P.B)*(sc.mx-o.v)/(sc.mx-sc.mn);
-      var ln=svg.querySelector('#cotPtX'), dt=svg.querySelector('#cotPtDot'); ln.setAttribute('x1',cx); ln.setAttribute('x2',cx); ln.style.display=''; dt.setAttribute('cx',cx); dt.setAttribute('cy',cy); dt.style.display='';
-      t.innerHTML='<b>'+o.date+'</b><br>'+pair+' '+cotFmtPct(o.v,1)+' \u00b7 '+cotPairStrengthBand(o.v)+'<br><span class="d">'+pair.slice(0,3)+' '+cotFmtPct(o.b,1)+' vs '+pair.slice(3,6)+' '+cotFmtPct(o.q,1)+'</span>';
+      var ln=svg.querySelector('#cotPtX'), dt=svg.querySelector('#cotPtDot'); ln.setAttribute('x1',cx); ln.setAttribute('x2',cx); ln.style.display=''; dt.setAttribute('cx',cx); dt.setAttribute('cy',cy); dt.style.display=''; cotSetAxisTag(svg,cy,o.v);
+      var rp=cotRankOfValue(o.v,ser);
+      t.innerHTML='<b>'+o.date+'</b><br>'+pair+' '+cotFmtPct(o.v,1)+' \u00b7 '+cotPairRankBand((rp-50)*2)+'<br><span class="d">'+Math.round(rp)+'% of range \u00b7 '+pair.slice(0,3)+' '+cotFmtPct(o.b,1)+' vs '+pair.slice(3,6)+' '+cotFmtPct(o.q,1)+'</span>';
       t.style.display='block'; place(t,e); return;
     }
     t.style.display='none';
-    var x=document.getElementById('cotPtX'); if(x){x.style.display='none'; document.getElementById('cotPtDot').style.display='none';}
+    var x=document.getElementById('cotPtX'); if(x){x.style.display='none'; document.getElementById('cotPtDot').style.display='none'; var sv=document.getElementById('cotPairTrendSvg'), g=sv&&sv.querySelector('#cotAxTag'); if(g) cotSetAxisTag(sv,parseFloat(g.getAttribute('data-y')),parseFloat(g.getAttribute('data-v')));}
   });
   document.addEventListener('click',function(e){
     var el=e.target.closest&&e.target.closest('[data-cot-pair]'); if(!el) return;
