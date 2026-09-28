@@ -4516,6 +4516,12 @@ body.editing .ov-pro-live{display:block!important;}
 #tab-cot #cotPairGridWrap .cot-pair-tile{padding:6px 3px!important;}
 }
 </style>
+<style id="cot-heatmap-font-up">
+@media (min-width:1101px){
+#tab-cot #cotPairGridWrap .cot-pair-tile>div:first-child{font-size:12.5px!important;}
+#tab-cot #cotPairGridWrap .cot-pair-val{font-size:13.5px!important;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -11585,10 +11591,13 @@ function cotPairTrendSvg(pair,ser){
   var P=COT_PT, sc=cotPtScale(ser);
   function X(i){return P.L+(P.W-P.L-P.R)*i/(ser.length-1);} function Y(v){return P.T+(P.H-P.T-P.B)*(sc.mx-v)/(sc.mx-sc.mn);}
   var vals=ser.map(function(o){return o.v;}), hi=Math.max.apply(null,vals), lo=Math.min.apply(null,vals);
-  var g='<line x1="'+P.L+'" x2="'+(P.W-P.R)+'" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="rgba(255,255,255,.18)"/>';
-  [35,15,-15,-35].forEach(function(v){ if(v<sc.mx&&v>sc.mn) g+='<line x1="'+P.L+'" x2="'+(P.W-P.R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="'+(v>0?'rgba(34,201,139,.28)':'rgba(240,68,85,.28)')+'" stroke-dasharray="4 5"/>'; });
-  function yl(v,t){return '<text x="'+(P.L-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" font-weight="600" fill="#8b8b93">'+t+'</text>';}
-  g+=yl(hi,cotFmtPct(hi,1))+yl(0,'0')+yl(lo,cotFmtPct(lo,1));
+  var g='';
+  [35,15,0,-15,-35].forEach(function(v){
+    if(v>sc.mx||v<sc.mn) return;
+    var zero=(v===0), c=zero?'rgba(255,255,255,.22)':(v>0?'rgba(34,201,139,.30)':'rgba(240,68,85,.30)');
+    g+='<line x1="'+P.L+'" x2="'+(P.W-P.R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="'+c+'"'+(zero?'':' stroke-dasharray="4 5"')+'/>'+
+       '<text x="'+(P.L-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" font-weight="600" fill="#8b8b93">'+(zero?'0':(v>0?'+':'\u2212')+Math.abs(v)+'%')+'</text>';
+  });
   var pts=ser.map(function(o,i){return X(i).toFixed(1)+','+Y(o.v).toFixed(1);}).join(' ');
   var last=ser[ser.length-1], col=last.v>=0?'#22c98b':'#f04455', xl='';
   var n=ser.length, idx=[0,Math.round(n*.2),Math.round(n*.4),Math.round(n*.6),Math.round(n*.8),n-1];
