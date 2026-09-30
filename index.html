@@ -4522,6 +4522,39 @@ body.editing .ov-pro-live{display:block!important;}
 #tab-cot #cotPairGridWrap .cot-pair-val{font-size:13.5px!important;}
 }
 </style>
+<style id="y2g-style">
+#tab-yield2y .y2-grid.has-input{grid-template-columns:minmax(0,.85fr) minmax(0,1fr) minmax(0,1.3fr)!important;}
+#tab-yield2y .y2-grid>.card.y2g-card{position:relative!important;align-self:stretch!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important;padding:0!important;}
+#tab-yield2y .y2g-inner{position:absolute;inset:0;display:flex;flex-direction:column;padding:12px 14px;box-sizing:border-box;}
+#tab-yield2y .y2g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+#tab-yield2y .y2g-head h3{margin:0;}
+#tab-yield2y .y2g-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+#tab-yield2y .y2g-tab{display:inline-flex;align-items:center;gap:6px;background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 8px;cursor:pointer;font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+#tab-yield2y .y2g-tab img{width:15px;height:auto;}
+#tab-yield2y .y2-grid.has-input .y2g-tab img{display:none;}
+#tab-yield2y .y2-grid.has-input .y2g-tab{padding:4px 7px;}
+#tab-yield2y .y2g-tab.all-on{border-color:rgba(255,255,255,.18);}
+#tab-yield2y .y2g-tab:hover{color:var(--text);}
+#tab-yield2y .y2g-tab.active{color:var(--text);background:rgba(255,255,255,.06);border-color:var(--tc,var(--amber));box-shadow:inset 0 -2px 0 var(--tc,var(--amber));}
+#tab-yield2y .y2g-stats{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 18px;}
+#tab-yield2y .y2g-stats div{display:flex;flex-direction:column;gap:1px;}
+#tab-yield2y .y2g-stats span{font-size:11px;color:var(--text-dim);}
+#tab-yield2y .y2g-stats b{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);}
+#tab-yield2y .y2g-stats b.big{font-size:18px;line-height:1.1;}
+#tab-yield2y .y2g-stats b.up{color:var(--bullish-strong);}
+#tab-yield2y .y2g-stats b.down{color:var(--bearish-strong);}
+#tab-yield2y .y2g-stats b.flat{color:var(--text-dim);}
+#tab-yield2y .y2g-chart{position:relative;flex:1 1 0;min-height:0;margin-top:8px;}
+#tab-yield2y .y2g-chart canvas{display:block;cursor:crosshair;}
+#tab-yield2y .y2g-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--text-dim);font-size:13px;}
+#tab-yield2y .y2g-tip{position:absolute;display:none;pointer-events:none;background:#202027;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 10px;min-width:126px;font-size:12px;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.45);}
+#tab-yield2y .y2g-tip-d{font-weight:700;margin-bottom:4px;}
+#tab-yield2y .y2g-tip-r{display:flex;justify-content:space-between;gap:14px;line-height:1.55;font-variant-numeric:tabular-nums;}
+#tab-yield2y .y2g-tip-r span{display:flex;align-items:center;gap:6px;color:var(--text-dim);}
+#tab-yield2y .y2g-tip-r i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+@media(max-width:1050px){#tab-yield2y .y2-grid>.card.y2g-card{height:380px!important;}}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -8176,9 +8209,165 @@ function y2LoadDemo(){
   while(rows.length<80){ if(isWeekday(d)){ var r={date:d.toISOString().slice(0,10)}; Y2_CCY_ORDER.forEach(function(c,i){r[c]=Number((base[c]+0.08*Math.sin(rows.length/8+i)+0.025*Math.cos(rows.length/3+i)).toFixed(3));}); rows.push(r); } d.setDate(d.getDate()+1); }
   YIELD_ENGINE.history=rows; YIELD_ENGINE.currentDate=rows[rows.length-1].date; YIELD_ENGINE.current={}; Y2_CCY_ORDER.forEach(function(c){YIELD_ENGINE.current[c]=rows[rows.length-1][c];});
 }
+/* ===== Global Yields: outright 2Y per currency, full stored history ===== */
+var Y2G_COLORS={USD:'#f2f3f5',EUR:'#4f8cff',GBP:'#b388ff',AUD:'#fa660f',NZD:'#22c98b',CAD:'#f04455',JPY:'#ffd166',CHF:'#ff9ecb'};
+var Y2G_SEL={USD:1,EUR:1,GBP:1,AUD:1,NZD:1,CAD:1,JPY:1,CHF:1}, Y2G_GEO=null, Y2G_BOUND=false;
+function y2gSelList(){ return Y2_CCY_ORDER.filter(function(c){return Y2G_SEL[c];}); }
+function y2gAllOn(){ return y2gSelList().length===Y2_CCY_ORDER.length; }
+function y2gRows(){
+  var rows=y2SortedHistory().slice();
+  var cd=YIELD_ENGINE.currentDate, cur=YIELD_ENGINE.current||{}, live={date:cd}, has=false;
+  Y2_CCY_ORDER.forEach(function(c){var n=y2Num(cur[c]); if(n!=null){live[c]=n; has=true;}});
+  if(has && cd){
+    var idx=-1; for(var i=0;i<rows.length;i++){ if(rows[i].date===cd){idx=i;break;} }
+    if(idx>=0) rows[idx]=Object.assign({},rows[idx],live);
+    else if(!rows.length || cd>rows[rows.length-1].date) rows.push(live);
+  }
+  return rows;
+}
+function y2gDate(d){
+  var m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], p=String(d).split('-');
+  return (+p[2])+' '+m[(+p[1])-1]+" '"+p[0].slice(2);
+}
+function y2gDelta(rows,c,days){
+  var last=-1, i; for(i=rows.length-1;i>=0;i--){ if(y2Num(rows[i][c])!=null){last=i;break;} }
+  if(last<0) return null;
+  var cur=y2Num(rows[last][c]);
+  if(days===0){ for(i=last-1;i>=0;i--){ var p=y2Num(rows[i][c]); if(p!=null) return (cur-p)*100; } return null; }
+  var key=new Date(Date.parse(rows[last].date+'T00:00:00Z')-days*864e5).toISOString().slice(0,10);
+  for(i=last;i>=0;i--){ if(rows[i].date<=key){ var q=y2Num(rows[i][c]); if(q!=null) return (cur-q)*100; } }
+  return null;
+}
+function y2gChg(x){
+  if(x==null) return '<b class="flat">—</b>';
+  var r=Math.round(x*10)/10;
+  return '<b class="'+(r>0?'up':(r<0?'down':'flat'))+'">'+(r>0?'+':'')+r.toFixed(1)+' bp</b>';
+}
+function y2gLast(rows,c){ for(var i=rows.length-1;i>=0;i--){ var n=y2Num(rows[i][c]); if(n!=null) return n; } return null; }
+function y2gStats(){
+  var el=document.getElementById('y2gStats'); if(!el) return;
+  var rows=y2gRows(), sel=y2gSelList();
+  if(sel.length===1){
+    var c=sel[0], cur=null, hi=null, lo=null;
+    rows.forEach(function(r){ var n=y2Num(r[c]); if(n==null) return; cur=n; if(hi==null||n>hi) hi=n; if(lo==null||n<lo) lo=n; });
+    el.innerHTML='<div><span>Current</span><b class="big" style="color:'+Y2G_COLORS[c]+'">'+(cur==null?'\u2014':cur.toFixed(3)+'%')+'</b></div>'+
+      '<div><span>1D</span>'+y2gChg(y2gDelta(rows,c,0))+'</div><div><span>1W</span>'+y2gChg(y2gDelta(rows,c,7))+'</div><div><span>1M</span>'+y2gChg(y2gDelta(rows,c,30))+'</div>'+
+      '<div><span>High</span><b>'+(hi==null?'\u2014':hi.toFixed(3)+'%')+'</b></div><div><span>Low</span><b>'+(lo==null?'\u2014':lo.toFixed(3)+'%')+'</b></div>';
+    return;
+  }
+  var arr=sel.map(function(c){return {c:c,v:y2gLast(rows,c)};}).filter(function(x){return x.v!=null;}).sort(function(a,b){return b.v-a.v;});
+  if(arr.length<2){ el.innerHTML=''; return; }
+  var h=arr[0], l=arr[arr.length-1], sp=(h.v-l.v)*100;
+  if(arr.length===2){
+    el.innerHTML='<div><span>'+h.c+'</span><b class="big" style="color:'+Y2G_COLORS[h.c]+'">'+h.v.toFixed(3)+'%</b></div><div><span>'+l.c+'</span><b class="big" style="color:'+Y2G_COLORS[l.c]+'">'+l.v.toFixed(3)+'%</b></div><div><span>'+h.c+' \u2212 '+l.c+'</span><b class="big">'+sp.toFixed(1)+' bp</b></div>';
+  } else {
+    el.innerHTML='<div><span>Highest 2Y</span><b style="color:'+Y2G_COLORS[h.c]+'">'+h.c+' '+h.v.toFixed(3)+'%</b></div><div><span>Lowest 2Y</span><b style="color:'+Y2G_COLORS[l.c]+'">'+l.c+' '+l.v.toFixed(3)+'%</b></div><div><span>Spread, high to low</span><b>'+sp.toFixed(0)+' bp</b></div>';
+  }
+}
+function y2gDraw(hoverIdx){
+  var cv=document.getElementById('y2gCanvas'); if(!cv) return;
+  var box=cv.parentNode, rect=box.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  var W=Math.max(260,rect.width), H=Math.max(120,rect.height);
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.width=W+'px'; cv.style.height=H+'px';
+  var ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  var empty=document.getElementById('y2gEmpty'), tip=document.getElementById('y2gTip');
+  var rows=y2gRows();
+  if(rows.length<2){ if(empty){empty.textContent='Not enough 2Y history yet. Import the CSV or record daily closes.'; empty.style.display='flex';} Y2G_GEO=null; return; }
+  if(empty) empty.style.display='none';
+  var list=y2gSelList(), multi=list.length>1;
+  var lo=Infinity, hi=-Infinity;
+  rows.forEach(function(r){ list.forEach(function(c){ var v=y2Num(r[c]); if(v==null) return; if(v<lo) lo=v; if(v>hi) hi=v; }); });
+  if(!isFinite(lo)){ lo=0; hi=1; }
+  if(hi-lo<0.05){ var m=(hi+lo)/2; lo=m-0.03; hi=m+0.03; }
+  var pad=(hi-lo)*0.1; lo-=pad; hi+=pad;
+  var L=50, R=multi?44:16, T=12, B=24, pw=W-L-R, ph=H-T-B, n=rows.length;
+  function X(i){ return L+(i/(n-1))*pw; }
+  function Y(v){ return T+(1-(v-lo)/(hi-lo))*ph; }
+  var dim='rgba(255,255,255,.62)';
+  ctx.font="11px 'IBM Plex Mono',monospace";
+  var raw=(hi-lo)/5, mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)), nm=raw/mag;
+  var step=(nm<=1?1:(nm<=2?2:(nm<=2.5?2.5:(nm<=5?5:10))))*mag;
+  ctx.textBaseline='middle';
+  for(var tv=Math.ceil(lo/step)*step; tv<=hi+1e-9; tv+=step){
+    var ty=Y(tv); ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(L,ty); ctx.lineTo(W-R,ty); ctx.stroke();
+    ctx.fillStyle=dim; ctx.textAlign='right'; ctx.fillText(tv.toFixed(step<1?2:1)+'%',L-8,ty);
+  }
+  ctx.textBaseline='alphabetic'; var xt=5, t;
+  for(t=0;t<xt;t++){ var xi=Math.round(t*(n-1)/(xt-1)); ctx.fillStyle=dim; ctx.textAlign=t===0?'left':(t===xt-1?'right':'center'); ctx.fillText(y2gDate(rows[xi].date),X(xi),H-6); }
+  function path(c){
+    var pts=[]; rows.forEach(function(r,i){ var v=y2Num(r[c]); if(v!=null) pts.push([X(i),Y(v)]); }); return pts;
+  }
+  var ends=[];
+  list.forEach(function(c){
+    var pts=path(c); if(pts.length<2) return;
+    var col=Y2G_COLORS[c];
+    if(!multi){
+      var g=ctx.createLinearGradient(0,T,0,T+ph); g.addColorStop(0,col+'40'); g.addColorStop(1,col+'00');
+      ctx.beginPath(); ctx.moveTo(pts[0][0],T+ph); pts.forEach(function(p){ctx.lineTo(p[0],p[1]);}); ctx.lineTo(pts[pts.length-1][0],T+ph); ctx.closePath(); ctx.fillStyle=g; ctx.fill();
+    }
+    ctx.strokeStyle=col; ctx.lineWidth=multi?3.2:3.6; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.beginPath(); pts.forEach(function(p,i){ if(i===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); }); ctx.stroke();
+    var lp=pts[pts.length-1];
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(lp[0],lp[1],4.5,0,Math.PI*2); ctx.fill();
+    ends.push({c:c,y:lp[1],x:lp[0]});
+  });
+  if(multi){
+    ends.sort(function(a,b){return a.y-b.y;}); for(var e=1;e<ends.length;e++){ if(ends[e].y-ends[e-1].y<12) ends[e].y=ends[e-1].y+12; }
+    ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.font="700 11px 'IBM Plex Mono',monospace";
+    ends.forEach(function(p){ ctx.fillStyle=Y2G_COLORS[p.c]; ctx.fillText(p.c,W-R+9,p.y); });
+  }
+  Y2G_GEO={L:L,pw:pw,n:n};
+  if(hoverIdx!=null && hoverIdx>=0 && hoverIdx<n){
+    var hx=X(hoverIdx), r0=rows[hoverIdx];
+    ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(hx,T); ctx.lineTo(hx,T+ph); ctx.stroke();
+    var items=[];
+    list.forEach(function(c){ var v=y2Num(r0[c]); if(v==null) return; ctx.fillStyle=Y2G_COLORS[c]; ctx.strokeStyle='#121216'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(hx,Y(v),5,0,Math.PI*2); ctx.fill(); ctx.stroke(); items.push({c:c,v:v}); });
+    items.sort(function(a,b){return b.v-a.v;});
+    var dayChg='';
+    if(!multi && hoverIdx>0){ var pv=null; for(var k=hoverIdx-1;k>=0;k--){ var q=y2Num(rows[k][list[0]]); if(q!=null){pv=q;break;} } if(pv!=null&&items.length){ var d=(items[0].v-pv)*100; dayChg='<div class="y2g-tip-r"><span>Day change</span><b style="color:'+(d>=0?'var(--bullish-strong)':'var(--bearish-strong)')+'">'+(d>0?'+':'')+d.toFixed(1)+' bp</b></div>'; } }
+    tip.innerHTML='<div class="y2g-tip-d">'+y2gDate(r0.date)+'</div>'+items.map(function(it){ return '<div class="y2g-tip-r"><span><i style="background:'+Y2G_COLORS[it.c]+'"></i>'+it.c+'</span><b>'+it.v.toFixed(3)+'%</b></div>'; }).join('')+dayChg;
+    tip.style.display='block';
+    var tw=tip.offsetWidth, left=hx+14; if(left+tw>W-4) left=hx-tw-14; tip.style.left=Math.max(4,left)+'px'; tip.style.top='8px';
+  } else if(tip){ tip.style.display='none'; }
+}
+function y2gInit(){
+  var card=document.getElementById('y2gCard'); if(!card) return;
+  var rows=y2gRows(), first=rows.length?rows[0].date:'';
+  function tabHtml(){
+    return '<button data-ccy="ALL" class="y2g-tab'+(y2gAllOn()?' active':'')+'">All</button>'+Y2_CCY_ORDER.map(function(c){
+      return '<button data-ccy="'+c+'" class="y2g-tab'+(Y2G_SEL[c]&&!y2gAllOn()?' active':'')+(y2gAllOn()?' all-on':'')+'" style="--tc:'+Y2G_COLORS[c]+'">'+flagImg(c)+c+'</button>';
+    }).join('');
+  }
+  var tabs=tabHtml();
+  card.innerHTML='<div class="y2g-inner"><div class="y2g-head"><div><h3>Global Yields</h3><div class="hist-spread-sub">2Y yield'+(first?' · since '+y2gDate(first):'')+'</div></div><div class="y2g-stats" id="y2gStats"></div></div>'+
+    '<div class="y2g-tabs" id="y2gTabs">'+tabs+'</div>'+
+    '<div class="y2g-chart"><canvas id="y2gCanvas"></canvas><div id="y2gEmpty" class="y2g-empty"></div><div id="y2gTip" class="y2g-tip"></div></div></div>';
+  var tabsEl=card.querySelector('#y2gTabs');
+  function bindTabs(){
+    var bs=tabsEl.querySelectorAll('.y2g-tab');
+    for(var i=0;i<bs.length;i++){ bs[i].onclick=function(){
+      var c=this.dataset.ccy;
+      if(c==='ALL'){ Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=1;}); }
+      else if(y2gAllOn()){ Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=0;}); Y2G_SEL[c]=1; }
+      else { Y2G_SEL[c]=Y2G_SEL[c]?0:1; if(!y2gSelList().length) Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=1;}); }
+      tabsEl.innerHTML=tabHtml(); bindTabs(); y2gStats(); y2gDraw();
+    }; }
+  }
+  bindTabs();
+  var chart=card.querySelector('.y2g-chart');
+  function idxFrom(cx){ if(!Y2G_GEO) return null; var f=(cx-chart.getBoundingClientRect().left-Y2G_GEO.L)/Y2G_GEO.pw; if(f<-0.02||f>1.02) return null; return Math.max(0,Math.min(Y2G_GEO.n-1,Math.round(f*(Y2G_GEO.n-1)))); }
+  chart.addEventListener('mousemove',function(ev){ y2gDraw(idxFrom(ev.clientX)); });
+  chart.addEventListener('mouseleave',function(){ y2gDraw(); });
+  chart.addEventListener('touchmove',function(ev){ if(ev.touches&&ev.touches[0]) y2gDraw(idxFrom(ev.touches[0].clientX)); },{passive:true});
+  chart.addEventListener('touchend',function(){ y2gDraw(); });
+  if(!Y2G_BOUND){ Y2G_BOUND=true; window.addEventListener('resize',function(){ if(document.getElementById('y2gCanvas')) y2gDraw(); }); }
+  y2gStats();
+  setTimeout(y2gDraw,0); setTimeout(y2gDraw,250);
+}
+
 function renderYield2Y(){
   var rows=y2SortedHistory(), latest=rows.length?rows[rows.length-1].date:'—';
-  var html='<div class="y2-grid">'+
+  var html='<div class="y2-grid'+(unlockedLocally?' has-input':'')+'">'+
     (unlockedLocally?(
     '<div class="card"><h3>Current 2Y Yield Input</h3><div class="y2-input-grid">'+
     Y2_CCY_ORDER.map(function(c){
@@ -8192,7 +8381,7 @@ function renderYield2Y(){
     '<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update snapshot</button><button class="y2-btn" id="y2SaveAsClose">Record daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo" style="display:none">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>'+
     '<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>'+'</div>'
     ):'')+
-    '<div class="card"><h3>Rate Differential Monitor</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>2Y Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div></div>'+
+    '<div class="card"><h3>Rate Differential Monitor</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>2Y Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div><div class="card y2g-card" id="y2gCard"></div></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div class="hist-spread-title"><div><h3>Bond Yield Spread</h3><div class="hist-spread-sub">Base 2Y yield − quote 2Y yield · basis points</div></div><div class="hist-spread-live"><div><div class="hist-live-label">Current spread</div><div id="histSpreadLiveValue" class="hist-live-value">—</div><div id="histSpreadLiveMeta" class="hist-live-meta">Select a pair</div><div id="histSpreadLiveChange" class="hist-live-change"></div></div></div></div>'+
     '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
@@ -8287,6 +8476,7 @@ function renderYield2Y(){
   }; reader.readAsText(f);};
   y2RenderRows(true);
   initHistoricalSpreadPanel();
+  y2gInit();
 }
 
 var HIST_SPREAD_PAIRS = [];
