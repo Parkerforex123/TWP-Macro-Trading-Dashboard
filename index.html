@@ -5908,7 +5908,13 @@ function riskSaveObservation(spxClose,vixClose,dateOverride){
   RISK_SENTIMENT.current={spxClose:spx,vixClose:vix,spxPct:row.spxPct,vixPct:row.vixPct,date:date};
   return {ok:true,row:row,prior:prior};
 }
-function riskContributionFor(ccy){ return 100*0.03*riskTermFor(ccy); }
+// Currency Detail weights (points out of 100). Same split as the pair side (PAIR_W_NEW) on purpose,
+// but kept as its own object so the two sides can be tuned separately later.
+// Fundamentals 25 + Yield 23 + CB Stance 19 (next move 9.5 + guidance 9.5) + COT Net Position 9 +
+// COT Weekly Change 9 + Seasonality 8 + Risk Sentiment 7 = 100.
+var CCY_W={fund:25,yield:23,cb:19,pos:9,wow:9,risk:7,seas:8};
+if(Math.abs(Object.keys(CCY_W).reduce(function(a,k){return a+CCY_W[k];},0)-100)>1e-9 && window.console) console.warn('CCY_W weights do not sum to 100');
+function riskContributionFor(ccy){ return CCY_W.risk*riskTermFor(ccy); } // matches compositeFor's risk weight (CCY_W.risk)
 function riskSurfaceHtml(){
   var score=riskRegimeScore(), label=riskRegimeLabel(score);
   var cur=RISK_SENTIMENT.current||{};
@@ -6269,12 +6275,10 @@ function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   // cotWowMagnitudeScore -- bigger weekly contract swings score higher instead of every
   // nonzero change flattening to the same +/-1).
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotNetTerm=cotNetOnlyScore(ccy)/3, cotWowTerm=cotWowMagnitudeScore(ccy)/3, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Weights: Fundamentals 42% + Yield 17% + CB Stance 13% + COT Net Position 12% + COT Weekly Change 10% + Risk Sentiment 4% + Seasonality 2%
-  // Positioning (Net + WoW) was raised from a combined 15% to 22% so that actual
-  // futures-market bets are a real confluence in the score, not a rounding error --
-  // while Fundamentals+Yield+CB stance still anchor 72% of the composite and remain
-  // what can push a reading into Bullish/Very Bullish territory on their own.
-  return 100*(0.42*fundTerm+0.17*yieldTerm+0.13*cbTerm+0.12*cotNetTerm+0.10*cotWowTerm+0.04*riskTerm+0.02*seasTerm); }
+  // Weights (see CCY_W): Fundamentals 25% + Yield 23% + CB Stance 19% + COT Net Position 9% + COT Weekly Change 9% + Seasonality 8% + Risk Sentiment 7%.
+  // Fundamentals + Yield + CB stance still hold 67% of the composite. Positioning (18%), Seasonality (8%)
+  // and Risk (7%) together hold the other 33%, so they matter more than before.
+  return CCY_W.fund*fundTerm+CCY_W.yield*yieldTerm+CCY_W.cb*cbTerm+CCY_W.pos*cotNetTerm+CCY_W.wow*cotWowTerm+CCY_W.risk*riskTerm+CCY_W.seas*seasTerm; }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
@@ -6288,25 +6292,34 @@ function alignmentFor(ccy){
   // actual-vs-forecast direction when a real surprise exists, the manual Bias label only as a
   // fallback when actual==forecast or either is missing) -- not the raw Bias label alone, which
   // can silently disagree with what's driving the score whenever a numeric surprise is present.
+  // Fundamentals occupy CCY_W.fund points of the composite. Each indicator keeps its own
+  // importance inside that pillar, but the pillar is scaled to its real weight (same method
+  // as pairAlignmentFor), so editing indicator weights can never inflate its vote.
+  var fundW=0, fundAgree=0;
   ["growth","inflation","labour"].forEach(function(sector){
-    (d[sector]||[]).forEach(function(ind){ if(indicatorIsUsable(ind)) vote(effectiveIndicatorBias(ind), Number(ind.weight)||0); });
+    (d[sector]||[]).forEach(function(ind){
+      if(!indicatorIsUsable(ind)) return;
+      var w=Math.abs(Number(ind.weight)||0), sg=effectiveIndicatorBias(ind);
+      if(!w || !sg) return;
+      fundW+=w; if(sg===dirSign) fundAgree+=w;
+    });
   });
+  if(fundW>0 && dirSign!==0){ totalW+=CCY_W.fund; agreeW+=CCY_W.fund*(fundAgree/fundW); }
   var y2s=y2Calc(ccy).score;
-  // Vote weights below are kept proportional to the current composite hierarchy
-  // (Fundamentals 42% + Yield 17% + CB Stance 13% + COT Net Position 12% + COT Weekly Change 10%
-  // + Risk 4% + Seasonality 2%), matching pairAlignmentFor.
-  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), 17);
-  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), 12);
-  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), 10);
-  // Central-bank stance is a full 13-point alignment vote, matching its 13%
-  // contribution to the composite score. HIKE agrees with a bullish composite;
+  // Vote weights below match the composite hierarchy in CCY_W
+  // (Fundamentals 25 + Yield 23 + CB Stance 19 + COT Net 9 + COT Weekly Change 9 + Seasonality 8 + Risk 7).
+  if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), CCY_W.yield);
+  vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), CCY_W.pos);
+  vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), CCY_W.wow);
+  // Central-bank stance is a full CCY_W.cb-point alignment vote, matching its contribution
+  // to the composite score. HIKE agrees with a bullish composite;
   // CUT agrees with a bearish composite; HOLD contributes no directional vote.
   var cbAlign=cbStanceScore(ccy);
-  vote(cbAlign>0?1:(cbAlign<0?-1:0), 13);
+  vote(cbAlign>0?1:(cbAlign<0?-1:0), CCY_W.cb);
   var seasVal=seasonalitySign(d);
-  vote(seasVal>0?1:(seasVal<0?-1:0), 2);
+  vote(seasVal>0?1:(seasVal<0?-1:0), CCY_W.seas);
   var riskVal=riskTermFor(ccy);
-  vote(riskVal>0?1:(riskVal<0?-1:0), 4);
+  vote(riskVal>0?1:(riskVal<0?-1:0), CCY_W.risk);
   if(dirSign===0 || totalW===0) return null;
   return {pct:Math.round(agreeW/totalW*100), dir:dirSign>0?"Bullish":"Bearish"};
 }
@@ -6417,6 +6430,45 @@ function pairSpreadSeries(base, quote){
   }).filter(function(x){return x.spread!=null;});
 }
 
+// ===== Pair yield score: fixed-band + current-day responsive =====
+// The pair yield pillar scores the BASE 2Y minus QUOTE 2Y spread directly. It combines five
+// checks: current spread vs 21D average, 7D change, 30D change, current spread vs 60D average,
+// and change in the distance from the 21D average. Each check is banded rather than continuous,
+// so small moves inside a band do not change the score. The latest observation is used directly;
+// there is no hidden volatility scaler or multi-day smoothing layer.
+var PAIR_YIELD_WEIGHTS=[3,3,2,1,1];  // vs 21D avg 3, 1-week change 3, 1-month change 2, vs 60D avg 1, acceleration 1
+var PAIR_YIELD_BANDS=[[-20,-8,8,20],[-24,-10,10,24],[-36,-15,15,36],[-40,-15,15,40],[-16,-6,6,16]]; // bp: [strong-,mild-,mild+,strong+] for SMA-dist, 1W, 1M, 60D, accel
+var PAIR_YIELD_DEADBAND=3;      // |score| below this counts as NO yield direction
+function pairYieldSign(y){ return (y==null||!Number.isFinite(Number(y))||Math.abs(Number(y))<PAIR_YIELD_DEADBAND)?0:(Number(y)>0?1:-1); }
+// Five-component yield score for the observation at rows[i]. rows = date-ascending
+// [{date,spread(bp)}].
+function pairYieldRawAt(rows, i){
+  var weights=PAIR_YIELD_WEIGHTS;
+  var cur=rows[i].spread, date=rows[i].date, prior=rows.slice(0,i);
+  var upTo=rows.slice(0,i+1);
+  var smaVals=upTo.slice(-21).map(function(r){return r.spread;});
+  var avgVals=upTo.slice(-60).map(function(r){return r.spread;});
+  var mean=function(a){return a.reduce(function(x,y){return x+y;},0)/a.length;};
+  var sma21=smaVals.length>=21?mean(smaVals):null, avg60=avgVals.length>=60?mean(avgVals):null;
+  var weekT=y2AddDays(date,-7), monthT=y2AddDays(date,-30);
+  var prev5=y2SpreadOnOrBefore(prior,weekT), prev21=y2SpreadOnOrBefore(prior,monthT);
+  var week=prev5==null?null:cur-prev5, month=prev21==null?null:cur-prev21;
+  var prevSma=null;
+  var vm=prior.filter(function(r){return r.date<=monthT;}).map(function(r){return r.spread;}).slice(-21);
+  if(vm.length>=21) prevSma=mean(vm);
+  var todayDist=sma21==null?null:cur-sma21, prevDist=(prevSma==null||prev21==null)?null:prev21-prevSma;
+  var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
+  var comps=[
+    sma21==null?null:y2ScoreBand(cur-sma21,PAIR_YIELD_BANDS[0],weights[0]),
+    week==null?null:y2ScoreBand(week,PAIR_YIELD_BANDS[1],weights[1]),
+    month==null?null:y2ScoreBand(month,PAIR_YIELD_BANDS[2],weights[2]),
+    avg60==null?null:y2ScoreBand(cur-avg60,PAIR_YIELD_BANDS[3],weights[3]),
+    distChange==null?null:y2ScoreBand(distChange,PAIR_YIELD_BANDS[4],weights[4])
+  ];
+  var aw=0, rs=0; comps.forEach(function(x,k){ if(x!=null){aw+=weights[k]; rs+=x;} });
+  return {score:aw?rs/aw*10:null,comps:comps,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange};
+}
+
 // ===== Pair-level 2Y yield differential score =====
 // FX is traded as a pair, so the yield component used by Pair Ranking is relative:
 // BASE 2Y yield minus QUOTE 2Y yield. We score that differential directly rather
@@ -6445,57 +6497,14 @@ function pairYieldCalc(base, quote){
   var current=(curBase-curQuote)*100;
   var refDateP=currentDate||(series.length?series[series.length-1].date:"");
   if(currentDate) byDate[currentDate]=current;
-  var combinedDates=Object.keys(byDate).sort();
-  var combinedRows=combinedDates.map(function(d){return {date:d,spread:byDate[d]};});
-  var all=combinedRows.map(function(r){return r.spread;}).filter(function(x){return Number.isFinite(x);});
-  if(!currentDate && (!all.length || Math.abs(all[all.length-1]-current)>1e-12)) all.push(current);
-  if(!all.length) return {pair:base+quote,base:base,quote:quote,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null]};
-
-  // 21D SMA / 60D avg are the last 21 / 60 saved observations (trading-day count, not
-  // a calendar-day span). This matches how TradingView's SMA works and what "21D SMA"
-  // means to a trader for a market that doesn't trade weekends — a calendar-day span
-  // always contains fewer trading days than its number, which was silently shrinking
-  // the window. Requires a full 21 / 60 saved points; short of that, no reading yet.
-  var upToRefP=combinedRows.filter(function(r){return r.date<=refDateP && Number.isFinite(r.spread);});
-  var smaVals=upToRefP.slice(-21).map(function(r){return r.spread;});
-  var avgVals=upToRefP.slice(-60).map(function(r){return r.spread;});
-  var sma21=smaVals.length>=21?smaVals.reduce(function(a,b){return a+b;},0)/smaVals.length:null;
-  var avg60=avgVals.length>=60?avgVals.reduce(function(a,b){return a+b;},0)/avgVals.length:null;
-
-  // Weekly/monthly changes use stored observations before the current observation,
-  // matching the existing yield-engine convention. Lookback is date-anchored (see
-  // y2ValueOnOrBefore) so an inconsistent update cadence doesn't stretch "week"/"month".
-  var histSpreadRows=series.filter(function(r){return !currentDate || r.date<currentDate;});
-  var weekTargetP=refDateP?y2AddDays(refDateP,-7):null;
-  var monthTargetP=refDateP?y2AddDays(refDateP,-30):null;
-  var prev5=y2SpreadOnOrBefore(histSpreadRows,weekTargetP);
-  var prev21=y2SpreadOnOrBefore(histSpreadRows,monthTargetP);
-  var week=prev5==null?null:current-prev5;
-  var month=prev21==null?null:current-prev21;
-
-  // Same 3/2/2/1/2 weighting and -10..+10 scale as the original yield engine,
-  // but now applied to the pair\'s actual 2Y differential.
-  var c1=sma21==null?null:y2ScoreBand(current-sma21,[-15,-3,3,15],3);
-  var c2=week==null?null:y2ScoreBand(week,[-20,-7,7,20],2);
-  var c3=month==null?null:y2ScoreBand(month,[-30,-10,10,30],2);
-  var c4=avg60==null?null:y2ScoreBand(current-avg60,[-30,-10,10,30],1);
-  var prevSma=null;
-  if(monthTargetP){
-    var valsAsOfMonthAgo=histSpreadRows.filter(function(r){
-      return r.date<=monthTargetP && Number.isFinite(r.spread);
-    }).map(function(r){return r.spread;}).slice(-21);
-    if(valsAsOfMonthAgo.length>=21){
-      prevSma=valsAsOfMonthAgo.reduce(function(a,b){return a+b;},0)/valsAsOfMonthAgo.length;
-    }
-  }
-  var todayDist=sma21==null?null:current-sma21;
-  var prevDist=(prevSma==null||prev21==null)?null:prev21-prevSma;
-  var distChange=(todayDist==null||prevDist==null)?null:todayDist-prevDist;
-  var c5=distChange==null?null:y2ScoreBand(distChange,[-12,-3,3,12],2);
-  var comps=[c1,c2,c3,c4,c5], weights=[3,2,2,1,2], availWeight=0, rawSum=0;
-  comps.forEach(function(x,i){if(x!=null){availWeight+=weights[i];rawSum+=x;}});
-  var score=availWeight?Math.round((rawSum/availWeight*10)*10)/10:null;
-  return {pair:base+quote,base:base,quote:quote,current:current,sma21:sma21,avg60:avg60,week:week,month:month,smaDist:distChange,score:score,components:comps};
+  else if(refDateP) byDate[refDateP]=current;   // no selected date: live value replaces the latest saved day
+  var combinedRows=Object.keys(byDate).sort().map(function(d){return {date:d,spread:byDate[d]};}).filter(function(r){return Number.isFinite(r.spread);});
+  if(!combinedRows.length) return {pair:base+quote,base:base,quote:quote,current:null,sma21:null,avg60:null,week:null,month:null,smaDist:null,score:null,components:[null,null,null,null,null]};
+  var last=combinedRows.length-1;
+  // The latest observation is scored directly against the fixed historical bands.
+  var now=pairYieldRawAt(combinedRows,last);
+  var score=now.score==null?null:Math.round(now.score*10)/10;
+  return {pair:base+quote,base:base,quote:quote,current:current,sma21:now.sma21,avg60:now.avg60,week:now.week,month:now.month,smaDist:now.smaDist,score:score,components:now.comps};
 }
 
 // Generic calendar-anchored spread change: "how much has base-vs-quote 2Y spread
@@ -6520,32 +6529,23 @@ function pairSpreadChangeSince(base,quote,days){
   return prev==null?null:y.current-prev;
 }
 
-// Pair "ruler" for the two pillars that used to be measured against a perfect-vs-perfect
-// maximum (one currency at +100 and the other at -100), which almost never happens. A pair's
-// Fundamentals gap of PAIR_FUND_FULL_GAP (on the -200..+200 scale the labels use) and a CB
-// stance gap of PAIR_CB_FULL_GAP (on the -20..+20 scale) now count as FULL strength, so
-// a "Very Bullish" Fundamentals label fills about half of its 45-point bucket instead of a
-// fifth. Anything past full strength is capped at 1. Weights are unchanged.
-// legacy=true gives the previous formula (gap / 2) for the old-vs-new scoring check.
-var PAIR_FUND_FULL_GAP=80, PAIR_CB_FULL_GAP=10;
-// Pair-score weights (points out of 100). The three rate-path pillars lead: Fundamentals 35 +
-// Yield 25 + CB Stance 17 = 77, so Yield and CB together (42) can outweigh Fundamentals (35)
-// when they agree. Positioning (COT Position 8 + COT WoW 7 = 15) was brought back down from a
-// combined 22 so futures positioning stays a confirmation layer and cannot swing the pair score
-// as hard. Risk 5 + Seasonality 3 restored. PAIR_W_OLD is the original split, kept for the
-// old-vs-new check.
-var PAIR_W_NEW={fund:35,yield:25,cb:17,pos:8,wow:7,risk:5,seas:3};
-var PAIR_W_OLD={fund:45,yield:18,cb:14,pos:8,wow:7,risk:5,seas:3};
-function pairW(legacy){ return legacy?PAIR_W_OLD:PAIR_W_NEW; }
-function pairFundTerm(fundBase,fundQuote,legacy){
-  if(legacy) return (fundBase-fundQuote)/2;
+// Pair normalization rulers. Fundamentals use a 100-point practical-full-strength gap on the
+// -200..+200 relative scale; anything beyond that is capped. CB stance uses a 10-point
+// practical-full-strength gap on its -20..+20 relative scale; anything beyond that is capped.
+// These rulers control sensitivity inside their fixed pillar weights; they do not change the
+// 25/23/19/9/9/8/7 weighting itself.
+var PAIR_FUND_FULL_GAP=100, PAIR_CB_FULL_GAP=10;
+// Pair-score weights (points out of 100): Fundamentals 25, Yield 23, CB Stance 19,
+// Position 9, WoW 9, Seasonality 8, Risk Sentiment 7. CB stance is split 9.5/9.5
+// between Next Move + Conviction and Forward Guidance.
+var PAIR_W_NEW={fund:25,yield:23,cb:19,pos:9,wow:9,risk:7,seas:8};
+function pairFundTerm(fundBase,fundQuote){
   return Math.max(-1,Math.min(1,(fundBase-fundQuote)*100/PAIR_FUND_FULL_GAP));
 }
-function pairCbTerm(cbBase,cbQuote,legacy){
-  if(legacy) return (cbBase-cbQuote)/2;
+function pairCbTerm(cbBase,cbQuote){
   return Math.max(-1,Math.min(1,(cbBase-cbQuote)*10/PAIR_CB_FULL_GAP));
 }
-function pairCompositeFor(base, quote, legacy){
+function pairCompositeFor(base, quote){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
   var fundBase=fb.max?(fb.raw/fb.max):0, fundQuote=fq.max?(fq.raw/fq.max):0;
@@ -6562,21 +6562,21 @@ function pairCompositeFor(base, quote, legacy){
   var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   var cbNextBase=cbNextMoveScore(base)/10, cbNextQuote=cbNextMoveScore(quote)/10;
   var cbGuideBase=cbGuidanceScore(base)/10, cbGuideQuote=cbGuidanceScore(quote)/10;
-  // The 17-point CB bucket is split 8.5/8.5:
-  //   8.5 points = expected next move + conviction
-  //   8.5 points = what the central bank actually communicated
-  // Each side is calculated as BASE minus QUOTE. If both agree, the full 17 points
+  // The 19-point CB bucket is split 9.5/9.5:
+  //   9.5 points = expected next move + conviction
+  //   9.5 points = what the central bank actually communicated
+  // Each side is calculated as BASE minus QUOTE. If both agree, the full 19 points
   // can be earned; if they conflict, the two halves offset rather than double-counting.
-  var cbNextPair=pairCbTerm(cbNextBase,cbNextQuote,legacy);
-  var cbGuidePair=pairCbTerm(cbGuideBase,cbGuideQuote,legacy);
-  var cbPair=legacy ? cbNextPair : (0.5*cbNextPair + 0.5*cbGuidePair);
+  var cbNextPair=pairCbTerm(cbNextBase,cbNextQuote);
+  var cbGuidePair=pairCbTerm(cbGuideBase,cbGuideQuote);
+  var cbPair=0.5*cbNextPair + 0.5*cbGuidePair;
   // All Base-vs-Quote differentials are normalized back to -1..1 before weighting.
-  var fundPair=pairFundTerm(fundBase,fundQuote,legacy);
+  var fundPair=pairFundTerm(fundBase,fundQuote);
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Pair weights: Fundamentals 35 + Yield 25 + CB Stance 17 + COT Position 8 + COT Weekly Change 7 + Risk Sentiment 5 + Seasonality 3 (see PAIR_W_NEW).
+  // Pair weights: Fundamentals 25 + Yield 23 + CB Stance 19 + COT Position 9 + COT Weekly Change 9 + Risk Sentiment 7 + Seasonality 8 (see PAIR_W_NEW).
   // Fundamentals and CB gaps use the practical-full-strength ruler above (see pairFundTerm / pairCbTerm).
-  var W=pairW(legacy);
+  var W=PAIR_W_NEW;
   return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.risk*riskPair+W.seas*seasPair;
 }
 
@@ -6628,7 +6628,7 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 35% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
+  // Fundamentals occupy 25% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
   // existing importance inside that pillar; the pillar is normalized to its total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
@@ -6644,30 +6644,30 @@ function pairAlignmentFor(base, quote, score){
     });
   });
   if(fundWeightSum>0){
-    total += pairW(false).fund;
-    agree += pairW(false).fund*(fundAgreeWeight/fundWeightSum);
+    total += PAIR_W_NEW.fund;
+    agree += PAIR_W_NEW.fund*(fundAgreeWeight/fundWeightSum);
   }
-  // Yield = 25% of the pair model.
+  // Yield = 23% of the pair model.
   var y=pairYieldCalc(base,quote).score;
-  if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,pairW(false).yield);
-  // COT Position = 8%, COT Weekly Change = 7%. Voted separately instead of blending
+  if(pairYieldSign(y)!==0) vote(pairYieldSign(y),PAIR_W_NEW.yield);
+  // COT Position = 9%, COT Weekly Change = 9%. Voted separately instead of blending
   // into .combined, so a pair with position and flow disagreeing shows that split
   // instead of cancelling into one vote.
   var cot=cotPairRegime(base,quote);
-  if(!cot.insufficient && cot.posLabel!=='Neutral') vote(Number(cot.posScore)>0?1:-1,pairW(false).pos);
-  if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,pairW(false).wow);
-  // CB stance = 17% split into two independent 8.5-point votes:
+  if(!cot.insufficient && cot.posLabel!=='Neutral') vote(Number(cot.posScore)>0?1:-1,PAIR_W_NEW.pos);
+  if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,PAIR_W_NEW.wow);
+  // CB stance = 19% split into two independent 9.5-point votes:
   // next move/conviction and forward-guidance direction.
   var cbNextDiff=cbNextMoveScore(base)-cbNextMoveScore(quote);
-  if(cbNextDiff!==0) vote(cbNextDiff>0?1:-1,pairW(false).cb/2);
+  if(cbNextDiff!==0) vote(cbNextDiff>0?1:-1,PAIR_W_NEW.cb/2);
   var cbGuideDiff=cbGuidanceScore(base)-cbGuidanceScore(quote);
-  if(cbGuideDiff!==0) vote(cbGuideDiff>0?1:-1,pairW(false).cb/2);
-  // Risk = 5%.
+  if(cbGuideDiff!==0) vote(cbGuideDiff>0?1:-1,PAIR_W_NEW.cb/2);
+  // Risk = 7%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
-  if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,pairW(false).risk);
-  // Seasonality = 3%.
+  if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,PAIR_W_NEW.risk);
+  // Seasonality = 8%.
   var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
-  if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,pairW(false).seas);
+  if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,PAIR_W_NEW.seas);
   return total ? Math.round((agree/total)*100) : null;
 }
 
@@ -6687,7 +6687,7 @@ function pairMacroGate(base,quote,score){
   var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
   var fSign=fundRel>0?1:(fundRel<0?-1:0);
   var y=pairYieldCalc(base,quote).score;
-  var ySign=y==null?0:(y>0?1:(y<0?-1:0));
+  var ySign=pairYieldSign(y);
   var cbLabel=pairCbStanceLabel(base,quote);
   var cbSign=pillarSign(cbLabel);
 
@@ -6765,12 +6765,9 @@ function scannerDriverExplanation(base,quote,driver){
 }
 // Single source of truth for the seven-pillar point breakdown (Fundamentals, Yield,
 // CB stance, Position, WoW, Seasonality, Risk sentiment) used by both the scanner
-// table and the Pair Focus panel. An earlier duplicate of this function existed
-// above with different weights (45/8%/7% vs the 50/7.5%/2.5% actually used here) --
-// it was dead code (later declaration wins), removed for clarity, not a scoring change.
-// Weights: Fundamentals max 33pts, Yield max 23pts, CB stance max 16pts, Position max
-// 12pts, WoW max 10pts, Seasonality max 2pts, Risk sentiment max 4pts -- these match
-// PAIR_FOCUS_PILLAR_CAP used to normalize the driver bars (pulled live from PAIR_W_NEW).
+// table and the Pair Focus panel.
+// The driver table uses the same live pillar caps as the pair score: Fundamentals 25, Yield 23,
+// CB stance 19, Position 9, WoW 9, Seasonality 8, Risk sentiment 7.
 function scannerDriverBreakdown(base,quote){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
@@ -6783,11 +6780,9 @@ function scannerDriverBreakdown(base,quote){
   var cbGuideBase=cbGuidanceScore(base)/10, cbGuideQuote=cbGuidanceScore(quote)/10;
   var out=[];
   function push(name,pts,label){out.push({name:name,pts:Number(pts)||0,label:label||'Neutral'});}
-  // IMPORTANT: keep every driver contribution exactly aligned with pairCompositeFor().
-  // The previous scanner breakdown used 25/7.5/2.5 point caps for Fundamentals/Position/WoW,
-  // while the live composite actually uses 45/8/7. This made the displayed Bias and driver
-  // contribution disagree with the real pair score.
-  var W=pairW(false);
+  // IMPORTANT: keep every driver contribution exactly aligned with pairCompositeFor() and
+  // the live PAIR_W_NEW weights.
+  var W=PAIR_W_NEW;
   push('Fundamentals',W.fund*pairFundTerm(fundBase,fundQuote),pillarBias((fundBase-fundQuote)*100));
   push('Yield',yScore==null?0:(W.yield/10)*yScore,yScore==null?'Neutral':(yScore>=7?'Very Bullish':yScore>=3?'Bullish':yScore<=-7?'Very Bearish':yScore<=-3?'Bearish':'Neutral'));
   push('CB stance',W.cb*(0.5*pairCbTerm(cbNextBase,cbNextQuote)+0.5*pairCbTerm(cbGuideBase,cbGuideQuote)),pairCbStanceLabel(base,quote));
@@ -10943,7 +10938,7 @@ function pairMacroSummaryHtml(pair, score){
   var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
   var y=pairYieldCalc(base,quote), yScore=y.score;
   var cot=cotPairRegime(base,quote);
-  var riskDiff=100*0.03*(riskTermFor(base)-riskTermFor(quote));
+  var riskDiff=PAIR_W_NEW.risk*(riskTermFor(base)-riskTermFor(quote))/2;
   var riskState=riskPairState(base,quote);
   var seas=seasonalityPairSpread(base,quote);
   var overall=pairBandLabel(score);
@@ -11089,11 +11084,10 @@ function pairMacroSummaryHtml(pair, score){
 // real, separate readings now, not a mirrored pair -- so they will not generally sum
 // to ~100 the way the old fake ones always did.
 var PAIR_FOCUS_PILLAR_CAP={Fundamentals:PAIR_W_NEW.fund,Yield:PAIR_W_NEW.yield,'CB stance':PAIR_W_NEW.cb,Position:PAIR_W_NEW.pos,WoW:PAIR_W_NEW.wow,Seasonality:PAIR_W_NEW.seas,'Risk sentiment':PAIR_W_NEW.risk};
-// Matches the live pair weights in PAIR_W_NEW: Fundamentals 35% + Yield 25% + CB stance 17%
-// + Position 8% + WoW 7% + Risk sentiment 5% + Seasonality 3%. Shown
-// under each pillar name in the driver table, and used to blend the per-currency
-// "USD"/"CHF" summary-tile numbers at the top of the card.
-var PAIR_FOCUS_PILLAR_WEIGHT={Fundamentals:33,Yield:23,'CB stance':16,Position:12,WoW:10,Seasonality:2,'Risk sentiment':4};
+// The displayed pillar caps come directly from PAIR_W_NEW so the Pair Focus panel and the
+// live pair score cannot drift apart.
+var PAIR_FOCUS_PILLAR_WEIGHT=PAIR_FOCUS_PILLAR_CAP;
+if(Math.abs(Object.keys(PAIR_W_NEW).reduce(function(a,k){return a+PAIR_W_NEW[k];},0)-100)>1e-9 && window.console) console.warn('PAIR_W_NEW weights do not sum to 100');
 // One-line explanation per pillar, used only in the hover tooltip -- kept out of the
 // row markup itself since the request was to keep the table dense, not to add copy.
 var PAIR_FOCUS_PILLAR_EXPLAIN={
@@ -11216,7 +11210,7 @@ function pairFocusHtml(pair,score,animate){
   var base=pair.slice(0,3), quote=pair.slice(3,6), y=pairYieldCalc(base,quote), cot=cotPairRegime(base,quote);
   var fb=fundFor(base), fq=fundFor(quote), fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
   var carry=scannerCarryPct(base,quote), bSur=surpriseWeightedPct(base), qSur=surpriseWeightedPct(quote);
-  var risk=riskPairState(base,quote), riskDiff=100*0.03*(riskTermFor(base)-riskTermFor(quote));
+  var risk=riskPairState(base,quote), riskDiff=PAIR_W_NEW.risk*(riskTermFor(base)-riskTermFor(quote))/2;
   var dir=score>7?1:score<-7?-1:0;
   var labels={
     Fundamentals:pillarBias(fundRel),
