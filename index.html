@@ -6528,15 +6528,13 @@ function pairSpreadChangeSince(base,quote,days){
 // fifth. Anything past full strength is capped at 1. Weights are unchanged.
 // legacy=true gives the previous formula (gap / 2) for the old-vs-new scoring check.
 var PAIR_FUND_FULL_GAP=80, PAIR_CB_FULL_GAP=10;
-// Pair-score weights (points out of 100). The three rate-path pillars lead: Fundamentals 33 +
-// Yield 23 + CB Stance 16 = 72, so Yield and CB together (39) can outweigh Fundamentals (33)
-// when they agree, and Fundamentals alone can no longer beat both. Positioning (COT Position 12 +
-// COT WoW 10 = 22) was raised from a combined 15 so real futures-market positioning is a genuine
-// confluence rather than a rounding error, while the 72-point rate-path bloc still anchors the
-// score and remains what actually pushes a reading into Bullish/Very Bullish on its own. Risk +
-// Seasonality trimmed from 8 to 6 to fund the increase. PAIR_W_OLD is the previous split, kept
-// for the old-vs-new check.
-var PAIR_W_NEW={fund:33,yield:23,cb:16,pos:12,wow:10,risk:4,seas:2};
+// Pair-score weights (points out of 100). The three rate-path pillars lead: Fundamentals 35 +
+// Yield 25 + CB Stance 17 = 77, so Yield and CB together (42) can outweigh Fundamentals (35)
+// when they agree. Positioning (COT Position 8 + COT WoW 7 = 15) was brought back down from a
+// combined 22 so futures positioning stays a confirmation layer and cannot swing the pair score
+// as hard. Risk 5 + Seasonality 3 restored. PAIR_W_OLD is the original split, kept for the
+// old-vs-new check.
+var PAIR_W_NEW={fund:35,yield:25,cb:17,pos:8,wow:7,risk:5,seas:3};
 var PAIR_W_OLD={fund:45,yield:18,cb:14,pos:8,wow:7,risk:5,seas:3};
 function pairW(legacy){ return legacy?PAIR_W_OLD:PAIR_W_NEW; }
 function pairFundTerm(fundBase,fundQuote,legacy){
@@ -6576,7 +6574,7 @@ function pairCompositeFor(base, quote, legacy){
   var fundPair=pairFundTerm(fundBase,fundQuote,legacy);
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Pair weights: Fundamentals 33 + Yield 23 + CB Stance 16 + COT Position 12 + COT Weekly Change 10 + Risk Sentiment 4 + Seasonality 2 (see PAIR_W_NEW).
+  // Pair weights: Fundamentals 35 + Yield 25 + CB Stance 17 + COT Position 8 + COT Weekly Change 7 + Risk Sentiment 5 + Seasonality 3 (see PAIR_W_NEW).
   // Fundamentals and CB gaps use the practical-full-strength ruler above (see pairFundTerm / pairCbTerm).
   var W=pairW(legacy);
   return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.risk*riskPair+W.seas*seasPair;
@@ -6630,7 +6628,7 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 33% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
+  // Fundamentals occupy 35% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
   // existing importance inside that pillar; the pillar is normalized to its total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
@@ -6649,25 +6647,25 @@ function pairAlignmentFor(base, quote, score){
     total += pairW(false).fund;
     agree += pairW(false).fund*(fundAgreeWeight/fundWeightSum);
   }
-  // Yield = 23% of the pair model.
+  // Yield = 25% of the pair model.
   var y=pairYieldCalc(base,quote).score;
   if(y!=null && Number(y)!==0) vote(Number(y)>0?1:-1,pairW(false).yield);
-  // COT Position = 12%, COT Weekly Change = 10%. Voted separately instead of blending
+  // COT Position = 8%, COT Weekly Change = 7%. Voted separately instead of blending
   // into .combined, so a pair with position and flow disagreeing shows that split
   // instead of cancelling into one vote.
   var cot=cotPairRegime(base,quote);
   if(!cot.insufficient && cot.posLabel!=='Neutral') vote(Number(cot.posScore)>0?1:-1,pairW(false).pos);
   if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,pairW(false).wow);
-  // CB stance = 16% split into two independent 8-point votes:
+  // CB stance = 17% split into two independent 8.5-point votes:
   // next move/conviction and forward-guidance direction.
   var cbNextDiff=cbNextMoveScore(base)-cbNextMoveScore(quote);
   if(cbNextDiff!==0) vote(cbNextDiff>0?1:-1,pairW(false).cb/2);
   var cbGuideDiff=cbGuidanceScore(base)-cbGuidanceScore(quote);
   if(cbGuideDiff!==0) vote(cbGuideDiff>0?1:-1,pairW(false).cb/2);
-  // Risk = 4%.
+  // Risk = 5%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
   if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,pairW(false).risk);
-  // Seasonality = 2%.
+  // Seasonality = 3%.
   var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
   if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,pairW(false).seas);
   return total ? Math.round((agree/total)*100) : null;
@@ -11091,8 +11089,8 @@ function pairMacroSummaryHtml(pair, score){
 // real, separate readings now, not a mirrored pair -- so they will not generally sum
 // to ~100 the way the old fake ones always did.
 var PAIR_FOCUS_PILLAR_CAP={Fundamentals:PAIR_W_NEW.fund,Yield:PAIR_W_NEW.yield,'CB stance':PAIR_W_NEW.cb,Position:PAIR_W_NEW.pos,WoW:PAIR_W_NEW.wow,Seasonality:PAIR_W_NEW.seas,'Risk sentiment':PAIR_W_NEW.risk};
-// Matches the live pair weights in PAIR_W_NEW: Fundamentals 33% + Yield 23% + CB stance 16%
-// + Position 12% + WoW 10% + Risk sentiment 4% + Seasonality 2%. Shown
+// Matches the live pair weights in PAIR_W_NEW: Fundamentals 35% + Yield 25% + CB stance 17%
+// + Position 8% + WoW 7% + Risk sentiment 5% + Seasonality 3%. Shown
 // under each pillar name in the driver table, and used to blend the per-currency
 // "USD"/"CHF" summary-tile numbers at the top of the card.
 var PAIR_FOCUS_PILLAR_WEIGHT={Fundamentals:33,Yield:23,'CB stance':16,Position:12,WoW:10,Seasonality:2,'Risk sentiment':4};
