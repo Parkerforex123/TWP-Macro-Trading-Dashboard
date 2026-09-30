@@ -1702,6 +1702,23 @@ body.ash,html.ash,body.black,html.black{--bullish:var(--ref-green);--bullish-str
   #tab-risk .risk-inline-note{width:100%;}
 }
 </style>
+<style id="v76-yield-charts-only">
+/* Yield workspace: remove the Rate Differential Monitor and give the two analytical charts the full row. */
+#tab-yield2y .y2-grid{display:block!important;margin-bottom:0!important;}
+#tab-yield2y .y2-grid:empty{display:none!important;}
+#tab-yield2y .y2-grid>.card{width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;}
+#tab-yield2y .y2-chart-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:14px!important;margin-top:12px!important;}
+#tab-yield2y .y2g-card,#tab-yield2y .hist-spread-card{height:390px!important;min-height:390px!important;}
+#tab-yield2y .hist-spread-chart{height:calc(100% - 74px)!important;min-height:245px!important;}
+@media(max-width:1050px){
+  #tab-yield2y .y2-chart-row{grid-template-columns:1fr!important;}
+  #tab-yield2y .y2g-card,#tab-yield2y .hist-spread-card{height:350px!important;min-height:350px!important;}
+  #tab-yield2y .hist-spread-chart{height:calc(100% - 74px)!important;min-height:220px!important;}
+}
+@media(max-width:700px){
+  #tab-yield2y .y2g-card,#tab-yield2y .hist-spread-card{height:330px!important;min-height:330px!important;}
+}
+</style>
 <style id="v5-trader-layout-polish">
 #tab-cot .cot-chart-zone-note{display:none!important;}
 #tab-risk .risk-page{max-width:680px!important;}
@@ -4555,6 +4572,79 @@ body.editing .ov-pro-live{display:block!important;}
 @media(max-width:1050px){#tab-yield2y .y2-grid>.card.y2g-card{height:380px!important;}}
 </style>
 
+<style id="yield-chart-background-match-v1">
+/* Bond Yield Spread uses the same plotting-field treatment as Global Yields. */
+#tab-yield2y .hist-spread-chart{
+  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 72%),var(--panel)!important;
+}
+#tab-yield2y .hist-spread-chart:after{
+  background:linear-gradient(90deg,transparent,var(--border),transparent)!important;
+}
+</style>
+
+<style id="v75-premium-yield-charts">
+/* Premium chart treatment: more breathing room, explicit current-value lanes,
+   and matching plotting surfaces for Global Yields and Bond Yield Spread. */
+#tab-yield2y .y2g-head{align-items:center!important;gap:12px!important;}
+#tab-yield2y .y2g-head-right{display:flex;align-items:center;gap:10px;margin-left:auto;min-width:0;}
+#tab-yield2y .y2g-stats{gap:3px 16px!important;}
+/* Global Yields + Bond Yield Spread share one balanced chart row. */
+#tab-yield2y .y2-chart-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:12px!important;
+  align-items:stretch!important;
+  margin-top:10px!important;
+}
+#tab-yield2y .y2-chart-row>.card{min-width:0!important;box-sizing:border-box!important;}
+#tab-yield2y .y2g-card{height:380px!important;min-height:380px!important;overflow:hidden!important;}
+#tab-yield2y .y2g-inner{height:100%!important;box-sizing:border-box!important;padding:13px 14px 12px!important;}
+#tab-yield2y .y2g-chart{height:calc(100% - 86px)!important;min-height:235px!important;margin-top:8px!important;}
+#tab-yield2y .hist-spread-card{margin:0!important;padding:13px 14px 12px!important;height:380px!important;min-height:380px!important;box-sizing:border-box!important;overflow:hidden!important;}
+#tab-yield2y .hist-spread-head{gap:12px!important;margin-bottom:8px!important;padding-bottom:7px!important;}
+#tab-yield2y .hist-spread-controls{gap:7px!important;}
+#tab-yield2y .hist-range{gap:3px!important;}
+#tab-yield2y .hist-range button{min-width:36px!important;padding:6px 8px!important;}
+#tab-yield2y .hist-spread-chart{
+  height:calc(100% - 74px)!important;min-height:235px!important;margin-top:0!important;
+  border:none!important;border-radius:7px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 72%),var(--panel)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),inset 0 0 0 1px rgba(255,255,255,.018)!important;
+  overflow:hidden!important;
+}
+#tab-yield2y .hist-spread-chart canvas{width:100%!important;height:100%!important;display:block!important;}
+#tab-yield2y .hist-spread-chart:after{height:1px!important;opacity:.55!important;}
+#tab-yield2y .y2-grid{margin-bottom:0!important;}
+@media(max-width:1050px){#tab-yield2y .hist-spread-chart{height:350px!important;min-height:350px!important;}}
+@media(max-width:700px){
+  #tab-yield2y .y2g-head{align-items:flex-start!important;}
+  #tab-yield2y .y2g-head-right{flex-direction:column;align-items:flex-end;gap:6px;}
+  #tab-yield2y .hist-spread-head{gap:12px!important;}
+  #tab-yield2y .hist-spread-chart{height:330px!important;min-height:330px!important;}
+  .y2g-expand-backdrop,.hist-spread-expand-backdrop{padding:10px;}
+  .y2g-expand-panel,.hist-spread-expand-panel{width:100%;height:calc(100vh - 20px);max-height:none;border-radius:6px;}
+  #tab-yield2y .y2g-card-expanded{height:100%!important;}
+  .hist-spread-chart.hist-spread-chart-expanded{height:calc(100vh - 190px)!important;min-height:300px!important;}
+}
+</style>
+
+<style id="v76-yield-chart-pair-layout">
+/* Authoritative final layout: monitor above, the two historical yield charts side by side. */
+#tab-yield2y .y2-grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important;}
+#tab-yield2y .y2-chart-row{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:12px!important;}
+#tab-yield2y .y2-chart-row .y2g-card,#tab-yield2y .y2-chart-row .hist-spread-card{height:380px!important;min-height:380px!important;}
+#tab-yield2y .y2g-chart{height:calc(100% - 84px)!important;min-height:240px!important;}
+#tab-yield2y .hist-spread-chart{height:calc(100% - 74px)!important;min-height:240px!important;}
+#tab-yield2y .y2g-head-right{display:flex!important;align-items:center!important;gap:10px!important;margin-left:auto!important;}
+#tab-yield2y .y2g-expand-btn{display:none!important;}
+@media(max-width:1050px){
+  #tab-yield2y .y2-chart-row{grid-template-columns:1fr!important;}
+  #tab-yield2y .y2-chart-row .y2g-card,#tab-yield2y .y2-chart-row .hist-spread-card{height:360px!important;min-height:360px!important;}
+}
+@media(max-width:700px){
+  #tab-yield2y .y2-chart-row .y2g-card,#tab-yield2y .y2-chart-row .hist-spread-card{height:330px!important;min-height:330px!important;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -8267,7 +8357,7 @@ function y2gStats(){
 function y2gDraw(hoverIdx){
   var cv=document.getElementById('y2gCanvas'); if(!cv) return;
   var box=cv.parentNode, rect=box.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
-  var W=Math.max(260,rect.width), H=Math.max(120,rect.height);
+  var W=Math.max(260,rect.width), H=Math.max(150,rect.height);
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.width=W+'px'; cv.style.height=H+'px';
   var ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
   var empty=document.getElementById('y2gEmpty'), tip=document.getElementById('y2gTip');
@@ -8277,58 +8367,37 @@ function y2gDraw(hoverIdx){
   var list=y2gSelList(), multi=list.length>1;
   var lo=Infinity, hi=-Infinity;
   rows.forEach(function(r){ list.forEach(function(c){ var v=y2Num(r[c]); if(v==null) return; if(v<lo) lo=v; if(v>hi) hi=v; }); });
-  if(!isFinite(lo)){ lo=0; hi=1; }
-  if(hi-lo<0.05){ var m=(hi+lo)/2; lo=m-0.03; hi=m+0.03; }
-  var pad=(hi-lo)*0.1; lo-=pad; hi+=pad;
-  var L=50, R=multi?44:16, T=12, B=24, pw=W-L-R, ph=H-T-B, n=rows.length;
-  function X(i){ return L+(i/(n-1))*pw; }
-  function Y(v){ return T+(1-(v-lo)/(hi-lo))*ph; }
-  var dim='rgba(255,255,255,.62)';
-  ctx.font="11px 'IBM Plex Mono',monospace";
+  if(!isFinite(lo)){lo=0;hi=1;}
+  if(hi-lo<0.12){var m=(hi+lo)/2;lo=m-0.06;hi=m+0.06;}
+  var pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
+  var L=46,R=10,T=10,B=25,pw=Math.max(40,W-L-R),ph=Math.max(40,H-T-B),n=rows.length;
+  function X(i){return L+(i/(n-1))*pw;}
+  function Y(v){return T+(1-(v-lo)/(hi-lo))*ph;}
+  ctx.font="10px 'IBM Plex Mono',monospace"; ctx.textBaseline='middle';
   var raw=(hi-lo)/5, mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)), nm=raw/mag;
   var step=(nm<=1?1:(nm<=2?2:(nm<=2.5?2.5:(nm<=5?5:10))))*mag;
-  ctx.textBaseline='middle';
-  for(var tv=Math.ceil(lo/step)*step; tv<=hi+1e-9; tv+=step){
-    var ty=Y(tv); ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(L,ty); ctx.lineTo(W-R,ty); ctx.stroke();
-    ctx.fillStyle=dim; ctx.textAlign='right'; ctx.fillText(tv.toFixed(step<1?2:1)+'%',L-8,ty);
+  for(var tv=Math.ceil(lo/step)*step;tv<=hi+1e-9;tv+=step){
+    var ty=Y(tv); ctx.strokeStyle='rgba(255,255,255,.075)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,ty);ctx.lineTo(W-R,ty);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign='right';ctx.fillText(tv.toFixed(step<1?2:1)+'%',L-7,ty);
   }
-  ctx.textBaseline='alphabetic'; var xt=5, t;
-  for(t=0;t<xt;t++){ var xi=Math.round(t*(n-1)/(xt-1)); ctx.fillStyle=dim; ctx.textAlign=t===0?'left':(t===xt-1?'right':'center'); ctx.fillText(y2gDate(rows[xi].date),X(xi),H-6); }
-  function path(c){
-    var pts=[]; rows.forEach(function(r,i){ var v=y2Num(r[c]); if(v!=null) pts.push([X(i),Y(v)]); }); return pts;
-  }
-  var ends=[];
+  ctx.textBaseline='alphabetic';
+  var xt=Math.min(5,Math.max(3,Math.floor(W/150)));
+  for(var t=0;t<xt;t++){var xi=Math.round(t*(n-1)/(xt-1));ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign=t===0?'left':(t===xt-1?'right':'center');ctx.fillText(y2gDate(rows[xi].date),X(xi),H-6);}
+  function path(c){var pts=[];rows.forEach(function(r,i){var v=y2Num(r[c]);if(v!=null)pts.push([X(i),Y(v)]);});return pts;}
   list.forEach(function(c){
-    var pts=path(c); if(pts.length<2) return;
-    var col=Y2G_COLORS[c];
-    if(!multi){
-      var g=ctx.createLinearGradient(0,T,0,T+ph); g.addColorStop(0,col+'40'); g.addColorStop(1,col+'00');
-      ctx.beginPath(); ctx.moveTo(pts[0][0],T+ph); pts.forEach(function(p){ctx.lineTo(p[0],p[1]);}); ctx.lineTo(pts[pts.length-1][0],T+ph); ctx.closePath(); ctx.fillStyle=g; ctx.fill();
-    }
-    ctx.strokeStyle=col; ctx.lineWidth=multi?3.2:3.6; ctx.lineJoin='round'; ctx.lineCap='round';
-    ctx.beginPath(); pts.forEach(function(p,i){ if(i===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); }); ctx.stroke();
-    var lp=pts[pts.length-1];
-    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(lp[0],lp[1],4.5,0,Math.PI*2); ctx.fill();
-    ends.push({c:c,y:lp[1],x:lp[0]});
+    var pts=path(c);if(pts.length<2)return;var col=Y2G_COLORS[c];
+    if(!multi){var g=ctx.createLinearGradient(0,T,0,T+ph);g.addColorStop(0,col+'32');g.addColorStop(1,col+'00');ctx.beginPath();ctx.moveTo(pts[0][0],T+ph);pts.forEach(function(p){ctx.lineTo(p[0],p[1]);});ctx.lineTo(pts[pts.length-1][0],T+ph);ctx.closePath();ctx.fillStyle=g;ctx.fill();}
+    ctx.strokeStyle=col;ctx.lineWidth=multi?2.25:2.8;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();pts.forEach(function(p,i){if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);});ctx.stroke();
   });
-  if(multi){
-    ends.sort(function(a,b){return a.y-b.y;}); for(var e=1;e<ends.length;e++){ if(ends[e].y-ends[e-1].y<12) ends[e].y=ends[e-1].y+12; }
-    ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.font="700 11px 'IBM Plex Mono',monospace";
-    ends.forEach(function(p){ ctx.fillStyle=Y2G_COLORS[p.c]; ctx.fillText(p.c,W-R+9,p.y); });
-  }
-  Y2G_GEO={L:L,pw:pw,n:n};
-  if(hoverIdx!=null && hoverIdx>=0 && hoverIdx<n){
-    var hx=X(hoverIdx), r0=rows[hoverIdx];
-    ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(hx,T); ctx.lineTo(hx,T+ph); ctx.stroke();
-    var items=[];
-    list.forEach(function(c){ var v=y2Num(r0[c]); if(v==null) return; ctx.fillStyle=Y2G_COLORS[c]; ctx.strokeStyle='#121216'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(hx,Y(v),5,0,Math.PI*2); ctx.fill(); ctx.stroke(); items.push({c:c,v:v}); });
-    items.sort(function(a,b){return b.v-a.v;});
-    var dayChg='';
-    if(!multi && hoverIdx>0){ var pv=null; for(var k=hoverIdx-1;k>=0;k--){ var q=y2Num(rows[k][list[0]]); if(q!=null){pv=q;break;} } if(pv!=null&&items.length){ var d=(items[0].v-pv)*100; dayChg='<div class="y2g-tip-r"><span>Day change</span><b style="color:'+(d>=0?'var(--bullish-strong)':'var(--bearish-strong)')+'">'+(d>0?'+':'')+d.toFixed(1)+' bp</b></div>'; } }
-    tip.innerHTML='<div class="y2g-tip-d">'+y2gDate(r0.date)+'</div>'+items.map(function(it){ return '<div class="y2g-tip-r"><span><i style="background:'+Y2G_COLORS[it.c]+'"></i>'+it.c+'</span><b>'+it.v.toFixed(3)+'%</b></div>'; }).join('')+dayChg;
-    tip.style.display='block';
-    var tw=tip.offsetWidth, left=hx+14; if(left+tw>W-4) left=hx-tw-14; tip.style.left=Math.max(4,left)+'px'; tip.style.top='8px';
-  } else if(tip){ tip.style.display='none'; }
+  Y2G_GEO={L:L,pw:pw,n:n,lo:lo,hi:hi,T:T,B:B};
+  if(hoverIdx!=null&&hoverIdx>=0&&hoverIdx<n){
+    var hx=X(hoverIdx),r0=rows[hoverIdx];ctx.strokeStyle='rgba(255,255,255,.30)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(hx,T);ctx.lineTo(hx,T+ph);ctx.stroke();
+    var items=[];list.forEach(function(c){var v=y2Num(r0[c]);if(v==null)return;ctx.fillStyle=Y2G_COLORS[c];ctx.strokeStyle='#121216';ctx.lineWidth=2;ctx.beginPath();ctx.arc(hx,Y(v),4.5,0,Math.PI*2);ctx.fill();ctx.stroke();items.push({c:c,v:v});});
+    items.sort(function(a,b){return b.v-a.v;});var dayChg='';
+    if(!multi&&hoverIdx>0){var pv=null;for(var k=hoverIdx-1;k>=0;k--){var q=y2Num(rows[k][list[0]]);if(q!=null){pv=q;break;}}if(pv!=null&&items.length){var d=(items[0].v-pv)*100;dayChg='<div class="y2g-tip-r"><span>Day change</span><b style="color:'+(d>=0?'var(--bullish-strong)':'var(--bearish-strong)')+'">'+(d>0?'+':'')+d.toFixed(1)+' bp</b></div>';}}
+    tip.innerHTML='<div class="y2g-tip-d">'+y2gDate(r0.date)+'</div>'+items.map(function(it){return '<div class="y2g-tip-r"><span><i style="background:'+Y2G_COLORS[it.c]+'"></i>'+it.c+'</span><b>'+it.v.toFixed(3)+'%</b></div>';}).join('')+dayChg;
+    tip.style.display='block';var tw=tip.offsetWidth,left=hx+12;if(left+tw>W-4)left=hx-tw-12;tip.style.left=Math.max(4,left)+'px';tip.style.top='8px';
+  }else if(tip){tip.style.display='none';}
 }
 function y2gInit(){
   var card=document.getElementById('y2gCard'); if(!card) return;
@@ -8339,7 +8408,7 @@ function y2gInit(){
     }).join('');
   }
   var tabs=tabHtml();
-  card.innerHTML='<div class="y2g-inner"><div class="y2g-head"><div><h3>Global Yields</h3><div class="hist-spread-sub">2Y yield'+(first?' · since '+y2gDate(first):'')+'</div></div><div class="y2g-stats" id="y2gStats"></div></div>'+
+  card.innerHTML='<div class="y2g-inner"><div class="y2g-head"><div><h3>Global Yields</h3><div class="hist-spread-sub">2Y yield'+(first?' · since '+y2gDate(first):'')+'</div></div><div class="y2g-head-right"><div class="y2g-stats" id="y2gStats"></div></div></div>'+
     '<div class="y2g-tabs" id="y2gTabs">'+tabs+'</div>'+
     '<div class="y2g-chart"><canvas id="y2gCanvas"></canvas><div id="y2gEmpty" class="y2g-empty"></div><div id="y2gTip" class="y2g-tip"></div></div></div>';
   var tabsEl=card.querySelector('#y2gTabs');
@@ -8381,12 +8450,13 @@ function renderYield2Y(){
     '<div class="y2-actions"><button class="y2-btn primary" id="y2SaveCurrent">Update snapshot</button><button class="y2-btn" id="y2SaveAsClose">Record daily close</button><button class="y2-btn" id="y2Export">Export CSV</button><button class="y2-btn" id="y2Demo" style="display:none">Load demo</button><label class="y2-btn" style="display:inline-block;cursor:pointer;">Import CSV<input id="y2Import" type="file" accept=".csv,text/csv" style="display:none"></label></div>'+
     '<div class="y2-note">The current inputs are temporary. The dashboard calculates the 21-day SMA from the historical daily closes; you never enter the SMA. “Save as daily close” adds the current values to the historical series. If you only update weekly, the score uses the historical series available to it; complete daily history is still required for exact 1-week/1-month components.</div>'+'</div>'
     ):'')+
-    '<div class="card"><h3>Rate Differential Monitor</h3><div class="table-scroll"><table class="y2-score-table"><thead><tr><th>Currency</th><th>2Y Score</th><th>Direction</th><th>2Y vs USD</th><th>Spread</th></tr></thead><tbody id="y2Rows"></tbody></table></div></div><div class="card y2g-card" id="y2gCard"></div></div>'+
+    '</div>'+
+    '<div class="y2-chart-row"><div class="card y2g-card" id="y2gCard"></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div class="hist-spread-title"><div><h3>Bond Yield Spread</h3><div class="hist-spread-sub">Base 2Y yield − quote 2Y yield · basis points</div></div><div class="hist-spread-live"><div><div class="hist-live-label">Current spread</div><div id="histSpreadLiveValue" class="hist-live-value">—</div><div id="histSpreadLiveMeta" class="hist-live-meta">Select a pair</div><div id="histSpreadLiveChange" class="hist-live-change"></div></div></div></div>'+
     '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
-    '</div>';
+    '</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){
     YIELD_ENGINE.current[this.dataset.y2Current]=y2Num(this.value);
@@ -8614,7 +8684,7 @@ function histSpreadDraw(animate){
     ctx.beginPath();
     ctx.rect(pad.l,0,Math.max(0,pw*reveal),H);
     ctx.clip();
-    ctx.strokeStyle=lineColor;ctx.lineWidth=compact?1.2:1.3;ctx.lineJoin="miter";ctx.lineCap="butt";
+    ctx.strokeStyle=lineColor;ctx.lineWidth=compact?2.4:2.8;ctx.lineJoin="round";ctx.lineCap="round";
     ctx.beginPath();
     rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
     ctx.stroke();
@@ -16225,5 +16295,121 @@ twpShowNameGateIfNeeded();
 @media(max-width:700px){
   .hist-spread-expand-panel{padding:36px 10px 12px;}
   .hist-spread-chart.hist-spread-chart-expanded{height:55vh!important;min-height:300px!important;}
+}
+</style>
+<style id="v77-yield-chart-layout-repair">
+/* V77 — repair the historical-chart row. Keep both charts as ordinary,
+   bounded flex/grid cards. No absolute positioning and no viewport-driven
+   height on either canvas. */
+#tab-yield2y .y2-chart-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:12px!important;
+  width:100%!important;
+  height:380px!important;
+  min-height:380px!important;
+  max-height:380px!important;
+  align-items:stretch!important;
+  margin-top:10px!important;
+}
+#tab-yield2y .y2-chart-row>.card{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  height:380px!important;
+  min-height:380px!important;
+  max-height:380px!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#tab-yield2y .y2-chart-row .y2g-card{
+  padding:0!important;
+}
+#tab-yield2y .y2g-inner{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  box-sizing:border-box!important;
+  padding:13px 14px 12px!important;
+}
+#tab-yield2y .y2g-head{
+  flex:0 0 auto!important;
+  min-height:0!important;
+}
+#tab-yield2y .y2g-tabs{
+  flex:0 0 auto!important;
+}
+#tab-yield2y .y2g-chart{
+  position:relative!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin-top:8px!important;
+  overflow:hidden!important;
+}
+#tab-yield2y .y2g-chart canvas{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+}
+#tab-yield2y .hist-spread-card{
+  margin:0!important;
+  padding:13px 14px 12px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  box-sizing:border-box!important;
+}
+#tab-yield2y .hist-spread-head{
+  flex:0 0 auto!important;
+  min-height:0!important;
+  margin-bottom:8px!important;
+}
+#tab-yield2y .hist-spread-chart{
+  position:relative!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin-top:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  border:1px solid var(--border)!important;
+  border-radius:7px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 72%),var(--panel)!important;
+}
+#tab-yield2y .hist-spread-chart canvas{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+}
+#tab-yield2y .hist-spread-stats{display:none!important;}
+@media(max-width:1050px){
+  #tab-yield2y .y2-chart-row{
+    grid-template-columns:1fr!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+  #tab-yield2y .y2-chart-row>.card{
+    height:360px!important;
+    min-height:360px!important;
+    max-height:360px!important;
+  }
+}
+@media(max-width:700px){
+  #tab-yield2y .y2-chart-row>.card{
+    height:330px!important;
+    min-height:330px!important;
+    max-height:330px!important;
+  }
 }
 </style>
