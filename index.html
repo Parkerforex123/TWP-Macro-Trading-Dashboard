@@ -4645,6 +4645,13 @@ body.editing .ov-pro-live{display:block!important;}
   #tab-yield2y .y2-chart-row .y2g-card,#tab-yield2y .y2-chart-row .hist-spread-card{height:330px!important;min-height:330px!important;}
 }
 </style>
+
+<style id="yield-final-ui-fix">
+#tab-yield2y .y2g-head h3{color:#fff!important;font-weight:800!important;}
+#tab-yield2y .hist-spread-note{display:block!important;margin-top:7px!important;color:rgba(255,255,255,.82)!important;font-size:11.5px!important;font-weight:700!important;line-height:1.35!important;}
+#tab-yield2y .y2g-stats div:last-child b{font-weight:800!important;}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -8390,7 +8397,18 @@ function y2gStats(){
   if(arr.length<2){ el.innerHTML=''; return; }
   var h=arr[0], l=arr[arr.length-1], sp=(h.v-l.v)*100;
   if(arr.length===2){
-    el.innerHTML='<div><span>'+h.c+'</span><b class="big" style="color:'+Y2G_COLORS[h.c]+'">'+h.v.toFixed(3)+'%</b></div><div><span>'+l.c+'</span><b class="big" style="color:'+Y2G_COLORS[l.c]+'">'+l.v.toFixed(3)+'%</b></div><div><span>'+h.c+' \u2212 '+l.c+'</span><b class="big">'+sp.toFixed(1)+' bp</b></div>';
+    var firstH=null, firstL=null;
+    for(var ri=0;ri<rows.length;ri++){
+      var hv=y2Num(rows[ri][h.c]), lv=y2Num(rows[ri][l.c]);
+      if(hv!=null && lv!=null){ firstH=hv; firstL=lv; break; }
+    }
+    var currentGap=sp, startGap=(firstH==null||firstL==null)?null:Math.abs((firstH-firstL)*100);
+    var gapMove=startGap==null?null:currentGap-startGap;
+    var gapTrend=gapMove==null?'—':(Math.abs(gapMove)<0.05?'Flat':(gapMove>0?'Widening':'Narrowing'));
+    var gapCls=gapMove==null||Math.abs(gapMove)<0.05?'flat':(gapMove>0?'up':'down');
+    var gapMoveText=gapMove==null?'':(gapMove>0?'+':'')+gapMove.toFixed(1)+' bp';
+    var rangeLabel=(Y2G_RANGES.find(function(r){return r[0]===Y2G_RANGE;})||['',''])[1];
+    el.innerHTML='<div><span>'+h.c+'</span><b class="big" style="color:'+Y2G_COLORS[h.c]+'">'+h.v.toFixed(3)+'%</b></div><div><span>'+l.c+'</span><b class="big" style="color:'+Y2G_COLORS[l.c]+'">'+l.v.toFixed(3)+'%</b></div><div><span>Gap</span><b class="big">'+currentGap.toFixed(1)+' bp</b></div><div><span>Gap · '+rangeLabel+'</span><b class="'+gapCls+'">'+gapTrend+(gapMoveText?' '+gapMoveText:'')+'</b></div>';
   } else {
     el.innerHTML='<div><span>Highest 2Y</span><b style="color:'+Y2G_COLORS[h.c]+'">'+h.c+' '+h.v.toFixed(3)+'%</b></div><div><span>Lowest 2Y</span><b style="color:'+Y2G_COLORS[l.c]+'">'+l.c+' '+l.v.toFixed(3)+'%</b></div><div><span>Spread, high to low</span><b>'+sp.toFixed(0)+' bp</b></div>';
   }
@@ -8478,7 +8496,22 @@ function y2gDraw(hoverIdx){
   var pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
   var L=change?56:46,R=(multi?(change?100:88):10),T=10,B=25,pw=Math.max(40,W-L-R),ph=Math.max(40,H-T-B);
   function X(i){return L+(i/(n-1))*pw;}
-  function Y(v){return T+(1-(v-lo)/(hi-lo))*ph;}
+  /* In Yield mode, large absolute-rate gaps can flatten the lower-yield
+     currency against the floor (e.g. USD ~4.9% versus CHF ~0.25%). Keep the
+     underlying yields and tooltip values unchanged, but use an adaptive visual
+     scale when the level gap is large. This gives low-yield lines more vertical
+     room without changing the actual yield data or spread math. */
+  var levelVisualPower=1;
+  if(!change && multi && lo>=0 && hi>0){
+    var levelRatio=hi/Math.max(lo,0.05);
+    if(levelRatio>=8) levelVisualPower=0.55;
+    else if(levelRatio>=3) levelVisualPower=0.65;
+  }
+  function Y(v){
+    var nrm=(v-lo)/(hi-lo);
+    if(!change && multi && levelVisualPower!==1) nrm=Math.pow(Math.max(0,Math.min(1,nrm)),levelVisualPower);
+    return T+(1-nrm)*ph;
+  }
   ctx.font="11px Inter, system-ui, sans-serif"; ctx.textBaseline='middle';
   var raw=(hi-lo)/5, mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)), nm=raw/mag;
   var step=(nm<=1?1:(nm<=2?2:(nm<=2.5?2.5:(nm<=5?5:10))))*mag;
@@ -8491,6 +8524,12 @@ function y2gDraw(hoverIdx){
     ctx.fillText(change?(isZero?'0':((tv>0?'+':'')+Math.round(tv)+' bp')):tv.toFixed(step<1?2:1)+'%',L-7,ty);
   }
   ctx.textBaseline='alphabetic';
+  if(!change && multi && levelVisualPower!==1){
+    ctx.fillStyle='rgba(255,255,255,.38)';
+    ctx.textAlign='right';
+    ctx.font='10px Inter, system-ui, sans-serif';
+    ctx.fillText('Adaptive visual scale',W-R,11);
+  }
   var xt=Math.min(5,Math.max(3,Math.floor(W/150)));
   for(var t=0;t<xt;t++){var xi=Math.round(t*(n-1)/(xt-1));ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign=t===0?'left':(t===xt-1?'right':'center');ctx.fillText(y2gDate(rows[xi].date),X(xi),H-6);}
   function path(c){var pts=[];ser[c].forEach(function(v,i){if(v!=null)pts.push([X(i),Y(v)]);});return pts;}
@@ -8624,6 +8663,7 @@ function renderYield2Y(){
     '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63">3M</button><button data-range="126" class="active">6M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
+    '<div id="histSpreadRead" class="hist-spread-note"></div>'+
     '</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){
@@ -8932,6 +8972,19 @@ function histSpreadDraw(animate){
     liveChange.innerHTML="Change <span>"+histSpreadFmt(periodChange)+"</span>";
     var __chgStyles=getComputedStyle(document.body);
     liveChange.style.color=periodChange>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#22c98b"):(periodChange<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#f04455"):"var(--text-dim)");
+  }
+  var readEl=document.getElementById("histSpreadRead");
+  if(readEl){
+    var pairRead=p?histSpreadLabel(code):code;
+    var baseC=p?p[1]:"", quoteC=p?p[2]:"";
+    var moveDir=periodChange==null?"flat":(Math.abs(periodChange)<0.05?"flat":((current>=0?periodChange>0:periodChange<0)?"widening":"narrowing"));
+    if(current>0){
+      readEl.textContent=baseC+" advantage "+moveDir+" — "+(moveDir==="widening"?"tailwind for "+baseC+"/"+quoteC:moveDir==="narrowing"?"headwind for "+baseC+"/"+quoteC:"no clear rate-differential change");
+    } else if(current<0){
+      readEl.textContent=quoteC+" advantage "+moveDir+" — "+(moveDir==="widening"?"headwind for "+baseC+"/"+quoteC:moveDir==="narrowing"?"tailwind for "+baseC+"/"+quoteC:"no clear rate-differential change");
+    } else {
+      readEl.textContent="Yield spread near zero — no clear rate advantage";
+    }
   }
   }
   if(stats) stats.innerHTML="";
