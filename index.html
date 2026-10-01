@@ -7923,7 +7923,7 @@ function switchTab(tab){
   else if(tab==="raw"){ renderRaw(true); }
   else if(tab==="detail"){ renderDetail(); }
   else if(tab==="scanner"){ renderScanner(true); }
-  else if(tab==="yield2y"){ renderYield2Y(); }
+  else if(tab==="yield2y"){ Y2G_PLAY=true; window.__y2NavAnim=true; renderYield2Y(); }
   else if(tab==="risk"){ renderRiskSentiment(); }
   else if(tab==="cot"){ renderCotRegime(true); }
   if(tab==="yield2y" && typeof histSpreadDraw==="function"){
@@ -8301,10 +8301,43 @@ function y2LoadDemo(){
 }
 /* ===== Global Yields: outright 2Y per currency, full stored history ===== */
 var Y2G_COLORS={USD:'#f2f3f5',EUR:'#4f8cff',GBP:'#b388ff',AUD:'#fa660f',NZD:'#22c98b',CAD:'#f04455',JPY:'#ffd166',CHF:'#ff9ecb'};
-var Y2G_SEL={USD:1,EUR:1,GBP:1,AUD:1,NZD:1,CAD:1,JPY:1,CHF:1}, Y2G_GEO=null, Y2G_BOUND=false;
+var Y2G_SEL={USD:1,EUR:0,GBP:0,AUD:0,NZD:0,CAD:0,JPY:0,CHF:0}, Y2G_GEO=null, Y2G_BOUND=false;
+/* Defaults to USD alone on every fresh load. Y2G_MODE 'change' rebases every line to 0 at the start of the
+   history (so 3-8 stacked currencies stay readable instead of being squashed flat by the 0.5%-4.9% level gap);
+   'level' is the raw yield view. Y2G_REVEAL (0..1) drives the draw-in sweep; Y2G_PLAY arms it for the next visible render. */
+var Y2G_MODE='change', Y2G_REVEAL=1, Y2G_PLAY=true, Y2G_RAF=null, Y2G_RANGE=182;
+var Y2G_RANGES=[[30,'1M'],[90,'3M'],[182,'6M'],[365,'1Y']];
+function y2gBp(v){ var r=Math.round(v*10)/10; return (r>0?'+':'')+r.toFixed(1)+' bp'; }
+function y2gPlay(){
+  if(Y2G_RAF){ cancelAnimationFrame(Y2G_RAF); Y2G_RAF=null; }
+  Y2G_REVEAL=0; var t0=null; y2gDraw();
+  Y2G_RAF=requestAnimationFrame(function step(ts){
+    if(t0==null) t0=ts; var t=Math.min(1,(ts-t0)/950); Y2G_REVEAL=1-Math.pow(1-t,3); y2gDraw();
+    if(t<1) Y2G_RAF=requestAnimationFrame(step); else { Y2G_RAF=null; Y2G_REVEAL=1; }
+  });
+}
+function y2gRefreshRanges(){
+  var el=document.getElementById('y2gRanges'); if(!el) return;
+  el.innerHTML=Y2G_RANGES.map(function(r){ return '<button type="button" data-days="'+r[0]+'" class="'+(r[0]===Y2G_RANGE?'active':'')+'">'+r[1]+'</button>'; }).join('');
+  var bs=el.querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){ bs[i].onclick=function(){ Y2G_RANGE=Number(this.dataset.days)||182; y2gRefreshRanges(); y2gStats(); y2gPlay(); }; }
+}
+function y2gRefreshMode(){
+  var el=document.getElementById('y2gMode'); if(!el) return;
+  if(y2gSelList().length<2){ el.innerHTML=''; return; }
+  el.innerHTML='<button type="button" data-mode="change" title="Every line starts at 0 so you can compare the moves" class="y2g-mode-btn'+(Y2G_MODE==='change'?' on':'')+'">Change</button><button type="button" data-mode="level" title="Actual 2Y yield levels" class="y2g-mode-btn'+(Y2G_MODE==='level'?' on':'')+'">Yield</button>';
+  var bs=el.querySelectorAll('.y2g-mode-btn');
+  for(var i=0;i<bs.length;i++){ bs[i].onclick=function(){ Y2G_MODE=this.dataset.mode; y2gRefreshMode(); y2gStats(); y2gPlay(); }; }
+}
 function y2gSelList(){ return Y2_CCY_ORDER.filter(function(c){return Y2G_SEL[c];}); }
 function y2gAllOn(){ return y2gSelList().length===Y2_CCY_ORDER.length; }
 function y2gRows(){
+  var all=y2gRowsAll(); if(all.length<2) return all;
+  var lastD=all[all.length-1].date, cut=new Date(Date.parse(lastD+'T00:00:00Z')-Y2G_RANGE*864e5).toISOString().slice(0,10);
+  var w=all.filter(function(r){return r.date>=cut;});
+  return w.length>=2?w:all;
+}
+function y2gRowsAll(){
   var rows=y2SortedHistory().slice();
   var cd=YIELD_ENGINE.currentDate, cur=YIELD_ENGINE.current||{}, live={date:cd}, has=false;
   Y2_CCY_ORDER.forEach(function(c){var n=y2Num(cur[c]); if(n!=null){live[c]=n; has=true;}});
@@ -8336,14 +8369,22 @@ function y2gChg(x){
 function y2gLast(rows,c){ for(var i=rows.length-1;i>=0;i--){ var n=y2Num(rows[i][c]); if(n!=null) return n; } return null; }
 function y2gStats(){
   var el=document.getElementById('y2gStats'); if(!el) return;
-  var rows=y2gRows(), sel=y2gSelList();
+  var rows=y2gRows(), allRows=y2gRowsAll(), sel=y2gSelList();
   if(sel.length===1){
     var c=sel[0], cur=null, hi=null, lo=null;
     rows.forEach(function(r){ var n=y2Num(r[c]); if(n==null) return; cur=n; if(hi==null||n>hi) hi=n; if(lo==null||n<lo) lo=n; });
     el.innerHTML='<div><span>Current</span><b class="big" style="color:'+Y2G_COLORS[c]+'">'+(cur==null?'\u2014':cur.toFixed(3)+'%')+'</b></div>'+
-      '<div><span>1D</span>'+y2gChg(y2gDelta(rows,c,0))+'</div><div><span>1W</span>'+y2gChg(y2gDelta(rows,c,7))+'</div><div><span>1M</span>'+y2gChg(y2gDelta(rows,c,30))+'</div>'+
+      '<div><span>1D</span>'+y2gChg(y2gDelta(allRows,c,0))+'</div><div><span>1W</span>'+y2gChg(y2gDelta(allRows,c,7))+'</div><div><span>1M</span>'+y2gChg(y2gDelta(allRows,c,30))+'</div>'+
       '<div><span>High</span><b>'+(hi==null?'\u2014':hi.toFixed(3)+'%')+'</b></div><div><span>Low</span><b>'+(lo==null?'\u2014':lo.toFixed(3)+'%')+'</b></div>';
     return;
+  }
+  if(sel.length>=3 && Y2G_MODE==='change'){
+    var mv=sel.map(function(c){ var f=null,l=null; rows.forEach(function(r){ var n=y2Num(r[c]); if(n==null) return; if(f==null) f=n; l=n; }); return {c:c,d:(f==null||l==null)?null:(l-f)*100}; }).filter(function(x){return x.d!=null;}).sort(function(a,b){return b.d-a.d;});
+    if(mv.length>=2){
+      var up=mv[0], dn=mv[mv.length-1];
+      el.innerHTML='<div><span>Top mover</span><b class="'+(up.d>=0?'up':'down')+'">'+up.c+' '+y2gBp(up.d)+'</b></div><div><span>Laggard</span><b class="'+(dn.d>=0?'up':'down')+'">'+dn.c+' '+y2gBp(dn.d)+'</b></div><div><span>Gap</span><b>'+Math.round(up.d-dn.d)+' bp</b></div>';
+      return;
+    }
   }
   var arr=sel.map(function(c){return {c:c,v:y2gLast(rows,c)};}).filter(function(x){return x.v!=null;}).sort(function(a,b){return b.v-a.v;});
   if(arr.length<2){ el.innerHTML=''; return; }
@@ -8421,48 +8462,76 @@ function y2gDraw(hoverIdx){
   var list=y2gSelList(), multi=list.length>1;
   if(Y2G_SPLIT && multi){ Y2G_GEO=null; if(tip) tip.style.display='none'; y2gDrawSplit(ctx,W,H,rows,list,hoverIdx); return; }
   Y2G_SGEO=null;
+  var change=multi&&Y2G_MODE==='change';
+  var reveal=(typeof Y2G_REVEAL==='number')?Y2G_REVEAL:1;
+  var n=rows.length, ser={};
+  list.forEach(function(c){
+    var b=null; for(var k=0;k<n;k++){ var q0=y2Num(rows[k][c]); if(q0!=null){ b=q0; break; } }
+    ser[c]=rows.map(function(r){ var v=y2Num(r[c]); if(v==null||b==null) return null; return change?(v-b)*100:v; });
+  });
+  function lastOf(c){ for(var k=n-1;k>=0;k--){ if(ser[c][k]!=null) return ser[c][k]; } return null; }
   var lo=Infinity, hi=-Infinity;
-  rows.forEach(function(r){ list.forEach(function(c){ var v=y2Num(r[c]); if(v==null) return; if(v<lo) lo=v; if(v>hi) hi=v; }); });
+  list.forEach(function(c){ ser[c].forEach(function(v){ if(v==null) return; if(v<lo) lo=v; if(v>hi) hi=v; }); });
   if(!isFinite(lo)){lo=0;hi=1;}
-  if(hi-lo<0.12){var m=(hi+lo)/2;lo=m-0.06;hi=m+0.06;}
+  var minSpan=change?12:0.12;
+  if(hi-lo<minSpan){var m=(hi+lo)/2;lo=m-minSpan/2;hi=m+minSpan/2;}
   var pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
-  var L=46,R=(multi?88:10),T=10,B=25,pw=Math.max(40,W-L-R),ph=Math.max(40,H-T-B),n=rows.length;
+  var L=change?56:46,R=(multi?(change?100:88):10),T=10,B=25,pw=Math.max(40,W-L-R),ph=Math.max(40,H-T-B);
   function X(i){return L+(i/(n-1))*pw;}
   function Y(v){return T+(1-(v-lo)/(hi-lo))*ph;}
   ctx.font="11px Inter, system-ui, sans-serif"; ctx.textBaseline='middle';
   var raw=(hi-lo)/5, mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)), nm=raw/mag;
   var step=(nm<=1?1:(nm<=2?2:(nm<=2.5?2.5:(nm<=5?5:10))))*mag;
-  if(multi){ var cand=[0.25,0.5,1,2,5]; for(var ci=0;ci<cand.length;ci++){ step=cand[ci]; if((hi-lo)/step<=11) break; } }
+  if(change){ var cb=[5,10,20,25,50,100,200,250,500]; for(var cj=0;cj<cb.length;cj++){ step=cb[cj]; if((hi-lo)/step<=8) break; } }
+  else if(multi){ var cand=[0.25,0.5,1,2,5]; for(var ci=0;ci<cand.length;ci++){ step=cand[ci]; if((hi-lo)/step<=11) break; } }
   for(var tv=Math.ceil(lo/step)*step;tv<=hi+1e-9;tv+=step){
-    var ty=Y(tv); ctx.strokeStyle='rgba(255,255,255,.09)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,ty);ctx.lineTo(W-R,ty);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign='right';ctx.fillText(tv.toFixed(step<1?2:1)+'%',L-7,ty);
+    var ty=Y(tv), isZero=change&&Math.abs(tv)<1e-9;
+    ctx.strokeStyle=isZero?'rgba(255,255,255,.28)':'rgba(255,255,255,.09)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,ty);ctx.lineTo(W-R,ty);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign='right';
+    ctx.fillText(change?(isZero?'0':((tv>0?'+':'')+Math.round(tv)+' bp')):tv.toFixed(step<1?2:1)+'%',L-7,ty);
   }
   ctx.textBaseline='alphabetic';
   var xt=Math.min(5,Math.max(3,Math.floor(W/150)));
   for(var t=0;t<xt;t++){var xi=Math.round(t*(n-1)/(xt-1));ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign=t===0?'left':(t===xt-1?'right':'center');ctx.fillText(y2gDate(rows[xi].date),X(xi),H-6);}
-  function path(c){var pts=[];rows.forEach(function(r,i){var v=y2Num(r[c]);if(v!=null)pts.push([X(i),Y(v)]);});return pts;}
+  function path(c){var pts=[];ser[c].forEach(function(v,i){if(v!=null)pts.push([X(i),Y(v)]);});return pts;}
+  // point on the line at the current sweep position, so a dot rides the head of each line as it draws
+  function headPt(pts){
+    var hx=L+pw*reveal, lastP=pts[pts.length-1];
+    if(hx>=lastP[0]-0.5) return lastP; if(hx<=pts[0][0]) return null;
+    for(var k=1;k<pts.length;k++){ if(pts[k][0]>=hx){ var a=pts[k-1],b=pts[k],tt=(hx-a[0])/((b[0]-a[0])||1); return [hx,a[1]+(b[1]-a[1])*tt]; } }
+    return lastP;
+  }
+  var paths={};
+  ctx.save(); ctx.beginPath(); ctx.rect(0,0,L+pw*reveal+(reveal>=0.999?W:0),H); ctx.clip();
   list.forEach(function(c){
-    var pts=path(c);if(pts.length<2)return;var col=Y2G_COLORS[c];
-    if(!multi){var g=ctx.createLinearGradient(0,T,0,T+ph);g.addColorStop(0,col+'32');g.addColorStop(1,col+'00');ctx.beginPath();ctx.moveTo(pts[0][0],T+ph);pts.forEach(function(p){ctx.lineTo(p[0],p[1]);});ctx.lineTo(pts[pts.length-1][0],T+ph);ctx.closePath();ctx.fillStyle=g;ctx.fill();}
+    var pts=path(c); paths[c]=pts; if(pts.length<2)return;var col=Y2G_COLORS[c];
+    var g=ctx.createLinearGradient(0,T,0,T+ph);g.addColorStop(0,col+(multi?'1c':'26'));g.addColorStop(1,col+'00');ctx.beginPath();ctx.moveTo(pts[0][0],T+ph);pts.forEach(function(p){ctx.lineTo(p[0],p[1]);});ctx.lineTo(pts[pts.length-1][0],T+ph);ctx.closePath();ctx.fillStyle=g;ctx.fill();
     ctx.strokeStyle=col;ctx.lineWidth=multi?2.25:2.8;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();pts.forEach(function(p,i){if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);});ctx.stroke();
   });
-  if(multi){
-    var ends=[]; list.forEach(function(c){ var pp=path(c); if(pp.length){ var q=pp[pp.length-1]; ends.push({c:c,x:q[0],y:q[1],ly:q[1],v:y2gLast(rows,c)}); } });
+  ctx.restore();
+  // dot at the head of every line: rides the sweep, then sits on today's value with a soft halo
+  list.forEach(function(c){
+    var pts=paths[c]; if(!pts||pts.length<2) return; var hp=headPt(pts); if(!hp) return;
+    ctx.fillStyle=Y2G_COLORS[c]+'38'; ctx.beginPath(); ctx.arc(hp[0],hp[1],multi?6.5:7.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=Y2G_COLORS[c]; ctx.beginPath(); ctx.arc(hp[0],hp[1],multi?3:3.8,0,Math.PI*2); ctx.fill();
+  });
+  if(multi && reveal>=0.999){
+    var ends=[]; list.forEach(function(c){ var pp=paths[c]; if(pp&&pp.length){ var q=pp[pp.length-1]; ends.push({c:c,x:q[0],y:q[1],ly:q[1],v:lastOf(c)}); } });
     ends.sort(function(a,b){return a.y-b.y;});
     var gap=13, e;
     for(e=1;e<ends.length;e++){ if(ends[e].ly-ends[e-1].ly<gap) ends[e].ly=ends[e-1].ly+gap; }
     var maxY=T+ph+4; if(ends.length&&ends[ends.length-1].ly>maxY){ ends[ends.length-1].ly=maxY; for(e=ends.length-2;e>=0;e--){ if(ends[e+1].ly-ends[e].ly<gap) ends[e].ly=ends[e+1].ly-gap; } }
     ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.font="600 11px Inter, system-ui, sans-serif";
-    ends.forEach(function(en){ ctx.fillStyle=Y2G_COLORS[en.c]; ctx.beginPath(); ctx.arc(en.x,en.y,3,0,Math.PI*2); ctx.fill(); ctx.fillText(en.c+' '+en.v.toFixed(2)+'%',W-R+9,en.ly); });
+    ends.forEach(function(en){ ctx.fillStyle=Y2G_COLORS[en.c]; ctx.fillText(en.c+' '+(change?y2gBp(en.v):en.v.toFixed(2)+'%'),W-R+9,en.ly); });
     ctx.textBaseline='alphabetic';
   }
   Y2G_GEO={L:L,pw:pw,n:n,lo:lo,hi:hi,T:T,B:B};
   if(hoverIdx!=null&&hoverIdx>=0&&hoverIdx<n){
     var hx=X(hoverIdx),r0=rows[hoverIdx];ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(hx,T);ctx.lineTo(hx,T+ph);ctx.stroke();
-    var items=[];list.forEach(function(c){var v=y2Num(r0[c]);if(v==null)return;ctx.fillStyle=Y2G_COLORS[c];ctx.strokeStyle='#121216';ctx.lineWidth=2;ctx.beginPath();ctx.arc(hx,Y(v),4.5,0,Math.PI*2);ctx.fill();ctx.stroke();items.push({c:c,v:v});});
+    var items=[];list.forEach(function(c){var v=ser[c][hoverIdx];if(v==null)return;ctx.fillStyle=Y2G_COLORS[c];ctx.strokeStyle='#121216';ctx.lineWidth=2;ctx.beginPath();ctx.arc(hx,Y(v),4.5,0,Math.PI*2);ctx.fill();ctx.stroke();items.push({c:c,v:v,lvl:y2Num(r0[c])});});
     items.sort(function(a,b){return b.v-a.v;});var dayChg='';
     if(!multi&&hoverIdx>0){var pv=null;for(var k=hoverIdx-1;k>=0;k--){var q=y2Num(rows[k][list[0]]);if(q!=null){pv=q;break;}}if(pv!=null&&items.length){var d=(items[0].v-pv)*100;dayChg='<div class="y2g-tip-r"><span>Day change</span><b style="color:'+(d>=0?'var(--bullish-strong)':'var(--bearish-strong)')+'">'+(d>0?'+':'')+d.toFixed(1)+' bp</b></div>';}}
-    tip.innerHTML='<div class="y2g-tip-d">'+y2gDate(r0.date)+'</div>'+items.map(function(it){return '<div class="y2g-tip-r"><span><i style="background:'+Y2G_COLORS[it.c]+'"></i>'+it.c+'</span><b>'+it.v.toFixed(3)+'%</b></div>';}).join('')+dayChg;
+    tip.innerHTML='<div class="y2g-tip-d">'+y2gDate(r0.date)+'</div>'+items.map(function(it){return '<div class="y2g-tip-r"><span><i style="background:'+Y2G_COLORS[it.c]+'"></i>'+it.c+'</span><b>'+(change?y2gBp(it.v)+' · '+(it.lvl==null?'—':it.lvl.toFixed(3)+'%'):it.v.toFixed(3)+'%')+'</b></div>';}).join('')+dayChg;
     tip.style.display='block';var tw=tip.offsetWidth,left=hx+12;if(left+tw>W-4)left=hx-tw-12;tip.style.left=Math.max(4,left)+'px';tip.style.top='8px';
   }else if(tip){tip.style.display='none';}
 }
@@ -8475,7 +8544,7 @@ function y2gInit(){
     }).join('');
   }
   var tabs=tabHtml();
-  card.innerHTML='<div class="y2g-inner"><div class="y2g-head"><div><h3>Global Yields</h3><div class="hist-spread-sub">2Y yield'+(first?' · since '+y2gDate(first):'')+'</div></div><div class="y2g-head-right"><div class="y2g-stats" id="y2gStats"></div><button type="button" id="y2gExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
+  card.innerHTML='<div class="y2g-inner"><div class="y2g-head"><div><h3>Global Yields</h3><div class="y2g-sub-row"><span class="hist-spread-sub">2Y yield</span><div class="hist-range y2g-ranges" id="y2gRanges"></div></div></div><div class="y2g-head-right"><div class="y2g-mode" id="y2gMode"></div><div class="y2g-stats" id="y2gStats"></div><button type="button" id="y2gExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="y2g-tabs" id="y2gTabs">'+tabs+'</div>'+
     '<div class="y2g-chart"><canvas id="y2gCanvas"></canvas><div id="y2gEmpty" class="y2g-empty"></div><div id="y2gTip" class="y2g-tip"></div></div></div>';
   var tabsEl=card.querySelector('#y2gTabs');
@@ -8485,8 +8554,8 @@ function y2gInit(){
       var c=this.dataset.ccy;
       if(c==='ALL'){ Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=1;}); }
       else if(y2gAllOn()){ Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=0;}); Y2G_SEL[c]=1; }
-      else { Y2G_SEL[c]=Y2G_SEL[c]?0:1; if(!y2gSelList().length) Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=1;}); }
-      tabsEl.innerHTML=tabHtml(); bindTabs(); y2gStats(); y2gDraw();
+      else { Y2G_SEL[c]=Y2G_SEL[c]?0:1; if(!y2gSelList().length) Y2G_SEL[c]=1; }
+      tabsEl.innerHTML=tabHtml(); bindTabs(); y2gStats(); y2gRefreshMode(); y2gPlay();
     }; }
   }
   bindTabs();
@@ -8505,8 +8574,9 @@ function y2gInit(){
   chart.addEventListener('touchmove',function(ev){ if(ev.touches&&ev.touches[0]) y2gDraw(idxFrom(ev.touches[0].clientX)); },{passive:true});
   chart.addEventListener('touchend',function(){ y2gDraw(); });
   if(!Y2G_BOUND){ Y2G_BOUND=true; window.addEventListener('resize',function(){ if(document.getElementById('y2gCanvas')) y2gDraw(); }); }
-  y2gStats();
+  y2gStats(); y2gRefreshMode(); y2gRefreshRanges();
   var xb=card.querySelector('#y2gExpandBtn'); if(xb) xb.onclick=function(){ y2gOpenExpand(card); };
+  if(Y2G_PLAY && card.offsetWidth>0){ Y2G_PLAY=false; y2gPlay(); }
   setTimeout(y2gDraw,0); setTimeout(y2gDraw,250);
 }
 function y2gOpenExpand(card){
@@ -8551,7 +8621,7 @@ function renderYield2Y(){
     '</div>'+
     '<div class="y2-chart-row"><div class="card y2g-card" id="y2gCard"></div>'+
     '<div class="card hist-spread-card"><div class="hist-spread-head"><div class="hist-spread-title"><div><h3>Bond Yield Spread</h3><div class="hist-spread-sub">Base 2Y yield − quote 2Y yield · basis points</div></div><div class="hist-spread-live"><div><div class="hist-live-label">Current spread</div><div id="histSpreadLiveValue" class="hist-live-value">—</div><div id="histSpreadLiveMeta" class="hist-live-meta">Select a pair</div><div id="histSpreadLiveChange" class="hist-live-change"></div></div></div></div>'+
-    '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63" class="active">3M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
+    '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63">3M</button><button data-range="126" class="active">6M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
     '</div></div>';
@@ -8653,7 +8723,7 @@ for(var hpi=0;hpi<CCY_ORDER.length;hpi++){
     HIST_SPREAD_PAIRS.push([CCY_ORDER[hpi]+CCY_ORDER[hpj],CCY_ORDER[hpi],CCY_ORDER[hpj]]);
   }
 }
-var HIST_SPREAD_RANGE = 63;
+var HIST_SPREAD_RANGE = 126;
 var HIST_SPREAD_ACTIVE = "EURUSD";
 var HIST_SPREAD_ANIM_ID = null;
 var COT_CHART_ANIM_ID = null;
@@ -8784,6 +8854,10 @@ function histSpreadDraw(animate){
     ctx.beginPath();
     ctx.rect(pad.l,0,Math.max(0,pw*reveal),H);
     ctx.clip();
+    var areaG=ctx.createLinearGradient(0,pad.t,0,pad.t+ph); areaG.addColorStop(0,lineColor+"26"); areaG.addColorStop(1,lineColor+"00");
+    ctx.beginPath(); ctx.moveTo(X(0),pad.t+ph);
+    rows.forEach(function(r,i){ ctx.lineTo(X(i),Y(r.spread)); });
+    ctx.lineTo(X(rows.length-1),pad.t+ph); ctx.closePath(); ctx.fillStyle=areaG; ctx.fill();
     ctx.strokeStyle=lineColor;ctx.lineWidth=compact?2.4:2.8;ctx.lineJoin="round";ctx.lineCap="round";
     ctx.beginPath();
     rows.forEach(function(r,i){var xx=X(i),yy=Y(r.spread);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});
@@ -8802,8 +8876,12 @@ function histSpreadDraw(animate){
 
     /* Always emphasize the latest observation without cluttering the plot -- but
        only once the sweeping line has actually reached it. */
-    if(reveal>=0.999){
-      ctx.fillStyle=lineColor;ctx.beginPath();ctx.arc(lastX,lastY,compact?3:3.2,0,Math.PI*2);ctx.fill();
+    if(reveal>0.01){
+      var nn=rows.length, ff=Math.min(nn-1,reveal*(nn-1)), i0=Math.floor(ff), i1=Math.min(nn-1,i0+1), tt=ff-i0;
+      var dotX=X(ff), dotY=reveal>=0.999?lastY:(Y(vals[i0])*(1-tt)+Y(vals[i1])*tt);
+      if(reveal>=0.999) dotX=lastX;
+      ctx.globalAlpha=0.22; ctx.fillStyle=lineColor; ctx.beginPath(); ctx.arc(dotX,dotY,compact?6.5:7.5,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+      ctx.fillStyle=lineColor; ctx.beginPath(); ctx.arc(dotX,dotY,compact?3.4:3.8,0,Math.PI*2); ctx.fill();
     }
   }
 
@@ -8846,9 +8924,11 @@ function histSpreadDraw(animate){
     // pairSpreadChangeSince always anchors to the actual calendar date instead
     // of a row count, so 1W here is guaranteed to match the "week" figure in
     // the Pair focus tooltip for the same pair, and 1M/3M/1Y are equally exact.
-    var rangeDaysMap={5:7,21:30,63:90,252:365};
+    var rangeDaysMap={5:7,21:30,63:90,126:182,252:365};
     var changeDays=rangeDaysMap[HIST_SPREAD_RANGE]||7;
     var periodChange=p?pairSpreadChangeSince(p[1],p[2],changeDays):null;
+    // History shorter than the chosen window (e.g. 6M when data only starts 1 May): measure from the oldest point shown instead of going blank.
+    if(periodChange==null && vals.length>1) periodChange=vals[vals.length-1]-vals[0];
     liveChange.innerHTML="Change <span>"+histSpreadFmt(periodChange)+"</span>";
     var __chgStyles=getComputedStyle(document.body);
     liveChange.style.color=periodChange>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#22c98b"):(periodChange<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#f04455"):"var(--text-dim)");
@@ -8913,14 +8993,14 @@ function initHistoricalSpreadPanel(){
     for(var i=0;i<btns.length;i++){
       btns[i].classList.toggle("active",Number(btns[i].dataset.range)===HIST_SPREAD_RANGE);
       btns[i].onclick=function(){
-        HIST_SPREAD_RANGE=Number(this.dataset.range)||63;
+        HIST_SPREAD_RANGE=Number(this.dataset.range)||126;
         var all=ranges.querySelectorAll("button");
         for(var j=0;j<all.length;j++) all[j].classList.toggle("active",all[j]===this);
         histSpreadDraw(true);
       };
     }
   }
-  setTimeout(histSpreadDraw,0);
+  setTimeout(function(){ histSpreadDraw(!!window.__y2NavAnim); window.__y2NavAnim=false; },0);
 }
 
 /* Bond Yield Spread: click-to-expand. Relocates the WHOLE card -- title,
@@ -16629,4 +16709,28 @@ twpShowNameGateIfNeeded();
 .hist-spread-expand-panel .hist-spread-trace-tip{position:absolute;z-index:4;display:none;pointer-events:none;min-width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:#202027;box-shadow:0 8px 22px rgba(0,0,0,.35);font:500 11.5px Inter,system-ui,sans-serif;line-height:1.35;color:var(--text);}
 .hist-spread-expand-panel .hist-spread-trace-tip .d{color:var(--text-faint);font-size:10.5px;}
 .hist-spread-expand-panel .hist-spread-trace-tip .v{font-size:13px;font-weight:700;margin-top:2px;}
+</style>
+<style id="y2g-mode-toggle">
+#tab-yield2y .y2g-sub-row{display:flex;align-items:center;gap:8px;margin-top:3px;}
+#tab-yield2y .y2g-ranges button{padding:3px 8px;font-size:10.5px;border-radius:5px;font-weight:700;}
+#tab-yield2y .y2g-ranges button.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+#tab-yield2y .y2g-mode{display:flex;flex:0 0 auto;}
+#tab-yield2y .y2g-mode:empty{display:none;}
+#tab-yield2y .y2g-mode-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);padding:4px 10px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1.2;}
+#tab-yield2y .y2g-mode-btn:first-child{border-radius:7px 0 0 7px;}
+#tab-yield2y .y2g-mode-btn:last-child{border-radius:0 7px 7px 0;border-left:0;}
+#tab-yield2y .y2g-mode-btn:hover{color:var(--text);}
+#tab-yield2y .y2g-mode-btn.on{color:var(--text);background:rgba(255,255,255,.08);box-shadow:inset 0 -2px 0 var(--amber);}
+</style>
+<style id="y2-square-corners">
+#tab-yield2y .card,#tab-yield2y .y2g-card,#tab-yield2y .hist-spread-card,#tab-yield2y .y2g-inner,
+#tab-yield2y .y2g-chart,#tab-yield2y .hist-spread-chart,#tab-yield2y .y2g-tip,#tab-yield2y .hist-spread-trace-tip,
+#tab-yield2y button,#tab-yield2y select,#tab-yield2y input,#tab-yield2y .y2g-tab,#tab-yield2y .y2g-mode-btn,
+#tab-yield2y .hist-range button,#tab-yield2y .hist-spread-select,#tab-yield2y .hist-spread-expand-btn,
+#tab-yield2y .y2-btn,#tab-yield2y .y2-input,#tab-yield2y .y2-track,#tab-yield2y .y2-track *,
+#tab-yield2y .ccy-flag,#tab-yield2y .y2-flag img,#tab-yield2y .y2g-tab img,#tab-yield2y table,
+.y2g-expand-panel2,.hist-spread-expand-panel,.hist-spread-expand-close,.y2g-card-expanded,.hist-spread-card-expanded,
+.y2g-card-expanded .y2g-tab,.y2g-card-expanded .y2g-mode-btn,.y2g-card-expanded .y2g-ranges button,
+.y2g-card-expanded .y2g-tip,.y2g-split-btn,.hist-spread-card-expanded button,.hist-spread-card-expanded select{border-radius:0!important;}
+#tab-yield2y .y2g-mode-btn:first-child,#tab-yield2y .y2g-mode-btn:last-child{border-radius:0!important;}
 </style>
