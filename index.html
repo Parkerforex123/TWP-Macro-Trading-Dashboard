@@ -201,15 +201,15 @@ body.editing .weight-col{display:table-cell;width:auto!important;padding:5px 8px
 .pair-flags img{width:100%;height:100%;object-fit:cover;display:block;}
 /* Draw-in on Trade Scanner tab open only (animateTrend flag) -- never on the 3s cloud
    poll re-render, same animate-on-navigation-only rule as the rest of this tab. */
-@keyframes pairFlagsSlideIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
-.pair-flags-animate-in{animation:pairFlagsSlideIn .45s ease both;}
-.scanner-pair-code-animate-in{animation:pairFlagsSlideIn .45s ease both;animation-delay:.05s;}
-.y2-ccy-animate-in{animation:pairFlagsSlideIn .45s ease both;}
+@keyframes pairFlagsSlideIn{from{opacity:0;transform:translate3d(-6px,0,0);}to{opacity:1;transform:translate3d(0,0,0);}}
+.pair-flags-animate-in{animation:pairFlagsSlideIn .3s ease-out both;will-change:transform,opacity;backface-visibility:hidden;}
+.scanner-pair-code-animate-in{animation:pairFlagsSlideIn .3s ease-out both;animation-delay:.03s;will-change:transform,opacity;}
+.y2-ccy-animate-in{animation:pairFlagsSlideIn .3s ease-out both;will-change:transform,opacity;}
 @keyframes y2BarGrow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
-.y2-track b.y2-bar-animate-in{animation:y2BarGrow .5s ease both;animation-delay:.08s;}
-.cot-ccy-animate-in{animation:pairFlagsSlideIn .45s ease both;}
+.y2-track b.y2-bar-animate-in{animation:y2BarGrow .45s ease-out both;animation-delay:.05s;will-change:transform;}
+.cot-ccy-animate-in{animation:pairFlagsSlideIn .3s ease-out both;will-change:transform,opacity;}
 @keyframes cotBarGrow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
-.cot-bar-seg.cot-bar-animate-in{animation:cotBarGrow .5s ease both;animation-delay:.08s;}
+.cot-bar-seg.cot-bar-animate-in{animation:cotBarGrow .45s ease-out both;animation-delay:.05s;will-change:transform;}
 .pair-table td,.pair-table th{font-size:13.5px!important;}
 .pair-table td,.pair-table th{padding-top:4px!important;padding-bottom:4px!important;padding-left:6px!important;padding-right:6px!important;}
 .pair-table .mono,.pair-table .ccy-name,.pair-table .pair-bias-single,.pair-table .pair-bias-stack strong,.pair-table .pair-bias-stack .lean-word,.pair-table .pair-factor{font-size:13.5px!important;font-weight:800!important;}
@@ -703,7 +703,7 @@ body.black .card,body.ash .card{box-shadow:none;}
 #tab-raw .ss-leg-dir.up{color:var(--bullish-strong);}
 #tab-raw .ss-leg-dir.down{color:var(--bearish-strong);}
 #tab-raw .ss-leg-dir.flat{color:var(--text-faint);}
-#tab-raw .ss-chart{padding:4px 9px 8px;background:#121216;position:relative;}
+#tab-raw .ss-chart{padding:4px 9px 8px;background:#101014;position:relative;}
 #tab-raw .ss-chart svg{display:block;width:100%;height:auto;min-height:340px;}
 #tab-raw .ss-hover-area{cursor:crosshair;}
 #tab-raw .ss-vline{display:none;stroke:var(--text-faint);stroke-width:1;stroke-dasharray:4 4;opacity:.85;vector-effect:non-scaling-stroke;}
@@ -2627,7 +2627,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-leg-ccy{font-weight:800;display:flex;align-items:center;gap:4px;}
 #tab-overview .ov-csi-leg-ccy img{width:16px;height:11px;border-radius:1px;object-fit:cover;}
 #tab-overview .ov-csi-leg-dir{font-size:9px;font-weight:800;margin-left:1px;}
-#tab-overview .ov-csi-chart{flex:1;min-height:0;padding:4px 9px 0;background:#121216;}
+#tab-overview .ov-csi-chart{flex:1;min-height:0;padding:4px 9px 0;background:#101014;}
 #tab-overview .ov-csi-chart svg{display:block;width:100%;height:100%;min-height:170px;}
 #tab-overview .ov-csi-foot{font-size:9.5px;color:var(--text-faint);line-height:1.3;padding:7px 12px 8px;border-top:1px solid var(--border);}
 #tab-overview .ov-csi-empty{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;font-size:12px;color:var(--text-faint);text-align:center;}
@@ -2727,7 +2727,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-swatch{width:13px;height:3px;}
 #tab-overview .ov-csi-leg-ccy{font-weight:800;}
 #tab-overview .ov-csi-leg-ccy img{width:16px;height:11px;}
-#tab-overview .ov-csi-chart{background:#121216!important;flex:1;min-height:0;padding:4px 9px 0;}
+#tab-overview .ov-csi-chart{background:#101014!important;flex:1;min-height:0;padding:4px 9px 0;}
 #tab-overview .ov-csi-chart svg{width:100%;height:100%;min-height:170px;}
 #tab-overview .ov-csi-foot{font-size:9.5px;padding:6px 12px 7px;line-height:1.25;}
 
@@ -2876,7 +2876,7 @@ body.ash .lock-box button.lock-eye:hover,html.ash .lock-box button.lock-eye:hove
 #tab-overview .ov-csi-head-note{font-size:10.5px!important;}
 #tab-overview .ov-csi-legend-row{display:flex!important;flex-wrap:wrap!important;gap:5px 13px!important;padding:7px 11px 4px!important;}
 #tab-overview .ov-csi-legend{font-family:var(--ui-font)!important;font-size:11px!important;}
-#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:3px 8px 4px!important;background:#121216!important;}
+#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:3px 8px 4px!important;background:#101014!important;}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:210px!important;}
 #tab-overview .ov-csi-vline{stroke:var(--text-faint)!important;stroke-width:1!important;stroke-dasharray:4 4!important;opacity:.9!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
@@ -3048,7 +3048,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-swatch{width:17px!important;height:3px!important;}
 #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
 #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-#tab-overview .ov-csi-chart{background:#121216!important;padding:4px 10px 6px!important;}
+#tab-overview .ov-csi-chart{background:#101014!important;padding:4px 10px 6px!important;}
 #tab-overview .ov-csi-chart svg{width:100%!important;height:100%!important;min-height:0!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.70)!important;stroke-width:1.15!important;stroke-dasharray:4 4!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{display:none;stroke:var(--panel)!important;stroke-width:1.6!important;vector-effect:non-scaling-stroke!important;}
@@ -3127,7 +3127,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-head .ov-headline{font-size:19px!important;font-weight:800!important;}
 #tab-overview .ov-csi-legend-row{min-height:42px!important;display:flex!important;align-items:center!important;gap:7px 15px!important;padding:7px 12px!important;}
 #tab-overview .ov-csi-legend{font-size:12px!important;font-weight:700!important;}
-#tab-overview .ov-csi-chart{padding:6px 8px 8px!important;background:#121216!important;}
+#tab-overview .ov-csi-chart{padding:6px 8px 8px!important;background:#101014!important;}
 #tab-overview .ov-csi-chart svg{shape-rendering:geometricPrecision!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;}
 #tab-overview .ov-csi-hover-dot{r:4.4;stroke:var(--panel)!important;stroke-width:1.7!important;}
@@ -3211,7 +3211,7 @@ body{font-size:var(--twp-body-size);}
 #tab-overview .ov-csi-swatch{width:16px!important;height:3px!important;}
 #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
 #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:5px 8px 6px!important;background:#121216!important;overflow:hidden!important;}
+#tab-overview .ov-csi-chart{position:relative!important;flex:1 1 auto!important;min-height:0!important;padding:5px 8px 6px!important;background:#101014!important;overflow:hidden!important;}
 #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;shape-rendering:geometricPrecision!important;overflow:visible!important;}
 #tab-overview .ov-csi-vline{stroke:rgba(238,242,238,.78)!important;stroke-width:1.2!important;stroke-dasharray:5 5!important;opacity:.95!important;vector-effect:non-scaling-stroke!important;}
 #tab-overview .ov-csi-hover-dot{stroke:var(--panel)!important;stroke-width:1.7!important;vector-effect:non-scaling-stroke!important;}
@@ -3806,7 +3806,7 @@ body{font-size:var(--twp-body-size);}
   border:1px solid var(--twp-border,rgba(255,255,255,.12));
   border-top:2px solid #FE660F;
   border-radius:12px;
-  background:var(--twp-bg,#0a0a0c);
+  background:var(--twp-bg,#101014);
   box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 0 1px rgba(254,102,15,.12);
   pointer-events:none;
 }
@@ -3916,7 +3916,7 @@ body{font-size:var(--twp-body-size);}
   min-width:0;
   border:1px solid var(--twp-border,rgba(255,255,255,.12));
   border-radius:9px;
-  background:var(--twp-panel,#121216);
+  background:var(--twp-panel,#101014);
   padding:10px;
   display:flex;
   flex-direction:column;
@@ -4646,12 +4646,98 @@ body.editing .ov-pro-live{display:block!important;}
 }
 </style>
 
-<style id="yield-final-ui-fix">
-#tab-yield2y .y2g-head h3{color:#fff!important;font-weight:800!important;}
-#tab-yield2y .hist-spread-note{display:block!important;margin-top:7px!important;color:rgba(255,255,255,.82)!important;font-size:11.5px!important;font-weight:700!important;line-height:1.35!important;}
-#tab-yield2y .y2g-stats div:last-child b{font-weight:800!important;}
+<style id="twp-final-yield-quotes-fix">
+html body #tab-yield2y .y2g-head-right{
+  display:flex!important;align-items:center!important;gap:10px!important;
+  min-width:0!important;flex:0 0 auto!important;
+}
+html body #tab-yield2y .y2g-stats{
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;
+  flex-wrap:nowrap!important;gap:6px 18px!important;min-width:0!important;white-space:nowrap!important;
+}
+html body #tab-yield2y .y2g-stats>div{flex:0 0 auto!important;min-width:58px!important;}
+html body #tab-yield2y .y2g-stats .y2g-current-stat{min-width:78px!important;}
+html body #tab-yield2y .y2g-stats .y2g-change-stat{min-width:70px!important;}
+html body #tab-yield2y .y2g-stats span{display:block!important;white-space:nowrap!important;}
+html body #tab-yield2y .y2g-stats b{white-space:nowrap!important;}
+@media(max-width:760px){
+  html body #tab-yield2y .y2g-head-right{width:100%!important;justify-content:space-between!important;}
+  html body #tab-yield2y .y2g-stats{justify-content:flex-start!important;}
+}
+html body #tab-cot .cot-expand-btn{display:none!important;}
 </style>
 
+
+<style id="v84-yield-stats-visibility-fix">
+/* Final: selected-currency Change + Yield must both remain visible in the normal card. */
+#tab-yield2y .y2g-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  flex-wrap:nowrap!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#tab-yield2y .y2g-title-col{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+#tab-yield2y .y2g-head-right{
+  flex:0 0 auto!important;
+  min-width:max-content!important;
+  width:auto!important;
+  max-width:none!important;
+  overflow:visible!important;
+}
+#tab-yield2y .y2g-stats{
+  flex:0 0 auto!important;
+  width:max-content!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:flex-start!important;
+  justify-content:flex-end!important;
+  gap:4px 14px!important;
+  overflow:visible!important;
+}
+#tab-yield2y .y2g-stats>div{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+}
+#tab-yield2y .y2g-stats .y2g-change-stat{min-width:62px!important;}
+#tab-yield2y .y2g-stats .y2g-current-stat{min-width:76px!important;}
+#tab-yield2y .y2g-stats span,#tab-yield2y .y2g-stats b{white-space:nowrap!important;}
+@media(max-width:520px){
+  #tab-yield2y .y2g-head{flex-wrap:wrap!important;align-items:flex-start!important;}
+  #tab-yield2y .y2g-head-right{width:100%!important;justify-content:flex-start!important;}
+  #tab-yield2y .y2g-stats{justify-content:flex-start!important;}
+}
+</style>
+
+<style id="currency-d2-scoped-navigation-v1">
+.esi-scope,.risk-scope{display:flex;align-items:center;gap:8px;padding:5px 8px;margin-bottom:8px;background:transparent;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-faint);}
+.esi-scope b,.risk-scope b{color:var(--text);font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+.esi-scope button,.risk-scope button{margin-left:auto;padding:3px 8px;border:1px solid var(--border);background:var(--panel2);color:var(--text-dim);font:600 10.5px Inter,system-ui,sans-serif;cursor:pointer;}
+.esi-scope button:hover,.risk-scope button:hover{color:var(--text);border-color:var(--text-faint);}
+.seasonality-sheet-backdrop{position:fixed;inset:0;z-index:9700;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.58);opacity:0;pointer-events:none;transition:opacity .12s ease;}
+.seasonality-sheet-backdrop.open{opacity:1;pointer-events:auto;}
+.seasonality-sheet{width:min(360px,calc(100vw - 40px));background:var(--bg);border:1px solid var(--border);padding:16px;box-shadow:0 24px 60px rgba(0,0,0,.5);transform:translateY(5px);opacity:0;transition:transform .14s ease,opacity .14s ease;}
+.seasonality-sheet.open{transform:none;opacity:1;}
+.seasonality-sheet-head{display:flex;align-items:center;justify-content:space-between;font-size:15px;}
+.seasonality-sheet-head>div{display:flex;align-items:center;gap:7px;}.seasonality-sheet-head span{font-size:11px;color:var(--text-faint);margin-left:2px;}
+.seasonality-sheet-close{border:1px solid var(--border);background:transparent;color:var(--text-faint);padding:2px 8px;font-size:16px;cursor:pointer;}
+.seasonality-sheet-kicker{margin-top:22px;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-faint);font-weight:700;}
+.seasonality-sheet-value{margin-top:4px;font-size:28px;font-weight:800;}.seasonality-sheet-label{margin-top:3px;font-size:13px;font-weight:700;}.seasonality-sheet-month{margin-top:12px;font-size:12px;color:var(--text-dim);}.seasonality-sheet-note{margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;line-height:1.45;color:var(--text-faint);}
+.seasonality-sheet-value.pos,.seasonality-sheet-label.pos{color:var(--bullish-strong);}.seasonality-sheet-value.neg,.seasonality-sheet-label.neg{color:var(--bearish-strong);}.seasonality-sheet-value.neu,.seasonality-sheet-label.neu{color:var(--text-dim);}
+#cotPairModal .cot-pm-panel{background:var(--bg)!important;}
+#cotPairModal #cotPairTrendSvg{background:var(--bg)!important;}
+#cotPairModal .cot-pm-sub{max-width:620px;}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -4662,7 +4748,7 @@ body.editing .ov-pro-live{display:block!important;}
       <button class="tab-btn active" data-tab="overview">Overview</button>
       <button class="tab-btn" data-tab="detail">Currency Detail</button>
       <button class="tab-btn" data-tab="scanner">Trade Scanner</button>
-      <button class="tab-btn" data-tab="yield2y">Bond Yield Spread</button>
+      <button class="tab-btn" data-tab="yield2y">Bond Yields</button>
       <button class="tab-btn" data-tab="cot" id="cotTabBtn">COT Regime</button>
       <button class="tab-btn" data-tab="raw">Economic Surprise Index</button>
       <button class="tab-btn" data-tab="risk" id="riskTabBtn">Risk Sentiment</button>
@@ -5134,6 +5220,8 @@ var y2DateTouchedThisSession = false; // true once the user actually changes the
 var YIELD_ENGINE={history:[], current:{}};
 var Y2_CCY_ORDER=["USD","EUR","GBP","AUD","NZD","CAD","JPY","CHF"];
 var unlockedLocally=false, activeTab="overview", activeDetailCcy="USD", expandedPair=null, saveTimer=null, pairFilters=["All"], pairSearchTerm="", lockBoxCollapsed=true, expandedSurpriseCcy=null, expandedSurpriseRange="ALL";
+// Currency Detail D2 navigation keeps the clicked currency as the scope of the destination view.
+var activeRawCcy=null, activeRiskCcy=null;
 var scannerFilters=["All"], scannerFavorites=[], scannerExpandedPair=null;
 // Global range for the Trade Scanner table's own Trend column (separate from expandedRange,
 // which only drives the big chart inside an expanded pair's Pair focus card). Clicking any
@@ -6045,14 +6133,15 @@ function riskSaveObservation(spxClose,vixClose,dateOverride){
 var CCY_W={fund:25,yield:23,cb:19,pos:9,wow:9,risk:7,seas:8};
 if(Math.abs(Object.keys(CCY_W).reduce(function(a,k){return a+CCY_W[k];},0)-100)>1e-9 && window.console) console.warn('CCY_W weights do not sum to 100');
 function riskContributionFor(ccy){ return CCY_W.risk*riskTermFor(ccy); } // matches compositeFor's risk weight (CCY_W.risk)
-function riskSurfaceHtml(){
+function riskSurfaceHtml(selectedCcy){
   var score=riskRegimeScore(), label=riskRegimeLabel(score);
   var cur=RISK_SENTIMENT.current||{};
   var ready=riskHasAnyReading();
   var pos=ready ? ((score+1)/2)*100 : 50;
   var arrowColor=score>0.06?'var(--bullish-strong)':score<-0.06?'var(--bearish-strong)':'var(--text-faint)';
   var flags={USD:flagImg("USD"),EUR:flagImg("EUR"),GBP:flagImg("GBP"),AUD:flagImg("AUD"),NZD:flagImg("NZD"),CAD:flagImg("CAD"),JPY:flagImg("JPY"),CHF:flagImg("CHF")};
-  var scored=CCY_ORDER.map(function(c){ return {c:c, sc: ready?Math.round(riskTermFor(c)*100):0}; });
+  var riskKeys=selectedCcy?[selectedCcy]:CCY_ORDER.slice();
+  var scored=riskKeys.map(function(c){ return {c:c, sc: ready?Math.round(riskTermFor(c)*100):0}; });
   scored.sort(function(a,b){ return b.sc-a.sc; });
   var strongest=scored[0], weakest=scored[scored.length-1];
   var spread=ready?(strongest.sc-weakest.sc):0;
@@ -6070,8 +6159,11 @@ function riskSurfaceHtml(){
       '<div class="strength-bias '+roleClass+'">'+lab+'</div>'+
       '</div>';
   }).join('');
+  var selectedHtml=selectedCcy
+    ? '<div class="risk-scope"><span>Currency scope</span><b>'+flagImg(selectedCcy)+' '+selectedCcy+'</b><button type="button" id="riskScopeAll">All</button></div>'
+    : '<div class="risk-scope"><span>Currency scope</span><b>All currencies</b></div>';
   return {ready:ready,html:
-    '<div class="strength-summary">'+
+    selectedHtml+'<div class="strength-summary">'+
       '<div class="strength-stat"><div class="strength-k">Regime</div><div id="riskRegimeValue" class="strength-v '+(ready?(score>=0.2?'strength-pos':score<=-0.2?'strength-neg':''):'')+'">'+(ready?label:'Baseline')+'</div></div>'+
       '<div class="strength-stat"><div class="strength-k">Strongest</div><div id="riskStrongestValue" class="strength-v strength-pos">'+(ready?strongest.c+' '+fmt(strongest.sc):'—')+'</div></div>'+
       '<div class="strength-stat"><div class="strength-k">Weakest</div><div id="riskWeakestValue" class="strength-v strength-neg">'+(ready?weakest.c+' '+fmt(weakest.sc):'—')+'</div></div>'+
@@ -6498,10 +6590,25 @@ function pairScoreClass(score){
 }
 
 var CCY_FLAG_ISO = {USD:"us",GBP:"gb",EUR:"eu",JPY:"jp",AUD:"au",NZD:"nz",CAD:"ca",CHF:"ch"};
+/* Flag cache: every flag is fetched ONCE at startup and kept as an in-memory blob URL.
+   Before this, each tab render rebuilt the table HTML and the browser re-requested the
+   flags from flagcdn.com, so they popped in half a beat AFTER the slide-in animation
+   started -- that was the visible "break" while pairs slid into place. */
+var FLAG_BLOBS={}, FLAG_KEEP=[];
+(function(){
+  var iso=["us","gb","eu","jp","au","nz","ca","ch"];
+  iso.forEach(function(c){
+    ["https://flagcdn.com/w40/"+c+".png","https://flagcdn.com/"+c+".svg"].forEach(function(u){
+      try{ var im=new Image(); im.decoding="async"; im.src=u; FLAG_KEEP.push(im); }catch(e){}
+      try{ fetch(u).then(function(r){return r.blob();}).then(function(b){ FLAG_BLOBS[u]=URL.createObjectURL(b); }).catch(function(){}); }catch(e){}
+    });
+  });
+})();
+function flagSrc(u){ return FLAG_BLOBS[u]||u; }
 function flagPair(base,quote,animate){
   var a=CCY_FLAG_ISO[base], q=CCY_FLAG_ISO[quote];
-  var imgA = a ? '<img src="https://flagcdn.com/w40/'+a+'.png" alt="'+base+'">' : '';
-  var imgB = q ? '<img src="https://flagcdn.com/w40/'+q+'.png" alt="'+quote+'">' : '';
+  var imgA = a ? '<img src="'+flagSrc('https://flagcdn.com/w40/'+a+'.png')+'" width="19" height="15" decoding="async" alt="'+base+'">' : '';
+  var imgB = q ? '<img src="'+flagSrc('https://flagcdn.com/w40/'+q+'.png')+'" width="19" height="15" decoding="async" alt="'+quote+'">' : '';
   return '<span class="pair-flags'+(animate?' pair-flags-animate-in':'')+'"><span class="flag-a">'+imgA+'</span><span class="flag-b">'+imgB+'</span></span>';
 }
 function sectorBand(raw,max){ var pct=max?(raw/max*100):0, a=Math.abs(pct), label;
@@ -7915,7 +8022,7 @@ var TAB_META={
   raw:{title:"Economic Surprise Index",sub:""},
   detail:{title:"Currency Detail",sub:""},
   scanner:{title:"Trade Scanner",sub:""},
-  yield2y:{title:"Bond Yield Spread",sub:""},
+  yield2y:{title:"Bond Yields",sub:""},
   risk:{title:"Risk Sentiment",sub:"S&P 500 + VIX market-risk regime"},
   cot:{title:"COT Regime",sub:"Institutional positioning, flow and crowding"}
 };
@@ -8374,15 +8481,39 @@ function y2gChg(x){
   return '<b class="'+(r>0?'up':(r<0?'down':'flat'))+'">'+(r>0?'+':'')+r.toFixed(1)+' bp</b>';
 }
 function y2gLast(rows,c){ for(var i=rows.length-1;i>=0;i--){ var n=y2Num(rows[i][c]); if(n!=null) return n; } return null; }
+function y2gGapHeadline(rows,h,l,sp){
+  var f=null,f1=null,f2=null;
+  for(var i=0;i<rows.length;i++){ var a=y2Num(rows[i][h.c]), b=y2Num(rows[i][l.c]); if(a!=null&&b!=null){ f1=a; f2=b; f=(a-b)*100; break; } }
+  if(f==null) return '';
+  var dh=(h.v-f1)*100, dl=(l.v-f2)*100, d=sp-f, lab='';
+  for(var k=0;k<Y2G_RANGES.length;k++){ if(Y2G_RANGES[k][0]===Y2G_RANGE) lab=Y2G_RANGES[k][1]; }
+  var H=h.c, L=l.c, big=Math.abs(d)>=20?'much ':'', txt, tail;
+  if(Math.abs(d)<1){ txt=H+' and '+L+' yields are moving together.'; tail='Gap is steady'; }
+  else if(d>0){
+    if(dh>0&&dl>=0) txt=H+' yields are rising '+big+'faster than '+L+' yields.';
+    else if(dh>0) txt=H+' yields are rising while '+L+' yields are falling.';
+    else txt=L+' yields are falling '+big+'faster than '+H+' yields.';
+    tail='Gap is widening in favour of '+H;
+  } else {
+    if(dl>0&&dh>=0) txt=L+' yields are rising '+big+'faster than '+H+' yields.';
+    else if(dl>0) txt=L+' yields are rising while '+H+' yields are falling.';
+    else txt=H+' yields are falling '+big+'faster than '+L+' yields.';
+    tail='Gap is narrowing, '+L+' is catching up';
+  }
+  var full=txt+' '+tail+(Math.abs(d)>=1?' ('+(d>0?'+':'\u2212')+Math.abs(d).toFixed(1)+' bp'+(lab?' over '+lab:'')+')':'')+'.';
+  var seg='<span class="y2g-hl-seg"><span class="y2g-hl-dot"></span>'+full+'</span>';
+  var secs=Math.max(16,Math.round(full.length*0.30));
+  return '<div class="y2g-hl-track" style="animation-duration:'+secs+'s">'+seg+seg+seg+seg+'</div>';
+}
 function y2gStats(){
   var el=document.getElementById('y2gStats'); if(!el) return;
+  var hl0=document.getElementById('y2gHeadline'); if(hl0) hl0.innerHTML='';
   var rows=y2gRows(), allRows=y2gRowsAll(), sel=y2gSelList();
   if(sel.length===1){
     var c=sel[0], cur=null, hi=null, lo=null;
     rows.forEach(function(r){ var n=y2Num(r[c]); if(n==null) return; cur=n; if(hi==null||n>hi) hi=n; if(lo==null||n<lo) lo=n; });
-    el.innerHTML='<div><span>Current</span><b class="big" style="color:'+Y2G_COLORS[c]+'">'+(cur==null?'\u2014':cur.toFixed(3)+'%')+'</b></div>'+
-      '<div><span>1D</span>'+y2gChg(y2gDelta(allRows,c,0))+'</div><div><span>1W</span>'+y2gChg(y2gDelta(allRows,c,7))+'</div><div><span>1M</span>'+y2gChg(y2gDelta(allRows,c,30))+'</div>'+
-      '<div><span>High</span><b>'+(hi==null?'\u2014':hi.toFixed(3)+'%')+'</b></div><div><span>Low</span><b>'+(lo==null?'\u2014':lo.toFixed(3)+'%')+'</b></div>';
+    el.innerHTML='<div class="y2g-change-stat"><span>Change</span>'+y2gChg(y2gDelta(allRows,c,0))+'</div>'+
+      '<div class="y2g-current-stat"><span>Yield</span><b class="big" style="color:'+Y2G_COLORS[c]+'">'+(cur==null?'\u2014':cur.toFixed(3)+'%')+'</b></div>';
     return;
   }
   if(sel.length>=3 && Y2G_MODE==='change'){
@@ -8397,18 +8528,8 @@ function y2gStats(){
   if(arr.length<2){ el.innerHTML=''; return; }
   var h=arr[0], l=arr[arr.length-1], sp=(h.v-l.v)*100;
   if(arr.length===2){
-    var firstH=null, firstL=null;
-    for(var ri=0;ri<rows.length;ri++){
-      var hv=y2Num(rows[ri][h.c]), lv=y2Num(rows[ri][l.c]);
-      if(hv!=null && lv!=null){ firstH=hv; firstL=lv; break; }
-    }
-    var currentGap=sp, startGap=(firstH==null||firstL==null)?null:Math.abs((firstH-firstL)*100);
-    var gapMove=startGap==null?null:currentGap-startGap;
-    var gapTrend=gapMove==null?'—':(Math.abs(gapMove)<0.05?'Flat':(gapMove>0?'Widening':'Narrowing'));
-    var gapCls=gapMove==null||Math.abs(gapMove)<0.05?'flat':(gapMove>0?'up':'down');
-    var gapMoveText=gapMove==null?'':(gapMove>0?'+':'')+gapMove.toFixed(1)+' bp';
-    var rangeLabel=(Y2G_RANGES.find(function(r){return r[0]===Y2G_RANGE;})||['',''])[1];
-    el.innerHTML='<div><span>'+h.c+'</span><b class="big" style="color:'+Y2G_COLORS[h.c]+'">'+h.v.toFixed(3)+'%</b></div><div><span>'+l.c+'</span><b class="big" style="color:'+Y2G_COLORS[l.c]+'">'+l.v.toFixed(3)+'%</b></div><div><span>Gap</span><b class="big">'+currentGap.toFixed(1)+' bp</b></div><div><span>Gap · '+rangeLabel+'</span><b class="'+gapCls+'">'+gapTrend+(gapMoveText?' '+gapMoveText:'')+'</b></div>';
+    el.innerHTML='<div><span>'+h.c+'</span><b class="big" style="color:'+Y2G_COLORS[h.c]+'">'+h.v.toFixed(3)+'%</b></div><div><span>'+l.c+'</span><b class="big" style="color:'+Y2G_COLORS[l.c]+'">'+l.v.toFixed(3)+'%</b></div><div class="y2g-gap"><span>Current gap</span><b class="big">'+sp.toFixed(1)+' bp</b></div>';
+    var hl=document.getElementById('y2gHeadline'); if(hl) hl.innerHTML=y2gGapHeadline(rows,h,l,sp);
   } else {
     el.innerHTML='<div><span>Highest 2Y</span><b style="color:'+Y2G_COLORS[h.c]+'">'+h.c+' '+h.v.toFixed(3)+'%</b></div><div><span>Lowest 2Y</span><b style="color:'+Y2G_COLORS[l.c]+'">'+l.c+' '+l.v.toFixed(3)+'%</b></div><div><span>Spread, high to low</span><b>'+sp.toFixed(0)+' bp</b></div>';
   }
@@ -8457,7 +8578,7 @@ function y2gDrawSplit(ctx,W,H,rows,list,hoverIdx){
       var v=q.vals[hoverIdx], x=q.X(hoverIdx);
       ctx.strokeStyle='rgba(255,255,255,.45)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x,q.y0+T); ctx.lineTo(x,q.y0+T+ph); ctx.stroke();
       if(v==null) return;
-      var y=q.Y(v); ctx.fillStyle=Y2G_COLORS[q.c]; ctx.strokeStyle='#121216'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      var y=q.Y(v); ctx.fillStyle=Y2G_COLORS[q.c]; ctx.strokeStyle='#101014'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.stroke();
       var txt=v.toFixed(3)+'%  \u00b7  '+y2gDate(rows[hoverIdx].date);
       ctx.font='600 11.5px '+FONT; var tw=ctx.measureText(txt).width+16, bx=x+12; if(bx+tw>q.x0+cw-4) bx=x-tw-12; var by=Math.max(q.y0+T+2,Math.min(q.y0+T+ph-26,y-13));
       ctx.fillStyle='#202027'; ctx.fillRect(bx,by,tw,24); ctx.strokeStyle='rgba(255,255,255,.14)'; ctx.lineWidth=1; ctx.strokeRect(bx+.5,by+.5,tw-1,23);
@@ -8496,22 +8617,7 @@ function y2gDraw(hoverIdx){
   var pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
   var L=change?56:46,R=(multi?(change?100:88):10),T=10,B=25,pw=Math.max(40,W-L-R),ph=Math.max(40,H-T-B);
   function X(i){return L+(i/(n-1))*pw;}
-  /* In Yield mode, large absolute-rate gaps can flatten the lower-yield
-     currency against the floor (e.g. USD ~4.9% versus CHF ~0.25%). Keep the
-     underlying yields and tooltip values unchanged, but use an adaptive visual
-     scale when the level gap is large. This gives low-yield lines more vertical
-     room without changing the actual yield data or spread math. */
-  var levelVisualPower=1;
-  if(!change && multi && lo>=0 && hi>0){
-    var levelRatio=hi/Math.max(lo,0.05);
-    if(levelRatio>=8) levelVisualPower=0.55;
-    else if(levelRatio>=3) levelVisualPower=0.65;
-  }
-  function Y(v){
-    var nrm=(v-lo)/(hi-lo);
-    if(!change && multi && levelVisualPower!==1) nrm=Math.pow(Math.max(0,Math.min(1,nrm)),levelVisualPower);
-    return T+(1-nrm)*ph;
-  }
+  function Y(v){return T+(1-(v-lo)/(hi-lo))*ph;}
   ctx.font="11px Inter, system-ui, sans-serif"; ctx.textBaseline='middle';
   var raw=(hi-lo)/5, mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)), nm=raw/mag;
   var step=(nm<=1?1:(nm<=2?2:(nm<=2.5?2.5:(nm<=5?5:10))))*mag;
@@ -8524,12 +8630,6 @@ function y2gDraw(hoverIdx){
     ctx.fillText(change?(isZero?'0':((tv>0?'+':'')+Math.round(tv)+' bp')):tv.toFixed(step<1?2:1)+'%',L-7,ty);
   }
   ctx.textBaseline='alphabetic';
-  if(!change && multi && levelVisualPower!==1){
-    ctx.fillStyle='rgba(255,255,255,.38)';
-    ctx.textAlign='right';
-    ctx.font='10px Inter, system-ui, sans-serif';
-    ctx.fillText('Adaptive visual scale',W-R,11);
-  }
   var xt=Math.min(5,Math.max(3,Math.floor(W/150)));
   for(var t=0;t<xt;t++){var xi=Math.round(t*(n-1)/(xt-1));ctx.fillStyle='rgba(255,255,255,.58)';ctx.textAlign=t===0?'left':(t===xt-1?'right':'center');ctx.fillText(y2gDate(rows[xi].date),X(xi),H-6);}
   function path(c){var pts=[];ser[c].forEach(function(v,i){if(v!=null)pts.push([X(i),Y(v)]);});return pts;}
@@ -8567,7 +8667,7 @@ function y2gDraw(hoverIdx){
   Y2G_GEO={L:L,pw:pw,n:n,lo:lo,hi:hi,T:T,B:B};
   if(hoverIdx!=null&&hoverIdx>=0&&hoverIdx<n){
     var hx=X(hoverIdx),r0=rows[hoverIdx];ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(hx,T);ctx.lineTo(hx,T+ph);ctx.stroke();
-    var items=[];list.forEach(function(c){var v=ser[c][hoverIdx];if(v==null)return;ctx.fillStyle=Y2G_COLORS[c];ctx.strokeStyle='#121216';ctx.lineWidth=2;ctx.beginPath();ctx.arc(hx,Y(v),4.5,0,Math.PI*2);ctx.fill();ctx.stroke();items.push({c:c,v:v,lvl:y2Num(r0[c])});});
+    var items=[];list.forEach(function(c){var v=ser[c][hoverIdx];if(v==null)return;ctx.fillStyle=Y2G_COLORS[c];ctx.strokeStyle='#101014';ctx.lineWidth=2;ctx.beginPath();ctx.arc(hx,Y(v),4.5,0,Math.PI*2);ctx.fill();ctx.stroke();items.push({c:c,v:v,lvl:y2Num(r0[c])});});
     items.sort(function(a,b){return b.v-a.v;});var dayChg='';
     if(!multi&&hoverIdx>0){var pv=null;for(var k=hoverIdx-1;k>=0;k--){var q=y2Num(rows[k][list[0]]);if(q!=null){pv=q;break;}}if(pv!=null&&items.length){var d=(items[0].v-pv)*100;dayChg='<div class="y2g-tip-r"><span>Day change</span><b style="color:'+(d>=0?'var(--bullish-strong)':'var(--bearish-strong)')+'">'+(d>0?'+':'')+d.toFixed(1)+' bp</b></div>';}}
     tip.innerHTML='<div class="y2g-tip-d">'+y2gDate(r0.date)+'</div>'+items.map(function(it){return '<div class="y2g-tip-r"><span><i style="background:'+Y2G_COLORS[it.c]+'"></i>'+it.c+'</span><b>'+(change?y2gBp(it.v)+' · '+(it.lvl==null?'—':it.lvl.toFixed(3)+'%'):it.v.toFixed(3)+'%')+'</b></div>';}).join('')+dayChg;
@@ -8583,8 +8683,8 @@ function y2gInit(){
     }).join('');
   }
   var tabs=tabHtml();
-  card.innerHTML='<div class="y2g-inner"><div class="y2g-head"><div><h3>Global Yields</h3><div class="y2g-sub-row"><span class="hist-spread-sub">2Y yield</span><div class="hist-range y2g-ranges" id="y2gRanges"></div></div></div><div class="y2g-head-right"><div class="y2g-mode" id="y2gMode"></div><div class="y2g-stats" id="y2gStats"></div><button type="button" id="y2gExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
-    '<div class="y2g-tabs" id="y2gTabs">'+tabs+'</div>'+
+  card.innerHTML='<div class="y2g-inner"><div class="y2g-headline" id="y2gHeadline"></div><div class="y2g-head"><div class="y2g-title-col"><h3>Global Yields</h3><div class="y2g-sub-row"><span class="hist-spread-sub">2Y yield</span><div class="hist-range y2g-ranges" id="y2gRanges"></div></div></div><div class="y2g-head-right"><div class="y2g-stats" id="y2gStats"></div><button type="button" id="y2gExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
+    '<div class="y2g-toolbar"><div class="y2g-tabs" id="y2gTabs">'+tabs+'</div><div class="y2g-mode" id="y2gMode"></div></div>'+
     '<div class="y2g-chart"><canvas id="y2gCanvas"></canvas><div id="y2gEmpty" class="y2g-empty"></div><div id="y2gTip" class="y2g-tip"></div></div></div>';
   var tabsEl=card.querySelector('#y2gTabs');
   function bindTabs(){
@@ -8663,7 +8763,6 @@ function renderYield2Y(){
     '<div class="hist-spread-controls"><label>Pair <select id="histSpreadPair" class="hist-spread-select"></select></label><div id="histSpreadRanges" class="hist-range"><button data-range="5">1W</button><button data-range="21">1M</button><button data-range="63">3M</button><button data-range="126" class="active">6M</button><button data-range="252">1Y</button></div><button type="button" id="histSpreadExpandBtn" class="hist-spread-expand-btn" title="Expand chart" aria-label="Expand chart"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div></div>'+
     '<div class="hist-spread-chart"><canvas id="histSpreadCanvas"></canvas><div id="histSpreadEmpty" class="hist-spread-empty"></div><div id="histSpreadHoverDot" class="hist-spread-hover-dot"></div><div id="histSpreadTraceTip" class="hist-spread-trace-tip"></div></div>'+
     '<div id="histSpreadStats" class="hist-spread-stats"></div>'+
-    '<div id="histSpreadRead" class="hist-spread-note"></div>'+
     '</div></div>';
   document.getElementById('tab-yield2y').innerHTML=html;
   var inputs=document.querySelectorAll('[data-y2-current]'); for(var i=0;i<inputs.length;i++){inputs[i].addEventListener('input',function(){
@@ -8973,19 +9072,6 @@ function histSpreadDraw(animate){
     var __chgStyles=getComputedStyle(document.body);
     liveChange.style.color=periodChange>0?(__chgStyles.getPropertyValue("--bullish-strong").trim()||"#22c98b"):(periodChange<0?(__chgStyles.getPropertyValue("--bearish-strong").trim()||"#f04455"):"var(--text-dim)");
   }
-  var readEl=document.getElementById("histSpreadRead");
-  if(readEl){
-    var pairRead=p?histSpreadLabel(code):code;
-    var baseC=p?p[1]:"", quoteC=p?p[2]:"";
-    var moveDir=periodChange==null?"flat":(Math.abs(periodChange)<0.05?"flat":((current>=0?periodChange>0:periodChange<0)?"widening":"narrowing"));
-    if(current>0){
-      readEl.textContent=baseC+" advantage "+moveDir+" — "+(moveDir==="widening"?"tailwind for "+baseC+"/"+quoteC:moveDir==="narrowing"?"headwind for "+baseC+"/"+quoteC:"no clear rate-differential change");
-    } else if(current<0){
-      readEl.textContent=quoteC+" advantage "+moveDir+" — "+(moveDir==="widening"?"headwind for "+baseC+"/"+quoteC:moveDir==="narrowing"?"tailwind for "+baseC+"/"+quoteC:"no clear rate-differential change");
-    } else {
-      readEl.textContent="Yield spread near zero — no clear rate advantage";
-    }
-  }
   }
   if(stats) stats.innerHTML="";
 
@@ -9121,7 +9207,7 @@ function flagImg(ccy){
   var codes={USD:"us",EUR:"eu",GBP:"gb",AUD:"au",NZD:"nz",CAD:"ca",JPY:"jp",CHF:"ch"};
   var code=codes[ccy];
   if(!code) return "";
-  return '<img class="ccy-flag" src="https://flagcdn.com/'+code+'.svg" alt="'+ccy+' flag" loading="eager">';
+  return '<img class="ccy-flag" src="'+flagSrc('https://flagcdn.com/'+code+'.svg')+'" width="20" height="15" decoding="async" alt="'+ccy+' flag" loading="eager">';
 }
 /* ===== Overview redesign: screen-first command board ===== */
 var OV_CSI_COLORS={
@@ -9164,7 +9250,8 @@ function overviewCsiHistory(scores){
 function renderOverviewCsi(scores,animate){
   var data=overviewCsiHistory(scores), days=data.days;
   var flags={}; CCYS.forEach(function(c){flags[c]=flagImg(c);});
-  var all=[]; CCYS.forEach(function(c){(data.series[c]||[]).forEach(function(v){if(v!=null)all.push(v);});});
+  var scopedKeys=activeRawCcy?[activeRawCcy]:CCYS.slice();
+  var all=[]; scopedKeys.forEach(function(c){(data.series[c]||[]).forEach(function(v){if(v!=null)all.push(v);});});
   if(all.length<1){
     return '<div class="ov-csi" id="overviewCurrencyIndex"><div class="ov-csi-head"><div><div class="ov-eyebrow">CURRENCY STRENGTH INDEX</div><div class="ov-headline">Composite Strength · '+TREND_WINDOW_DAYS+'D</div></div><div class="ov-muted">Waiting for logged history</div></div><div class="ov-csi-empty">No logged history yet.</div></div>';
   }
@@ -9874,7 +9961,7 @@ function bindSurpriseTrendHover(){
 // trend line and the gauges are always telling the same story for a given currency.
 var SS_HIDDEN={};
 function surpriseStrengthHistory(stats){
-  var keys=CCYS.slice(), today=new Date(), todayKey=today.toISOString().slice(0,10), days=[];
+  var keys=activeRawCcy?[activeRawCcy]:CCYS.slice(), today=new Date(), todayKey=today.toISOString().slice(0,10), days=[];
   for(var di=TREND_WINDOW_DAYS-1;di>=0;di--){ var d=new Date(today); d.setUTCDate(d.getUTCDate()-di); days.push(d.toISOString().slice(0,10)); }
   // Plot on the SAME 0-100% scale the gauges above already show (surpriseWeightedPct's
   // pct = 50 + 50*raw/max), not the raw signed +/-100 fundamentals % this used to store and
@@ -9897,12 +9984,13 @@ function surpriseStrengthHistory(stats){
 function renderSurpriseStrengthChart(stats,animate){
   var data=surpriseStrengthHistory(stats), days=data.days;
   var flags={}; CCYS.forEach(function(c){flags[c]=flagImg(c);});
-  var all=[]; CCYS.forEach(function(c){(data.series[c]||[]).forEach(function(v){if(v!=null)all.push(v);});});
+  var scopedKeys=activeRawCcy?[activeRawCcy]:CCYS.slice();
+  var all=[]; scopedKeys.forEach(function(c){(data.series[c]||[]).forEach(function(v){if(v!=null)all.push(v);});});
   if(all.length<1){
     return '<div class="card ss-card"><div class="ss-head"><div><div class="ss-eyebrow">SURPRISE INDEX</div><div class="ss-headline">Surprise Strength &middot; '+TREND_WINDOW_DAYS+'D</div></div><div class="ss-muted">Waiting for logged history</div></div><div class="ss-empty">No logged history yet.</div></div>';
   }
   var firstActive=days.length-1,lastActive=0,found=false;
-  for(var di=0;di<days.length;di++){ for(var ci=0;ci<CCYS.length;ci++){ var vv=(data.series[CCYS[ci]]||[])[di]; if(vv!=null){firstActive=Math.min(firstActive,di);lastActive=Math.max(lastActive,di);found=true;} } }
+  for(var di=0;di<days.length;di++){ for(var ci=0;ci<scopedKeys.length;ci++){ var vv=(data.series[scopedKeys[ci]]||[])[di]; if(vv!=null){firstActive=Math.min(firstActive,di);lastActive=Math.max(lastActive,di);found=true;} } }
   if(!found){ firstActive=0; lastActive=days.length-1; }
   var span=Math.max(1,lastActive-firstActive), padDays=Math.max(0,Math.min(3,Math.floor(span*.08)));
   var plotFirst=Math.max(0,firstActive-padDays), plotLast=Math.min(days.length-1,lastActive+padDays), plotSpan=Math.max(1,plotLast-plotFirst);
@@ -9912,7 +10000,7 @@ function renderSurpriseStrengthChart(stats,animate){
   // on) in steps of 5, so 50 always lands exactly on the middle gridline -- styled and sized
   // identically to every other gridline, no separate bold/white treatment and no risk of a
   // near-duplicate label (e.g. 50 and 53) sitting on top of each other.
-  var allVals=[]; CCYS.forEach(function(c){ for(var i=plotFirst;i<=plotLast;i++){ var v=(data.series[c]||[])[i]; if(v!=null) allVals.push(v); } });
+  var allVals=[]; scopedKeys.forEach(function(c){ for(var i=plotFirst;i<=plotLast;i++){ var v=(data.series[c]||[])[i]; if(v!=null) allVals.push(v); } });
   var rawMin=Math.min.apply(null,allVals), rawMax=Math.max.apply(null,allVals);
   var padV=Math.max(3,(rawMax-rawMin)*.12);
   var halfSpan=Math.max(5, Math.abs(Math.min(50,rawMin)-padV-50), Math.abs(Math.max(50,rawMax)+padV-50));
@@ -9939,7 +10027,7 @@ function renderSurpriseStrengthChart(stats,animate){
   grid+='<line x1="'+pl+'" y1="'+pt+'" x2="'+pl+'" y2="'+(H-pb)+'" stroke="var(--text-faint)" stroke-width="1.2" opacity=".55" vector-effect="non-scaling-stroke"/>'+
     '<line x1="'+pl+'" y1="'+(H-pb)+'" x2="'+(W-pr)+'" y2="'+(H-pb)+'" stroke="var(--text-faint)" stroke-width="1.2" opacity=".55" vector-effect="non-scaling-stroke"/>';
   var seriesSvg="", legend="", plotSeries={};
-  CCYS.forEach(function(c){
+  scopedKeys.forEach(function(c){
     var vals=data.series[c]||[], xy=[], out=new Array(vals.length).fill(null);
     for(var i=plotFirst;i<=plotLast;i++){ var v=vals[i]; if(v==null) continue; out[i]=v; xy.push([xPos(i),yPos(v)]); }
     plotSeries[c]=out;
@@ -10134,7 +10222,9 @@ function esiPairsHtml(){
   var pct={}; CCYS.forEach(function(c){ pct[c]=surpriseWeightedPct(c).pct; });
   var list=[];
   for(var i=0;i<CCY_ORDER.length;i++){ for(var j=i+1;j<CCY_ORDER.length;j++){
-    var b=CCY_ORDER[i], q=CCY_ORDER[j]; if(pct[b]==null||pct[q]==null) continue;
+    var b=CCY_ORDER[i], q=CCY_ORDER[j];
+    if(activeRawCcy && b!==activeRawCcy && q!==activeRawCcy) continue;
+    if(pct[b]==null||pct[q]==null) continue;
     list.push({pair:b+q,base:b,quote:q,gap:pct[b]-pct[q]});
   } }
   list.sort(function(a,b){ return Math.abs(b.gap)-Math.abs(a.gap); });
@@ -10150,7 +10240,8 @@ function esiPairsHtml(){
 }
 function renderRaw(animate){
   if(!DATA)return;
-  var stats=CCYS.map(function(c){return {ccy:c,data:surpriseDataForCurrency(c)};});
+  var rawKeys=activeRawCcy?[activeRawCcy]:CCYS.slice();
+  var stats=rawKeys.map(function(c){return {ccy:c,data:surpriseDataForCurrency(c)};});
   stats.sort(function(a,b){return b.data.avg-a.data.avg;});
   var totalReleases=stats.reduce(function(a,x){return a+x.data.rows.length;},0);
   var best=stats[0],worst=stats[stats.length-1];
@@ -10183,7 +10274,7 @@ function renderRaw(animate){
       surpriseBigChart(expandedSurpriseCcy, expandedSurpriseRange)+'</div></div>';
   }
   var bestSc=Math.round(best.data.avg*10)/10, worstSc=Math.round(worst.data.avg*10)/10;
-  var gaugeStats=CCYS.map(function(c){ return {ccy:c, br:surpriseWeightedPct(c)}; });
+  var gaugeStats=rawKeys.map(function(c){ return {ccy:c, br:surpriseWeightedPct(c)}; });
   var gaugeRanked=gaugeStats.slice().sort(function(a,b){ var av=a.br.pct==null?-1:a.br.pct, bv=b.br.pct==null?-1:b.br.pct; return bv-av; });
   var esiDevMax=0; gaugeStats.forEach(function(x){ if(x.br.pct!=null) esiDevMax=Math.max(esiDevMax,Math.abs(x.br.pct-50)); });
   esiBarScale=Math.max(30,esiDevMax/0.92);
@@ -10197,7 +10288,10 @@ function renderRaw(animate){
     '<div class="surprise-gauge-grid">'+gaugesHtml+'</div>'+
     '<div class="surprise-rank-table"><div class="surprise-rank-head"><span>Currency</span><span>Score</span></div>'+rankRowsHtml+'</div>'+
     '</div></div>';
-  var html='<div class="surprise-fit-wrap esi-v71">'+
+  var scopeHtml=activeRawCcy
+    ? '<div class="esi-scope"><span>Currency scope</span><b>'+flagImg(activeRawCcy)+' '+activeRawCcy+'</b><button type="button" id="esiScopeAll">All</button></div>'
+    : '<div class="esi-scope"><span>Currency scope</span><b>All currencies</b></div>';
+  var html=scopeHtml+'<div class="surprise-fit-wrap esi-v71">'+
     '<div class="esi-col">'+gaugeSectionHtml+esiDriversHtml()+'</div>'+
     '<div class="esi-col">'+esiPairsHtml()+renderSurpriseStrengthChart(stats,animate)+'</div>'+
     (expandedHtml?'<div class="esi-expanded">'+expandedHtml+'</div>':'')+'</div>';
@@ -10219,10 +10313,13 @@ function renderRaw(animate){
   }
   animateSurpriseGauges();
   if(animate) animateSurpriseStrengthChart();
+  var scopeAll=document.getElementById('esiScopeAll');
+  if(scopeAll){ scopeAll.onclick=function(e){ e.stopPropagation(); activeRawCcy=null; esiSelectedCcy=null; expandedSurpriseCcy=null; renderRaw(); }; }
   var gotos=document.querySelectorAll("#tab-raw [data-goto]");
   for(var i=0;i<gotos.length;i++)gotos[i].onclick=function(){
     var c=this.dataset.goto;
-    expandedSurpriseCcy = (expandedSurpriseCcy===c) ? null : c;
+    activeRawCcy=c; esiSelectedCcy=c;
+    expandedSurpriseCcy=c;
     renderRaw();
   };
   var seasonEls=document.querySelectorAll("#tab-raw [data-role=\"ccyfield\"][data-field=\"seasonalityAvg\"]");
@@ -10413,14 +10510,14 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
     // of the earlier small/thin build. Axis gutter on the left for the Y labels. Ticks are
     // the 90D bound (auto, rounded to a clean multiple of 5, same approach as Overview's
     // Composite Strength chart).
-    var w=300,h=124,pad=8,axisGutter=32;
+    var w=(window.DX_TREND_DIMS&&DX_TREND_DIMS.w)||300,h=(window.DX_TREND_DIMS&&DX_TREND_DIMS.h)||124,pad=10,axisGutter=34;
     var plotW=w-axisGutter;
     var vals=series.map(function(s){ return s.val; });
-    var magnitude=Math.max.apply(null,vals.map(Math.abs));
-    var padAmt=Math.max(4,magnitude*.12);
-    var bound=Math.ceil((magnitude+padAmt)/5)*5;
-    if(bound<20) bound=20; // keep the zero line comfortably inside the drawn range, not hugging an edge
-    var min=-bound, max=bound;
+    var vmin=Math.min.apply(null,vals), vmax=Math.max.apply(null,vals);
+    var padAmt=Math.max(3,(vmax-vmin)*.14);
+    var min=Math.floor(Math.min(0,vmin-padAmt)/5)*5, max=Math.ceil(Math.max(0,vmax+padAmt)/5)*5;
+    if(max-min<20){ min-=10; max+=10; }
+    var bound=Math.max(Math.abs(min),max);
     function yPos(v){ return h-pad-((v-min)/(max-min))*(h-2*pad); }
     var xy=series.map(function(s,i){
       var x=axisGutter+pad+(i/(series.length-1))*(plotW-2*pad);
@@ -10452,7 +10549,7 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
     // circle instead. When animating, the dot starts invisible and is faded in by
     // animateDetailTrend() timed to land right as the line finishes drawing in --
     // it should not just sit there fully-formed while the line is still catching up to it.
-    var liveDot = liveIdx>=0 ? '<circle class="detail-trend-live-dot detail-trend-round-fix" cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="4.2" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2.4" pointer-events="none"'+(animate?' style="opacity:0;transition:opacity .22s ease .66s;"':'')+'/>' : '';
+    var liveDot = liveIdx>=0 ? '<circle class="detail-trend-live-dot detail-trend-round-fix" cx="'+xy[liveIdx][0].toFixed(1)+'" cy="'+xy[liveIdx][1].toFixed(1)+'" r="3.6" fill="'+fillVar+'" stroke="'+fillVar+'" stroke-opacity=".22" stroke-width="7" pointer-events="none"'+(animate?' style="opacity:0;transition:opacity .22s ease .66s;"':'')+'/>' : '';
     // Single zero reference line, in place of the old +/-14 shaded band. Styled as a plain
     // gridline now -- same faint neutral color/weight as the other axis lines, no dash, no
     // gold -- so it doesn't pop off the chart; it should just read as the normal zero tick.
@@ -10469,9 +10566,10 @@ function renderDetailTrendPanel(ccy, liveScore, animate){
     axisSvg+='<text x="'+(axisGutter-6)+'" y="'+(yZero+4).toFixed(1)+'" text-anchor="end" font-size="12" font-weight="600" fill="var(--text-faint)" font-family="Inter,system-ui,sans-serif">0</text>';
     spark='<svg class="detail-trend-spark" data-ccy="'+esc(ccy)+'" data-days="'+esc(series.map(function(s){return s.date;}).join(','))+'" data-vals="'+esc(series.map(function(s){return s.val;}).join(','))+'" data-live-idx="'+liveIdx+'" data-axis-gutter="'+axisGutter+'" data-view-w="'+w+'" viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="none" style="overflow:visible;touch-action:none;cursor:crosshair;display:block;">'+
       axisSvg+zeroLine+
+      '<polygon points="'+xy[0][0].toFixed(1)+','+(h-pad)+' '+linePts+' '+xy[xy.length-1][0].toFixed(1)+','+(h-pad)+'" fill="'+fillVar+'" opacity=".08" pointer-events="none"/>'+
       '<polyline class="detail-trend-line" fill="none" stroke="'+fillVar+'" stroke-width="2.4" points="'+linePts+'" pointer-events="none"'+(animate?' style="stroke-dasharray:'+lineLenStr+';stroke-dashoffset:'+lineLenStr+';transition:stroke-dashoffset .7s ease;"':'')+'/>'+
       liveDot+
-      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot detail-trend-round-fix" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="4.6" fill="var(--panel)" stroke="'+fillVar+'" stroke-width="2"/></g>'+
+      '<g class="detail-trend-crosshair" opacity="0" pointer-events="none"><circle class="detail-trend-hover-dot detail-trend-round-fix" cx="'+xy[xy.length-1][0].toFixed(1)+'" cy="'+xy[xy.length-1][1].toFixed(1)+'" r="3.6" fill="'+fillVar+'" stroke="'+fillVar+'" stroke-opacity=".22" stroke-width="7"/></g>'+
       hitPts+
       '<rect x="'+axisGutter+'" y="0" width="'+plotW+'" height="'+h+'" fill="transparent" pointer-events="all" class="detail-trend-hitbox"/>'+
       '</svg>';
@@ -10543,7 +10641,7 @@ function renderDetail(){
   if(!DATA) return;
   var html='<div class="ccy-pills" id="detailPills"></div><div id="detailBody"></div>';
   document.getElementById("tab-detail").innerHTML=html;
-  var pillsHtml=""; for(var i=0;i<CCYS.length;i++){ pillsHtml += '<button class="ccy-pill '+(CCYS[i]===activeDetailCcy?"active":"")+'" data-ccy="'+CCYS[i]+'">'+flagImg(CCYS[i])+' '+CCYS[i]+'</button>'; }
+  var pillsHtml=""; for(var i=0;i<CCYS.length;i++){ var pSc=0; try{ pSc=Math.round(compositeFor(CCYS[i])); }catch(e){} pillsHtml += '<button class="ccy-pill '+(CCYS[i]===activeDetailCcy?"active":"")+'" data-ccy="'+CCYS[i]+'">'+flagImg(CCYS[i])+' <span class="pill-code">'+CCYS[i]+'</span><span class="pill-sc '+(pSc>0?'up':pSc<0?'down':'')+'">'+(pSc>0?'+':'')+pSc+'</span></button>'; }
   document.getElementById("detailPills").innerHTML=pillsHtml;
   var pills=document.querySelectorAll("#detailPills .ccy-pill");
   for(var p=0;p<pills.length;p++){ pills[p].onclick=function(){ activeDetailCcy=this.dataset.ccy; renderDetail(); }; }
@@ -10613,10 +10711,21 @@ function policyMarketInfo(ccy){
   if(p.sign!==0 && marketSign===p.sign){ rel="They agree"; relCls="policy-match"; }
   else if(p.sign!==0 && marketSign===-p.sign){ rel="They disagree"; relCls="policy-diverge"; }
   else if(p.sign!==0 && marketSign===0){ rel="Market not confirming"; relCls="policy-watch"; }
-  else if(p.sign===0 && marketSign>0){ rel="Market is starting to price a hike"; relCls="policy-watch"; }
-  else if(p.sign===0 && marketSign<0){ rel="Market is starting to price a cut"; relCls="policy-watch"; }
-  else if(p.sign===0 && marketSign===0){ rel="Both are neutral"; relCls="policy-match"; }
+  else if(p.sign===0 && marketSign>0){ rel="Market is starting to price a hike"; relCls="policy-hike"; }
+  else if(p.sign===0 && marketSign<0){ rel="Market is starting to price a cut"; relCls="policy-cut"; }
+  else if(p.sign===0 && marketSign===0){ rel="Both are neutral"; relCls="policy-flat"; }
   return {policy:p,market:market,marketSign:marketSign,relation:rel,relationCls:relCls,y:y};
+}
+function policySummary(ccy){
+  var p=policyStanceInfo(ccy);
+  var gScore=cbGuidanceScore(ccy), gSign=gScore>=1?1:(gScore<=-1?-1:0);
+  var tone=cbGuidanceLabel(gScore).toLowerCase();
+  var act=cbPolicyAction(ccy);
+  var stance=p.sign>0?"hawkish":(p.sign<0?"dovish":"neutral");
+  var next=p.sign>0?"a hike":(p.sign<0?"a cut":"a hold");
+  var did=act==="HIKE"?"raised rates":(act==="CUT"?"cut rates":"held rates");
+  var conn=(gSign!==0 && gSign!==p.sign)?"But at the last meeting it ":"At the last meeting it ";
+  return "Policy stance is "+stance+", with "+next+" expected next. "+conn+did+", and its guidance was "+tone+".";
 }
 function renderPolicyMonitor(ccy){
   var x=policyMarketInfo(ccy), p=x.policy;
@@ -10624,8 +10733,8 @@ function renderPolicyMonitor(ccy){
   return '<div class="policy-monitor" id="policyMonitor-'+ccy+'">'+
     '<div class="policy-monitor-head"><span class="policy-monitor-title">Policy Monitor</span></div>'+
     '<div class="policy-monitor-grid">'+
-      '<div class="policy-metric"><span class="policy-k">Policy stance</span><span id="policyStance-'+ccy+'" class="policy-value '+p.cls+'">'+p.label+'</span><span class="policy-sub">Next move: '+p.move+' · '+esc(p.conviction)+'</span><span class="policy-sub" id="policyGuidanceStance-'+ccy+'">'+esc(cbStanceLabel(ccy))+'</span></div>'+
-      '<div class="policy-metric"><span class="policy-k">2Y market signal</span><span id="policyMarket-'+ccy+'" class="policy-value '+(x.y==null?'policy-neutral':(x.y>1?'policy-bull':x.y<-1?'policy-bear':'policy-neutral'))+'">'+x.market+' <span class="policy-score">'+yTxt+'</span></span><span class="policy-sub">Own-history 2Y score</span></div>'+ 
+      '<div class="policy-metric"><span class="policy-k">Policy stance</span><span id="policyStance-'+ccy+'" class="policy-value '+p.cls+'">'+p.label+'</span><span class="policy-sub policy-summary" id="policySummary-'+ccy+'">'+esc(policySummary(ccy))+'</span></div>'+
+      '<div class="policy-metric"><span class="policy-k">2Y market signal</span><span id="policyMarket-'+ccy+'" class="policy-value '+(x.y==null?'policy-neutral':(x.y>1?'policy-bull':x.y<-1?'policy-bear':'policy-neutral'))+'">'+x.market+' <span class="policy-score">'+yTxt+'</span></span></div>'+
     '</div>'+
     '<div class="policy-relation '+x.relationCls+'"><span>Policy vs market</span><strong id="policyRelation-'+ccy+'">'+x.relation+'</strong></div>'+
   '</div>';
@@ -10634,10 +10743,103 @@ function updatePolicyMonitor(ccy){
   var root=document.getElementById("policyMonitor-"+ccy); if(!root) return;
   var x=policyMarketInfo(ccy), p=x.policy;
   var st=document.getElementById("policyStance-"+ccy); if(st){ st.textContent=p.label; st.className="policy-value "+p.cls; }
-  var gs=document.getElementById("policyGuidanceStance-"+ccy); if(gs){ gs.textContent=cbStanceLabel(ccy); }
+  var gs=document.getElementById("policySummary-"+ccy); if(gs){ gs.textContent=policySummary(ccy); }
   var mk=document.getElementById("policyMarket-"+ccy); if(mk){ var yTxt=x.y==null?"—":((x.y>0?"+":"")+x.y); mk.innerHTML=x.market+' <span class="policy-score">'+yTxt+'</span>'; mk.className="policy-value "+(x.y==null||Math.abs(x.y)<=1?"policy-neutral":x.y>0?"policy-bull":"policy-bear"); }
   var rel=document.getElementById("policyRelation-"+ccy); if(rel){ rel.textContent=x.relation; rel.parentElement.className="policy-relation "+x.relationCls; }
 }
+
+/* ===== Currency Detail: premium layout helpers ===== */
+function dxTile(k,id,txt,styleStr,scale,subHtml,goto,ccy,valCls){
+  return '<div class="dx-tile'+(goto&&goto!=='raw'?' stat-nav':(goto==='raw'?' stat-nav':''))+'"'+(goto?' data-goto-tab="'+goto+'" data-goto-ccy="'+ccy+'"':'')+' data-scale="'+scale+'">'+
+    '<span class="dx-k">'+k+'</span>'+
+    '<div class="dx-tv"><span class="'+(valCls||'mono')+'" id="'+id+'" style="'+styleStr+'">'+txt+'</span></div>'+
+    '<span class="dx-bar"><i></i></span>'+
+    '<div class="dx-ts">'+subHtml+'</div>'+
+  '</div>';
+}
+function dxSync(anim){
+  var pend=[];
+  var root=document.querySelector('#tab-detail .dx'); if(!root) return;
+  var tiles=root.querySelectorAll('.dx-tile');
+  for(var i=0;i<tiles.length;i++){
+    var t=tiles[i], vEl=t.querySelector('.dx-tv span'), bar=t.querySelector('.dx-bar i'); if(!vEl||!bar) continue;
+    var scale=parseFloat(t.getAttribute('data-scale'))||10;
+    if(vEl.id.indexOf('statFund-')===0){ try{ var fm=fundFor(activeDetailCcy).max; if(fm) scale=fm; }catch(e){} }
+    var v=parseFloat(String(vEl.textContent).replace('\u2212','-').replace(/[^0-9.\-]/g,''));
+    if(!isFinite(v)) v=0;
+    var w=Math.min(50,Math.abs(v)/scale*50), lf=(v>=0?50:50-w);
+    if(anim){ bar.style.transition='none'; bar.style.width='0%'; bar.style.left='50%'; pend.push([bar,w,lf]); } else { bar.style.width=w+'%'; bar.style.left=lf+'%'; }
+    bar.className=v>0?'up':(v<0?'down':'');
+    t.classList.toggle('is-up',v>0); t.classList.toggle('is-down',v<0);
+  }
+  if(pend.length){ void root.offsetWidth; requestAnimationFrame(function(){ requestAnimationFrame(function(){ pend.forEach(function(a){ a[0].style.transition=''; a[0].style.width=a[1]+'%'; a[0].style.left=a[2]+'%'; }); }); }); }
+  var chip=root.querySelector('[id^="gaugeBiasChip-"]');
+  if(chip){
+    var txt=chip.textContent||'';
+    root.classList.remove('dx-bull','dx-bear','dx-neu');
+    root.classList.add(txt.indexOf('Bull')>=0?'dx-bull':txt.indexOf('Bear')>=0?'dx-bear':'dx-neu');
+  }
+  var sc=document.querySelector('#tab-detail [id^="gaugeScoreTxt-"]');
+  var pill=document.querySelector('#detailPills .ccy-pill.active .pill-sc');
+  if(sc&&pill&&!window.dxAnimating){ pill.textContent=sc.textContent; pill.className='pill-sc '+(parseFloat(sc.textContent)>0?'up':parseFloat(sc.textContent)<0?'down':''); }
+}
+var dxObserver=null;
+function dxWatch(){
+  var body=document.getElementById('detailBody'); if(!body||!window.MutationObserver) return;
+  if(dxObserver) dxObserver.disconnect();
+  var queued=false;
+  dxObserver=new MutationObserver(function(){ if(queued||window.dxAnimating) return; queued=true; requestAnimationFrame(function(){ queued=false; dxSync(); }); });
+  dxObserver.observe(body,{childList:true,characterData:true,subtree:true});
+}
+
+/* ===== Currency Detail: intro blurb, count-in animation, trend fitting ===== */
+function dxIntro(txt){
+  var t=String(txt||'').replace(/\s+/g,' ').trim();
+  if(!t) return 'No forward guidance entered yet.';
+  var parts=t.split(/(?<=[.!?])\s+(?=[A-Z"'\u201C(])/), out=parts[0].trim();
+  if(parts.length>1 && out.length<95 && (out+' '+parts[1].trim()).length<=185) out=out+' '+parts[1].trim();
+  if(out.length>190){ out=out.slice(0,185); out=out.slice(0,out.lastIndexOf(' '))+'\u2026'; }
+  return out;
+}
+window.dxAnimToken=0;
+function dxAnimateIn(ccy, sc){
+  var needle=document.getElementById('gaugeNeedle-'+ccy), num=document.getElementById('gaugeScoreTxt-'+ccy);
+  if(!needle||!num||typeof gaugeGeom!=='function') return;
+  var target=Number(sc)||0, t0=null, dur=800, tok=++window.dxAnimToken;
+  window.dxAnimating=true;
+  function put(v){ var g=gaugeGeom(v); needle.setAttribute('x2',g.nx); needle.setAttribute('y2',g.ny); }
+  put(0); num.textContent=fmt(0);
+  function step(ts){
+    if(tok!==window.dxAnimToken) return;
+    if(t0===null) t0=ts;
+    var p=Math.min(1,(ts-t0)/dur), e=1-Math.pow(1-p,3), v=target*e;
+    put(v); num.textContent=fmt(Math.round(v));
+    if(p<1){ requestAnimationFrame(step); }
+    else { put(target); num.textContent=fmt(sc); window.dxAnimating=false; dxSync(); }
+  }
+  requestAnimationFrame(step);
+}
+function dxFitTrend(ccy, sc, animate){
+  var wrap=document.getElementById('trendPanelWrap-'+ccy); if(!wrap) return;
+  var svg=wrap.querySelector('.detail-trend-spark'); if(!svg) return;
+  var r=svg.getBoundingClientRect(); if(r.width<80||r.height<60) return;
+  var w=Math.round(r.width), h=Math.round(r.height);
+  if(svg.getAttribute('data-view-w')===String(w) && window.DX_TREND_DIMS && DX_TREND_DIMS.h===h) return;
+  window.DX_TREND_DIMS={w:w,h:h};
+  wrap.innerHTML=renderDetailTrendPanel(ccy, sc, animate);
+}
+var _dxRz;
+window.addEventListener('resize', function(){
+  clearTimeout(_dxRz);
+  _dxRz=setTimeout(function(){
+    var t=document.getElementById('tab-detail');
+    if(!t||!t.classList.contains('active')||!window.DATA||!DATA[activeDetailCcy]) return;
+    dxFitTrend(activeDetailCcy, compositeFor(activeDetailCcy), false);
+    if(typeof bindDetailTrendHover==='function') bindDetailTrendHover();
+    fixTrendDotAspect();
+  },200);
+});
+
 function renderDetailBody(ccy, animate){
   if(!DATA || !DATA[ccy]) return;
   var d=DATA[ccy], f=fundFor(ccy), sc=compositeFor(ccy), label=bandLabel(sc), scCot=seasCotScore(ccy);
@@ -10652,69 +10854,95 @@ function renderDetailBody(ccy, animate){
   var alignColor = !align ? "color:var(--text-faint);" : (align.pct>=80?(align.dir==="Bullish"?"color:var(--bullish-strong);":"color:var(--bearish-strong);") : "color:var(--text-dim);");
   var alignTxt = !align ? "No clear lean yet" : ((flagged?'&#9873; ':'')+align.pct+"% of the evidence agrees "+align.dir.toLowerCase()+" ("+alignmentLabel(align)+")");
   
-  var html = '<div class="card"><div class="detail-grid">'+
-    '<div class="left-col">'+
-      '<div class="ccy-hero">'+flagImg(ccy)+'<span class="ccy-big">'+ccy+'</span> <span class="'+chipClass(label)+'" id="gaugeBiasChip-'+ccy+'">'+label+'</span></div>'+
-      '<div class="ccy-full">'+CCY_NAME[ccy]+'</div>'+
-      gaugeSvg(ccy,sc)+
-      '<div class="gauge-num mono" id="gaugeScoreTxt-'+ccy+'">'+fmt(sc)+'</div>'+
-      '<div class="stat-block">'+
-        '<div class="stat-row"><span>Currency regime score</span><span class="stat-chip '+chipClass(label)+'" id="statOverall-'+ccy+'">'+fmt(sc)+'</span></div>'+
-        '<div class="stat-row" style="align-items:flex-start;"><span>Alignment</span><span class="mono" id="statAlign-'+ccy+'" style="'+alignColor+'text-align:right;max-width:190px;font-size:12.5px;font-weight:600;">'+alignTxt+'</span></div>'+
-        '<div class="stat-row stat-nav" data-goto-tab="cot" data-goto-ccy="'+ccy+'" title="Open COT Regime for '+ccy+'"><span>COT net position score</span><span class="mono" id="statCotNet-'+ccy+'" style="'+numColor(cotNetScore)+'">'+(cotNetScore>0?"+":"")+cotNetScore+'</span></div>'+
-        '<div class="stat-row stat-nav" data-goto-tab="cot" data-goto-ccy="'+ccy+'" title="Open COT Regime for '+ccy+'"><span>COT weekly change score</span><span class="mono" id="statCotWow-'+ccy+'" style="'+numColor(cotWowScore)+'">'+(cotWowScore>0?"+":"")+cotWowScore+'</span></div>'+
-        '<div class="stat-row"><span>CB stance score</span><span class="mono" id="statCb-'+ccy+'" style="'+numColor(cbScore)+'">'+(cbScore>0?"+":"")+Math.round(cbScore)+'</span></div>'+        '<div class="stat-row"><span>CB stance read</span><span class="mono" id="statCbRead-'+ccy+'" style="'+numColor(cbScore)+'">'+esc(cbStanceLabel(ccy))+'</span></div>'+
-        '<div class="stat-row"><span>Seasonality score</span><span class="mono" id="statSeason-'+ccy+'" style="'+numColor(seasonalitySign(d))+'">'+fmt(seasonalitySign(d))+'</span></div>'+
-        '<div class="stat-row stat-nav" data-goto-tab="risk" data-goto-ccy="'+ccy+'" title="Open Risk Sentiment"><span>Risk sentiment contribution</span><span class="mono" id="statRisk-'+ccy+'" style="'+numColor(riskContributionFor(ccy))+'">'+(riskContributionFor(ccy)>0?"+":"")+riskContributionFor(ccy).toFixed(1)+'</span></div>'+
-        '<div class="stat-row stat-nav" data-goto-tab="raw" data-goto-ccy="'+ccy+'" title="Open Economic Surprise Index for '+ccy+'"><span>Fundamentals score</span><span class="mono" id="statFund-'+ccy+'" style="'+numColor(f.raw)+'">'+(f.raw>0?"+":"")+f.raw+'</span></div>'+
-        '<div class="stat-row stat-nav" style="align-items:flex-start;" data-goto-tab="yield2y" data-goto-ccy="'+ccy+'" title="Open Bond Yield Spread for '+ccy+'"><span>Own-history 2Y score</span><div style="text-align:right;"><span class="mono '+y2TrendClass(y2Score)+'" id="stat2YScore-'+ccy+'">'+y2ScoreFmt(y2Score)+'</span><div class="y2-small '+y2TrendClass(y2Score)+'" id="stat2YTrend-'+ccy+'">'+esc(y2TrendLabel(y2Score))+'</div></div></div>'+
+  var cotL=cotLatest(ccy);
+  var riskPts=riskContributionFor(ccy);
+  var sgnTxt=function(n){ return (n>0?"+":"")+n; };
+  var regCls=(label.indexOf("Bull")>=0)?"dx-bull":(label.indexOf("Bear")>=0)?"dx-bear":"dx-neu";
+  var html = '<div class="dx '+regCls+'" id="dx-'+ccy+'">'+
+    '<div class="dx-smoke" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'+
+    '<section class="dx-card dx-hero">'+
+      '<div class="dx-id">'+
+        '<div class="dx-id-top">'+flagImg(ccy)+'<div class="dx-id-names"><div class="dx-code">'+ccy+'</div><div class="dx-name">'+CCY_NAME[ccy]+'</div></div></div>'+
+        '<span class="'+chipClass(label)+'" id="gaugeBiasChip-'+ccy+'">'+label+'</span>'+
+        '<div class="dx-align"><span class="dx-k">Evidence alignment</span><span id="statAlign-'+ccy+'" style="'+alignColor+'">'+alignTxt+'</span></div>'+
       '</div>'+
-      '<div class="rate-box">'+
-        '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Interest rate</span>'+
-          '<input type="text" data-role="ccyfield" data-ccy="'+ccy+'" data-field="interestRate" value="'+esc(d.interestRate)+'" style="width:64px;" '+(unlockedLocally?"":"disabled")+'></div>'+
-        '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Next move</span>'+
-          (unlockedLocally?
-            '<select class="move-select '+d.nextMove+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="nextMove">'+
-            ["HIKE","HOLD","CUT"].map(function(o){ return '<option '+(o===d.nextMove?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
-            : '<span class="move-select '+d.nextMove+' static-chip">'+d.nextMove+'</span>')+'</div>'+
-        '<div class="rate-line"><span style="font-size:13px;color:var(--text-dim);">Conviction</span>'+
-          (unlockedLocally?
-            '<select class="conv-select '+d.conviction.split(" ")[0]+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="conviction">'+
-            ["High conviction","Medium conviction","Low conviction"].map(function(o){ return '<option '+(o===d.conviction?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
-            : '<span class="conv-select '+d.conviction.split(" ")[0]+' static-chip">'+d.conviction+'</span>')+'</div>'+
-        '<button type="button" class="guidance-trigger" data-ccy="'+ccy+'" aria-label="Open forward guidance for '+ccy+'">Forward guidance</button>'+
+      '<div class="dx-gauge">'+gaugeSvg(ccy,sc)+'<div class="gauge-num mono" id="gaugeScoreTxt-'+ccy+'">'+fmt(sc)+'</div><div class="dx-gauge-cap">Currency regime score</div></div>'+
+      '<div class="dx-builder">'+
+        '<div class="dx-group"><div class="dx-gh">Main drivers</div><div class="dx-tiles">'+
+          dxTile('Fundamentals','statFund-'+ccy,sgnTxt(f.raw),numColor(f.raw),f.max||100,'<span>Macro data</span>','raw',ccy)+
+          dxTile('2Y yield','stat2YScore-'+ccy,y2ScoreFmt(y2Score),'',10,'<span id="stat2YTrend-'+ccy+'" class="y2-small '+y2TrendClass(y2Score)+'">'+esc(y2TrendLabel(y2Score))+'</span>','yield2y',ccy,'mono '+y2TrendClass(y2Score))+
+          dxTile('CB stance','statCb-'+ccy,sgnTxt(Math.round(cbScore)),numColor(cbScore),10,'<span id="statCbRead-'+ccy+'" style="'+numColor(cbScore)+'">'+esc(cbStanceLabel(ccy))+'</span>','guidance',ccy)+
+        '</div></div>'+
+        '<div class="dx-group"><div class="dx-gh">Positioning</div><div class="dx-tiles">'+
+          dxTile('COT net','statCotNet-'+ccy,sgnTxt(cotNetScore),numColor(cotNetScore),3,'<span>Net position</span>','cot',ccy)+
+          dxTile('COT weekly','statCotWow-'+ccy,sgnTxt(cotWowScore),numColor(cotWowScore),3,'<span>Weekly flow</span>','cot',ccy)+
+        '</div></div>'+
+        '<div class="dx-group"><div class="dx-gh">Context</div><div class="dx-tiles">'+
+          dxTile('Season','statSeason-'+ccy,fmt(seasonalitySign(d)),numColor(seasonalitySign(d)),1,'<span>Month avg</span>','seasonality',ccy)+
+          dxTile('Risk','statRisk-'+ccy,(riskPts>0?"+":"")+riskPts.toFixed(1),numColor(riskPts),(CCY_W&&CCY_W.risk)||5,'<span>Points</span>','risk',ccy)+
+        '</div></div>'+
       '</div>'+
-    '</div>'+
-    '<div class="right-col">'+
-      '<div class="info-trend-row">'+
-      '<div class="info-grid">'+
-        '<div class="info-item"><span class="k">Seasonality Avg</span>'+
-          '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">'+
-            '<input class="seasonality-avg-input" id="seasAvg-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(d.seasonalityAvg||'')+'" '+(unlockedLocally?"":"disabled")+'>'+
-            '<span class="seasonality-derived '+seasonalityLabel(d)+'" id="seasTxt-'+ccy+'">'+seasonalityLabel(d)+'</span>'+
-          '</div>'+
-          '<div style="display:flex;align-items:center;gap:7px;margin-top:4px;">'+
-            '<input class="seasonality-month-input" id="seasMonthInput-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityMonth" type="month" value="'+esc(d.seasonalityMonth||currentSeasonalityMonthKey())+'" '+(unlockedLocally?"":"disabled")+'>'+
-            '<span class="seasonality-month" id="seasMonth-'+ccy+'">'+seasonalityMonthLabel(d.seasonalityMonth||currentSeasonalityMonthKey())+' average</span>'+
-          '</div>'+
-        '</div>'+
-        
-        '<div class="info-item risk-detail-item"><span class="k">Risk sentiment</span><span class="v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
-        '<div class="info-item institutional-bias-item"><span class="k">Institutional activity bias</span><span class="v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+        '<div class="info-item latest-position-item"><span class="k">Latest Positioning Change</span><span class="v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+        '<div class="info-item cot-net-item"><span class="k">COT net positioning</span><span class="v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).net)+'">'+cotFormat(cotLatest(ccy).net)+'</span></div>'+        '<div class="info-item cot-change-item"><span class="k">COT WoW change</span><span class="v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotLatest(ccy).netChg)+'">'+cotFormat(cotLatest(ccy).netChg)+'</span></div>'+        '<div class="info-item"><span class="k">Long / Short</span><span class="v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotLatest(ccy);if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+        '<div class="info-item"><span class="k">COT regime</span><span class="v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+      '</div>'+
-      renderPolicyMonitor(ccy)+
-      renderDetailTrendPanelWrap(ccy, sc, animate)+
-      '</div>';
+    '</section>'+
+    '<div class="dx-main">'+
+      '<section class="dx-card dx-ind">';
   for(var s=0;s<sectors.length;s++){
     var key=sectors[s][0], lab=sectors[s][1], calc=sectors[s][2], band=sectorBand(calc.raw,calc.max);
-    html += '<div class="sector-block"><div class="sector-title"><span class="label">'+lab+'</span>'+
+    html += '<div class="dx-sector"><div class="dx-st"><span class="dx-sl">'+lab+'</span>'+
       '<span class="'+sectorChipClass(band.label)+'" id="band-'+ccy+'-'+key+'">'+band.label+'</span></div>'+
       '<table><thead><tr><th>Indicator</th><th class="weight-col">Weight</th><th>Actual</th><th>Forecast</th><th>Surprise</th><th>Bias</th><th></th></tr></thead>'+
       '<tbody>'+indicatorRows(ccy,key,d[key])+'</tbody></table>'+
       (unlockedLocally? '<button class="add-btn" data-action="add" data-ccy="'+ccy+'" data-sector="'+key+'">+ add indicator</button>':'')+'</div>';
   }
-  html += '</div></div></div>';
+  html += '</section>'+
+      '<section class="dx-card dx-cb">'+
+        '<header class="dx-ch"><span>Central bank</span></header>'+
+        '<div class="dx-rate">'+
+          '<div class="dx-rc"><span class="dx-k">Rate</span><input type="text" data-role="ccyfield" data-ccy="'+ccy+'" data-field="interestRate" value="'+esc(d.interestRate)+'" '+(unlockedLocally?"":"disabled")+'></div>'+
+          '<div class="dx-rc"><span class="dx-k">Next move</span>'+
+            (unlockedLocally?
+              '<select class="move-select '+d.nextMove+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="nextMove">'+
+              ["HIKE","HOLD","CUT"].map(function(o){ return '<option '+(o===d.nextMove?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+              : '<span class="move-select '+d.nextMove+' static-chip">'+d.nextMove+'</span>')+'</div>'+
+          '<div class="dx-rc"><span class="dx-k">Conviction</span>'+
+            (unlockedLocally?
+              '<select class="conv-select '+d.conviction.split(" ")[0]+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="conviction">'+
+              ["High conviction","Medium conviction","Low conviction"].map(function(o){ return '<option '+(o===d.conviction?"selected":"")+'>'+o+'</option>'; }).join("")+'</select>'
+              : '<span class="conv-select '+d.conviction.split(" ")[0]+' static-chip">'+d.conviction.replace(" conviction","")+'</span>')+'</div>'+
+        '</div>'+
+        renderPolicyMonitor(ccy)+
+        '<div class="dx-gd"><span class="dx-k">Forward guidance</span><p>'+esc(dxIntro(d.guidance))+'</p></div>'+
+        '<button type="button" class="guidance-trigger" data-ccy="'+ccy+'" aria-label="Open forward guidance for '+ccy+'">Open full guidance <span aria-hidden="true">&rarr;</span></button>'+
+      '</section>'+
+      '<div class="dx-col">'+
+        '<section class="dx-card dx-trend">'+
+          '<header class="dx-ch"><span>Composite trend</span><span class="dx-ch-r">90 days</span></header>'+
+          renderDetailTrendPanelWrap(ccy, sc, animate)+
+        '</section>'+
+        '<section class="dx-card dx-pos">'+
+          '<header class="dx-ch"><span>Positioning &amp; context</span></header>'+
+          '<div class="dx-fields">'+
+            '<div class="dx-f"><span class="dx-k">Institutional bias</span><span class="dx-v" id="instBiasTxt-'+ccy+'" style="'+instColorStyle(cotInstBand(cotScore))+'">'+cotInstBand(cotScore)+'</span></div>'+
+            '<div class="dx-f"><span class="dx-k">COT regime</span><span class="dx-v" id="cotRegimeTxt-'+ccy+'">'+cotCrowding(ccy).label+'</span></div>'+
+            '<div class="dx-f"><span class="dx-k">COT net</span><span class="dx-v mono" id="cotNetTxt-'+ccy+'" style="'+numColor(cotL.net)+'">'+cotFormat(cotL.net)+'</span></div>'+
+            '<div class="dx-f"><span class="dx-k">COT WoW</span><span class="dx-v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotL.netChg)+'">'+cotFormat(cotL.netChg)+'</span></div>'+
+            '<div class="dx-f"><span class="dx-k">Long / Short</span><span class="dx-v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotL;if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+
+            '<div class="dx-f"><span class="dx-k">Latest change</span><span class="dx-v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+
+            '<div class="dx-f"><span class="dx-k">Risk sentiment</span><span class="dx-v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
+            '<div class="dx-f dx-season"><span class="dx-k">Seasonality</span><span class="dx-v">'+
+              '<input class="seasonality-avg-input" id="seasAvg-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(d.seasonalityAvg||'')+'" '+(unlockedLocally?"":"disabled")+'>'+
+              '<span class="seasonality-derived '+seasonalityLabel(d)+'" id="seasTxt-'+ccy+'">'+seasonalityLabel(d)+'</span>'+
+            '</span></div>'+
+            '<div class="dx-f dx-season"><span class="dx-k" id="seasMonth-'+ccy+'">'+seasonalityMonthLabel(d.seasonalityMonth||currentSeasonalityMonthKey())+' average</span><span class="dx-v">'+
+              '<input class="seasonality-month-input" id="seasMonthInput-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityMonth" type="month" value="'+esc(d.seasonalityMonth||currentSeasonalityMonthKey())+'" '+(unlockedLocally?"":"disabled")+'>'+
+            '</span></div>'+
+          '</div>'+
+        '</section>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
   document.getElementById("detailBody").innerHTML=html;
   wireDetailEvents();
+  dxSync(!!animate); dxWatch(); dxFitTrend(ccy, sc, animate); if(animate){ dxAnimateIn(ccy, sc); }
   var gEl=document.querySelector('.guidance-box[data-ccy="'+ccy+'"]');
   // Measuring immediately after innerHTML= can happen before web fonts / sibling layout
   // (sparklines, cards) have finished settling, which is exactly the "wrong on first load,
@@ -10729,6 +10957,35 @@ function renderDetailBody(ccy, animate){
   runGrow(); // also run immediately so it's not blank/collapsed while waiting on fonts
 }
 
+
+var seasonalitySheetState={ccy:null};
+function ensureSeasonalitySheet(){
+  var bd=document.getElementById('seasonalitySheetBackdrop'), sh=document.getElementById('seasonalitySheet');
+  if(bd&&sh) return {backdrop:bd,sheet:sh};
+  bd=document.createElement('div'); bd.id='seasonalitySheetBackdrop'; bd.className='seasonality-sheet-backdrop';
+  sh=document.createElement('section'); sh.id='seasonalitySheet'; sh.className='seasonality-sheet'; sh.setAttribute('role','dialog'); sh.setAttribute('aria-modal','true');
+  document.body.appendChild(bd); document.body.appendChild(sh);
+  bd.addEventListener('click',function(e){if(e.target===bd) closeSeasonalitySheet();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&sh.classList.contains('open')) closeSeasonalitySheet();});
+  return {backdrop:bd,sheet:sh};
+}
+function openSeasonalitySheet(ccy,trigger){
+  if(!DATA||!DATA[ccy]) return;
+  var ui=ensureSeasonalitySheet(), d=DATA[ccy], n=seasonalityAvgNum(d), label=seasonalityLabel(d), sign=seasonalitySign(d);
+  seasonalitySheetState.ccy=ccy;
+  ui.sheet.innerHTML='<div class="seasonality-sheet-head"><div>'+flagImg(ccy)+' <b>'+esc(ccy)+'</b><span>'+esc(CCY_NAME[ccy]||'')+'</span></div><button type="button" class="seasonality-sheet-close">×</button></div>'+
+    '<div class="seasonality-sheet-kicker">Seasonality</div>'+
+    '<div class="seasonality-sheet-value '+(sign>0?'pos':sign<0?'neg':'neu')+'">'+(n==null?'—':(n>0?'+':'')+Number(n).toFixed(2)+'%')+'</div>'+
+    '<div class="seasonality-sheet-label '+(sign>0?'pos':sign<0?'neg':'neu')+'">'+esc(label)+'</div>'+
+    '<div class="seasonality-sheet-month">'+esc(seasonalityMonthLabel(d.seasonalityMonth||currentSeasonalityMonthKey()))+' average</div>'+
+    '<div class="seasonality-sheet-note">Current month-average seasonal reading for '+esc(ccy)+'.</div>';
+  ui.sheet.querySelector('.seasonality-sheet-close').onclick=closeSeasonalitySheet;
+  ui.backdrop.classList.add('open'); ui.sheet.classList.add('open');
+}
+function closeSeasonalitySheet(){
+  var bd=document.getElementById('seasonalitySheetBackdrop'), sh=document.getElementById('seasonalitySheet');
+  if(sh) sh.classList.remove('open'); if(bd) bd.classList.remove('open'); seasonalitySheetState.ccy=null;
+}
 
 var guidanceSheetState={ccy:null,trigger:null};
 
@@ -10903,9 +11160,27 @@ function wireDetailEvents(){
   for(var n=0;n<navRows.length;n++){
     navRows[n].onclick=function(){
       var tab=this.dataset.gotoTab, ccy=this.dataset.gotoCcy;
-      if(tab==="cot"){ activeCotCcy=ccy; }
-      else if(tab==="raw"){ expandedSurpriseCcy=ccy; }
-      switchTab(tab);
+      if(tab==="cot"){
+        activeCotCcy=ccy;
+        switchTab(tab);
+      } else if(tab==="raw"){
+        activeRawCcy=ccy;
+        esiSelectedCcy=ccy;
+        expandedSurpriseCcy=ccy;
+        switchTab(tab);
+      } else if(tab==="yield2y"){
+        Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=0;});
+        Y2G_SEL[ccy]=1;
+        Y2G_MODE='level';
+        switchTab(tab);
+      } else if(tab==="risk"){
+        activeRiskCcy=ccy;
+        switchTab(tab);
+      } else if(tab==="guidance"){
+        openGuidanceSheet(ccy,this);
+      } else if(tab==="seasonality"){
+        openSeasonalitySheet(ccy,this);
+      }
     };
   }
 
@@ -12101,7 +12376,7 @@ function cotRankOfValue(v,ser){var vals=ser.map(function(o){return o.v;}), lo=Ma
 var COT_PT={W:680,H:280,L:52,R:16,T:16,B:28};
 function cotPtScale(ser){
   var vals=ser.map(function(o){return o.v;}).concat([0]), hi=Math.max.apply(null,vals), lo=Math.min.apply(null,vals), rng=Math.max(hi-lo,1);
-  var steps=[5,10,20,25,50,100], step=100; for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=7){step=steps[i];break;} }
+  var steps=[5,10,20,25,50,100], step=100; for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=4){step=steps[i];break;} }
   var mx=Math.ceil(hi/step)*step, mn=Math.floor(lo/step)*step;
   if(mx-hi<step*0.12) mx+=step*0.25; if(lo-mn<step*0.12) mn-=step*0.25; // keep the extreme point off the frame edge
   return {mx:mx,mn:mn,step:step,hi:hi,lo:lo};
@@ -12117,12 +12392,11 @@ function cotPairTrendSvg(pair,ser){
        '<text x="'+(P.L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" font-weight="600" fill="#8b8b93">'+(zero?'0':(tv>0?'+':'\u2212')+Math.abs(tv))+'</text>';
   }
   var pts=ser.map(function(o,i){return X(i).toFixed(1)+','+Y(o.v).toFixed(1);}).join(' ');
-  var last=ser[ser.length-1], col=last.v>=0?'#22c98b':'#f04455', xl='', n=ser.length;
+  var last=ser[ser.length-1], col=last.v>0?'#22c98b':last.v<0?'#f04455':'#8b8b93', xl='', n=ser.length;
   [0,Math.round(n*.2),Math.round(n*.4),Math.round(n*.6),Math.round(n*.8),n-1].forEach(function(i){xl+='<text x="'+X(i)+'" y="'+(P.H-8)+'" text-anchor="middle" font-size="11" fill="#8b8b93">'+ser[i].date.slice(5)+'</text>';});
   return '<svg id="cotPairTrendSvg" viewBox="0 0 '+P.W+' '+P.H+'" data-pair="'+pair+'" style="width:100%;height:auto;display:block;">'+g+
    '<polyline class="cot-pt-line" pathLength="1" points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'+
    '<circle class="cot-pt-end" cx="'+X(n-1)+'" cy="'+Y(last.v)+'" r="4.5" fill="'+col+'"/>'+xl+
-   '<g id="cotAxTag" data-y="'+Y(last.v).toFixed(1)+'" data-v="'+last.v+'"><rect id="cotAxTagR" x="1" width="'+(P.L-8)+'" height="18" rx="0" y="'+(Y(last.v)-9).toFixed(1)+'" fill="'+col+'"/><text id="cotAxTagT" x="'+((P.L-8)/2+1)+'" y="'+(Y(last.v)+4).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#0b0b0d">'+cotFmtPct(last.v,1)+'</text></g>'+
    '<line id="cotPtX" x1="0" x2="0" y1="'+P.T+'" y2="'+(P.H-P.B)+'" stroke="rgba(255,255,255,.3)" style="display:none"/><circle id="cotPtDot" r="4" fill="#fff" style="display:none"/></svg>';
 }
 function cotOpenPairTrend(pair){
@@ -12133,7 +12407,7 @@ function cotOpenPairTrend(pair){
   var bd=document.createElement('div'); bd.id='cotPairModal';
   bd.innerHTML='<div class="cot-pm-panel"><div class="cot-pm-head"><div><span class="cot-pm-pair">'+pair+'</span>'+
     (rk.cur!=null?'<span class="cot-pm-val" style="color:'+bcol+'">'+band+' \u00b7 '+cotFmtPct(rk.cur,1)+(rk.rangePos!=null?' \u00b7 '+Math.round(rk.rangePos)+'% of 52w range':'')+'</span>':'')+
-    '<div class="cot-pm-sub">LF Strength Index \u00b7 '+ser.length+' rolling weekly readings'+(ser.length?' \u00b7 '+ser[0].date+' to '+ser[ser.length-1].date:'')+' \u00b7 rated against its own history</div></div><button class="cot-pm-x" type="button">\u00d7</button></div>'+
+    '</div><button class="cot-pm-x" type="button">\u00d7</button></div>'+
     (ser.length>=2?cotPairTrendSvg(pair,ser):'<div class="cot-pm-sub" style="padding:24px 0;">Not enough weekly history yet.</div>')+'</div>';
   document.body.appendChild(bd);
   var t=document.getElementById('cotPairTip'); if(t) t.style.display='none';
@@ -12152,16 +12426,14 @@ function cotPairGridHtml(){
   });
   items.sort(function(a,b){return b.score-a.score;});
   var tiles=items.map(function(o){
-    var a=0.16+0.72*Math.min(Math.abs(o.score)/100,1);
-    var bg=o.score>=0?'rgba(38,166,154,'+a.toFixed(2)+')':'rgba(239,83,80,'+a.toFixed(2)+')';
-    var col=o.score>=0?'#7ee0d6':'#ff8a87';
-    return '<div class="cot-pair-tile" data-cot-pair="'+o.pair+'" style="background:'+bg+';padding:10px 8px;text-align:center;border-radius:3px;">'+
-      '<div style="font-size:12px;font-weight:700;color:var(--text);">'+o.pair+'</div>'+
-      '<div class="cot-pair-val" style="font-size:13px;font-weight:800;color:'+col+';margin-top:2px;">'+cotFmtPct(o.v,1)+'</div></div>';
+    var a=0.10+0.50*Math.min(Math.abs(o.score)/100,1);
+    var bg=o.score>=0?'rgba(34,201,139,'+a.toFixed(2)+')':'rgba(240,68,85,'+a.toFixed(2)+')';
+    return '<div class="cot-pair-tile" data-cot-pair="'+o.pair+'" style="background:'+bg+';">'+
+      '<span class="cp-n">'+o.pair+'</span><span class="cot-pair-val cp-v '+(o.score>=0?'up':'down')+'">'+cotFmtPct(o.v,1)+'</span></div>';
   }).join('');
   return '<div id="cotPairGridWrap" class="cot-card" style="margin-top:12px;"><div class="cot-card-head"><div><div class="cot-title">Currency Pairs \u2014 LF Strength Index</div></div>'+
     '<div class="cot-chart-meta">Week '+(COT_ENGINE.currentDate||'\u2014')+'</div></div>'+
-    '<div class="cot-section-pad"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px;">'+tiles+'</div></div></div>';
+    '<div class="cot-section-pad"><div class="cot-pair-grid">'+tiles+'</div></div></div>';
 }
 function cotPairTipHtml(pair){
   var b=pair.slice(0,3), q=pair.slice(3,6), v=cotPairStrength(b,q), nb=cotNetPctOI(b), nq=cotNetPctOI(q), rk=cotPairRank(b,q);
@@ -12206,8 +12478,25 @@ function cotDetailHtml(ccy){
   var longPct=(d.long!=null&&d.short!=null)?(d.long/(d.long+d.short)*100):null;
   var shortPct=(d.long!=null&&d.short!=null)?(d.short/(d.long+d.short)*100):null;
   var badgeClass=crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral';
+  var st=function(k,v,cls,tip){return '<div class="stat"'+(tip?' title="'+tip+'"':'')+'><span>'+k+'</span><b class="'+(cls||'')+'">'+v+'</b></div>';};
+  var nOI=cotNetPctOI(ccy);
+  var tone=crowd.tone==='bull'?'cot-good':crowd.tone==='bear'?'cot-bad':'cot-neutral';
   return '<div class="cot-hero">'+
-    '<div class="cot-side"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div>'+    '<div class="cot-range-read"><div class="cot-range-pct">'+(crowd.loc==null?'—':crowd.loc.toFixed(0)+'%')+'</div><div class="cot-range-label">Range</div></div>'+    '<div class="badge" style="color:'+(crowd.tone==='bull'?'var(--bullish-strong)':crowd.tone==='bear'?'var(--bearish-strong)':'var(--text-dim)')+';background:var(--panel3);">'+crowd.label+'</div>'+    '<div class="stat"><span>Net position</span><b class="'+netCls+'">'+cotFormat(d.net)+'</b></div>'+    '<div class="stat"><span>WoW change</span><b class="'+chgCls+'">'+cotFormat(d.netChg)+'</b></div>'+    '<div class="stat"><span>Open Interest</span><b>'+(d.oi!=null?Math.round(d.oi).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Net % of LF (long+short)</span><b class="'+netCls+'">'+(cotNetPctOI(ccy)!=null?cotPercent(cotNetPctOI(ccy)):'—')+'</b><span style="display:block;font-size:9.5px;color:var(--text-faint);margin-top:2px;">Net ÷ (long + short). This is the figure the pair COT score compares between the two currencies.</span></div>'+    '<div class="stat"><span>Long contracts</span><b>'+(d.long!=null?Math.round(d.long).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Short contracts</span><b>'+(d.short!=null?Math.round(d.short).toLocaleString():'—')+'</b></div>'+    '<div class="stat"><span>Long / Short</span><b>'+(longPct==null?'—':longPct.toFixed(1)+'% / '+shortPct.toFixed(1)+'%')+'</b></div>'+    '<div class="stat"><span>Longs Δ</span><b class="'+(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral')+'">'+cotFormat(d.longChg)+'</b></div>'+    '<div class="stat"><span>Shorts Δ</span><b class="'+(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral')+'">'+cotFormat(d.shortChg)+'</b></div>'+    '<div class="stat"><span>What changed</span><b>'+esc(flow)+'</b></div>'+        '</div>'+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+Math.min(hist.length,52)+' rolling weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div><div id="cotChartZoneNote" class="cot-chart-zone-note"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
+    '<div class="cot-side"><div class="cot-idrow">'+flagImg(ccy)+'<div class="cot-idnames"><div class="big">'+ccy+'</div><div class="name">'+CCY_NAME[ccy]+'</div></div></div>'+
+    '<div class="cot-idmeta"><span class="badge '+tone+'">'+crowd.label+'</span><span class="cot-rangepill"><b>'+(crowd.loc==null?'\u2014':crowd.loc.toFixed(0)+'%')+'</b> of 52w range</span></div>'+
+    '<div class="cot-stats">'+
+      st('Net position',cotFormat(d.net),netCls)+
+      st('WoW change',cotFormat(d.netChg),chgCls)+
+      st('Net % of LF',(nOI!=null?cotPercent(nOI):'\u2014'),netCls,'Net \u00f7 (long + short). This is the figure the pair COT score compares between the two currencies.')+
+      st('Open interest',(d.oi!=null?Math.round(d.oi).toLocaleString():'\u2014'))+
+      st('Long contracts',(d.long!=null?Math.round(d.long).toLocaleString():'\u2014'))+
+      st('Short contracts',(d.short!=null?Math.round(d.short).toLocaleString():'\u2014'))+
+      st('Long / Short',(longPct==null?'\u2014':longPct.toFixed(0)+'% / '+shortPct.toFixed(0)+'%'))+
+      st('What changed',esc(flow),'')+
+      st('Longs \u0394',cotFormat(d.longChg),(d.longChg>0?'cot-good':d.longChg<0?'cot-bad':'cot-neutral'))+
+      st('Shorts \u0394',cotFormat(d.shortChg),(d.shortChg>0?'cot-bad':d.shortChg<0?'cot-good':'cot-neutral'))+
+    '</div></div>'+
+    '<div class="cot-chart-wrap"><div class="cot-chart-head"><div><div class="cot-chart-title">Net contracts history</div><div class="cot-chart-meta">'+Math.min(hist.length,52)+' rolling weekly observations · '+(d.date||'—')+'</div></div><div class="cot-chart-range">'+['6W','3M','6M','12M','ALL'].map(function(r){return '<button class="cot-range-btn '+(activeCotRange===r?'active':'')+'" data-cot-range="'+r+'">'+r+'</button>';}).join('')+(unlockedLocally?'<button class="cot-export-btn" id="cotExportCsvBtn" type="button">Export CSV</button>':'')+'</div></div><div class="cot-chart"><canvas id="cotRegimeCanvas"></canvas><div id="cotRegimeEmpty" class="cot-chart-empty"></div><div id="cotCrosshairTip" class="cot-crosshair-tip"></div><div id="cotChartZoneNote" class="cot-chart-zone-note"></div></div>'+    '<div class="cot-mini-grid">'+      '<div class="cot-mini"><div class="k">52W High</div><div class="v cot-good">'+cotFormat(d.high)+'</div></div>'+      '<div class="cot-mini"><div class="k">52W Low</div><div class="v cot-bad">'+cotFormat(d.low)+'</div></div>'+      '<div class="cot-mini"><div class="k">Current</div><div class="v '+netCls+'">'+cotFormat(d.net)+'</div></div>'+      '<div class="cot-mini"><div class="k">Regime</div><div class="v '+badgeClass+'">'+crowd.label+'</div></div>'+    '</div></div></div>';
 }
 function renderCotRegime(animate){
   var tab=document.getElementById('tab-cot'); if(!tab||!DATA) return;
@@ -12255,7 +12544,29 @@ function renderCotRegime(animate){
     };
   }
   var cotExportBtn=document.getElementById('cotExportCsvBtn'); if(cotExportBtn) cotExportBtn.onclick=cotExportCsv;
+  cotMakeTicker(tab);
   requestAnimationFrame(function(){cotDrawChart(ccy,animate);});
+}
+/* Currency pairs strip scrolls right-to-left like a news ticker. Clone the tiles once for a seamless loop;
+   the start time is kept globally so a re-render continues the motion instead of restarting it. */
+window.__cotTickT0=window.__cotTickT0||performance.now();
+function cotMakeTicker(tab){
+  var grid=tab&&tab.querySelector('.cot-pair-grid'); if(!grid||grid.getAttribute('data-ticker')) return;
+  grid.setAttribute('data-ticker','1');
+  var tiles=Array.prototype.slice.call(grid.children), sel=(typeof activeCotCcy!=='undefined'&&activeCotCcy!=='ALL')?activeCotCcy:null;
+  if(sel){
+    /* selected currency's pairs lead the strip (pairs where it is the base first, then where it is the quote) */
+    var nm=function(t){var n=t.querySelector('.cp-n'); return n?n.textContent.trim():'';};
+    var rank=function(t){var n=nm(t); return n.indexOf(sel)===0?0:n.indexOf(sel)===3?1:2;};
+    tiles.map(function(t,i){return {t:t,i:i,r:rank(t)};}).sort(function(a,b){return a.r-b.r||a.i-b.i;}).forEach(function(o){grid.appendChild(o.t);});
+    tiles=Array.prototype.slice.call(grid.children);
+  }
+  var changed=(window.__cotTickSel!==(sel||'ALL')); window.__cotTickSel=sel||'ALL';
+  if(changed) window.__cotTickT0=performance.now();
+  tiles.forEach(function(t){ var c=t.cloneNode(true); c.setAttribute('aria-hidden','true'); grid.appendChild(c); });
+  var half=grid.scrollWidth/2||tiles.length*170, dur=Math.max(30,Math.round(half/55));
+  var elapsed=((performance.now()-window.__cotTickT0)/1000)%dur;
+  grid.style.animationDuration=dur+'s'; grid.style.animationDelay='-'+elapsed.toFixed(2)+'s';
 }
 function cotCommitInputs(ccy,tab){
   if(!unlockedLocally) return;
@@ -12313,7 +12624,7 @@ function renderRiskSentiment(){
     return '<tr><td>'+esc(r.date)+'</td><td class="mono">'+(r.spxClose==null?'—':Number(r.spxClose).toFixed(2))+'</td><td class="mono">'+(r.spxPct==null?'—':riskPctLabel(r.spxPct))+'</td><td class="mono">'+(r.vixClose==null?'—':Number(r.vixClose).toFixed(2))+'</td><td class="mono">'+(r.vixPct==null?'—':riskPctLabel(r.vixPct))+'</td><td class="'+riskClass(rowScore==null?0:rowScore)+'">'+rs+'</td></tr>';
   }).join(''):'<tr><td colspan="6"><div class="risk-empty">No saved observations yet.</div></td></tr>';
 
-  var surface=riskSurfaceHtml();
+  var surface=riskSurfaceHtml(activeRiskCcy);
   var inlineEditor = unlockedLocally ?
     '<div class="risk-inline-editor risk-inline-live">'+
       '<span class="risk-inline-label">Daily close</span>'+
@@ -12332,6 +12643,8 @@ function renderRiskSentiment(){
     (surface.ready?'':'<div class="risk-empty" style="padding:8px 12px 10px;">'+(unlockedLocally?'Enter the latest S&amp;P 500 and VIX closes above.':'Awaiting the latest market close.')+'</div>')+
   '</div></div>';
 
+  var riskScopeAll=document.getElementById('riskScopeAll');
+  if(riskScopeAll){ riskScopeAll.onclick=function(){ activeRiskCcy=null; renderRiskSentiment(); }; }
   if(!unlockedLocally) return;
   var si=document.getElementById('riskSpxCloseInput'), vi=document.getElementById('riskVixCloseInput'), di=document.getElementById('riskObsDateInput'), sb=document.getElementById('riskSaveCloseBtn'), lr=document.getElementById('riskLiveReadout');
   function selectedRiskDate(){ return (di&&di.value)||riskTodayKey(); }
@@ -13259,7 +13572,8 @@ body.black .rail, body.ash .rail{
   syncPairStickyOffset();
   window.addEventListener('resize',syncPairStickyOffset);
   document.addEventListener('DOMContentLoaded',syncPairStickyOffset);
-  var obs=new MutationObserver(syncPairStickyOffset);
+  var __spoQ=false;
+  var obs=new MutationObserver(function(){ if(__spoQ) return; __spoQ=true; requestAnimationFrame(function(){ __spoQ=false; syncPairStickyOffset(); }); });
   var head=document.querySelector('.page-head');
   if(head) obs.observe(head,{childList:true,subtree:true,attributes:true,characterData:true});
 })();
@@ -13423,7 +13737,7 @@ body.black .rail, body.ash .rail{
    active theme, and the fixes above (day-count label, 100-base label moved
    off the clipped right edge, added left/bottom axis lines). Nothing else
    on the page touched. */
-#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#121216!important;background-image:none!important;}
+#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#101014!important;background-image:none!important;}
 </style>
 
 
@@ -13469,19 +13783,19 @@ body.black .rail, body.ash .rail{
    were nearly invisible against it. Bring the panel back in line with the
    card it lives in, and the JS-side grid/label opacity bump above now has
    proper contrast to work with. */
-#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#121216!important;background-image:none!important;}
+#tab-overview .ov-csi,#tab-overview .ov-csi-chart{background:#101014!important;background-image:none!important;}
 </style>
 
 <style id="twp-final-premium-v1">
 /* Premium deep-black / violet treatment + calmer WatchTower-inspired overview. */
 :root{
-  --twp-bg:#0a0a0c;
-  --twp-panel:#121216;
+  --twp-bg:#101014;
+  --twp-panel:#101014;
   --twp-panel2:#191920;
   --twp-panel3:#202027;
   --twp-border:rgba(255,255,255,.12);
   --twp-bg-ash:#101014;
-  --twp-panel-ash:#17171d;
+  --twp-panel-ash:#101014;
   --twp-panel2-ash:#1e1e25;
   --twp-panel3-ash:#26262d;
   --twp-border-ash:rgba(255,255,255,.14);
@@ -13612,7 +13926,7 @@ body,html{background:var(--bg);}
 #tab-overview .ov-csi-leg-ccy{font-size:11.5px!important;}
 #tab-overview .ov-csi-leg-ccy img{width:18px!important;height:12px!important;}
 #tab-overview .ov-csi-leg-dir{font-size:9px!important;}
-#tab-overview .ov-csi-chart{background:#121216!important;background-image:none!important;padding:3px 8px 5px!important;}
+#tab-overview .ov-csi-chart{background:#101014!important;background-image:none!important;padding:3px 8px 5px!important;}
 #tab-overview .ov-csi-chart svg{shape-rendering:geometricPrecision!important;}
 #tab-overview .ov-csi-chart text{font-family:Inter,system-ui,sans-serif!important;fill:#6f756f!important;font-weight:500!important;}
 #tab-overview .ov-csi-chart polyline{stroke-linecap:round!important;stroke-linejoin:round!important;}
@@ -13699,7 +14013,7 @@ body,html{background:var(--bg);}
   #tab-overview .ov-csi-swatch{width:17px!important;height:3px!important;border-radius:2px!important;}
   #tab-overview .ov-csi-leg-ccy{font-size:12px!important;font-weight:800!important;}
   #tab-overview .ov-csi-leg-dir{font-size:10px!important;}
-  #tab-overview .ov-csi-chart{flex:1 1 auto!important;min-height:0!important;padding:7px 9px 7px!important;background:#121216!important;overflow:hidden!important;}
+  #tab-overview .ov-csi-chart{flex:1 1 auto!important;min-height:0!important;padding:7px 9px 7px!important;background:#101014!important;overflow:hidden!important;}
   #tab-overview .ov-csi-chart svg{display:block!important;width:100%!important;height:100%!important;min-height:0!important;overflow:visible!important;shape-rendering:geometricPrecision!important;}
   #tab-overview .ov-csi-chart text{font-size:12px!important;}
 
@@ -15074,7 +15388,7 @@ body,html{background:var(--bg);}
 }
 #tab-raw .ss-legend{flex:0 0 calc(25% - 10px)!important;font-size:12px!important;font-weight:700!important;}
 #tab-raw .ss-chart{
-  background:#121216!important;
+  background:#101014!important;
   flex:0 0 auto!important;
   display:block!important;
   padding:6px 10px 8px!important;
@@ -15818,7 +16132,7 @@ twpShowNameGateIfNeeded();
 </style>
 
 <style id="csi-chart-bg-match-card-v1">
-/* The Composite Strength · 90D plot area was hardcoded to a flat #121216 with no
+/* The Composite Strength · 90D plot area was hardcoded to a flat #101014 with no
    gradient, while every other Overview card (Macro Breadth, Risk Sentiment, Economic
    Calendar, and the .ov-csi card's own header/legend) uses var(--panel) plus the same
    soft top-light gradient overlay. On the "ash" theme (--panel:#1f1f1f, the default)
@@ -15827,7 +16141,7 @@ twpShowNameGateIfNeeded();
    the same panel color + gradient here makes the chart's plot area blend into its own
    card exactly like every other panel does, on all three themes (ash/black/light).
    This is the last-in-source-order rule for .ov-csi-chart's background, so it wins the
-   cascade over every earlier hardcoded #121216!important pass. */
+   cascade over every earlier hardcoded #101014!important pass. */
 #tab-overview .ov-csi-chart{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 80%),var(--panel)!important;}
 </style>
 
@@ -16396,6 +16710,543 @@ twpShowNameGateIfNeeded();
 #tab-raw .esi-pair-val.neu{color:var(--text-dim);}
 </style>
 
+
+<style id="dx-premium">
+/* =====================================================================
+   CURRENCY DETAIL — premium terminal layout
+   Scoped to #tab-detail .dx. Square corners, one surface colour, fine grain.
+   ===================================================================== */
+#tab-detail{
+  --dx-line:rgba(255,255,255,.075);
+  --dx-line-2:rgba(255,255,255,.13);
+  --dx-surface:#0e0e11;
+  --dx-surface-2:#121215;
+  --dx-grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.055'/></svg>");
+  --dx-accent:var(--bullish-strong);
+}
+#tab-detail .dx.dx-bear{--dx-accent:var(--bearish-strong);}
+#tab-detail .dx.dx-neu{--dx-accent:var(--text-faint);}
+
+/* ---------- fit to the screen ---------- */
+@media (min-width:1100px) and (min-height:720px){
+  #tab-detail.active{display:flex!important;flex-direction:column!important;height:calc(100dvh - 84px)!important;min-height:0!important;overflow:hidden!important;padding-bottom:0!important;}
+  #tab-detail .dx{flex:1 1 auto!important;min-height:0!important;display:grid!important;grid-template-rows:auto minmax(0,1fr)!important;}
+  #tab-detail .dx-main{min-height:0!important;}
+  #tab-detail .dx-main > *{min-height:0!important;overflow:auto!important;}
+  #tab-detail .dx-main > .dx-col{overflow:hidden!important;}
+}
+
+/* ---------- currency switcher ---------- */
+#tab-detail .ccy-pills{display:flex!important;flex-wrap:nowrap!important;gap:0!important;margin:0 0 12px!important;border-bottom:1px solid var(--dx-line-2)!important;overflow-x:auto;}
+#tab-detail .ccy-pill{
+  display:inline-flex!important;align-items:center!important;gap:8px!important;flex:1 1 0!important;justify-content:center!important;
+  border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;background:transparent!important;
+  padding:9px 10px 10px!important;margin-bottom:-1px!important;color:var(--text-faint)!important;
+  font-family:'Space Grotesk',sans-serif!important;font-size:12.5px!important;font-weight:700!important;letter-spacing:.14em!important;
+  transition:color .15s,background .15s,border-color .15s;
+}
+#tab-detail .ccy-pill:hover{color:var(--text)!important;background:rgba(255,255,255,.025)!important;}
+#tab-detail .ccy-pill.active{color:var(--text)!important;border-bottom-color:var(--amber)!important;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(250,102,15,.07))!important;}
+#tab-detail .ccy-pill .ccy-flag{width:18px!important;height:13px!important;object-fit:cover;border-radius:0!important;opacity:.9;box-shadow:0 0 0 1px rgba(255,255,255,.12);}
+#tab-detail .ccy-pill .pill-sc{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0;color:var(--text-faint);}
+#tab-detail .ccy-pill .pill-sc.up{color:var(--bullish-strong);}
+#tab-detail .ccy-pill .pill-sc.down{color:var(--bearish-strong);}
+
+/* ---------- surfaces ---------- */
+#tab-detail .dx{display:flex;flex-direction:column;gap:12px;}
+#tab-detail .dx-card{
+  position:relative;border:1px solid var(--dx-line)!important;border-radius:0!important;
+  background:
+    var(--dx-grain),
+    linear-gradient(180deg,rgba(255,255,255,.035) 0,rgba(255,255,255,0) 90px),
+    var(--dx-surface)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 40px -26px rgba(0,0,0,.9)!important;
+  padding:0!important;margin:0!important;
+}
+#tab-detail .dx-card::before{ /* corner ticks */
+  content:"";position:absolute;left:-1px;top:-1px;width:9px;height:9px;pointer-events:none;
+  border-left:1px solid var(--dx-line-2);border-top:1px solid var(--dx-line-2);
+}
+#tab-detail .dx-k{display:block;font-family:'Inter',sans-serif;font-size:10.5px!important;font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase;color:var(--text-faint)!important;line-height:1.2;}
+#tab-detail .dx-ch{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px 9px;
+  border-bottom:1px solid var(--dx-line);
+  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);
+}
+#tab-detail .dx-ch-r{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.06em;color:var(--text-faint);text-transform:none;}
+
+/* ---------- hero ---------- */
+#tab-detail .dx-hero{
+  display:grid!important;grid-template-columns:200px 236px minmax(0,1fr);align-items:stretch;
+  border-top:2px solid var(--dx-accent)!important;
+  background:
+    var(--dx-grain),
+    radial-gradient(ellipse 520px 180px at 0% 0%,color-mix(in srgb,var(--dx-accent) 11%,transparent),transparent 70%),
+    linear-gradient(180deg,rgba(255,255,255,.035) 0,rgba(255,255,255,0) 90px),
+    var(--dx-surface)!important;
+}
+#tab-detail .dx-hero > *{padding:14px 18px;min-width:0;}
+#tab-detail .dx-hero > * + *{border-left:1px solid var(--dx-line);}
+#tab-detail .dx-id{display:flex;flex-direction:column;justify-content:space-between;gap:10px;}
+#tab-detail .dx-id-top{display:flex;align-items:center;gap:12px;}
+#tab-detail .dx-id .ccy-flag{width:42px!important;height:30px!important;object-fit:cover;border-radius:0!important;box-shadow:0 0 0 1px rgba(255,255,255,.16),0 6px 14px -6px rgba(0,0,0,.8);flex:0 0 auto;}
+#tab-detail .dx-code{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;letter-spacing:.02em;line-height:1;color:var(--text);}
+#tab-detail .dx-name{margin-top:5px;font-size:11.5px;color:var(--text-dim);line-height:1.25;}
+#tab-detail .dx-id .chip{align-self:flex-start;border-radius:0!important;padding:5px 12px!important;font-size:11px!important;letter-spacing:.12em!important;text-transform:uppercase;}
+#tab-detail .dx-align span:last-child{display:block;margin-top:5px;font-size:12px!important;font-weight:500!important;line-height:1.35;text-align:left!important;max-width:none!important;font-family:'Inter',sans-serif!important;}
+#tab-detail .dx-gauge{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:10px!important;padding-bottom:10px!important;}
+#tab-detail .dx-gauge .gauge-svg{width:100%!important;max-width:210px!important;height:auto!important;display:block;margin:0 auto;overflow:visible;}
+#tab-detail .dx-gauge .gauge-num{
+  position:static!important;transform:none!important;margin:-30px 0 0!important;
+  font-family:'Space Grotesk',sans-serif!important;font-size:34px!important;font-weight:700!important;line-height:1!important;letter-spacing:-.01em;
+  color:var(--dx-accent)!important;text-shadow:0 0 22px color-mix(in srgb,var(--dx-accent) 35%,transparent);
+}
+#tab-detail .dx-gauge-cap{margin-top:7px;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint);}
+
+/* score builder */
+#tab-detail .dx-builder{display:grid;grid-template-columns:3fr 2fr 2fr;gap:0;align-items:stretch;padding:0!important;}
+#tab-detail .dx-group{display:flex;flex-direction:column;padding:14px 14px 12px;min-width:0;}
+#tab-detail .dx-group + .dx-group{border-left:1px solid var(--dx-line);}
+#tab-detail .dx-gh{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+#tab-detail .dx-gh::after{content:"";flex:1;height:1px;background:var(--dx-line);}
+#tab-detail .dx-tiles{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;flex:1;}
+#tab-detail .dx-tile{display:flex;flex-direction:column;gap:5px;min-width:0;padding:2px 0;cursor:default;position:relative;transition:transform .15s;}
+#tab-detail .dx-tile.stat-nav{cursor:pointer;}
+#tab-detail .dx-tile.stat-nav:hover{transform:translateY(-1px);}
+#tab-detail .dx-tile.stat-nav:hover .dx-k{color:var(--text-dim)!important;}
+#tab-detail .dx-tv{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;line-height:1.05;letter-spacing:-.01em;}
+#tab-detail .dx-tv span{font-family:'Space Grotesk',sans-serif!important;font-size:26px!important;font-weight:700!important;}
+#tab-detail .dx-tv .y2-positive{color:var(--bullish-strong)!important;}
+#tab-detail .dx-tv .y2-negative{color:var(--bearish-strong)!important;}
+#tab-detail .dx-tv .y2-neutral{color:var(--text-dim)!important;}
+#tab-detail .dx-bar{position:relative;display:block;height:3px;background:rgba(255,255,255,.07);}
+#tab-detail .dx-bar::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(255,255,255,.28);}
+#tab-detail .dx-bar i{position:absolute;top:0;bottom:0;left:50%;width:0;background:var(--text-faint);transition:width .5s cubic-bezier(.2,.7,.2,1),left .5s cubic-bezier(.2,.7,.2,1);}
+#tab-detail .dx-bar i.up{background:var(--bullish-strong);box-shadow:0 0 10px color-mix(in srgb,var(--bullish-strong) 55%,transparent);}
+#tab-detail .dx-bar i.down{background:var(--bearish-strong);box-shadow:0 0 10px color-mix(in srgb,var(--bearish-strong) 55%,transparent);}
+#tab-detail .dx-ts{font-size:10.5px;color:var(--text-faint);line-height:1.25;min-height:2.5em;}
+#tab-detail .dx-ts .y2-small{font-size:10.5px!important;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+#tab-detail .dx-ts .y2-positive{color:var(--bullish-strong)!important;}
+#tab-detail .dx-ts .y2-negative{color:var(--bearish-strong)!important;}
+#tab-detail .dx-ts .y2-neutral{color:var(--text-faint)!important;}
+
+/* ---------- main grid ---------- */
+#tab-detail .dx-main{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,.9fr) minmax(0,.9fr);gap:12px;align-items:stretch;}
+#tab-detail .dx-col{display:flex;flex-direction:column;gap:12px;min-width:0;}
+#tab-detail .dx-col > .dx-pos{flex:0 0 auto;}
+#tab-detail .dx-col > .dx-trend{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;}
+
+/* indicators */
+#tab-detail .dx-ind{padding:4px 18px 8px!important;}
+#tab-detail .dx-sector{margin:0!important;padding:10px 0 4px;}
+#tab-detail .dx-sector + .dx-sector{border-top:1px solid var(--dx-line);}
+#tab-detail .dx-st{display:flex;align-items:center;gap:10px;margin:0 0 4px;}
+#tab-detail .dx-sl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--text);}
+#tab-detail .dx-st .chip{border-radius:0!important;padding:2px 8px!important;font-size:10px!important;letter-spacing:.1em!important;text-transform:uppercase;}
+#tab-detail .dx-sector table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;border-spacing:0!important;background:transparent!important;}
+#tab-detail .dx-sector thead th{
+  background:transparent!important;border:0!important;border-bottom:1px solid var(--dx-line)!important;border-radius:0!important;
+  padding:5px 6px!important;font-family:'Inter',sans-serif!important;font-size:10px!important;font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase;color:var(--text-faint)!important;text-align:left!important;
+}
+#tab-detail .dx-sector tbody td{
+  background:transparent!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.04)!important;border-radius:0!important;
+  padding:4px 6px!important;height:29px;vertical-align:middle;font-size:13.5px!important;
+}
+#tab-detail .dx-sector tbody tr:last-child td{border-bottom:0!important;}
+#tab-detail .dx-sector tbody tr{transition:background .12s;}
+#tab-detail .dx-sector tbody tr:hover td{background:rgba(255,255,255,.03)!important;}
+#tab-detail .dx-sector th:nth-child(1),#tab-detail .dx-sector td:nth-child(1){width:36%!important;text-align:left!important;}
+#tab-detail .dx-sector th:nth-child(3),#tab-detail .dx-sector td:nth-child(3),
+#tab-detail .dx-sector th:nth-child(4),#tab-detail .dx-sector td:nth-child(4){width:16%!important;text-align:left!important;}
+#tab-detail .dx-sector th:nth-child(5),#tab-detail .dx-sector td:nth-child(5){width:14%!important;text-align:left!important;}
+#tab-detail .dx-sector th:nth-child(6),#tab-detail .dx-sector td:nth-child(6){width:18%!important;text-align:left!important;}
+#tab-detail .dx-sector th:nth-child(7),#tab-detail .dx-sector td:nth-child(7){width:0!important;padding:0!important;}
+body.editing #tab-detail .dx-sector th:nth-child(1),body.editing #tab-detail .dx-sector td:nth-child(1){width:30%!important;}
+body.editing #tab-detail .dx-sector th:nth-child(7),body.editing #tab-detail .dx-sector td:nth-child(7){width:30px!important;padding:0 4px!important;}
+#tab-detail .dx-sector .ind-link,#tab-detail .dx-sector .ind-name{font-family:'Inter',sans-serif!important;font-size:13.5px!important;font-weight:500!important;color:var(--text)!important;text-decoration:none!important;border-bottom:1px dotted rgba(255,255,255,.22);white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%;vertical-align:middle;}
+#tab-detail .dx-sector .ind-link:hover{border-bottom-color:var(--amber);color:#fff!important;}
+#tab-detail .dx-sector .ind-txt,#tab-detail .dx-sector .ind-num,#tab-detail .dx-sector .surprise{font-family:'IBM Plex Mono',monospace!important;font-size:13px!important;font-weight:500!important;letter-spacing:0!important;}
+#tab-detail .dx-sector .ind-txt{width:100%!important;color:var(--text)!important;}
+#tab-detail .dx-sector .bias-chip-text{font-family:'Inter',sans-serif!important;font-size:11px!important;font-weight:700!important;letter-spacing:.1em!important;text-transform:uppercase;display:inline-flex!important;align-items:center;gap:7px;}
+#tab-detail .dx-sector .bias-chip-text::before{content:"";width:6px;height:6px;background:currentColor;display:inline-block;}
+#tab-detail .dx-sector .bias-chip-text.Bullish{color:var(--bullish-strong)!important;}
+#tab-detail .dx-sector .bias-chip-text.Bearish{color:var(--bearish-strong)!important;}
+#tab-detail .dx-sector .bias-chip-text.Neutral{color:var(--text-faint)!important;}
+body.editing #tab-detail .dx-sector .ind-txt,body.editing #tab-detail .dx-sector .ind-num,body.editing #tab-detail .dx-sector .ind-name,body.editing #tab-detail .dx-sector .bias-select{border:1px solid var(--dx-line-2)!important;background:rgba(255,255,255,.03)!important;padding:3px 6px!important;border-radius:0!important;}
+#tab-detail .dx-sector .add-btn{margin-top:6px;border-radius:0!important;}
+
+/* central bank card */
+#tab-detail .dx-cb{display:flex;flex-direction:column;}
+#tab-detail .dx-rate{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--dx-line);}
+#tab-detail .dx-rc{display:flex;flex-direction:column;gap:7px;padding:12px 14px;min-width:0;}
+#tab-detail .dx-rc + .dx-rc{border-left:1px solid var(--dx-line);}
+#tab-detail .dx-rc input{width:100%!important;max-width:100%;background:transparent!important;border:0!important;border-bottom:1px solid transparent!important;border-radius:0!important;padding:0!important;color:var(--text)!important;font-family:'Space Grotesk',sans-serif!important;font-size:22px!important;font-weight:700!important;line-height:1.1;}
+#tab-detail .dx-rc input:not(:disabled){border-bottom-color:var(--dx-line-2)!important;}
+#tab-detail .dx-rc .static-chip,#tab-detail .dx-rc select{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;font-family:'Space Grotesk',sans-serif!important;font-size:18px!important;font-weight:700!important;line-height:1.2;text-transform:uppercase;letter-spacing:.02em;}
+#tab-detail .dx-rc select{border-bottom:1px solid var(--dx-line-2)!important;}
+#tab-detail .dx-rc .conv-select{font-size:15px!important;}
+#tab-detail .dx-cb .policy-monitor{display:flex!important;flex-direction:column!important;gap:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;margin:0!important;flex:1 1 auto;}
+#tab-detail .dx-cb .policy-monitor-head{display:none!important;}
+#tab-detail .dx-cb .policy-monitor-grid{display:grid!important;grid-template-columns:1fr!important;gap:0!important;}
+#tab-detail .dx-cb .policy-metric{display:flex!important;flex-direction:column!important;gap:4px!important;padding:12px 16px!important;border:0!important;border-bottom:1px solid var(--dx-line)!important;background:transparent!important;}
+#tab-detail .dx-cb .policy-k{font-size:10.5px!important;font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase;color:var(--text-faint)!important;}
+#tab-detail .dx-cb .policy-value{font-family:'Space Grotesk',sans-serif!important;font-size:18px!important;font-weight:700!important;line-height:1.15;}
+#tab-detail .dx-cb .policy-score{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--text-dim);margin-left:4px;}
+#tab-detail .dx-cb .policy-sub{font-size:11px!important;color:var(--text-faint)!important;line-height:1.3;}
+#tab-detail .dx-cb .policy-relation{display:flex!important;flex-direction:column!important;gap:4px!important;padding:12px 16px!important;margin:0!important;border:0!important;background:transparent!important;}
+#tab-detail .dx-cb .policy-relation span{font-size:10.5px!important;font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase;color:var(--text-faint)!important;}
+#tab-detail .dx-cb .policy-relation strong{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;}
+#tab-detail .dx-cb .guidance-trigger{
+  margin:auto 0 0!important;width:100%;display:flex!important;align-items:center;justify-content:space-between;
+  border:0!important;border-top:1px solid var(--dx-line-2)!important;border-radius:0!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0))!important;
+  padding:13px 16px!important;color:var(--text)!important;font-family:'Space Grotesk',sans-serif!important;font-size:11px!important;font-weight:700!important;letter-spacing:.18em!important;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s;
+}
+#tab-detail .dx-cb .guidance-trigger:hover{background:color-mix(in srgb,var(--amber) 12%,transparent)!important;color:#fff!important;}
+#tab-detail .dx-cb .guidance-trigger span{color:var(--amber);transition:transform .15s;}
+#tab-detail .dx-cb .guidance-trigger:hover span{transform:translateX(3px);}
+
+/* positioning */
+#tab-detail .dx-fields{display:flex;flex-direction:column;padding:2px 16px 8px;}
+#tab-detail .dx-f{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:30px;border-bottom:1px solid rgba(255,255,255,.04);}
+#tab-detail .dx-f:last-child{border-bottom:0;}
+#tab-detail .dx-f .dx-k{flex:0 0 auto;}
+#tab-detail .dx-v{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;}
+#tab-detail .dx-v.mono,#tab-detail .dx-v .mono{font-family:'IBM Plex Mono',monospace;}
+#tab-detail .dx-season .seasonality-avg-input,#tab-detail .dx-season .seasonality-month-input{width:84px;background:transparent!important;border:1px solid var(--dx-line)!important;border-radius:0!important;color:var(--text)!important;padding:3px 6px!important;font-family:'IBM Plex Mono',monospace!important;font-size:12px!important;}
+#tab-detail .dx-season .seasonality-month-input{width:112px;}
+#tab-detail .dx-season .seasonality-derived{font-size:12.5px!important;}
+#tab-detail .dx-season .seasonality-derived.Bearish{color:var(--bearish-strong);}
+
+/* trend */
+#tab-detail .dx-trend [id^="trendPanelWrap-"]{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;}
+#tab-detail .dx-trend .trend-panel{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:14px 16px!important;margin:0!important;min-height:0!important;height:auto!important;display:flex!important;flex-direction:column;gap:8px;flex:1 1 auto;}
+#tab-detail .dx-trend .trend-panel .k{display:none!important;}
+#tab-detail .dx-trend .trend-score{font-family:'Space Grotesk',sans-serif!important;font-size:30px!important;font-weight:700!important;line-height:1;}
+#tab-detail .dx-trend .trend-delta{font-size:11.5px!important;line-height:1.35;}
+#tab-detail .dx-trend .detail-trend-spark{width:100%;height:auto;max-height:90px;}
+
+/* ---------- small screens: natural flow ---------- */
+
+/* ---- refinements ---- */
+#tab-detail .dx-tile .dx-k,#tab-detail .dx-rc .dx-k{letter-spacing:.09em!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#tab-detail .dx-builder{grid-template-columns:3.4fr 2fr 1.8fr!important;}
+#tab-detail .dx-hero{grid-template-columns:196px 226px minmax(0,1fr)!important;}
+#tab-detail .dx-gauge .gauge-num{margin-top:-16px!important;}
+#tab-detail .dx-rc{padding:12px 12px!important;}
+#tab-detail .dx-cb .policy-relation{align-items:flex-start!important;text-align:left!important;}
+#tab-detail .dx-cb .policy-relation span,#tab-detail .dx-cb .policy-relation strong{text-align:left!important;}
+#tab-detail .dx-cb .policy-monitor{flex:0 0 auto!important;}
+#tab-detail .dx-gd{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:7px;padding:12px 16px;border-top:1px solid var(--dx-line);overflow:hidden;}
+#tab-detail .dx-gd p{margin:0;font-size:12.5px;line-height:1.5;color:var(--text-dim);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:7;overflow:hidden;}
+#tab-detail .dx-cb .guidance-trigger{margin:0!important;}
+#tab-detail .dx-trend{overflow:hidden!important;}
+#tab-detail .dx-trend .trend-panel,#tab-detail .dx-trend .trend-panel *{white-space:normal!important;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box;}
+#tab-detail .dx-trend .trend-panel > div:last-child{margin-top:auto!important;font-size:11.5px!important;color:var(--text-faint)!important;}
+
+
+#tab-detail .dx-cb .policy-monitor{min-height:0!important;height:auto!important;max-height:none!important;width:100%!important;min-width:0!important;}
+#tab-detail .dx-trend .trend-panel{min-width:0!important;width:100%!important;max-width:100%!important;flex-basis:auto!important;}
+#tab-detail .dx-rc .dx-k,#tab-detail .dx-tile .dx-k{font-size:10px!important;}
+
+
+#tab-detail .ccy-pills{flex:0 0 auto!important;}
+
+/* narrower laptops */
+@media (max-width:1380px){
+  #tab-detail .dx-hero{grid-template-columns:176px 196px minmax(0,1fr)!important;}
+  #tab-detail .dx-hero > *{padding-left:14px;padding-right:14px;}
+  #tab-detail .dx-tile .dx-k,#tab-detail .dx-rc .dx-k{font-size:9.5px!important;letter-spacing:.05em!important;}
+  #tab-detail .dx-group{padding-left:11px;padding-right:11px;}
+  #tab-detail .dx-tiles{gap:8px;}
+  #tab-detail .dx-tv,#tab-detail .dx-tv span{font-size:23px!important;}
+  #tab-detail .dx-sector thead th{font-size:9.5px!important;letter-spacing:.06em!important;padding-left:4px!important;padding-right:4px!important;}
+  #tab-detail .dx-sector th:nth-child(1),#tab-detail .dx-sector td:nth-child(1){width:33%!important;}
+  #tab-detail .dx-sector th:nth-child(5),#tab-detail .dx-sector td:nth-child(5){width:15%!important;}
+  #tab-detail .dx-sector th:nth-child(6),#tab-detail .dx-sector td:nth-child(6){width:19%!important;}
+  #tab-detail .dx-ind{padding-left:14px!important;padding-right:14px!important;}
+  #tab-detail .dx-sector .bias-chip-text{letter-spacing:.05em!important;}
+}
+
+/* shorter screens: compact the vertical rhythm so everything still fits */
+@media (min-width:1100px) and (max-height:860px){
+  #tab-detail .dx{gap:8px;}
+  #tab-detail .ccy-pills{margin-bottom:8px!important;}
+  #tab-detail .ccy-pill{padding:6px 8px 7px!important;}
+  #tab-detail .dx-hero > *{padding-top:9px;padding-bottom:9px;}
+  #tab-detail .dx-code{font-size:28px;}
+  #tab-detail .dx-id .ccy-flag{width:34px!important;height:24px!important;}
+  #tab-detail .dx-id{gap:6px;}
+  #tab-detail .dx-name{font-size:11px;margin-top:3px;}
+  #tab-detail .dx-gauge .gauge-svg{max-width:168px!important;}
+  #tab-detail .dx-gauge .gauge-num{font-size:28px!important;margin-top:-12px!important;}
+  #tab-detail .dx-gauge-cap{display:none;}
+  #tab-detail .dx-gh{margin-bottom:6px;}
+  #tab-detail .dx-group{padding-top:9px;padding-bottom:8px;}
+  #tab-detail .dx-tile{gap:4px;}
+  #tab-detail .dx-tv,#tab-detail .dx-tv span{font-size:21px!important;}
+  #tab-detail .dx-ts{min-height:0;}
+  #tab-detail .dx-ts .y2-small{-webkit-line-clamp:1;}
+  #tab-detail .dx-ind{padding-top:0!important;padding-bottom:4px!important;}
+  #tab-detail .dx-sector{padding:7px 0 2px;}
+  #tab-detail .dx-st{margin-bottom:2px;}
+  #tab-detail .dx-sector thead th{padding-top:3px!important;padding-bottom:3px!important;}
+  #tab-detail .dx-sector tbody td{height:24px;padding-top:2px!important;padding-bottom:2px!important;font-size:13px!important;}
+  #tab-detail .dx-sector .ind-link,#tab-detail .dx-sector .ind-name{font-size:13px!important;}
+  #tab-detail .dx-ch{padding:8px 14px 7px;}
+  #tab-detail .dx-rc{padding:8px 12px!important;gap:5px;}
+  #tab-detail .dx-rc input{font-size:19px!important;}
+  #tab-detail .dx-rc .static-chip,#tab-detail .dx-rc select{font-size:16px!important;}
+  #tab-detail .dx-cb .policy-metric,#tab-detail .dx-cb .policy-relation{padding:8px 14px!important;gap:3px!important;}
+  #tab-detail .dx-cb .policy-value{font-size:16px!important;}
+  #tab-detail .dx-cb .policy-sub + .policy-sub{display:none!important;}
+  #tab-detail .dx-gd{padding:8px 14px;gap:5px;}
+  #tab-detail .dx-gd p{font-size:12px;line-height:1.45;-webkit-line-clamp:4;}
+  #tab-detail .dx-cb .guidance-trigger{padding:10px 14px!important;}
+  #tab-detail .dx-fields{padding:0 14px 4px;}
+  #tab-detail .dx-f{min-height:25px;}
+  #tab-detail .dx-trend .trend-panel{padding:9px 14px!important;gap:4px;}
+  #tab-detail .dx-trend .trend-score{font-size:24px!important;}
+}
+
+
+@media (max-width:1380px){
+  #tab-detail .dx-rate{grid-template-columns:1fr 1fr 1.2fr;}
+  #tab-detail .dx-rc .dx-k{letter-spacing:.02em!important;}
+}
+@media (min-width:1100px) and (max-height:780px){
+  #tab-detail .dx-ts{display:none;}
+  #tab-detail .dx-gauge .gauge-svg{max-width:150px!important;}
+  #tab-detail .dx-gauge .gauge-num{font-size:26px!important;}
+  #tab-detail .dx-tv,#tab-detail .dx-tv span{font-size:20px!important;}
+  #tab-detail .dx-sector tbody td{height:22px;font-size:12.5px!important;}
+  #tab-detail .dx-sector .ind-link,#tab-detail .dx-sector .ind-name{font-size:12.5px!important;}
+  #tab-detail .dx-sector{padding-top:5px;}
+  #tab-detail .dx-cb .policy-sub{display:none!important;}
+  #tab-detail .dx-cb .policy-metric,#tab-detail .dx-cb .policy-relation{padding:6px 14px!important;}
+  #tab-detail .dx-gd p{-webkit-line-clamp:3;}
+  #tab-detail .dx-f{min-height:23px;}
+}
+
+
+@media (min-width:1100px) and (min-height:720px){
+  #tab-detail .dx-main{grid-template-rows:minmax(0,1fr)!important;height:100%!important;}
+  #tab-detail .dx-main > .dx-col{min-height:0!important;}
+}
+#tab-detail .dx-sector tbody td{line-height:1.2!important;}
+#tab-detail .dx-sector .ind-txt,#tab-detail .dx-sector .ind-num,#tab-detail .dx-sector .bias-select{padding-top:0!important;padding-bottom:0!important;height:auto!important;min-height:0!important;line-height:1.2!important;}
+body:not(.editing) #tab-detail .dx-sector .ind-txt,body:not(.editing) #tab-detail .dx-sector .ind-num{padding-left:0!important;padding-right:0!important;}
+
+
+@media (min-width:1100px) and (min-height:720px){
+  #tab-detail #detailBody{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;}
+}
+
+@media (max-width:1099px),(max-height:719px){
+  #tab-detail .dx-hero{grid-template-columns:1fr 1fr;}
+  #tab-detail .dx-hero > .dx-builder{grid-column:1 / -1;border-left:0;border-top:1px solid var(--dx-line);}
+  #tab-detail .dx-main{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  #tab-detail .dx-ind{grid-column:1 / -1;}
+}
+@media (max-width:760px){
+  #tab-detail .dx-hero{grid-template-columns:1fr;}
+  #tab-detail .dx-hero > * + *{border-left:0;border-top:1px solid var(--dx-line);}
+  #tab-detail .dx-builder{grid-template-columns:1fr;}
+  #tab-detail .dx-group + .dx-group{border-left:0;border-top:1px solid var(--dx-line);}
+  #tab-detail .dx-main{grid-template-columns:1fr;}
+  #tab-detail .dx-sector{overflow-x:auto;}
+  #tab-detail .dx-sector table{min-width:520px!important;}
+  #tab-detail .ccy-pill .ccy-flag{display:none;}
+}
+</style>
+
+<script id="twp-type-scale">
+/* Snaps stray small/odd font sizes onto 12 / 13 / 14 (all tabs except Currency Detail).
+   FREEZE FIX: this used to run ~120ms after ANY DOM change, calling getComputedStyle and
+   forcing a layout on every element of the tab in one go -- right in the middle of the
+   draw-in animations. That is the 1-second freeze on Scanner / COT / Risk. Now it:
+   1) waits until the page has been quiet for 1.2s (animations finished),
+   2) works in small time-sliced chunks so the browser can paint between them,
+   3) only reacts to real content changes (not hover/tooltip class flips). */
+(function(){
+  if(window.__twpTypeScale) return; window.__twpTypeScale=true;
+  var q=null, job=0;
+  function snap(f){ if(f<11.9) return 12; if(f<12.9) return f<12.4?12:13; if(f<13.9) return f<13.4?13:14; return 0; }
+  function run(){
+    var root=document.querySelector('.tab-panel.active');
+    if(!root || root.id==='tab-detail') return;
+    var id=++job, els=root.getElementsByTagName('*'), i=0;
+    function chunk(){
+      if(id!==job) return;
+      var t0=performance.now(), todo=[];
+      // read phase (no writes in between, so no layout thrash)
+      while(i<els.length && performance.now()-t0<6){
+        var e=els[i++];
+        if(!e.firstChild || e.tagName==='STYLE' || e.tagName==='SCRIPT' || e.namespaceURI==='http://www.w3.org/2000/svg') continue;
+        var f=parseFloat(getComputedStyle(e).fontSize); if(!f) continue;
+        var t=snap(f); if(t && Math.abs(t-f)>.01) todo.push([e,t,e.scrollWidth>e.clientWidth+1]);
+      }
+      // write phase
+      for(var k=0;k<todo.length;k++) todo[k][0].style.setProperty('font-size',todo[k][1]+'px','important');
+      if(i<els.length) requestAnimationFrame(chunk);
+    }
+    requestAnimationFrame(chunk);
+  }
+  function sched(){ job++; clearTimeout(q); q=setTimeout(function(){ if(window.requestIdleCallback) requestIdleCallback(run,{timeout:2000}); else run(); },1200); }
+  window.__twpTypeScaleSched=sched;
+  document.addEventListener('DOMContentLoaded',function(){
+    sched();
+    new MutationObserver(function(m){
+      for(var i=0;i<m.length;i++){
+        var r=m[i];
+        if(r.type==='childList' && (r.addedNodes.length>1 || (r.target.id||'').indexOf('tab-')===0 || r.target.tagName==='TBODY')){ sched(); return; }
+        if(r.type==='attributes' && r.target.classList && r.target.classList.contains('tab-panel')){ sched(); return; }
+      }
+    }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  });
+})();
+</script>
+
+<script id="twp-perf">
+/* Speed: (a) within one render pass, heavy pure lookups are computed once, not once per pair;
+   (b) background re-renders (cloud sync) rebuild only the tab you are looking at. */
+(function(){
+  function memo(name){
+    var fn=window[name]; if(typeof fn!=='function'||fn.__memo) return;
+    var cache=Object.create(null), armed=false;
+    var w=function(){
+      var k=name+'|'+Array.prototype.join.call(arguments,'|');
+      if(k in cache) return cache[k];
+      var v=fn.apply(this,arguments); cache[k]=v;
+      if(!armed){ armed=true; Promise.resolve().then(function(){ cache=Object.create(null); armed=false; }); }
+      return v;
+    };
+    w.__memo=true; window[name]=w;
+  }
+  ['cotNormSeries','cotWeekKey','y2SortedHistory'].forEach(memo);
+
+  var ACTIVE={overview:'renderOverview',raw:'renderRaw',detail:'renderDetail',scanner:'renderScanner',yield2y:'renderYield2Y',risk:'renderRiskSentiment',cot:'renderCotRegime'};
+  var ALL=['renderOverview','renderRaw','renderDetail','renderScanner','renderYield2Y','renderRiskSentiment','renderCotRegime'];
+  var first=true, chain=null;
+  var orig=window.renderAllStatic;
+  window.renderAllStatic=function(){
+    document.body.classList.toggle('editing', !!window.unlockedLocally);
+    var cur=window.activeTab||'overview', fn=ACTIVE[cur]||'renderOverview';
+    clearTimeout(chain);
+    if(typeof window[fn]==='function') window[fn]();
+    if(first){
+      first=false; var rest=ALL.filter(function(n){return n!==fn;});
+      (function step(){ var n=rest.shift(); if(!n) return;
+        var run=function(){ try{ window[n](); }catch(e){} step(); };
+        chain=setTimeout(function(){
+          if(window.requestIdleCallback) requestIdleCallback(run,{timeout:1500}); else run();
+        }, 250);
+      })();
+    }
+  };
+})();
+</script>
+
+<style id="twp-bond-yields-polish-old">
+html body #tab-yield2y .y2g-head h3{font-weight:700!important;color:var(--text)!important;letter-spacing:.3px;}
+html body #tab-yield2y .y2g-stats .y2g-gap{max-width:230px;}
+html body #tab-yield2y .y2g-stats .y2g-gap > span{font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--text-dim);}
+html body #tab-yield2y .y2g-gap-note{display:block;font-style:normal;font-size:11px;line-height:1.35;color:var(--text-dim);margin-top:2px;white-space:normal;}
+html body #tab-yield2y .y2g-gap-note.up{color:var(--text-dim);}
+</style>
+<style id="twp-bond-yields-polish">
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-head h3{font-size:14.5px!important;font-weight:800!important;color:var(--text)!important;letter-spacing:.4px;margin:0!important;}
+/* News-ticker headline: scrolls right-to-left, loops forever. Transform only (GPU), so no lag. */
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-headline{display:block;position:relative;overflow:hidden;margin:0 0 9px;padding:0 0 8px;border-bottom:1px solid rgba(255,30,60,.28);color:#ff1f3d;font-size:13.5px;font-weight:800;line-height:1.3;white-space:nowrap;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-headline:empty{display:none;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-hl-track{display:inline-flex;width:max-content;animation:y2gTicker 30s linear infinite;will-change:transform;backface-visibility:hidden;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-headline:hover .y2g-hl-track{animation-play-state:paused;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-hl-seg{display:inline-flex;align-items:center;gap:8px;padding-right:90px;flex:0 0 auto;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-hl-dot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:#ff1f3d;box-shadow:0 0 8px rgba(255,31,61,.7);}
+@keyframes y2gTicker{from{transform:translate3d(0,0,0);}to{transform:translate3d(-25%,0,0);}}
+@media (prefers-reduced-motion:reduce){html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-hl-track{animation:none;}}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-head{align-items:center!important;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-head-right{gap:14px!important;margin-left:auto!important;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-stats{align-items:flex-start;justify-content:flex-end;flex-wrap:nowrap!important;gap:4px 18px!important;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-stats .y2g-gap > span{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-dim);}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-tabs{margin-top:0!important;flex:1 1 auto;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-mode{flex:0 0 auto;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-chart{flex:1 1 0!important;height:auto!important;min-height:200px!important;}
+
+html body .y2g-expand-panel2 .y2g-head h3{font-size:15px!important;}
+html body .y2g-expand-panel2 .y2g-headline{font-size:15px;margin-bottom:12px;}
+html body .y2g-expand-panel2 .y2g-mode{display:flex;flex:0 0 auto;}
+html body .y2g-expand-panel2 .y2g-mode:empty{display:none;}
+html body .y2g-expand-panel2 .y2g-mode-btn{background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,system-ui,sans-serif;line-height:1.2;}
+html body .y2g-expand-panel2 .y2g-mode-btn:first-child{border-radius:7px 0 0 7px;}
+html body .y2g-expand-panel2 .y2g-mode-btn:last-child{border-radius:0 7px 7px 0;border-left:0;}
+html body .y2g-expand-panel2 .y2g-mode-btn:hover{color:var(--text);}
+html body .y2g-expand-panel2 .y2g-mode-btn.on{color:var(--text);background:rgba(255,255,255,.08);box-shadow:inset 0 -2px 0 var(--amber);}
+html body .y2g-expand-panel2 .y2g-toolbar{margin-top:12px;}
+html body .y2g-expand-panel2 .y2g-sub-row{display:flex;align-items:center;gap:8px;margin-top:3px;}
+</style>
+<style id="twp-cot-chart-polish">
+html body #tab-cot .cot-chart{background:transparent!important;border:none!important;box-shadow:none!important;}
+html body #tab-cot .cot-chart-wrap{background:transparent!important;}
+html body #tab-cot .cot-side{background:transparent!important;}
+html body #tab-cot .cot-section-pad,html body #tab-cot .cot-detail-grid,html body #tab-cot .cot-selected{background:transparent!important;}
+html body #tab-cot .cot-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:26px;margin-left:6px;padding:0;border:1px solid var(--border);border-radius:0;background:var(--panel2);color:var(--text-dim);cursor:pointer;}
+html body #tab-cot .cot-expand-btn:hover{color:var(--text);border-color:var(--text-faint);}
+html body #tab-cot .cot-chart-range{align-items:center!important;}
+html body #tab-cot .cot-expand-backdrop{position:fixed;inset:0;z-index:9600;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.62);}
+html body #tab-cot .cot-expand-panel{position:relative;width:96vw;max-width:1400px;height:calc(90vh - 20px);min-height:480px;background:var(--panel);border:1px solid var(--border);padding:44px 22px 16px;box-shadow:0 24px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;}
+html body #tab-cot .cot-expand-panel .cot-chart-wrap{flex:1 1 auto!important;height:100%!important;min-height:0!important;padding:0!important;}
+html body #tab-cot .cot-expand-panel .cot-expand-btn{display:none!important;}
+html body #tab-cot .cot-expand-close{position:absolute;top:8px;right:10px;width:30px;height:30px;border:1px solid var(--border);background:var(--panel2);color:var(--text-dim);font-size:18px;line-height:1;cursor:pointer;z-index:3;}
+html body #tab-cot .cot-expand-close:hover{color:var(--text);}
+</style>
+<script id="twp-cot-expand">
+(function(){
+  function cur(){ return (window.activeCotCcy==='ALL'||!window.activeCotCcy)?'USD':window.activeCotCcy; }
+  function redraw(){ if(typeof cotDrawChart==='function') cotDrawChart(cur()); }
+  function open(){
+    var tab=document.getElementById('tab-cot'); if(!tab) return;
+    var wrap=tab.querySelector('.cot-chart-wrap'); if(!wrap || tab.querySelector('.cot-expand-backdrop')) return;
+    var bd=document.createElement('div'); bd.className='cot-expand-backdrop';
+    var pn=document.createElement('div'); pn.className='cot-expand-panel';
+    var cb=document.createElement('button'); cb.type='button'; cb.className='cot-expand-close'; cb.setAttribute('aria-label','Close'); cb.innerHTML='&times;';
+    var ph=document.createElement('div'); ph.style.display='none'; wrap.parentNode.insertBefore(ph,wrap);
+    pn.appendChild(cb); pn.appendChild(wrap); bd.appendChild(pn); tab.appendChild(bd);
+    var rb=wrap.querySelectorAll('[data-cot-range]');
+    for(var i=0;i<rb.length;i++){ rb[i].onclick=function(){
+      window.activeCotRange=this.dataset.cotRange;
+      var all=wrap.querySelectorAll('[data-cot-range]'); for(var k=0;k<all.length;k++) all[k].classList.toggle('active',all[k]===this);
+      redraw();
+    }; }
+    function close(){
+      document.removeEventListener('keydown',esc);
+      if(ph.parentNode){ ph.parentNode.insertBefore(wrap,ph); ph.parentNode.removeChild(ph); }
+      var rb2=wrap.querySelectorAll('[data-cot-range]');
+      for(var j=0;j<rb2.length;j++){ rb2[j].onclick=function(){ window.activeCotRange=this.dataset.cotRange; renderCotRegime(true); }; }
+      if(bd.parentNode) bd.parentNode.removeChild(bd);
+      requestAnimationFrame(function(){ requestAnimationFrame(redraw); });
+    }
+    function esc(e){ if(e.key==='Escape') close(); }
+    document.addEventListener('keydown',esc);
+    bd.addEventListener('click',function(e){ if(e.target===bd) close(); });
+    cb.onclick=close;
+    requestAnimationFrame(function(){ requestAnimationFrame(redraw); }); setTimeout(redraw,200);
+  }
+  document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('#cotChartExpandBtn'); if(b) open(); });
+  var orig=window.renderCotRegime;
+  if(typeof orig==='function' && !orig.__cotExp){
+    var w=function(){
+      var was=!!document.querySelector('#tab-cot .cot-expand-backdrop');
+      var r=orig.apply(this,arguments);
+      if(was) setTimeout(open,0);
+      return r;
+    };
+    w.__cotExp=true; window.renderCotRegime=w;
+  }
+})();
+</script>
 </body>
 </html>
 
@@ -16787,3 +17638,512 @@ twpShowNameGateIfNeeded();
 .y2g-card-expanded .y2g-tip,.y2g-split-btn,.hist-spread-card-expanded button,.hist-spread-card-expanded select{border-radius:0!important;}
 #tab-yield2y .y2g-mode-btn:first-child,#tab-yield2y .y2g-mode-btn:last-child{border-radius:0!important;}
 </style>
+
+<style id="dx-normalize-v3">
+/* Currency Detail v3: true-black surfaces, one normal typeface, amber headings, tighter rhythm */
+html body #tab-detail{--dx-surface:#101014;--dx-line:rgba(255,255,255,.08);
+  --dx-grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.035'/></svg>");}
+html body #tab-detail .dx-card{background:var(--dx-grain),var(--dx-surface)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;}
+html body #tab-detail #detailBody .dx *,html body #tab-detail #detailPills *{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif!important;font-variant-numeric:tabular-nums;font-feature-settings:normal!important;letter-spacing:0!important;text-transform:none!important;}
+html body #tab-detail input,html body #tab-detail select{color-scheme:dark;}
+
+/* tabs: close together, no scores */
+html body #tab-detail .ccy-pills{justify-content:flex-start!important;gap:2px!important;}
+html body #tab-detail .ccy-pill{flex:0 0 auto!important;padding:10px 20px 11px!important;font-size:13.5px!important;}
+html body #tab-detail .ccy-pill .pill-sc{display:none!important;}
+
+/* normal-size labels and headings */
+html body #tab-detail .dx-k{font-size:12px!important;font-weight:500!important;color:var(--text-dim)!important;}
+html body #tab-detail .dx-tile .dx-k,html body #tab-detail .dx-rc .dx-k{font-size:12px!important;}
+html body #tab-detail .dx-gh{font-size:13px!important;font-weight:600!important;color:var(--amber)!important;margin-bottom:8px!important;}
+html body #tab-detail .dx-ch span:first-child,html body #tab-detail .dx-sl{font-size:13px!important;font-weight:600!important;color:var(--amber)!important;}
+html body #tab-detail .dx-ch-r{font-size:12px!important;color:var(--text-faint)!important;font-weight:500!important;}
+html body #tab-detail .dx-code{font-size:32px!important;}
+html body #tab-detail .dx-name,html body #tab-detail .dx-align span:last-child{font-size:13px!important;}
+html body #tab-detail .dx-tv,html body #tab-detail .dx-tv span{font-size:clamp(20px,2.9vh,26px)!important;font-weight:700!important;}
+html body #tab-detail .dx-ts,html body #tab-detail .dx-ts .y2-small{font-size:12px!important;}
+html body #tab-detail .dx-gauge .gauge-num{font-size:clamp(26px,3.6vh,36px)!important;font-weight:700!important;}
+html body #tab-detail .dx-gauge-cap{font-size:12px!important;font-weight:500!important;color:var(--text-dim)!important;}
+html body #tab-detail .dx-gauge .gauge-svg text{display:none!important;}
+html body #tab-detail .dx-id .chip,html body #tab-detail .dx-st .chip{font-size:12px!important;font-weight:600!important;padding:3px 10px!important;}
+html body #tab-detail .dx-sector thead th{font-size:12px!important;font-weight:500!important;color:var(--text-faint)!important;}
+html body #tab-detail .dx-sector .bias-chip-text{font-size:12px!important;font-weight:600!important;}
+html body #tab-detail .dx-bar i{transition:left .8s cubic-bezier(.2,.8,.2,1),width .8s cubic-bezier(.2,.8,.2,1);}
+
+/* central bank: amber headings, tight rows */
+html body #tab-detail .dx-cb .policy-k,html body #tab-detail .dx-cb .policy-relation span{font-size:12.5px!important;font-weight:600!important;color:var(--amber)!important;}
+html body #tab-detail .dx-cb .policy-sub{font-size:12px!important;}
+html body #tab-detail .dx-cb .policy-metric,html body #tab-detail .dx-cb .policy-relation{padding:9px 16px!important;gap:3px!important;}
+html body #tab-detail .dx-gd{gap:8px!important;padding:12px 16px!important;}
+html body #tab-detail .dx-gd .dx-k{font-size:12.5px!important;font-weight:600!important;color:var(--amber)!important;}
+html body #tab-detail .dx-gd p{font-size:13.5px!important;line-height:1.5!important;color:var(--text)!important;border-left:2px solid var(--amber);padding-left:10px;-webkit-line-clamp:4!important;}
+html body #tab-detail .dx-cb .guidance-trigger{font-size:13px!important;font-weight:600!important;color:var(--amber)!important;padding:12px 16px!important;background:color-mix(in srgb,var(--amber) 9%,transparent)!important;border-top:1px solid color-mix(in srgb,var(--amber) 40%,transparent)!important;}
+html body #tab-detail .dx-cb .guidance-trigger:hover{background:color-mix(in srgb,var(--amber) 18%,transparent)!important;color:#fff!important;}
+
+/* positioning: nothing clipped */
+html body #tab-detail .dx-f{min-height:32px;}
+html body #tab-detail .dx-v{font-size:13.5px!important;}
+html body #tab-detail .dx-season input{font-size:13px!important;}
+html body #tab-detail .dx-season .seasonality-month-input{width:160px!important;flex:0 0 auto!important;}
+html body #tab-detail .dx-season .seasonality-avg-input{width:84px!important;flex:0 0 auto!important;}
+
+/* trend: fills its card, score and delta share a row */
+html body #tab-detail .dx-trend .detail-trend-spark{flex:1 1 0!important;width:100%!important;height:auto!important;min-height:110px!important;max-height:none!important;}
+html body #tab-detail .dx-trend .trend-panel > div:first-child{display:flex!important;align-items:baseline;gap:12px;}
+html body #tab-detail .dx-trend .trend-score{font-size:30px!important;}
+html body #tab-detail .dx-trend .trend-score{white-space:nowrap!important;overflow-wrap:normal!important;flex:0 0 auto;}
+html body #tab-detail .dx-trend .trend-panel .trend-score{word-break:normal!important;}
+html body #tab-detail .dx-trend .trend-delta{font-size:12.5px!important;}
+
+/* v3.1: exact #101014 surface, trend chart always fully visible */
+html body #tab-detail .dx-card{background:#101014 var(--dx-grain)!important;}
+html body #tab-detail .dx-trend{min-height:0!important;}
+html body #tab-detail .dx-trend [id^="trendPanelWrap-"]{min-height:0!important;overflow:hidden;}
+html body #tab-detail .dx-trend .trend-panel{overflow:hidden!important;padding:10px 14px 10px!important;gap:6px!important;}
+html body #tab-detail .dx-trend .detail-trend-spark{flex:1 1 0!important;min-height:64px!important;height:0!important;}
+html body #tab-detail .dx-trend .trend-score{font-size:26px!important;}
+html body #tab-detail .dx-f{min-height:28px!important;}
+html body #tab-detail .dx-fields{padding:0 16px 4px!important;}
+html body #tab-detail .dx-ch{padding:9px 16px 8px!important;}
+@media (max-height:980px){
+  html body #tab-detail .dx-f{min-height:25px!important;}
+  html body #tab-detail .dx-v,html body #tab-detail .dx-f .dx-k{font-size:12.5px!important;}
+}
+
+/* v3.2: balanced type scale. 12 = labels/headers, 13 = body text and values, 16 = key values, 20-26 = hero numbers */
+html body #tab-detail .dx-sector .ind-link,html body #tab-detail .dx-sector .ind-name,
+html body #tab-detail .dx-sector tbody td,
+html body #tab-detail .dx-sector .ind-txt,html body #tab-detail .dx-sector .ind-num,html body #tab-detail .dx-sector .surprise,
+html body #tab-detail .dx-sector .bias-chip-text{font-size:13px!important;font-weight:500!important;line-height:1.2!important;}
+html body #tab-detail .dx-sector .bias-chip-text{font-weight:600!important;}
+html body #tab-detail .dx-sector thead th{font-size:12px!important;font-weight:500!important;}
+html body #tab-detail .dx-sector th:nth-child(3),html body #tab-detail .dx-sector td:nth-child(3),
+html body #tab-detail .dx-sector th:nth-child(4),html body #tab-detail .dx-sector td:nth-child(4),
+html body #tab-detail .dx-sector th:nth-child(5),html body #tab-detail .dx-sector td:nth-child(5){text-align:right!important;padding-right:14px!important;}
+html body #tab-detail .dx-sector td:nth-child(3) *,html body #tab-detail .dx-sector td:nth-child(4) *,html body #tab-detail .dx-sector td:nth-child(5) *{text-align:right!important;}
+html body #tab-detail .dx-sector th:nth-child(6),html body #tab-detail .dx-sector td:nth-child(6){text-align:left!important;padding-left:10px!important;}
+html body #tab-detail .dx-sl,html body #tab-detail .dx-ch span:first-child,html body #tab-detail .dx-gh,html body #tab-detail .dx-cb .policy-k,html body #tab-detail .dx-cb .policy-relation span,html body #tab-detail .dx-gd .dx-k{font-size:13px!important;}
+html body #tab-detail .dx-id .chip,html body #tab-detail .dx-st .chip{font-size:12px!important;}
+html body #tab-detail .dx-k,html body #tab-detail .dx-tile .dx-k,html body #tab-detail .dx-rc .dx-k{font-size:12px!important;}
+html body #tab-detail .dx-rc input{font-size:20px!important;}
+html body #tab-detail .dx-rc .static-chip,html body #tab-detail .dx-rc select,html body #tab-detail .dx-rc .conv-select,html body #tab-detail .dx-cb .policy-value,html body #tab-detail .dx-cb .policy-relation strong{font-size:16px!important;font-weight:700!important;}
+html body #tab-detail .dx-cb .policy-sub,html body #tab-detail .dx-ts,html body #tab-detail .dx-ts .y2-small,html body #tab-detail .dx-gauge-cap,html body #tab-detail .dx-align span:last-child,html body #tab-detail .dx-name{font-size:12px!important;}
+html body #tab-detail .dx-f .dx-k,html body #tab-detail .dx-v,html body #tab-detail .dx-season input,html body #tab-detail .dx-season .seasonality-derived{font-size:13px!important;}
+html body #tab-detail .dx-gd p{font-size:13px!important;}
+html body #tab-detail .dx-cb .guidance-trigger,html body #tab-detail .ccy-pill{font-size:13px!important;}
+html body #tab-detail .dx-ch-r,html body #tab-detail .dx-trend .trend-delta{font-size:12px!important;}
+@media (max-height:980px){html body #tab-detail .dx-v,html body #tab-detail .dx-f .dx-k{font-size:13px!important;}}
+</style>
+
+<style id="twp-surface-0a0a0c">
+/* One surface colour everywhere: page and every card/panel = #101014; nested surfaces step up from it */
+:root,html.ash,html.black,body.ash,body.black,html body.ash,html body.black{
+  --twp-bg:#101014;--twp-panel:#101014;--twp-panel2:#16161b;--twp-panel3:#1e1e23;
+  --twp-bg-ash:#101014;--twp-panel-ash:#101014;--twp-panel2-ash:#16161b;--twp-panel3-ash:#1e1e23;
+  --bg:#101014;--panel:#101014;--panel2:#16161b;--panel3:#1e1e23;
+}
+html,body{background:#101014;}
+</style>
+
+<style id="cot-v3">
+/* COT Regime v3: same language as Currency Detail. One screen, one typeface, 12/13/16 scale, amber headings. */
+@media (min-width:1100px) and (min-height:720px){
+  html body #tab-cot.active{display:flex!important;flex-direction:column!important;height:calc(100dvh - 108px)!important;min-height:0!important;overflow:hidden!important;padding-bottom:0!important;}
+  html body #tab-cot .cot-page{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:12px!important;overflow:hidden!important;}
+  html body #tab-cot .cot-grid{flex:1 1 0!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr)!important;gap:12px!important;}
+  html body #tab-cot .cot-grid > .cot-card{min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}
+  html body #tab-cot .cot-grid > .cot-card > .cot-section-pad{flex:1 1 auto;min-height:0;overflow:auto;}
+  html body #tab-cot .cot-page > .cot-card:last-child{flex:0 0 auto!important;}
+}
+html body #tab-cot *{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif!important;letter-spacing:0!important;text-transform:none!important;font-variant-numeric:tabular-nums;}
+html body #tab-cot .cot-page{padding:0!important;}
+
+/* selector = underline tabs */
+html body #tab-cot .cot-selector{display:flex!important;gap:2px!important;margin:0!important;padding:0!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.13)!important;background:transparent!important;flex:0 0 auto;}
+html body #tab-cot .cot-pill{border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;background:transparent!important;color:var(--text-faint)!important;padding:9px 20px 10px!important;margin-bottom:-1px!important;font-size:13.5px!important;font-weight:700!important;box-shadow:none!important;}
+html body #tab-cot .cot-pill:hover{color:var(--text)!important;background:rgba(255,255,255,.025)!important;}
+html body #tab-cot .cot-pill.active{color:var(--text)!important;border-bottom-color:var(--amber)!important;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(250,102,15,.07))!important;}
+
+/* cards */
+html body #tab-cot .cot-card{border:1px solid rgba(255,255,255,.08)!important;border-radius:0!important;background:#101014!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;margin:0!important;padding:0!important;}
+html body #tab-cot .cot-card-head{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:11px 16px 10px!important;border-bottom:1px solid rgba(255,255,255,.08)!important;background:transparent!important;flex:0 0 auto;}
+html body #tab-cot .cot-title{font-size:13px!important;font-weight:600!important;color:var(--amber)!important;}
+html body #tab-cot .cot-sub{display:none!important;}
+html body #tab-cot .cot-chart-meta{font-size:12px!important;font-weight:500!important;color:var(--text-faint)!important;}
+html body #tab-cot .cot-section-pad{padding:0 14px 6px!important;}
+
+/* positioning table */
+html body #tab-cot .cot-table{width:100%!important;border-collapse:collapse!important;}
+html body #tab-cot .cot-table th{font-size:12px!important;font-weight:500!important;color:var(--text-faint)!important;padding:9px 6px!important;border-bottom:1px solid rgba(255,255,255,.08)!important;background:transparent!important;text-align:right!important;white-space:nowrap;}
+html body #tab-cot .cot-table th:first-child,html body #tab-cot .cot-table th:nth-child(2),html body #tab-cot .cot-table th:nth-child(6){text-align:left!important;}
+html body #tab-cot .cot-table td{font-size:13px!important;font-weight:500!important;padding:5px 6px!important;height:36px!important;border-bottom:1px solid rgba(255,255,255,.045)!important;vertical-align:middle!important;text-align:right!important;}
+html body #tab-cot .cot-table td:first-child,html body #tab-cot .cot-table td:nth-child(2),html body #tab-cot .cot-table td:nth-child(6){text-align:left!important;}
+html body #tab-cot .cot-table tbody tr:last-child td{border-bottom:0!important;}
+html body #tab-cot .cot-table tbody tr:hover td{background:rgba(255,255,255,.03)!important;}
+html body #tab-cot .cot-table td *{font-size:13px!important;}
+html body #tab-cot .cot-table td .d,html body #tab-cot .cot-table td small{font-size:12px!important;}
+html body #tab-cot .cot-table .ccy-flag{width:20px!important;height:14px!important;border-radius:0!important;}
+
+/* selected regime */
+html body #tab-cot .cot-hero{display:grid!important;grid-template-columns:230px minmax(0,1fr)!important;gap:0!important;flex:1 1 auto;min-height:0;}
+html body #tab-cot .cot-side{padding:12px 16px!important;border-right:1px solid rgba(255,255,255,.08)!important;display:flex!important;flex-direction:column!important;gap:10px!important;min-height:0;overflow:hidden;}
+html body #tab-cot .cot-idrow .big{font-size:30px!important;font-weight:700!important;line-height:1!important;}
+html body #tab-cot .cot-idrow .name{font-size:12px!important;color:var(--text-dim)!important;margin-top:4px!important;}
+html body #tab-cot .cot-idrow .ccy-flag{width:38px!important;height:27px!important;border-radius:0!important;}
+html body #tab-cot .cot-idmeta{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:6px!important;}
+html body #tab-cot .cot-idmeta .badge{font-size:12px!important;font-weight:600!important;padding:3px 10px!important;border-radius:0!important;}
+html body #tab-cot .cot-rangepill{font-size:12px!important;color:var(--text-dim)!important;border:0!important;background:transparent!important;padding:0!important;}
+html body #tab-cot .cot-rangepill b{font-size:13px!important;color:var(--text)!important;}
+html body #tab-cot .cot-stats{display:flex!important;flex-direction:column!important;gap:0!important;flex:1 1 auto;min-height:0;}
+html body #tab-cot .cot-stats .stat{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:27px!important;padding:0!important;border-bottom:1px solid rgba(255,255,255,.045)!important;background:transparent!important;}
+html body #tab-cot .cot-stats .stat::before,html body #tab-cot .cot-stats .stat::after{content:none!important;display:none!important;}
+html body #tab-cot .cot-stats .stat > span{font-size:12px!important;font-weight:500!important;color:var(--text-dim)!important;white-space:nowrap!important;flex:0 0 auto!important;}
+html body #tab-cot .cot-stats .stat > b{font-size:13px!important;font-weight:600!important;text-align:right!important;white-space:nowrap!important;}
+html body #tab-cot .cot-stats .stat > *:not(span):not(b){display:none!important;}
+html body #tab-cot .cot-chart-wrap{padding:12px 16px!important;display:flex!important;flex-direction:column!important;gap:8px!important;min-width:0;min-height:0;}
+html body #tab-cot .cot-chart-head{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:10px!important;flex:0 0 auto;}
+html body #tab-cot .cot-chart-title{font-size:13px!important;font-weight:600!important;color:var(--amber)!important;}
+html body #tab-cot .cot-chart-range{display:flex!important;gap:2px!important;}
+html body #tab-cot .cot-chart-range button{border:0!important;border-radius:0!important;background:transparent!important;color:var(--text-faint)!important;font-size:12px!important;font-weight:600!important;padding:4px 9px!important;}
+html body #tab-cot .cot-chart-range button.active{background:var(--amber)!important;color:#0a0a0c!important;}
+html body #tab-cot .cot-chart{flex:1 1 0!important;min-height:90px!important;height:auto!important;}
+html body #tab-cot .cot-chart svg{width:100%!important;height:100%!important;}
+html body #tab-cot .cot-mini-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;flex:0 0 auto;border:1px solid rgba(255,255,255,.08);}
+html body #tab-cot .cot-mini-grid > *{padding:7px 10px!important;border:0!important;border-left:1px solid rgba(255,255,255,.08)!important;background:transparent!important;border-radius:0!important;font-size:12px!important;color:var(--text-dim)!important;display:flex!important;flex-direction:column!important;gap:2px!important;}
+html body #tab-cot .cot-mini-grid > *:first-child{border-left:0!important;}
+html body #tab-cot .cot-mini-grid b,html body #tab-cot .cot-mini-grid strong{font-size:13px!important;font-weight:600!important;color:var(--text)!important;}
+
+/* pair strength: calm tiles, colour only in the figure and a left edge */
+html body #tab-cot .cot-pair-grid{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:6px!important;padding:2px 0 0!important;}
+html body #tab-cot .cot-pair-tile{background:#101014!important;background-image:none!important;border:0!important;border-left:3px solid rgba(255,255,255,.18)!important;border-radius:0!important;padding:6px 10px!important;min-height:0!important;height:auto!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;box-shadow:none!important;cursor:pointer;}
+html body #tab-cot .cot-pair-tile:hover{background:#191920!important;}
+html body #tab-cot .cot-pair-tile:has(.cp-v.up){border-left-color:var(--bullish-strong)!important;}
+html body #tab-cot .cot-pair-tile:has(.cp-v.down){border-left-color:var(--bearish-strong)!important;}
+html body #tab-cot .cot-pair-tile .cp-n{font-size:12.5px!important;font-weight:600!important;color:var(--text)!important;text-shadow:none!important;}
+html body #tab-cot .cot-pair-tile .cp-v{font-size:12.5px!important;font-weight:600!important;text-shadow:none!important;}
+html body #tab-cot .cot-pair-tile .cp-v.up{color:var(--bullish-strong)!important;}
+html body #tab-cot .cot-pair-tile .cp-v.down{color:var(--bearish-strong)!important;}
+@media (max-width:1099px),(max-height:719px){
+  html body #tab-cot .cot-grid{grid-template-columns:1fr!important;}
+  html body #tab-cot .cot-pair-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+}
+
+html body #tab-cot .cot-hero{grid-template-columns:268px minmax(0,1fr)!important;}
+html body #tab-cot .cot-stats .stat > b{overflow:hidden;text-overflow:ellipsis;min-width:0;}
+html body #tab-cot .cot-split-label{display:flex!important;justify-content:space-between!important;gap:8px!important;white-space:nowrap!important;margin-top:3px!important;}
+html body #tab-cot .cot-split-label span{font-size:12px!important;font-weight:500!important;color:var(--text-faint)!important;white-space:nowrap!important;}
+html body #tab-cot .cot-bar{height:6px!important;border-radius:0!important;}
+html body #tab-cot .cot-table td:nth-child(2){min-width:170px;}
+html body #tab-cot .cot-table td{height:38px!important;}
+
+html body #tab-cot .cot-grid > .cot-card:first-child .cot-section-pad{display:flex;flex-direction:column;}
+html body #tab-cot .cot-grid > .cot-card:first-child .cot-table{height:100%!important;}
+html body #tab-cot .cot-stats .stat > b{white-space:normal!important;line-height:1.25!important;}
+html body #tab-cot .cot-stats .stat{min-height:28px!important;}
+
+/* v3.3: fixed row height with visible rules, no clipped labels, pair strip becomes a scrolling ticker */
+html body #tab-cot .cot-grid > .cot-card:first-child .cot-table{height:auto!important;}
+html body #tab-cot .cot-table td{height:46px!important;border-bottom:1px solid rgba(255,255,255,.12)!important;}
+html body #tab-cot .cot-table tbody tr:last-child td{border-bottom:1px solid rgba(255,255,255,.12)!important;}
+html body #tab-cot .cot-table thead th{border-bottom:1px solid rgba(255,255,255,.16)!important;}
+html body #tab-cot .cot-table td:nth-child(2),html body #tab-cot .cot-table th:nth-child(2){width:215px!important;min-width:215px!important;}
+html body #tab-cot .cot-table td:nth-child(2) > *{overflow:visible!important;}
+html body #tab-cot .cot-split-label{gap:12px!important;}
+html body #tab-cot .cot-split-label span{font-size:12px!important;overflow:visible!important;text-overflow:clip!important;}
+html body #tab-cot .cot-grid > .cot-card:first-child .cot-section-pad{flex:0 0 auto!important;overflow:visible!important;}
+
+html body #tab-cot .cot-page > .cot-card:last-child{flex:0 0 auto!important;}
+html body #tab-cot .cot-page > .cot-card:last-child .cot-card-head{padding:8px 16px 7px!important;}
+html body #tab-cot .cot-page > .cot-card:last-child .cot-section-pad{padding:0!important;overflow:hidden!important;position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%);}
+html body #tab-cot .cot-pair-grid{display:flex!important;flex-wrap:nowrap!important;gap:0!important;width:max-content!important;padding:0!important;grid-template-columns:none!important;
+  animation:cotTicker 90s linear infinite;will-change:transform;}
+@keyframes cotTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+html body #tab-cot .cot-page > .cot-card:last-child:hover .cot-pair-grid{animation-play-state:paused;}
+html body #tab-cot .cot-pair-tile{flex:0 0 auto!important;display:flex!important;align-items:center!important;gap:10px!important;padding:0 22px!important;height:40px!important;background:transparent!important;border:0!important;border-right:1px solid rgba(255,255,255,.1)!important;}
+html body #tab-cot .cot-pair-tile:hover{background:rgba(255,255,255,.04)!important;}
+html body #tab-cot .cot-pair-tile::before{content:'';width:3px;height:16px;background:rgba(255,255,255,.25);flex:0 0 auto;}
+html body #tab-cot .cot-pair-tile:has(.cp-v.up)::before{background:var(--bullish-strong);}
+html body #tab-cot .cot-pair-tile:has(.cp-v.down)::before{background:var(--bearish-strong);}
+html body #tab-cot .cot-pair-tile .cp-n,html body #tab-cot .cot-pair-tile .cp-v{font-size:13px!important;}
+@media (prefers-reduced-motion:reduce){html body #tab-cot .cot-pair-grid{animation:none!important;}}
+html body #tab-cot .cot-table td{height:clamp(44px,5.6vh,58px)!important;}
+
+/* v3.4: never wider than the window. Shrink the layout instead of scrolling sideways. */
+html body .content{min-width:0!important;max-width:100%!important;}
+html body #tab-cot,html body #tab-cot .cot-page{min-width:0!important;max-width:100%!important;width:100%!important;}
+html body #tab-cot .cot-page > .cot-card:last-child{min-width:0!important;max-width:100%!important;overflow:hidden!important;}
+html body #tab-cot .cot-grid > .cot-card{min-width:0!important;}
+@media (max-width:1700px){
+  html body #tab-cot .cot-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;}
+  html body #tab-cot .cot-table th,html body #tab-cot .cot-table td{padding-left:4px!important;padding-right:4px!important;}
+  html body #tab-cot .cot-table td:nth-child(2),html body #tab-cot .cot-table th:nth-child(2){width:150px!important;min-width:150px!important;}
+  html body #tab-cot .cot-split-label{gap:6px!important;}
+  html body #tab-cot .cot-section-pad{padding:0 10px 6px!important;}
+  html body #tab-cot .cot-hero{grid-template-columns:230px minmax(0,1fr)!important;}
+  html body #tab-cot .cot-side{padding:12px 12px!important;}
+  html body #tab-cot .cot-chart-wrap{padding:10px 12px!important;}
+  html body #tab-cot .cot-chart-title,html body #tab-cot .cot-chart-meta{white-space:normal;}
+}
+html body #tab-cot .cot-chart-wrap{min-width:0!important;overflow:hidden;}
+html body #tab-cot .cot-chart-head{flex-wrap:wrap!important;}
+
+@media (max-width:1700px){
+  html body #tab-cot .cot-table td:nth-child(2),html body #tab-cot .cot-table th:nth-child(2){width:126px!important;min-width:126px!important;}
+  html body #tab-cot .cot-table td:nth-child(6),html body #tab-cot .cot-table th:nth-child(6){white-space:nowrap!important;overflow:visible!important;min-width:112px!important;}
+  html body #tab-cot .cot-table td:nth-child(7){white-space:nowrap!important;}
+  html body #tab-cot .cot-table td,html body #tab-cot .cot-table th{font-size:12.5px!important;}
+  html body #tab-cot .cot-table td *{font-size:12.5px!important;}
+  html body #tab-cot .cot-split-label span{font-size:11.5px!important;}
+}
+
+@media (max-width:1700px){
+  html body #tab-cot .cot-table td:nth-child(2),html body #tab-cot .cot-table th:nth-child(2){width:142px!important;min-width:142px!important;}
+  html body #tab-cot .cot-split-label{justify-content:space-between!important;}
+  html body #tab-cot .cot-table td:nth-child(2) .cot-split-label span{overflow:visible!important;}
+}
+</style>
+
+
+
+
+<style id="hero-corner-shade-v1">
+/* Currency Detail hero: a coloured shade that starts at the top-left corner of the red/green/grey top line.
+   Bearish = red, Bullish = green, Neutral = amber. Colours follow the regime class already on the card. */
+#tab-detail .dx{--hs:var(--bullish-strong);}
+#tab-detail .dx.dx-bear{--hs:var(--bearish-strong);}
+#tab-detail .dx.dx-neu{--hs:#9aa3ad;}
+
+#tab-detail .dx-hero{position:relative;overflow:hidden;
+  background:
+    var(--dx-grain),
+    radial-gradient(ellipse 45% 150% at 0% 0%,color-mix(in srgb,var(--hs) 20%,transparent) 0%,color-mix(in srgb,var(--hs) 6%,transparent) 40%,transparent 70%),
+    linear-gradient(180deg,color-mix(in srgb,var(--hs) 4%,transparent) 0,transparent 50%),
+    var(--dx-surface)!important;
+  border-top:2px solid transparent!important;
+}
+/* the top line: bright at the corner, fading to the right, with a glow */
+#tab-detail .dx-hero::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;pointer-events:none;z-index:2;
+  background:linear-gradient(90deg,var(--hs) 0%,var(--hs) 35%,color-mix(in srgb,var(--hs) 25%,transparent) 100%);
+  box-shadow:0 0 22px 3px color-mix(in srgb,var(--hs) 55%,transparent);}
+/* a soft bright spot right at the corner you circled */
+#tab-detail .dx-hero::after{content:"";position:absolute;top:-30px;left:-30px;width:220px;height:140px;pointer-events:none;z-index:0;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--hs) 35%,transparent),transparent);filter:blur(6px);}
+#tab-detail .dx-hero > *{position:relative;z-index:1;}
+</style>
+
+<style id="hero-smoke-v1">
+/* Smoke that keeps flowing out of the top-left corner of the Currency Detail header and drifts over the dashboard.
+   Red = bearish, green = bullish, grey = neutral (colour comes from --hs on the card). */
+#tab-detail .dx{position:relative;}
+#tab-detail .dx-smoke{position:absolute;top:0;left:0;width:520px;height:340px;overflow:hidden;pointer-events:none;z-index:4;
+  -webkit-mask-image:radial-gradient(ellipse 100% 100% at 0% 0%,#000 0%,rgba(0,0,0,.5) 45%,transparent 90%);
+          mask-image:radial-gradient(ellipse 100% 100% at 0% 0%,#000 0%,rgba(0,0,0,.5) 45%,transparent 90%);}
+#tab-detail .dx-smoke i{position:absolute;left:-120px;top:-100px;width:300px;height:220px;border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--hs) 30%,transparent) 0%,color-mix(in srgb,var(--hs) 11%,transparent) 55%,transparent 100%);
+  filter:blur(34px);opacity:0;will-change:transform,opacity;
+  animation:dxSmoke var(--t,18s) linear infinite;animation-delay:var(--d,0s);}
+#tab-detail .dx-smoke i:nth-child(1){--dx:300px;--dy:150px;--r:40deg; --t:17s;--d:0s;}
+#tab-detail .dx-smoke i:nth-child(2){--dx:200px;--dy:230px;--r:-50deg;--t:21s;--d:-3s;}
+#tab-detail .dx-smoke i:nth-child(3){--dx:380px;--dy:90px;--r:60deg; --t:24s;--d:-7s;}
+#tab-detail .dx-smoke i:nth-child(4){--dx:150px;--dy:260px;--r:-30deg;--t:19s;--d:-11s;}
+#tab-detail .dx-smoke i:nth-child(5){--dx:330px;--dy:190px;--r:80deg; --t:26s;--d:-5s;}
+#tab-detail .dx-smoke i:nth-child(6){--dx:250px;--dy:60px;--r:-70deg;--t:15s;--d:-9s;}
+#tab-detail .dx-smoke i:nth-child(7){--dx:420px;--dy:150px;--r:30deg; --t:28s;--d:-14s;}
+#tab-detail .dx-smoke i:nth-child(8){--dx:120px;--dy:170px;--r:-90deg;--t:16s;--d:-2s;}
+@keyframes dxSmoke{
+  0%  {transform:translate(0,0) scale(.45) rotate(0deg);opacity:0;}
+  10% {opacity:.6;}
+  45% {transform:translate(calc(var(--dx)*.5),calc(var(--dy)*.55)) scale(1.1) rotate(calc(var(--r)*.5));opacity:.4;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(1.5) rotate(var(--r));opacity:0;}
+}
+@media (prefers-reduced-motion:reduce){#tab-detail .dx-smoke i{animation:none;opacity:.25;}}
+</style>
+
+<style id="currency-detail-composite-top-layout-v1">
+/* Currency Detail (desktop): the right-hand column starts at the very top, level with the hero strip.
+   Composite trend sits at the top of it and stretches downward; Positioning & context is pushed below it,
+   so there is no dead space left under Positioning & context. */
+@media (min-width:1100px) and (min-height:720px){
+  #tab-detail .dx{grid-template-columns:minmax(0,1.62fr) minmax(0,.9fr) minmax(0,.9fr)!important;}
+  #tab-detail .dx-main{display:contents!important;}
+  #tab-detail .dx-hero{grid-column:1 / 3!important;grid-row:1!important;}
+  #tab-detail .dx-main > .dx-ind{grid-column:1!important;grid-row:2!important;}
+  #tab-detail .dx-main > .dx-cb{grid-column:2!important;grid-row:2!important;}
+  #tab-detail .dx-main > .dx-col{grid-column:3!important;grid-row:1 / 3!important;min-height:0!important;overflow:hidden!important;}
+  #tab-detail .dx-col > .dx-pos{flex:0 0 auto!important;}
+  html body #tab-detail .dx-col > .dx-pos .dx-f{min-height:35px!important;}
+}
+#tab-detail .dx-col > .dx-trend{flex:1 1 0!important;min-height:330px!important;max-height:450px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+#tab-detail .dx-col > .dx-trend .dx-ch{flex:0 0 auto!important;}
+#tab-detail .dx-col > .dx-trend [id^="trendPanelWrap-"]{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+html body #tab-detail .dx-col > .dx-trend .trend-panel{flex:1 1 auto!important;min-height:0!important;padding:14px 18px 14px!important;gap:10px!important;}
+html body #tab-detail .dx-col > .dx-trend .detail-trend-spark{flex:1 1 0!important;width:100%!important;height:0!important;min-height:150px!important;max-height:270px!important;display:block!important;}
+html body #tab-detail .dx-col > .dx-trend .trend-score{font-size:30px!important;}
+
+/* Top strip: all seven tiles (and their bars) are exactly the same width, with the same gap between every
+   pair of neighbours, including across the group dividers. Group side padding = half the gap, so the
+   divider sits in the middle of an ordinary gap. */
+@media (min-width:761px){
+  #tab-detail .dx-builder{--dxg:16px;}
+  html body #tab-detail .dx-builder{grid-template-columns:repeat(7,minmax(0,1fr))!important;}
+  html body #tab-detail .dx-builder > .dx-group:nth-child(1){grid-column:span 3!important;}
+  html body #tab-detail .dx-builder > .dx-group:nth-child(2){grid-column:span 2!important;}
+  html body #tab-detail .dx-builder > .dx-group:nth-child(3){grid-column:span 2!important;}
+  html body #tab-detail .dx-builder > .dx-group{padding-left:calc(var(--dxg)/2)!important;padding-right:calc(var(--dxg)/2)!important;}
+  html body #tab-detail .dx-builder .dx-tiles{gap:var(--dxg)!important;}
+}
+@media (min-width:761px) and (max-width:1380px){
+  #tab-detail .dx-builder{--dxg:10px;}
+}
+
+/* COT Regime: stop forcing the two big cards to the very bottom of the screen. They take the height their
+   content needs (with a sensible minimum), the left table's rows share that height so there is no empty
+   block under the table, and the selected-currency panel is no longer padded out with extra gaps. */
+@media (min-width:1100px) and (min-height:720px){
+  html body #tab-cot .cot-grid{flex:0 0 auto!important;min-height:0!important;align-items:stretch!important;}
+  html body #tab-cot .cot-stats .stat{margin-top:0!important;min-height:30px!important;}
+  html body #tab-cot .cot-grid > .cot-card:first-child .cot-section-pad{flex:0 0 auto!important;overflow:visible!important;}
+  html body #tab-cot .cot-grid > .cot-card:first-child .cot-table{height:auto!important;}
+  html body #tab-cot .cot-table td{height:48px!important;}
+  html body #tab-cot .cot-chart{min-height:260px!important;}
+}
+
+/* Positioning & context: seasonality value and month read as plain text, no boxes. */
+html body #tab-detail .dx-pos .dx-season input{border:0!important;background:transparent!important;box-shadow:none!important;outline:0!important;border-radius:0!important;text-align:right!important;padding-left:0!important;padding-right:0!important;-webkit-appearance:none;appearance:none;}
+html body #tab-detail .dx-pos .dx-season input::-webkit-calendar-picker-indicator{display:none!important;}
+html body.editing #tab-detail .dx-pos .dx-season input:not(:disabled){border-bottom:1px solid rgba(255,255,255,.22)!important;}
+
+/* Currency Detail: the row of currency tabs shows no scrollbar sliver at its right end. */
+html body #tab-detail .ccy-pills{overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;-ms-overflow-style:none!important;}
+html body #tab-detail .ccy-pills::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+
+/* Forward Guidance: blur the whole dashboard behind the sharp centered sheet. */
+.guidance-sheet-backdrop{
+  background:rgba(0,0,0,.46)!important;
+  -webkit-backdrop-filter:blur(9px)!important;
+  backdrop-filter:blur(9px)!important;
+  transition:opacity .22s ease!important;
+}
+.guidance-sheet{
+  bottom:auto!important;
+  top:50%!important;
+  transform:translate(-50%,-50%) scale(.965)!important;
+  transform-origin:center center!important;
+}
+.guidance-sheet.open{
+  animation:guidanceSheetCenterIn .32s cubic-bezier(.22,.72,.2,1) forwards!important;
+}
+@keyframes guidanceSheetCenterIn{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.965);}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+}
+@media(max-width:720px){
+  .guidance-sheet{
+    top:auto!important;
+    bottom:10px!important;
+    transform:translateX(-50%) translateY(18px) scale(.985)!important;
+  }
+  .guidance-sheet.open{
+    animation:guidanceSheetMobileIn .28s ease-out forwards!important;
+  }
+}
+@keyframes guidanceSheetMobileIn{
+  0%{opacity:0;transform:translateX(-50%) translateY(18px) scale(.985);}
+  100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+}
+body.guidance-sheet-open{overflow:hidden!important;}
+</style>
+
+<style id="twp-detail-tweaks">
+/* Policy vs market: hike pricing = green, cut pricing = red */
+html body #tab-detail .dx-cb .policy-relation.policy-hike strong,
+html body #tab-detail .policy-relation.policy-hike strong{color:var(--bullish-strong)!important;}
+html body #tab-detail .dx-cb .policy-relation.policy-cut strong,
+html body #tab-detail .policy-relation.policy-cut strong{color:var(--bearish-strong)!important;}
+/* Conviction: High green, Medium gold, Low ash */
+html body #tab-detail .dx-rc .conv-select.High{color:var(--bullish-strong)!important;}
+html body #tab-detail .dx-rc .conv-select.Medium{color:#e0b13c!important;}
+html body #tab-detail .dx-rc .conv-select.Low{color:#8d939c!important;}
+/* Rate / Next move / Conviction labels: red */
+html body #tab-detail .dx-rc .dx-k{color:#e8283c!important;}
+/* Composite trend and Positioning & context titles: white */
+html body #tab-detail .dx-trend .dx-ch span:first-child,
+html body #tab-detail .dx-pos .dx-ch span:first-child{color:#fff!important;}
+/* Policy summary: white */
+html body #tab-detail .dx-cb .policy-summary{font-size:13px!important;line-height:1.5!important;color:#fff!important;}
+/* Composite trend number: normal size */
+html body #tab-detail .dx-col > .dx-trend .trend-panel .trend-score,
+html body #tab-detail .dx-trend .trend-panel .trend-score{font-size:20px!important;}
+
+/* Growth / Inflation / Labour: slim band, rich red heading */
+html body #tab-detail .dx-sl{color:#e8283c!important;font-size:13px!important;}
+html body #tab-detail .dx-st{background:rgba(255,255,255,.05)!important;border-left:3px solid #e8283c;padding:2px 10px!important;margin:0 0 1px!important;min-height:0!important;gap:8px!important;}
+html body #tab-detail .dx-st .chip{padding:1px 7px!important;font-size:11px!important;line-height:1.3!important;}
+html body #tab-detail .dx-sector{padding:5px 0 1px!important;}
+html body #tab-detail .dx-ind{padding-top:0!important;padding-bottom:2px!important;}
+html body #tab-detail .dx-sector thead th{padding-top:2px!important;padding-bottom:2px!important;line-height:1.1!important;}
+/* Rows scale with screen height so Average Hr Earnings, JOLTS etc. fit without scrolling */
+html body #tab-detail .dx-sector tbody td{height:clamp(21px,2.6vh,28px)!important;padding-top:1px!important;padding-bottom:1px!important;}
+/* Slightly bigger numbers and names */
+html body #tab-detail .dx-sector tbody td,
+html body #tab-detail .dx-sector .ind-link,html body #tab-detail .dx-sector .ind-name,
+html body #tab-detail .dx-sector .ind-txt,html body #tab-detail .dx-sector .ind-num,
+html body #tab-detail .dx-sector .surprise{font-size:14px!important;}
+html body #tab-detail .dx-sector .bias-chip-text{font-size:12.5px!important;}
+
+/* ---- round 3: a little more air in the indicator list, tighter side cards ---- */
+html body #tab-detail .dx-policy-flat,
+html body #tab-detail .dx-cb .policy-relation.policy-flat strong,
+html body #tab-detail .policy-relation.policy-flat strong{color:#8d939c!important;}
+html body #tab-detail .dx-sector{padding:7px 0 2px!important;}
+html body #tab-detail .dx-st{margin:0 0 3px!important;padding:3px 10px!important;}
+html body #tab-detail .dx-sector thead th{font-size:13px!important;padding-top:3px!important;padding-bottom:3px!important;}
+html body #tab-detail .dx-sector tbody td{height:clamp(22px,2.8vh,31px)!important;padding-top:1px!important;padding-bottom:1px!important;}
+/* Central bank card: tighter, and Open full guidance sits right under the text */
+html body #tab-detail .dx-cb{align-self:stretch!important;}
+html body #tab-detail .dx-rc{padding:8px 12px!important;gap:4px!important;}
+html body #tab-detail .dx-cb .policy-metric{padding:7px 16px!important;gap:2px!important;}
+html body #tab-detail .dx-cb .policy-relation{padding:7px 16px!important;gap:2px!important;}
+html body #tab-detail .dx-gd{flex:0 0 auto!important;padding:8px 16px 10px!important;gap:4px!important;}
+html body #tab-detail .dx-cb .guidance-trigger{margin:0!important;padding:10px 16px!important;}
+/* Positioning & context: tighter rows */
+html body #tab-detail .dx-f{min-height:24px!important;}
+html body #tab-detail .dx-fields{padding:0 16px 2px!important;}
+html body #tab-detail .dx-col > .dx-trend{max-height:none!important;}
+
+/* ---- round 4: gauge without tick lines; livelier smoke that reaches further ---- */
+html body #tab-detail .dx-gauge .gauge-svg line:not([id^="gaugeNeedle"]){display:none!important;}
+html body #tab-detail .dx-smoke{width:680px;height:470px;
+  -webkit-mask-image:radial-gradient(ellipse 100% 100% at 0% 0%,#000 0%,rgba(0,0,0,.65) 55%,transparent 100%)!important;
+          mask-image:radial-gradient(ellipse 100% 100% at 0% 0%,#000 0%,rgba(0,0,0,.65) 55%,transparent 100%)!important;}
+html body #tab-detail .dx-smoke i{width:320px;height:240px;filter:blur(30px);
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--hs) 42%,transparent) 0%,color-mix(in srgb,var(--hs) 16%,transparent) 55%,transparent 100%)!important;
+  animation-name:dxSmoke2!important;}
+html body #tab-detail .dx-smoke i:nth-child(1){--dx:520px;--dy:150px;--r:40deg; --t:8s; --d:0s;}
+html body #tab-detail .dx-smoke i:nth-child(2){--dx:260px;--dy:340px;--r:-50deg;--t:10s;--d:-2s;}
+html body #tab-detail .dx-smoke i:nth-child(3){--dx:600px;--dy:240px;--r:60deg; --t:11s;--d:-5s;}
+html body #tab-detail .dx-smoke i:nth-child(4){--dx:180px;--dy:380px;--r:-30deg;--t:9s; --d:-7s;}
+html body #tab-detail .dx-smoke i:nth-child(5){--dx:440px;--dy:300px;--r:80deg; --t:12s;--d:-3s;}
+html body #tab-detail .dx-smoke i:nth-child(6){--dx:560px;--dy:90px; --r:-70deg;--t:7s; --d:-4s;}
+html body #tab-detail .dx-smoke i:nth-child(7){--dx:340px;--dy:260px;--r:30deg; --t:13s;--d:-9s;}
+html body #tab-detail .dx-smoke i:nth-child(8){--dx:140px;--dy:300px;--r:-90deg;--t:9s; --d:-1s;}
+@keyframes dxSmoke2{
+  0%  {transform:translate(0,0) scale(.5) rotate(0deg);opacity:0;}
+  12% {opacity:.9;}
+  50% {transform:translate(calc(var(--dx)*.55),calc(var(--dy)*.55)) scale(1.15) rotate(calc(var(--r)*.5));opacity:.65;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(1.6) rotate(var(--r));opacity:0;}
+}
+/* smoke: same speed and spread, just more transparent */
+html body #tab-detail .dx-smoke{opacity:.6!important;}
+
+/* ---- round 5: Economic Surprise Index - slim bars, square edges like Currency Detail ---- */
+html body #tab-raw .card,html body #tab-raw .esi-panel,html body #tab-raw .ss-card,html body #tab-raw .surprise-gauge-card{border-radius:0!important;border:1px solid rgba(255,255,255,.08)!important;}
+html body #tab-raw .surprise-bar-track{height:5px!important;border-radius:0!important;}
+html body #tab-raw .surprise-bar-fill{border-radius:0!important;}
+html body #tab-raw .esi-pair-track{height:5px!important;border-radius:0!important;}
+html body #tab-raw .esi-pair-track i{border-radius:0!important;}
+html body #tab-raw .surprise-bar-zero{border-radius:0!important;}
+</style>
+
+
