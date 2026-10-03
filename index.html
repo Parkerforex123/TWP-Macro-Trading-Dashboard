@@ -6770,12 +6770,12 @@ function pairSpreadChangeSince(base,quote,days){
 // -200..+200 relative scale; anything beyond that is capped. CB stance uses a 10-point
 // practical-full-strength gap on its -20..+20 relative scale; anything beyond that is capped.
 // These rulers control sensitivity inside their fixed pillar weights; they do not change the
-// 25/23/19/9/9/8/7 weighting itself.
+// 29/23/19/9/9/7/4 weighting itself.
 var PAIR_FUND_FULL_GAP=100, PAIR_CB_FULL_GAP=10;
-// Pair-score weights (points out of 100): Fundamentals 25, Yield 23, CB Stance 19,
-// Position 9, WoW 9, Seasonality 8, Risk Sentiment 7. CB stance is split 9.5/9.5
+// Pair-score weights (points out of 100): Fundamentals 29, Yield 23, CB Stance 19,
+// Position 9, WoW 9, Risk Sentiment 7, Seasonality 4. CB stance is split 9.5/9.5
 // between Next Move + Conviction and Forward Guidance.
-var PAIR_W_NEW={fund:25,yield:23,cb:19,pos:9,wow:9,risk:7,seas:8};
+var PAIR_W_NEW={fund:29,yield:23,cb:19,pos:9,wow:9,risk:7,seas:4};
 function pairFundTerm(fundBase,fundQuote){
   return Math.max(-1,Math.min(1,(fundBase-fundQuote)*100/PAIR_FUND_FULL_GAP));
 }
@@ -6811,7 +6811,7 @@ function pairCompositeFor(base, quote){
   var fundPair=pairFundTerm(fundBase,fundQuote);
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Pair weights: Fundamentals 25 + Yield 23 + CB Stance 19 + COT Position 9 + COT Weekly Change 9 + Risk Sentiment 7 + Seasonality 8 (see PAIR_W_NEW).
+  // Pair weights: Fundamentals 29 + Yield 23 + CB Stance 19 + COT Position 9 + COT Weekly Change 9 + Risk Sentiment 7 + Seasonality 4 (see PAIR_W_NEW).
   // Fundamentals and CB gaps use the practical-full-strength ruler above (see pairFundTerm / pairCbTerm).
   var W=PAIR_W_NEW;
   return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.risk*riskPair+W.seas*seasPair;
@@ -6865,7 +6865,7 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 25% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
+  // Fundamentals occupy 29% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
   // existing importance inside that pillar; the pillar is normalized to its total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
@@ -6902,7 +6902,7 @@ function pairAlignmentFor(base, quote, score){
   // Risk = 7%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
   if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,PAIR_W_NEW.risk);
-  // Seasonality = 8%.
+  // Seasonality = 4%.
   var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
   if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,PAIR_W_NEW.seas);
   return total ? Math.round((agree/total)*100) : null;
@@ -7003,8 +7003,8 @@ function scannerDriverExplanation(base,quote,driver){
 // Single source of truth for the seven-pillar point breakdown (Fundamentals, Yield,
 // CB stance, Position, WoW, Seasonality, Risk sentiment) used by both the scanner
 // table and the Pair Focus panel.
-// The driver table uses the same live pillar caps as the pair score: Fundamentals 25, Yield 23,
-// CB stance 19, Position 9, WoW 9, Seasonality 8, Risk sentiment 7.
+// The driver table uses the same live pillar caps as the pair score: Fundamentals 29, Yield 23,
+// CB stance 19, Position 9, WoW 9, Seasonality 4, Risk sentiment 7.
 function scannerDriverBreakdown(base,quote){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
