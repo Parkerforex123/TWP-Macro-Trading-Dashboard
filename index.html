@@ -8415,7 +8415,7 @@ function y2LoadDemo(){
 }
 /* ===== Global Yields: outright 2Y per currency, full stored history ===== */
 var Y2G_COLORS={USD:'#f2f3f5',EUR:'#4f8cff',GBP:'#b388ff',AUD:'#fa660f',NZD:'#22c98b',CAD:'#f04455',JPY:'#ffd166',CHF:'#ff9ecb'};
-var Y2G_SEL={USD:1,EUR:0,GBP:0,AUD:0,NZD:0,CAD:0,JPY:0,CHF:0}, Y2G_GEO=null, Y2G_BOUND=false;
+var Y2G_SEL={USD:1,EUR:1,GBP:1,AUD:1,NZD:1,CAD:1,JPY:1,CHF:1}, Y2G_GEO=null, Y2G_BOUND=false;
 /* Defaults to USD alone on every fresh load. Y2G_MODE 'change' rebases every line to 0 at the start of the
    history (so 3-8 stacked currencies stay readable instead of being squashed flat by the 0.5%-4.9% level gap);
    'level' is the raw yield view. Y2G_REVEAL (0..1) drives the draw-in sweep; Y2G_PLAY arms it for the next visible render. */
@@ -11171,7 +11171,7 @@ function wireDetailEvents(){
       } else if(tab==="yield2y"){
         Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=0;});
         Y2G_SEL[ccy]=1;
-        Y2G_MODE='level';
+        Y2G_MODE='level'; window.__y2gKeep=true;
         switchTab(tab);
       } else if(tab==="risk"){
         activeRiskCcy=ccy;
@@ -17247,6 +17247,59 @@ html body #tab-cot .cot-expand-close:hover{color:var(--text);}
   }
 })();
 </script>
+<style id="y2g-toolbar-unclip">
+/* Fix: an old `.y2g-tabs{flex:0 0 auto!important}` rule stopped the currency tab row from shrinking/wrapping,
+   so it grew wider than the card and pushed the Change / Yield toggle (and chart edge) off-screen. */
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:8px 12px!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-tabs{flex:1 1 100%!important;min-width:0!important;max-width:100%!important;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-mode{flex:0 0 auto!important;margin-left:auto!important;position:relative;z-index:2;}
+html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-mode-btn{white-space:nowrap;}
+@media(max-width:700px){
+  html body #tab-yield2y .y2g-toolbar .y2g-tabs{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;}
+  html body #tab-yield2y .y2g-toolbar .y2g-tabs::-webkit-scrollbar{display:none;}
+  html body #tab-yield2y .y2g-toolbar .y2g-tab{flex:0 0 auto;white-space:nowrap;}
+  html body #tab-yield2y .y2g-card{overflow:hidden;}
+}
+@media(max-width:700px){
+  /* the card is a fixed 330px on phones, which cut the chart off once the toggle row was visible: let it grow */
+  html body #tab-yield2y .y2-chart-row > .card.y2g-card{height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important;}
+  html body #tab-yield2y .y2-chart-row > .card.y2g-card .y2g-inner{position:relative!important;inset:auto!important;height:auto!important;}
+  html body #tab-yield2y .y2-chart-row > .card.y2g-card .y2g-chart{flex:none!important;height:300px!important;min-height:300px!important;}
+}
+</style>
+<script id="y2g-default-all">
+/* Opening the Bond Yields tab always starts Global Yields on All currencies + Change view
+   (unless you jumped in from a specific currency elsewhere, which keeps that currency). */
+(function(){
+  if(typeof switchTab!=='function') return;
+  var _st=switchTab;
+  switchTab=function(t){
+    if(t==='yield2y' && typeof activeTab!=='undefined' && activeTab!=='yield2y'){
+      if(window.__y2gKeep){ window.__y2gKeep=false; }
+      else { Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=1;}); Y2G_MODE='change'; Y2G_PLAY=true; }
+    }
+    return _st.apply(this,arguments);
+  };
+})();
+</script>
+<style id="y2g-chart-room">
+/* Give the chart its height back now that the Change / Yield toggle is visible: compact tabs so the toggle
+   shares their row, and a slightly taller card for when the toggle still has to drop to its own line. */
+@media(min-width:701px){
+  html body #tab-yield2y .y2g-toolbar{flex-wrap:nowrap!important;}
+  html body #tab-yield2y .y2g-toolbar .y2g-tabs{flex:1 1 0!important;gap:3px!important;}
+  html body #tab-yield2y .y2g-toolbar .y2g-tab{padding:4px 6px!important;gap:4px!important;font-size:12px!important;}
+  html body #tab-yield2y .y2g-toolbar .y2g-tab img{width:13px!important;}
+  html body #tab-yield2y .y2g-toolbar .y2g-mode{align-self:flex-start;}
+}
+@media(min-width:1051px){
+  html body #tab-yield2y .y2-chart-row{height:500px!important;min-height:500px!important;max-height:500px!important;}
+  html body #tab-yield2y .y2-chart-row>.card{height:500px!important;min-height:500px!important;max-height:500px!important;}
+}
+@media(min-width:701px) and (max-width:1050px){
+  html body #tab-yield2y .y2-chart-row>.card{height:430px!important;min-height:430px!important;max-height:430px!important;}
+}
+</style>
 </body>
 </html>
 
