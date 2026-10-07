@@ -4751,7 +4751,7 @@ html body #tab-cot .cot-expand-btn{display:none!important;}
       <button class="tab-btn" data-tab="yield2y">Bond Yields</button>
       <button class="tab-btn" data-tab="cot" id="cotTabBtn">COT Regime</button>
       <button class="tab-btn" data-tab="raw">Economic Surprise Index</button>
-      <button class="tab-btn" data-tab="risk" id="riskTabBtn">Risk Sentiment</button>
+      <button class="tab-btn" data-tab="risk" id="riskTabBtn">Market Regime</button>
     </nav>
     <div class="lock-box" id="lockBox"></div>
   </aside>
@@ -5194,7 +5194,7 @@ function cbMacroPrompt(ccy,sourceText){
 }
 var DATA=null, SETTINGS={passwordHash:null}, DAILY={}, LOG=[], SIGNAL_LOG={};
 var CLOUD_UPDATED_AT=null; // server version last observed for optimistic concurrency
-var RISK_SENTIMENT={history:[],current:{spxClose:null,vixClose:null,spxPct:null,vixPct:null,date:""}};
+var RISK_SENTIMENT={history:[],current:{spxClose:null,vixClose:null,ndxClose:null,goldClose:null,spxPct:null,vixPct:null,date:""}};
 var COT_ENGINE={history:[],current:{},currentDate:"2026-08-18",inputDate:"2026-08-25"};
 var TREND_WINDOW_DAYS = 90; // shared lookback for all trend arrows, deltas and sparklines
 // Merges today's LIVE value onto the end of a logged (days, vals) series so trend lines
@@ -5422,9 +5422,9 @@ async function saveDataNow(){
       updateStatus("Session expired — local copy queued for cloud retry","var(--bearish-strong)");
       authSignOut(); unlockedLocally=false; renderLockBox();
     }else if(cloudConflict){
-      updateStatus("Cloud changed — local copy queued; reload before retrying","var(--bearish-strong)");
+      updateStatus("Syncing…","var(--text-faint)");
     }else{
-      updateStatus("Cloud save failed — local copy queued; retrying","var(--amber)");
+      updateStatus("Syncing…","var(--text-faint)");
       setTimeout(function(){if(AUTH.accessToken&&!isSaving)saveDataNow();},5000);
     }
   }finally{
@@ -6083,12 +6083,12 @@ function riskTodayKey(){
   return d.toISOString().slice(0,10);
 }
 function normalizeRiskState(raw){
-  var out={history:[],current:{spxClose:null,vixClose:null,spxPct:null,vixPct:null,date:""}};
+  var out={history:[],current:{spxClose:null,vixClose:null,ndxClose:null,goldClose:null,spxPct:null,vixPct:null,date:""}};
   if(!raw) return out;
   // Migrate the first version, which stored percentage changes directly.
   if(Array.isArray(raw.history)) out.history=raw.history.filter(function(r){return r && r.date;}).map(function(r){
-    return {date:r.date,spxClose:r.spxClose!=null?Number(r.spxClose):null,vixClose:r.vixClose!=null?Number(r.vixClose):null,spxPct:r.spxPct!=null?Number(r.spxPct):null,vixPct:r.vixPct!=null?Number(r.vixPct):null};
-  }).filter(function(r){ return Number.isFinite(r.spxClose)||Number.isFinite(r.vixClose); });
+    return {date:r.date,spxClose:r.spxClose!=null?Number(r.spxClose):null,vixClose:r.vixClose!=null?Number(r.vixClose):null,ndxClose:r.ndxClose!=null?Number(r.ndxClose):null,goldClose:r.goldClose!=null?Number(r.goldClose):null,spxPct:r.spxPct!=null?Number(r.spxPct):null,vixPct:r.vixPct!=null?Number(r.vixPct):null};
+  }).filter(function(r){ return Number.isFinite(r.spxClose)||Number.isFinite(r.vixClose)||Number.isFinite(r.ndxClose)||Number.isFinite(r.goldClose); });
   if(raw.spxPct!=null || raw.vixPct!=null){
     out.history.push({date:raw.date||riskTodayKey(),spxClose:null,vixClose:null,spxPct:riskInputNum(raw.spxPct),vixPct:riskInputNum(raw.vixPct)});
   }
@@ -6096,7 +6096,7 @@ function normalizeRiskState(raw){
   out.history=Object.keys(by).sort().map(function(k){return by[k];});
   if(raw.current && typeof raw.current==='object'){
     out.current.spxClose=riskInputNum(raw.current.spxClose); out.current.vixClose=riskInputNum(raw.current.vixClose);
-    out.current.spxPct=riskInputNum(raw.current.spxPct); out.current.vixPct=riskInputNum(raw.current.vixPct); out.current.date=raw.current.date||"";
+    out.current.spxPct=riskInputNum(raw.current.spxPct); out.current.vixPct=riskInputNum(raw.current.vixPct); out.current.ndxClose=riskInputNum(raw.current.ndxClose); out.current.goldClose=riskInputNum(raw.current.goldClose); out.current.date=raw.current.date||"";
   }
   if(raw.spxClose!=null || raw.vixClose!=null){
     out.current.spxClose=riskInputNum(raw.spxClose); out.current.vixClose=riskInputNum(raw.vixClose);
@@ -6113,73 +6113,73 @@ function riskDailyPct(close, prevClose){
   if(close==null || prevClose==null || prevClose===0) return null;
   return ((close/prevClose)-1)*100;
 }
-function riskSaveObservation(spxClose,vixClose,dateOverride){
+function riskSaveObservation(spxClose,vixClose,dateOverride,ndxClose,goldClose){
   var date=String(dateOverride||riskTodayKey()).trim();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date=riskTodayKey();
-  var spx=riskInputNum(spxClose), vix=riskInputNum(vixClose);
-  if(spx==null || vix==null) return {ok:false,msg:'Enter both closes first.'};
+  var vals={spxClose:riskInputNum(spxClose),vixClose:riskInputNum(vixClose),ndxClose:riskInputNum(ndxClose),goldClose:riskInputNum(goldClose)};
+  if(vals.spxClose==null && vals.vixClose==null && vals.ndxClose==null && vals.goldClose==null) return {ok:false,msg:'Enter at least one close first.'};
   var rows=riskHistorySorted(), prior=null;
   for(var i=rows.length-1;i>=0;i--){if(rows[i].date<date){prior=rows[i];break;}}
-  var row={date:date,spxClose:spx,vixClose:vix,spxPct:riskDailyPct(spx,prior&&prior.spxClose),vixPct:riskDailyPct(vix,prior&&prior.vixClose)};
-  var by={}; rows.forEach(function(r){by[r.date]=r;}); by[date]=row;
+  var by={}; rows.forEach(function(r){by[r.date]=r;});
+  var row=Object.assign({date:date,spxClose:null,vixClose:null,ndxClose:null,goldClose:null,spxPct:null,vixPct:null},by[date]||{});
+  ['spxClose','vixClose','ndxClose','goldClose'].forEach(function(k){ if(vals[k]!=null) row[k]=vals[k]; });
+  row.spxPct=riskDailyPct(row.spxClose,prior&&prior.spxClose);
+  row.vixPct=riskDailyPct(row.vixClose,prior&&prior.vixClose);
+  by[date]=row;
   RISK_SENTIMENT.history=Object.keys(by).sort().map(function(k){return by[k];});
-  RISK_SENTIMENT.current={spxClose:spx,vixClose:vix,spxPct:row.spxPct,vixPct:row.vixPct,date:date};
+  RISK_SENTIMENT.current=Object.assign({},row);
   return {ok:true,row:row,prior:prior};
 }
 // Currency Detail weights (points out of 100). Same split as the pair side (PAIR_W_NEW) on purpose,
 // but kept as its own object so the two sides can be tuned separately later.
 // Fundamentals 25 + Yield 23 + CB Stance 19 (next move 9.5 + guidance 9.5) + COT Net Position 9 +
 // COT Weekly Change 9 + Seasonality 8 + Risk Sentiment 7 = 100.
-var CCY_W={fund:25,yield:23,cb:19,pos:9,wow:9,risk:7,seas:8};
+var CCY_W={fund:25,yield:23,cb:20,pos:10,wow:9,risk:7,seas:6};
 if(Math.abs(Object.keys(CCY_W).reduce(function(a,k){return a+CCY_W[k];},0)-100)>1e-9 && window.console) console.warn('CCY_W weights do not sum to 100');
 function riskContributionFor(ccy){ return CCY_W.risk*riskTermFor(ccy); } // matches compositeFor's risk weight (CCY_W.risk)
 function riskSurfaceHtml(selectedCcy){
   var score=riskRegimeScore(), label=riskRegimeLabel(score);
-  var cur=RISK_SENTIMENT.current||{};
   var ready=riskHasAnyReading();
   var pos=ready ? ((score+1)/2)*100 : 50;
   var arrowColor=score>0.06?'var(--bullish-strong)':score<-0.06?'var(--bearish-strong)':'var(--text-faint)';
   var flags={USD:flagImg("USD"),EUR:flagImg("EUR"),GBP:flagImg("GBP"),AUD:flagImg("AUD"),NZD:flagImg("NZD"),CAD:flagImg("CAD"),JPY:flagImg("JPY"),CHF:flagImg("CHF")};
   var riskKeys=selectedCcy?[selectedCcy]:CCY_ORDER.slice();
   var scored=riskKeys.map(function(c){ return {c:c, sc: ready?Math.round(riskTermFor(c)*100):0}; });
-  scored.sort(function(a,b){ return b.sc-a.sc; });
-  var strongest=scored[0], weakest=scored[scored.length-1];
-  var spread=ready?(strongest.sc-weakest.sc):0;
+  scored.sort(function(a,b){return b.sc-a.sc;});
+  var strongest=scored[0], weakest=scored[scored.length-1], spread=ready?(strongest.sc-weakest.sc):0;
   var list=scored.map(function(o,i){
-    var sc=o.sc, lab=ready?riskPublicStateFor(o.c):'Baseline';
-    var barPct=Math.min(100,Math.abs(sc));
-    var roleClass=ready?riskPublicClassFor(o.c):'strength-neu';
+    var sc=o.sc;
     var color=!ready?'var(--text-faint)':(sc>0?'var(--bullish-strong)':(sc<0?'var(--bearish-strong)':'var(--text-faint)'));
-    var side=sc>=0?'50%':(50-barPct/2)+'%';
-    return '<div class="strength-row">'+
+    var barPct=Math.min(100,Math.abs(sc));
+    var left=sc>=0?'50%':(50-barPct/2)+'%';
+    var rt=riskTermFor(o.c);
+    var tip=rt>0.03 ? (o.c+': risk-on transmission is supportive. Current regime favors '+o.c+'.') : rt<-0.03 ? (o.c+': risk-off transmission is supportive. Current regime favors '+o.c+'.') : (o.c+': risk transmission is currently neutral.');
+    return '<div class="strength-row" data-ui-tip="'+esc(tip)+'">'+
       '<div class="strength-rank">'+(i+1)+'</div>'+
       '<div class="strength-ccy">'+(flags[o.c]||'')+' '+o.c+'</div>'+
-      '<div class="strength-bar"><i style="left:'+side+';width:'+(ready?barPct/2:0)+'%;background:'+color+';"></i></div>'+
-      '<div class="strength-score '+roleClass+'">'+(ready?fmt(sc):'—')+'</div>'+
-      '<div class="strength-bias '+roleClass+'">'+lab+'</div>'+
-      '</div>';
+      '<div class="strength-bar"><i style="left:'+left+';width:'+(ready?barPct/2:0)+'%;background:'+color+';"></i></div>'+
+      '<div class="strength-score '+(sc>0?'strength-pos':sc<0?'strength-neg':'strength-neu')+'">'+(ready?fmt(sc):'—')+'</div>'+
+    '</div>';
   }).join('');
-  var selectedHtml=selectedCcy
-    ? '<div class="risk-scope"><span>Currency scope</span><b>'+flagImg(selectedCcy)+' '+selectedCcy+'</b><button type="button" id="riskScopeAll">All</button></div>'
-    : '<div class="risk-scope"><span>Currency scope</span><b>All currencies</b></div>';
+  var scopeKeys=['ALL'].concat(CCY_ORDER);
+  var selectedKey=selectedCcy||'ALL';
+  var scopeTips={ALL:'All currencies.',USD:'USD: defensive; tends to benefit when risk falls.',EUR:'EUR: mild pro-risk sensitivity.',GBP:'GBP: moderate pro-risk sensitivity.',AUD:'AUD: high risk-on sensitivity.',NZD:'NZD: high risk-on sensitivity.',CAD:'CAD: moderate risk-on sensitivity.',JPY:'JPY: defensive; tends to benefit when risk falls.',CHF:'CHF: defensive; tends to benefit when risk falls.'};
+  var scopeHtml='<div class="risk-scope-tabs">'+scopeKeys.map(function(c){
+    var active=(c===selectedKey)?' active':'';
+    return '<button type="button" class="risk-scope-tab'+active+'" data-risk-scope="'+c+'" data-ui-tip="'+esc(scopeTips[c]||c)+'">'+c+'</button>';
+  }).join('')+'</div>';
   return {ready:ready,html:
-    selectedHtml+'<div class="strength-summary">'+
-      '<div class="strength-stat"><div class="strength-k">Regime</div><div id="riskRegimeValue" class="strength-v '+(ready?(score>=0.2?'strength-pos':score<=-0.2?'strength-neg':''):'')+'">'+(ready?label:'Baseline')+'</div></div>'+
-      '<div class="strength-stat"><div class="strength-k">Strongest</div><div id="riskStrongestValue" class="strength-v strength-pos">'+(ready?strongest.c+' '+fmt(strongest.sc):'—')+'</div></div>'+
-      '<div class="strength-stat"><div class="strength-k">Weakest</div><div id="riskWeakestValue" class="strength-v strength-neg">'+(ready?weakest.c+' '+fmt(weakest.sc):'—')+'</div></div>'+
-      '<div class="strength-stat"><div class="strength-k">Spread</div><div id="riskSpreadValue" class="strength-v">'+(ready?spread+' pts':'—')+'</div></div>'+
-    '</div>'+
-    '<div class="risk-scale-wrap">'+
-      '<div class="risk-scale-label left">RISK-OFF</div>'+
-      '<div class="risk-scale"><span class="risk-scale-mid"></span><i style="left:'+pos.toFixed(2)+'%;background:'+arrowColor+';"></i></div>'+
-      '<div class="risk-scale-label right">RISK-ON</div>'+
-    '</div>'+
-    '<div class="strength-list-head"><div>#</div><div>Currency</div><div>Risk Position</div><div>Score</div><div>Role</div></div>'+
-    list
+    scopeHtml+
+    '<div class="strength-summary">'+
+      '<div class="strength-stat" data-ui-tip="Current four-input market regime."><div class="strength-k">Regime</div><div id="riskRegimeValue" class="strength-v '+(ready?(score>=0.12?'strength-pos':score<=-0.12?'strength-neg':''):'')+'">'+(ready?(Math.round(50+score*50)+' · '+label):'Baseline')+'</div></div>'+
+      '<div class="strength-stat" data-ui-tip="Highest current FX risk score."><div class="strength-k">Strongest</div><div id="riskStrongestValue" class="strength-v strength-pos">'+(ready?strongest.c+' '+fmt(strongest.sc):'—')+'</div></div>'+
+      '<div class="strength-stat" data-ui-tip="Lowest current FX risk score."><div class="strength-k">Weakest</div><div id="riskWeakestValue" class="strength-v strength-neg">'+(ready?weakest.c+' '+fmt(weakest.sc):'—')+'</div></div>'+
+      '<div class="strength-stat" data-ui-tip="Gap between strongest and weakest."><div class="strength-k">Spread</div><div id="riskSpreadValue" class="strength-v">'+(ready?spread+' pts':'—')+'</div></div>'+
+    '</div>'+    '<div class="risk-scale-wrap"><span class="risk-scale-label left">RISK-OFF</span><div class="risk-scale"><span class="risk-scale-mid"></span><i style="left:'+pos.toFixed(2)+'%;background:'+arrowColor+';"></i></div><span class="risk-scale-label right">RISK-ON</span></div>'+    '<div class="strength-list-head"><div>#</div><div>Currency</div><div>Risk Position</div><div>Score</div></div>'+    list
   };
 }
 
-function riskClass(score){ return score>=0.20 ? "risk-bull" : score<=-0.20 ? "risk-bear" : "risk-neu"; }
+function riskClass(score){ return score>=0.12 ? "risk-bull" : score<=-0.12 ? "risk-bear" : "risk-neu"; }
 function riskInputNum(v){
   if(v===null||v===undefined||String(v).trim()==="") return null;
   var n=Number(String(v).replace(/%/g,"").replace(/,/g,""));
@@ -6211,24 +6211,71 @@ function riskScoreFromObservation(row,prior){
   if(levelSignal!=null) return levelSignal;
   return null;
 }
+
+// ================= MARKET REGIME (replaces the old S&P + VIX "Risk Sentiment" blend) =================
+// Four inputs, each turned into a 0-100 reading (50 = neutral) from the LATEST close, then averaged:
+//   S&P 500 : latest daily % change   (+1.5% or more = 100, -1.5% or worse = 0)
+//   Nasdaq  : latest daily % change   (+2% = 100, -2% = 0)
+//   VIX     : level                   (10 or lower = 100, 20 = 50, 30 or higher = 0)
+//   Gold    : latest daily % change, INVERTED (gold up 1.5% = 0, gold down 1.5% = 100)
+// The average is translated per currency via riskSensitivity() (AUD/NZD +, JPY/CHF -) and carries the 7% weight.
+var REGIME_FRED={spxClose:'SP500',vixClose:'VIXCLS',ndxClose:'NASDAQ100',goldClose:'NASDAQQGLDI'};
+var REGIME_NAMES={spxClose:'S&P 500',vixClose:'VIX',ndxClose:'Nasdaq-100',goldClose:'Gold'};
+var _regimeCache={key:'',val:null};
+function regimeSeries(key){
+  var cur=RISK_SENTIMENT.current||{}, curDate=cur.date||'9999-99-99';
+  var out=riskHistorySorted().filter(function(r){ return r.date && r.date<=curDate && r.date!==cur.date && riskInputNum(r[key])!=null; })
+    .map(function(r){ return {date:r.date,v:Number(r[key])}; });
+  var cv=riskInputNum(cur[key]);
+  if(cv!=null) out.push({date:cur.date||riskTodayKey(),v:cv});
+  return out;
+}
+function regimeDaily(key){
+  var ser=regimeSeries(key);
+  if(ser.length<2) return null;
+  var last=ser[ser.length-1], prev=ser[ser.length-2];
+  if(!prev.v) return null;
+  return {pct:(last.v/prev.v-1)*100, close:last.v};
+}
+function regimeComponents(){
+  var out={};
+  function chg(key,scale,invert){
+    var m=regimeDaily(key);
+    if(!m) return {score:null,pct:null,close:null};
+    var t=riskClamp(m.pct/scale,-1,1); if(invert) t=-t;
+    return {score:50+50*t,pct:m.pct,close:m.close};
+  }
+  out.spx=chg('spxClose',1.5,false); out.ndx=chg('ndxClose',2,false); out.gold=chg('goldClose',1.5,true);
+  var vx=regimeSeries('vixClose'), v=vx.length?vx[vx.length-1].v:null;
+  out.vix={score:v==null?null:50+50*riskClamp((20-v)/10,-1,1),close:v};
+  return out;
+}
+function regimeValue(){
+  var cur=RISK_SENTIMENT.current||{}, hist=(RISK_SENTIMENT.history||[]);
+  var key=hist.length+'|'+JSON.stringify(cur)+'|'+(hist.length?JSON.stringify(hist[hist.length-1]):'');
+  if(_regimeCache.key===key) return _regimeCache.val;
+  var c=regimeComponents(), a=[];
+  ['spx','ndx','vix','gold'].forEach(function(k){ if(c[k].score!=null) a.push(c[k].score); });
+  var val=a.length?a.reduce(function(x,y){return x+y;},0)/a.length:null;
+  _regimeCache={key:key,val:val};
+  return val;
+}
+function regimeLabelFor(d){
+  if(d>=75) return "Strong Risk-On";
+  if(d>=65) return "Risk-On";
+  if(d>=56) return "Mild Risk-On";
+  if(d>=45) return "Neutral";
+  if(d>=36) return "Mild Risk-Off";
+  if(d>=26) return "Risk-Off";
+  return "Strong Risk-Off";
+}
 function riskRegimeScore(){
-  var cur=RISK_SENTIMENT.current||{};
-  if(!cur || (cur.spxClose==null && cur.vixClose==null)) return 0;
-  var rows=riskHistorySorted(), prior=null;
-  for(var i=rows.length-1;i>=0;i--){ if(rows[i].date && rows[i].date<(cur.date||riskTodayKey())){ prior=rows[i]; break; } }
-  var score=riskScoreFromObservation(cur,prior);
-  return score==null?0:score;
+  var v=regimeValue();
+  if(v==null) return 0;
+  return (v-50)/50; // -1..+1, so riskTermFor / riskSensitivity keep working unchanged
 }
-function riskHasAnyReading(){
-  var cur=RISK_SENTIMENT.current||{};
-  return cur.spxClose!=null && cur.vixClose!=null;
-}
-function riskRegimeLabel(score){
-  if(score>=0.20) return "Risk-On";
-  if(score<=-0.20) return "Risk-Off";
-  if(Math.abs(score)<0.06) return "Neutral";
-  return score>0 ? "Mixed / Lean Risk-On" : "Mixed / Lean Risk-Off";
-}
+function riskHasAnyReading(){ return regimeValue()!=null; }
+function riskRegimeLabel(score){ return regimeLabelFor(50+Number(score)*50); }
 function riskSensitivity(ccy){
   return ({AUD:1.00,NZD:1.00,CAD:0.75,GBP:0.35,EUR:0.20,USD:-0.15,JPY:-1.00,CHF:-1.00})[ccy] || 0;
 }
@@ -6770,12 +6817,12 @@ function pairSpreadChangeSince(base,quote,days){
 // -200..+200 relative scale; anything beyond that is capped. CB stance uses a 10-point
 // practical-full-strength gap on its -20..+20 relative scale; anything beyond that is capped.
 // These rulers control sensitivity inside their fixed pillar weights; they do not change the
-// 29/23/19/9/9/7/4 weighting itself.
+// 25/23/20/10/9/7/6 weighting itself.
 var PAIR_FUND_FULL_GAP=100, PAIR_CB_FULL_GAP=10;
 // Pair-score weights (points out of 100): Fundamentals 29, Yield 23, CB Stance 19,
 // Position 9, WoW 9, Risk Sentiment 7, Seasonality 4. CB stance is split 9.5/9.5
 // between Next Move + Conviction and Forward Guidance.
-var PAIR_W_NEW={fund:29,yield:23,cb:19,pos:9,wow:9,risk:7,seas:4};
+var PAIR_W_NEW={fund:25,yield:23,cb:20,pos:10,wow:9,risk:7,seas:6};
 function pairFundTerm(fundBase,fundQuote){
   return Math.max(-1,Math.min(1,(fundBase-fundQuote)*100/PAIR_FUND_FULL_GAP));
 }
@@ -6811,7 +6858,7 @@ function pairCompositeFor(base, quote){
   var fundPair=pairFundTerm(fundBase,fundQuote);
   var riskPair=(riskBase-riskQuote)/2;
   var seasPair=(seasBase-seasQuote)/2;
-  // Pair weights: Fundamentals 29 + Yield 23 + CB Stance 19 + COT Position 9 + COT Weekly Change 9 + Risk Sentiment 7 + Seasonality 4 (see PAIR_W_NEW).
+  // Pair weights: Fundamentals 25 + Yield 23 + CB Stance 20 + COT Position 10 + COT Weekly Change 9 + Risk Sentiment 7 + Seasonality 6 (see PAIR_W_NEW).
   // Fundamentals and CB gaps use the practical-full-strength ruler above (see pairFundTerm / pairCbTerm).
   var W=PAIR_W_NEW;
   return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.risk*riskPair+W.seas*seasPair;
@@ -6922,7 +6969,7 @@ function pairMacroGate(base,quote,score){
   var dir=s>0?1:-1;
   var fb=fundFor(base), fq=fundFor(quote);
   var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
-  var fSign=fundRel>0?1:(fundRel<0?-1:0);
+  var fSign=pillarSign(pillarBias(fundRel));   // same reading as the FND pill: neutral inside +/-15
   var y=pairYieldCalc(base,quote).score;
   var ySign=pairYieldSign(y);
   var cbLabel=pairCbStanceLabel(base,quote);
@@ -6938,21 +6985,17 @@ function pairMacroGate(base,quote,score){
   return ySign===dir && cbSign===dir;
 }
 function pairFinalBandLabel(base,quote,score){
-  // Fixed: this used to run every pair through pairMacroGate() first, which forced
-  // a pair back to Neutral/Flat any time 2 of the 3 primary pillars didn't line up
-  // with the score's direction -- even when the score itself was solidly Bullish or
-  // Bearish. That is what was quietly dumping genuinely bullish pairs (e.g. a pair
-  // clearing +21 on Fundamentals+CB alone, with Yield flat) into the Flat bucket,
-  // so the Scanner's "Bullish" filter under-counted real setups. The gate is
-  // removed: the regime now comes straight from the score, same threshold as
-  // pairBandLabel(), with no separate "leaning" tier.
-  // Bands are even 20-point zones, matching pairBandLabel()/bandLabel().
-  var s=Math.round(Number(score)||0);
-  if(s>=41) return "Very Bullish";
-  if(s>=21) return "Bullish";
-  if(s<=-41) return "Very Bearish";
-  if(s<=-21) return "Bearish";
-  return "Neutral";
+  // Final actionable pair state is always the live composite band. There is no
+  // historical stickiness: a score of +18 is Neutral/FLAT today, even if yesterday
+  // was Bullish. This keeps Score, Bias and LONG/FLAT/SHORT internally consistent.
+  return pairBandLabel(score);
+}
+// Most recent logged score for a pair from a day BEFORE today (DAILY is filled by the auto/manual log).
+function pairPriorLoggedScore(pair){
+  var today=new Date().toISOString().slice(0,10), best=null;
+  try{ Object.keys(DAILY||{}).forEach(function(d){ if(d<today && DAILY[d] && DAILY[d][pair]!==undefined && (best==null||d>best)) best=d; }); }catch(e){}
+  if(best==null) return null;
+  var v=Number(DAILY[best][pair]); return Number.isFinite(v)?v:null;
 }
 
 function buildPairs(scores){
@@ -7104,21 +7147,32 @@ function pillarSign(label){
 // for the trade-side column and grouping they now count as a side: +14 and above is
 // LONG, -14 and below is SHORT, and only the Neutral band (-13..+13) is FLAT.
 function scannerBucket(score, bias){
-  // The scanner has no actionable Leaning buckets. If a final regime is supplied,
-  // use it directly. Raw scores in the old Leaning ranges remain Neutral.
-  if(typeof bias==="string") return bias;
-  var s=Math.round(Number(score)||0);
-  if(s>=41) return "Very Bullish";
-  if(s>=21) return "Bullish";
-  if(s<=-41) return "Very Bearish";
-  if(s<=-21) return "Bearish";
-  return "Neutral";
+  // The score is the source of truth. Never resurrect a stale stored bias.
+  return pairBandLabel(score);
 }
 function scannerPillCell(label, tip){
   var sign=pillarSign(label);
   var strong=label && label.indexOf("Very")!==-1;
   var cls=sign>0?"scanner-pill-bull":(sign<0?"scanner-pill-bear":"scanner-pill-neu");
   return '<span class="scanner-pill '+cls+(strong?' strong':'')+'" data-scanner-tip="'+esc(tip||'')+'"></span>';
+}
+// Score shown on the Scanner is always the real score (no capping, WATCH or not).
+function scannerShownScore(p){ return p.score; }
+function scannerWatchTooltip(base,quote,score){
+  var s=Math.round(Number(score)||0), dir=s>0?1:-1, side=dir>0?'LONG':'SHORT', pair=base+quote;
+  var fb=fundFor(base), fq=fundFor(quote), y=pairYieldCalc(base,quote).score;
+  var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
+  var fLbl=pillarBias(fundRel), fSign=pillarSign(fLbl);
+  var yLbl=y==null?'Neutral':(y>=7?'Very Bullish':y>=3?'Bullish':y<=-7?'Very Bearish':y<=-3?'Bearish':'Neutral');
+  var cbLbl=pairCbStanceLabel(base,quote)||'Neutral';
+  var why;
+  if(fSign===-dir) why='Fundamentals say the opposite.';
+  else if(fSign===dir) why='Fundamentals agree, but Yield and CB do not.';
+  else why='Fundamentals are neutral, and Yield and CB do not both agree.';
+  return '<div class="stt-kicker">Watch</div>'+
+    '<div class="stt-title">'+esc(pair)+' score is '+(s>0?'+':'')+s+', macro is not lined up</div>'+
+    '<div class="stt-note"><b class="stt-note-strong">Fundamentals: '+esc(fLbl)+' · Yield: '+esc(yLbl)+' · CB: '+esc(cbLbl)+'</b></div>'+
+    '<div class="stt-note"><b class="stt-note-strong">'+esc(why)+' Check price action.</b></div>';
 }
 function scannerSideBadge(bias, score){
   // Side is driven by the FINAL regime, not the raw score. A raw +/- score can
@@ -7698,12 +7752,12 @@ function renderScanner(animateTrend){
        ((DATA[p.base]&&parseNum(DATA[p.base].interestRate)&&parseNum(DATA[p.base].interestRate).num>0) ? 'Both currencies pay '+Math.abs(carry).toFixed(2)+'% to hold, so neither has a carry advantage.' : 'Both policy rates are 0%, so neither currency pays a carry premium to hold.'))+
       '</b></div>';
     var isFav=scannerFavorites.indexOf(p.pair)!==-1;
-    var scoreCls=pairScoreClass(p.score);
+    var scoreCls=pairScoreClass(scannerShownScore(p));
     rows += '<tr class="rowhover scanner-row" data-pair="'+p.pair+'">'+
       '<td class="scanner-star-td" data-label="Fav"><span class="scanner-star'+(isFav?' active':'')+'" data-star="'+p.pair+'">'+(isFav?'★':'☆')+'</span></td>'+
-      '<td data-label="Side">'+scannerSideBadge(p.bias,p.score)+'</td>'+
+      '<td data-label="Side"'+''+'>'+scannerSideBadge(p.bias,p.score)+'</td>'+
       '<td class="scanner-pair-td" data-label="Pair" data-scanner-tip="'+esc(scannerPairTooltipHtml(p.base,p.quote,p.score))+'"><span class="scanner-pair-wrap">'+flagPair(p.base,p.quote,animateTrend)+'<span class="scanner-pair-code'+(animateTrend?' scanner-pair-code-animate-in':'')+'">'+p.pair+'</span></span></td>'+
-      '<td data-label="Score"><div class="scanner-score-wrap"><span class="scanner-score '+scoreCls+'">'+scannerScoreCompact(p.score)+'</span>'+scannerGaugeBar(p.score,scoreCls)+'</div></td>'+
+      '<td data-label="Score"><div class="scanner-score-wrap"><span class="scanner-score '+scoreCls+'">'+scannerScoreCompact(scannerShownScore(p))+'</span>'+scannerGaugeBar(scannerShownScore(p),scoreCls)+'</div></td>'+
       '<td class="day-delta-cell" data-label="7D &Delta;" data-scanner-tip="'+esc(scanner7dTooltip(p.base,p.quote,p.score))+'">'+dailyChangeCell(p.pair,p.score)+'</td>'+
       '<td data-label="Trend"><div class="scanner-trend-cell">'+scannerTrendSpark(p.pair,animateTrend)+'</div></td>'+
       '<td class="scanner-pill-td" data-label="FND">'+scannerPillCell(fundBias,scannerPillarExplanation(p.base,p.quote,"Fundamentals",fundBias))+'</td>'+
@@ -8023,7 +8077,7 @@ var TAB_META={
   detail:{title:"Currency Detail",sub:""},
   scanner:{title:"Trade Scanner",sub:""},
   yield2y:{title:"Bond Yields",sub:""},
-  risk:{title:"Risk Sentiment",sub:"S&P 500 + VIX market-risk regime"},
+  risk:{title:"Market Regime",sub:"S&P 500 · Nasdaq-100 · VIX · Gold"},
   cot:{title:"COT Regime",sub:"Institutional positioning, flow and crowding"}
 };
 function switchTab(tab){
@@ -9442,7 +9496,7 @@ function currentEconWeekStart(){
 function calendarVisibleEvents(){ensureEconomicCalendarSeed();var now=Date.now();var weekStart=currentEconWeekStart().getTime(),weekEnd=weekStart+7*24*3600*1000;var recent=ECON_CALENDAR.filter(function(e){var t=calendarDateTime(e);return t!==Infinity&&t<=now&&t>=weekStart&&t<weekEnd;}).sort(function(a,b){return calendarDateTime(b)-calendarDateTime(a);});var groups={},order=[];recent.forEach(function(e){var day=e.date||"";if(!groups[day]){groups[day]=[];order.push(day);}groups[day].push(e);});return {recent:recent,groups:groups,order:order};}
 function calendarRow(e){
   var tone=calendarReleaseTone(e),actual=e.actual!==undefined&&e.actual!==""?esc(e.actual):"—",forecast=e.forecast!==undefined&&e.forecast!==""?esc(e.forecast):"—";
-  return '<div class="ov-cal-row" data-cal-id="'+esc(e.id)+'">'+
+  return '<div class="ov-cal-row" data-cal-id="'+esc(e.id)+'" data-ui-tip="'+esc((e.name||'Release')+': actual versus forecast.')+'">'+
     '<div class="ov-cal-release"><span class="ov-cal-ccy">'+flagImg(e.ccy)+' '+esc(e.ccy||"—")+'</span><strong title="'+esc(e.name||"Release")+'">'+esc(e.name||"Release")+'</strong><i class="ov-cal-impact '+calendarImpactClass(e.impact)+'"></i></div>'+
     '<div class="ov-cal-value '+tone+'">'+actual+'</div>'+
     '<div class="ov-cal-value '+(forecast==="—"?"neutral":"neutral")+'">'+forecast+'</div>'+ (unlockedLocally?'<button class="ov-cal-del" data-cal-delete="'+esc(e.id)+'" title="Remove from recent tape">×</button>':'')+
@@ -9492,11 +9546,11 @@ function renderOverview(animate){
 
   /* ---- Pair radar: explicitly split bullish and bearish setups ---- */
   var pairs=buildPairs(scores).slice().sort(function(a,b){return b.score-a.score;});
-  var pairTop=pairs.filter(function(p){return Number(p.score)>=15;}).slice(0,3);
-  var pairBottom=pairs.filter(function(p){return Number(p.score)<=-15;}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
+  var pairTop=pairs.filter(function(p){return p.bias==='Bullish'||p.bias==='Very Bullish';}).slice(0,3);
+  var pairBottom=pairs.filter(function(p){return p.bias==='Bearish'||p.bias==='Very Bearish';}).sort(function(a,b){return a.score-b.score;}).slice(0,3);
   function miniPair(p){
     var trend=pairTrend30d(p.pair), cls=pairScoreClass(p.score);
-    return '<div class="ov-pair-row" data-pair="'+esc(p.pair)+'" title="Open '+esc(p.pair)+' in Trade Scanner">'+
+    return '<div class="ov-pair-row" data-pair="'+esc(p.pair)+'">'+
       '<div class="ov-pair-name">'+flagPair(p.base,p.quote)+'<strong>'+p.pair+'</strong></div>'+ 
       '<div class="ov-pair-score '+cls+'">'+signFmt(p.score)+'</div>'+ 
       '<div class="ov-pair-bias '+cls+'">'+esc(p.bias)+'</div>'+ 
@@ -9516,9 +9570,9 @@ function renderOverview(animate){
   }).sort(function(a,b){return b.term-a.term;});
   function riskRow(o){
     var rc=o.term>0.5?'pos':o.term<-0.5?'neg':'neu';
-    return '<div class="ov-risk-row" data-ccy="'+o.c+'" title="Open '+o.c+' currency detail">'+
+    var riskTip=o.term>0.5 ? (o.c+': risk-on transmission is strongly supportive; current regime favors '+o.c+'.') : o.term<-0.5 ? (o.c+': risk-off transmission is strongly supportive; current regime favors '+o.c+'.') : (o.c+': risk transmission is near neutral.');
+    return '<div class="ov-risk-row" data-ccy="'+o.c+'" data-ui-tip="'+esc(riskTip)+'">'+
       '<span class="ov-risk-ccy">'+(flags[o.c]||'')+' '+o.c+'</span>'+ 
-      '<span class="ov-risk-role '+rc+'">'+esc(o.lab)+'</span>'+ 
       '<span class="ov-risk-val '+rc+'">'+signFmt(o.term)+'</span>'+ 
     '</div>';
   }
@@ -9529,18 +9583,20 @@ function renderOverview(animate){
   var breadthNote=breadthBull>breadthBear?'Positive pressure is broader than negative pressure.':breadthBear>breadthBull?'Negative pressure is broader than positive pressure.':'Macro pressure is broadly balanced.';
 
   var spxTxt=riskReady&&riskCur.spxClose!=null?Number(riskCur.spxClose).toFixed(2):'—';
+  var ndxTxt=riskReady&&riskCur.ndxClose!=null?Number(riskCur.ndxClose).toFixed(2):'—';
   var vixTxt=riskReady&&riskCur.vixClose!=null?Number(riskCur.vixClose).toFixed(2):'—';
+  var goldTxt=riskReady&&riskCur.goldClose!=null?Number(riskCur.goldClose).toFixed(2):'—';
 
   var html='<div class="ov-pro-board"><div class="ov-top">'+
     '<section class="ov-pro-card ov-pro-snapshot">'+
       '<div class="ov-pro-head">'+
-        '<div><div class="ov-pro-eyebrow">MARKET SNAPSHOT</div><div class="ov-pro-title">Macro Breadth</div></div>'+ 
+        '<div data-ui-tip="Macro Breadth: which currencies have the strongest and weakest composite scores right now."><div class="ov-pro-eyebrow">MARKET SNAPSHOT</div><div class="ov-pro-title">Macro Breadth</div></div>'+ 
         '<div class="ov-pro-live">LIVE DASHBOARD READ</div>'+ 
       '</div>'+ 
       '<div class="ov-pro-kpis">'+
-        '<div><span class="ov-kpi-label-strongest">STRONGEST</span><b class="ov-pos"><strong>'+strongest+'</strong> <i class="ov-score-regime '+regimeColorClass(bandLabel(scores[strongest]))+'">'+signFmt(scores[strongest])+'</i> <span class="ov-kpi-trend-arrow '+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'up':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'down':'flat')+'">'+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'▲':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'▼':'—')+'</span></b></div>'+ 
-        '<div><span class="ov-kpi-label-weakest">WEAKEST</span><b class="ov-neg"><strong>'+weakest+'</strong> <i class="ov-score-regime '+regimeColorClass(bandLabel(scores[weakest]))+'">'+signFmt(scores[weakest])+'</i> <span class="ov-kpi-trend-arrow '+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'up':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'down':'flat')+'">'+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'▲':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'▼':'—')+'</span></b></div>'+ 
-        '<div><span>SPREAD</span><b class="ov-spread-positive">'+spread+' pts</b></div>'+ 
+        '<div data-ui-tip="Highest live currency composite."><span class="ov-kpi-label-strongest">STRONGEST</span><b class="ov-pos"><strong>'+strongest+'</strong> <i class="ov-score-regime '+regimeColorClass(bandLabel(scores[strongest]))+'">'+signFmt(scores[strongest])+'</i> <span class="ov-kpi-trend-arrow '+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'up':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'down':'flat')+'">'+(ccyTrend30d(strongest,scores[strongest]).dir==='up'?'▲':ccyTrend30d(strongest,scores[strongest]).dir==='down'?'▼':'—')+'</span></b></div>'+ 
+        '<div data-ui-tip="Lowest live currency composite."><span class="ov-kpi-label-weakest">WEAKEST</span><b class="ov-neg"><strong>'+weakest+'</strong> <i class="ov-score-regime '+regimeColorClass(bandLabel(scores[weakest]))+'">'+signFmt(scores[weakest])+'</i> <span class="ov-kpi-trend-arrow '+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'up':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'down':'flat')+'">'+(ccyTrend30d(weakest,scores[weakest]).dir==='up'?'▲':ccyTrend30d(weakest,scores[weakest]).dir==='down'?'▼':'—')+'</span></b></div>'+ 
+        '<div data-ui-tip="Distance between strongest and weakest."><span>SPREAD</span><b class="ov-spread-positive">'+spread+' pts</b></div>'+ 
       '</div>'+ 
       '<div class="ov-pro-breadth">'+
         '<div class="ov-pro-breadth-top"><strong>Macro breadth</strong><span>Current pressure and recent direction</span></div>'+ 
@@ -9563,17 +9619,17 @@ function renderOverview(animate){
 
     calendarPanelHtml()+
 
-    '<section class="ov-pro-card ov-pro-risk">'+
+    '<section class="ov-pro-card ov-pro-risk" data-ui-tip="Market regime: S&amp;P, Nasdaq, VIX and Gold set the risk backdrop; pro-risk conditions favor AUD/NZD/CAD and defensive conditions favor JPY/CHF/USD.">'+
       '<div class="ov-pro-head">'+
-        '<div><div class="ov-pro-eyebrow">RISK SENTIMENT · FULL CURRENCY TRANSMISSION</div><div class="ov-pro-title '+(riskScore>0.06?'ov-pos':riskScore<-0.06?'ov-neg':'')+'">'+(riskReady?riskLabel:'Awaiting close')+'</div></div>'+ 
-        '<div class="ov-pro-risk-market"><span>S&amp;P</span><b>'+spxTxt+'</b><span>VIX</span><b>'+vixTxt+'</b></div>'+ 
+        '<div data-ui-tip="Current market regime: four market inputs translated into FX risk. The regime determines which currencies receive a risk-on or defensive tailwind."><div class="ov-pro-eyebrow">RISK SENTIMENT · FULL CURRENCY TRANSMISSION</div><div class="ov-pro-title '+(riskScore>0.06?'ov-pos':riskScore<-0.06?'ov-neg':'')+'">'+(riskReady?riskLabel:'Awaiting close')+'</div></div>'+ 
+        '<div class="ov-pro-risk-market"><span>S&amp;P</span><b>'+spxTxt+'</b><span>NASDAQ</span><b>'+ndxTxt+'</b><span>VIX</span><b>'+vixTxt+'</b><span>GOLD</span><b>'+goldTxt+'</b></div>'+ 
       '</div>'+ 
       '<div class="ov-pro-risk-meter"><span>RISK-OFF</span><div><i style="left:'+riskPos+'%;background:'+riskTone+'"></i></div><span>RISK-ON</span></div>'+ 
       '<div class="ov-pro-risk-grid">'+riskRows.slice(0,4).map(riskRow).join('')+riskRows.slice(4).map(riskRow).join('')+'</div>'+ 
     '</section></div>'+
 
     '<div class="ov-bottom"><div class="ov-pro-left-lower">'+
-      '<section class="ov-pro-card ov-pro-strength">'+
+      '<section class="ov-pro-card ov-pro-strength" data-ui-tip="Composite Ranking: the seven-pillar macro score. Highest score = strongest currency.">'+
         '<div class="ov-pro-head"><div><div class="ov-pro-eyebrow">CURRENCY STRENGTH</div><div class="ov-pro-title">Composite Ranking</div></div><div class="ov-pro-live">8 CURRENCIES · LIVE SCORE</div></div>'+ 
         '<div class="ov-pro-table-head"><span>#</span><span>Currency</span><span>Strength</span><span>Score</span><span>State</span></div>'+ 
         '<div class="ov-pro-table-body">'+currencyRows+'</div>'+ 
@@ -9581,7 +9637,7 @@ function renderOverview(animate){
       renderOverviewCsi(scores,animate)+
     '</div>'+
 
-    '<section class="ov-pro-card ov-pro-pairs">'+
+    '<section class="ov-pro-card ov-pro-pairs" data-ui-tip="Top Setups: only pairs above +20 or below -20 qualify; Neutral pairs stay out.">'+
       '<div class="ov-pro-head"><div><div class="ov-pro-eyebrow">PAIR RADAR</div><div class="ov-pro-title">Top Setups</div><div class="ov-pro-note">Ranked from the same live pair-composite engine.</div></div><button class="ov-pro-open" data-open-tab="scanner">OPEN TRADE SCANNER →</button></div>'+ 
       '<div class="ov-pro-setup-columns">'+
         '<div class="ov-pro-setup"><div class="ov-pro-setup-label bull">TOP BULLISH</div>'+(pairTop.length?pairTop.map(miniPair).join(''):'<div class="ov-setup-empty">No Bullish pair meets the +21 setup threshold.</div>')+'</div>'+ 
@@ -12613,83 +12669,146 @@ function cotCommitInputs(ccy,tab){
 }
 
 function riskPctLabel(v){ var n=riskInputNum(v); return n==null?"—":((n>0?"+":"")+n.toFixed(2)+"%"); }
+function regimeFredParse(txt){
+  var out=[], lines=String(txt||'').split(/\r?\n/);
+  for(var i=1;i<lines.length;i++){
+    var p=lines[i].split(','); if(p.length<2) continue;
+    var d=p[0].trim(), v=parseFloat(p[1]);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d) && Number.isFinite(v)) out.push({date:d,v:v});
+  }
+  return out;
+}
+async function regimeFetchFred(){
+  var start=new Date(); start.setUTCDate(start.getUTCDate()-70);
+  var cosd=start.toISOString().slice(0,10), got={}, ok=[], bad=[];
+  var keys=Object.keys(REGIME_FRED);
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];
+    try{
+      var r=await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id='+REGIME_FRED[k]+'&cosd='+cosd,{cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var rows=regimeFredParse(await r.text());
+      if(!rows.length) throw new Error('empty');
+      got[k]=rows; ok.push(REGIME_NAMES[k]);
+    }catch(e){ bad.push(REGIME_NAMES[k]); }
+  }
+  if(ok.length){
+    RISK_SENTIMENT=normalizeRiskState(RISK_SENTIMENT);
+    var by={}; RISK_SENTIMENT.history.forEach(function(r){by[r.date]=r;});
+    Object.keys(got).forEach(function(k){
+      got[k].forEach(function(p){
+        var r=by[p.date]||(by[p.date]={date:p.date,spxClose:null,vixClose:null,ndxClose:null,goldClose:null,spxPct:null,vixPct:null});
+        r[k]=p.v; // FRED is authoritative for the daily market close
+      });
+    });
+    var dates=Object.keys(by).sort(), hist=dates.map(function(d){return by[d];});
+    hist.forEach(function(r,i){
+      var pr=i?hist[i-1]:null;
+      r.spxPct=riskDailyPct(r.spxClose,pr&&pr.spxClose); r.vixPct=riskDailyPct(r.vixClose,pr&&pr.vixClose);
+    });
+    RISK_SENTIMENT.history=hist;
+    RISK_SENTIMENT.current=Object.assign({},hist[hist.length-1]);
+    _regimeCache={key:'',val:null};
+  }
+  regimeLastStatus=(ok.length?('FRED loaded: '+ok.join(', ')):'FRED did not return any data (browser may be blocking it)')+(bad.length?(' \u00b7 not loaded: '+bad.join(', ')+' \u2014 type those closes in manually'):'');
+  return {ok:ok,bad:bad};
+}
+function regimeAutoRefresh(){
+  regimeFetchFred().then(function(res){
+    try{
+      if(res.ok.length){ if(unlockedLocally) scheduleSave(); updateComputed(); if(typeof activeTab!=='undefined' && activeTab==='risk') renderRiskSentiment(); }
+    }catch(e){}
+  });
+}
+setTimeout(regimeAutoRefresh,4000); setTimeout(regimeAutoRefresh,20000); setInterval(regimeAutoRefresh,3600000);
+function regimePanelHtml(){
+  var comp=regimeComponents();
+  function tile(name,c,tip){
+    var sc=c.score==null?null:Math.round(c.score);
+    var tc=sc==null?'':(sc>=56?'rg-pos':(sc<=44?'rg-neg':''));
+    return '<div class="rg-tile" data-ui-tip="'+esc(tip)+'"><div class="rg-k">'+name+'</div><div class="rg-v '+tc+'">'+(sc==null?'—':sc)+'</div></div>';
+  }
+  return '<div class="rg-tiles">'+
+      tile('S&amp;P 500',comp.spx,'S&amp;P 500: broad equity risk appetite.')+
+      tile('Nasdaq-100',comp.ndx,'Nasdaq: growth and duration risk appetite.')+
+      tile('VIX',comp.vix,'VIX: lower = calmer risk.')+
+      tile('Gold',comp.gold,'Gold: defensive hedge signal; inverted here.')+
+    '</div>';
+}
+var regimeLastStatus='' ;
 function renderRiskSentiment(){
   var tab=document.getElementById("tab-risk"); if(!tab) return;
   RISK_SENTIMENT=normalizeRiskState(RISK_SENTIMENT);
-  var rows=riskHistorySorted().slice(-10).reverse();
-  var cur=RISK_SENTIMENT.current||{}, spx=riskInputNum(cur.spxClose), vix=riskInputNum(cur.vixClose);
-  var histHtml=rows.length?rows.map(function(r){
-    var all=riskHistorySorted(), prior=null; for(var pi=all.length-1;pi>=0;pi--){if(all[pi].date<r.date){prior=all[pi];break;}}
-    var rowScore=riskScoreFromObservation(r,prior), rs=rowScore==null?"No reading":riskRegimeLabel(rowScore);
-    return '<tr><td>'+esc(r.date)+'</td><td class="mono">'+(r.spxClose==null?'—':Number(r.spxClose).toFixed(2))+'</td><td class="mono">'+(r.spxPct==null?'—':riskPctLabel(r.spxPct))+'</td><td class="mono">'+(r.vixClose==null?'—':Number(r.vixClose).toFixed(2))+'</td><td class="mono">'+(r.vixPct==null?'—':riskPctLabel(r.vixPct))+'</td><td class="'+riskClass(rowScore==null?0:rowScore)+'">'+rs+'</td></tr>';
-  }).join(''):'<tr><td colspan="6"><div class="risk-empty">No saved observations yet.</div></td></tr>';
-
+  var cur=RISK_SENTIMENT.current||{};
   var surface=riskSurfaceHtml(activeRiskCcy);
+  function inp(id,label,val){ return '<label class="risk-inline-field"><span>'+label+'</span><input id="'+id+'" class="risk-inline-input" inputmode="decimal" placeholder="Close" value="'+(val==null?'':esc(val))+'"></label>'; }
   var inlineEditor = unlockedLocally ?
     '<div class="risk-inline-editor risk-inline-live">'+
       '<span class="risk-inline-label">Daily close</span>'+
       '<label class="risk-inline-field"><span>Date</span><input id="riskObsDateInput" type="date" class="risk-inline-input risk-date-input" value="'+esc(cur.date||riskTodayKey())+'"></label>'+
-      '<label class="risk-inline-field"><span>S&amp;P 500</span><input id="riskSpxCloseInput" class="risk-inline-input" inputmode="decimal" placeholder="Close" value="'+(spx==null?'':esc(spx))+'"></label>'+
-      '<label class="risk-inline-field"><span>VIX</span><input id="riskVixCloseInput" class="risk-inline-input" inputmode="decimal" placeholder="Close" value="'+(vix==null?'':esc(vix))+'"></label>'+
+      inp('riskSpxCloseInput','S&amp;P 500',riskInputNum(cur.spxClose))+
+      inp('riskNdxCloseInput','Nasdaq-100',riskInputNum(cur.ndxClose))+
+      inp('riskVixCloseInput','VIX',riskInputNum(cur.vixClose))+
+      inp('riskGoldCloseInput','Gold',riskInputNum(cur.goldClose))+
       '<button id="riskSaveCloseBtn" class="risk-btn primary risk-btn-sm" type="button">Save Daily Close</button>'+
-      '<span id="riskLiveReadout" class="risk-inline-note">60% S&amp;P · 40% inverse VIX · saved closes drive the regime</span>'+
+      '<button id="riskFredBtn" class="risk-btn risk-btn-sm" type="button">Refresh from FRED</button>'+
+      '<span id="riskLiveReadout" class="risk-inline-note">'+(regimeLastStatus||'FRED pulls the closes automatically \u00b7 FRED is authoritative for daily closes; manual entry is a fallback')+'</span>'+
     '</div>' : '';
-
-  var historyPanel='';
-  tab.innerHTML='<div class="risk-page"><div class="strength-card risk-compact-card">'+
+  tab.innerHTML='<div class="risk-page" data-ui-tip="Market Regime: four market inputs translated into FX risk."><div class="strength-card risk-compact-card">'+
+    '<div id="rgPanel" class="rg-panel">'+regimePanelHtml()+'</div>'+
     surface.html+
     inlineEditor+
-    historyPanel+
-    (surface.ready?'':'<div class="risk-empty" style="padding:8px 12px 10px;">'+(unlockedLocally?'Enter the latest S&amp;P 500 and VIX closes above.':'Awaiting the latest market close.')+'</div>')+
+    (surface.ready?'':'<div class="risk-empty" style="padding:8px 12px 10px;">'+(unlockedLocally?'No closes yet \u2014 hit Refresh from FRED, or type the latest closes above.':'Awaiting the latest market close.')+'</div>')+
   '</div></div>';
 
-  var riskScopeAll=document.getElementById('riskScopeAll');
-  if(riskScopeAll){ riskScopeAll.onclick=function(){ activeRiskCcy=null; renderRiskSentiment(); }; }
+  var riskScopeTabs=document.querySelectorAll('[data-risk-scope]');
+  for(var rst=0;rst<riskScopeTabs.length;rst++){
+    riskScopeTabs[rst].onclick=function(){
+      var key=this.dataset.riskScope||'ALL';
+      activeRiskCcy=(key==='ALL')?null:key;
+      renderRiskSentiment();
+    };
+  }
   if(!unlockedLocally) return;
-  var si=document.getElementById('riskSpxCloseInput'), vi=document.getElementById('riskVixCloseInput'), di=document.getElementById('riskObsDateInput'), sb=document.getElementById('riskSaveCloseBtn'), lr=document.getElementById('riskLiveReadout');
+  var si=document.getElementById('riskSpxCloseInput'), ni=document.getElementById('riskNdxCloseInput'), vi=document.getElementById('riskVixCloseInput'), gi=document.getElementById('riskGoldCloseInput');
+  var di=document.getElementById('riskObsDateInput'), sb=document.getElementById('riskSaveCloseBtn'), fb=document.getElementById('riskFredBtn'), lr=document.getElementById('riskLiveReadout');
   function selectedRiskDate(){ return (di&&di.value)||riskTodayKey(); }
+  function readInputs(){ return {sp:riskInputNum(si?si.value:null), nd:riskInputNum(ni?ni.value:null), vx:riskInputNum(vi?vi.value:null), gd:riskInputNum(gi?gi.value:null)}; }
   function previewRiskLive(){
-    var sp=riskInputNum(si?si.value:null), vx=riskInputNum(vi?vi.value:null), date=selectedRiskDate();
-    if(sp==null || vx==null){ if(lr) lr.textContent='Enter both closes, then save the completed U.S. session.'; return; }
-    var rows=riskHistorySorted(), prior=null;
-    for(var i=rows.length-1;i>=0;i--){if(rows[i].date<date){prior=rows[i];break;}}
-    var preview={date:date,spxClose:sp,vixClose:vx,spxPct:riskDailyPct(sp,prior&&prior.spxClose),vixPct:riskDailyPct(vx,prior&&prior.vixClose)};
-    var score=riskScoreFromObservation(preview,prior);
-    RISK_SENTIMENT.current=preview;
-    var lbl=score==null?'—':riskRegimeLabel(score);
-    var reg=document.getElementById('riskRegimeValue');
-    if(reg){ reg.textContent=lbl; reg.className='strength-v '+(score>=0.20?'strength-pos':score<=-0.20?'strength-neg':''); }
-    var spxTerm=score==null?0:Math.round(riskTermFor('AUD')*100);
-    var strongest=CCY_ORDER.map(function(c){return {c:c,sc:Math.round((score||0)*riskSensitivity(c)*100)};}).sort(function(a,b){return b.sc-a.sc;});
-    var weakest=strongest[strongest.length-1];
-    var strongestEl=document.getElementById('riskStrongestValue'); if(strongestEl) strongestEl.textContent=strongest[0].c+' '+fmt(strongest[0].sc);
-    var weakestEl=document.getElementById('riskWeakestValue'); if(weakestEl) weakestEl.textContent=weakest.c+' '+fmt(weakest.sc);
-    var spreadEl=document.getElementById('riskSpreadValue'); if(spreadEl) spreadEl.textContent=(strongest[0].sc-weakest.sc)+' pts';
-    var scale=document.querySelector('#tab-risk .risk-scale i'); if(scale){scale.style.left=(((score==null?0:score)+1)/2*100).toFixed(2)+'%';scale.style.background=score>0.06?'var(--bullish-strong)':score<-0.06?'var(--bearish-strong)':'var(--text-faint)';}
-    if(lr) lr.textContent='Live preview: '+(preview.spxPct==null?'S&P —':('S&P '+riskPctLabel(preview.spxPct)))+' · '+(preview.vixPct==null?'VIX —':('VIX '+riskPctLabel(preview.vixPct)))+' · '+lbl+' · Save to store this close';
+    var x=readInputs(), date=selectedRiskDate();
+    RISK_SENTIMENT.current={date:date,spxClose:x.sp,vixClose:x.vx,ndxClose:x.nd,goldClose:x.gd,spxPct:null,vixPct:null};
+    var host=document.getElementById('rgPanel'); if(host) host.innerHTML=regimePanelHtml();
+    var v=regimeValue(), reg=document.getElementById('riskRegimeValue');
+    if(reg && v!=null){ reg.textContent=Math.round(v)+' \u00b7 '+regimeLabelFor(v); }
+    if(lr) lr.textContent='Live preview \u00b7 Save Daily Close to store it';
     updateComputed();
   }
   function saveRiskClose(){
-    var sp=riskInputNum(si?si.value:null), vx=riskInputNum(vi?vi.value:null), date=selectedRiskDate();
-    var result=riskSaveObservation(sp,vx,date);
+    var x=readInputs(), date=selectedRiskDate();
+    var result=riskSaveObservation(x.sp,x.vx,date,x.nd,x.gd);
     if(!result.ok){ if(lr) lr.textContent=result.msg; return; }
+    _regimeCache={key:'',val:null};
     renderRiskSentiment();
     updateComputed();
     scheduleSave();
-    var savedScore=riskRegimeScore();
-    var savedLabel=riskRegimeLabel(savedScore);
-    var savedRow=result.row;
-    var live=document.getElementById('riskLiveReadout');
-    if(live) live.textContent='Saved '+date+' · S&P '+riskPctLabel(savedRow.spxPct)+' · VIX '+riskPctLabel(savedRow.vixPct)+' · '+savedLabel;
+    var live=document.getElementById('riskLiveReadout'), v=regimeValue();
+    if(live) live.textContent='Saved '+date+(v!=null?(' \u00b7 regime '+Math.round(v)+' \u00b7 '+regimeLabelFor(v)):'');
   }
-  if(si){ si.addEventListener('focus',function(){isTyping=true;}); si.addEventListener('input',previewRiskLive); si.addEventListener('blur',function(){isTyping=false;}); }
-  if(vi){ vi.addEventListener('focus',function(){isTyping=true;}); vi.addEventListener('input',previewRiskLive); vi.addEventListener('blur',function(){isTyping=false;}); }
+  async function runFred(silent){
+    var live=document.getElementById('riskLiveReadout');
+    if(live) live.textContent='Pulling closes from FRED\u2026';
+    var res=await regimeFetchFred();
+    if(!document.getElementById('tab-risk')) return;
+    if(res.ok.length){ renderRiskSentiment(); updateComputed(); scheduleSave(); }
+    var live2=document.getElementById('riskLiveReadout');
+    if(live2){
+      live2.textContent=(res.ok.length?('FRED loaded: '+res.ok.join(', ')):'FRED did not return any data')+(res.bad.length?(' \u00b7 not loaded: '+res.bad.join(', ')+' \u2014 type those closes in manually'):'');
+    }
+  }
+  [si,ni,vi,gi].forEach(function(el){ if(el){ el.addEventListener('focus',function(){isTyping=true;}); el.addEventListener('input',previewRiskLive); el.addEventListener('blur',function(){isTyping=false;}); } });
   if(di){ di.addEventListener('focus',function(){isTyping=true;}); di.addEventListener('change',previewRiskLive); di.addEventListener('blur',function(){isTyping=false;}); }
   if(sb){ sb.addEventListener('click',saveRiskClose); }
-
-  // Risk Sentiment now has an explicit save action and explicit observation date.
-  // This prevents a close entered for a completed session from being silently attached
-  // to the wrong automatic date.
+  if(fb){ fb.addEventListener('click',function(){ runFred(false); }); }
 }
 
 function esc(s){ if(s===undefined||s===null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -13023,7 +13142,6 @@ async function init(){
           var pendingAtPoll=(pendingParsedPoll&&pendingParsedPoll.DATA&&pendingParsedPoll.DATA._updatedAt)||pendingDuringPoll.queuedAt||null;
           if(pendingAtPoll && row.updated_at && pendingAtPoll>row.updated_at){
             lastCloudUpdatedAt=row.updated_at;
-            updateStatus('Local changes queued — waiting for cloud retry', 'var(--amber)');
             return;
           }
         }catch(e){}
@@ -14804,6 +14922,83 @@ body,html{background:var(--bg);}
 })();
 </script>
 
+<style id="market-regime-panel">
+#tab-risk .rg-panel{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);}
+#tab-risk .rg-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;}
+#tab-risk .rg-title{color:var(--amber);font-size:15px;font-weight:600;}
+#tab-risk .rg-note{color:var(--text-dim);font-size:12.5px;margin-top:3px;}
+#tab-risk .rg-big{text-align:right;}
+#tab-risk .rg-num{font-size:34px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;}
+#tab-risk .rg-of{color:var(--text-dim);font-size:14px;}
+#tab-risk .rg-lbl{font-size:13px;margin-top:4px;color:var(--text-dim);}
+#tab-risk .rg-pos{color:var(--bullish-strong)!important;}
+#tab-risk .rg-neg{color:var(--bearish-strong)!important;}
+#tab-risk .rg-bar{position:relative;height:6px;margin:12px 0 12px;display:flex;background:rgba(255,255,255,.06);}
+#tab-risk .rg-bar i{display:block;height:100%;}
+#tab-risk .rg-z1{width:44%;background:rgba(240,68,85,.35);}
+#tab-risk .rg-z2{width:12%;background:rgba(255,255,255,.12);}
+#tab-risk .rg-z3{width:44%;background:rgba(34,201,139,.35);}
+#tab-risk .rg-bar b{position:absolute;top:-4px;width:3px;height:14px;background:#f2f3f5;transform:translateX(-50%);}
+#tab-risk .rg-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+#tab-risk .rg-tile{background:#0e0e11;border:1px solid rgba(255,255,255,.08);padding:9px 11px;border-radius:0;}
+#tab-risk .rg-k{color:var(--text-dim);font-size:12.5px;}
+#tab-risk .rg-v{font-size:22px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums;}
+#tab-risk .rg-s{color:var(--text-dim);font-size:12px;margin-top:2px;}
+html body #tab-risk .risk-inline-editor{display:flex!important;flex-wrap:wrap!important;align-items:flex-end!important;gap:8px 10px!important;padding:12px 14px!important;}
+html body #tab-risk .risk-inline-field{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:3px!important;}
+html body #tab-risk .risk-inline-input{height:34px!important;min-height:0!important;width:112px!important;flex:0 0 auto!important;box-sizing:border-box!important;border-radius:0!important;}
+html body #tab-risk #riskObsDateInput,html body #tab-risk input.risk-date-input{width:156px!important;height:34px!important;min-height:34px!important;max-height:34px!important;}
+html body #tab-risk .risk-inline-label{align-self:flex-end;padding-bottom:9px;}
+html body #tab-risk .risk-inline-editor .risk-btn{height:34px!important;padding:0 14px!important;border-radius:0!important;}
+html body #tab-risk .risk-inline-note{flex:1 1 100%!important;margin-top:2px;}
+@media(max-width:700px){#tab-risk .rg-tiles{grid-template-columns:repeat(2,1fr);}}
+</style>
+<style id="twp-ui-tooltip-v1">
+#twp-ui-tooltip{position:fixed;z-index:30000;display:none;pointer-events:none;max-width:220px;padding:5px 7px;border:1px solid var(--border);border-radius:0;background:var(--panel);box-shadow:0 8px 18px rgba(0,0,0,.32);color:var(--text);font:600 10.5px/1.25 Inter,system-ui,sans-serif;white-space:normal;}
+#twp-ui-tooltip.show{display:block;}
+[data-ui-tip]{cursor:default;}
+#tab-overview .ov-pair-row[data-ui-tip],#tab-overview .ov-currency-row[data-ui-tip],#tab-overview .ov-risk-row[data-ui-tip]{cursor:pointer;}
+#tab-risk .rg-tile[data-ui-tip],#tab-risk .risk-scope-tab[data-ui-tip],#tab-risk .strength-stat[data-ui-tip],#tab-risk .strength-row[data-ui-tip]{cursor:default;}
+</style>
+<script id="twp-ui-tooltip-v1">
+(function(){
+  var tip=null,target=null;
+  function ensure(){
+    if(tip) return tip;
+    tip=document.createElement('div'); tip.id='twp-ui-tooltip'; document.body.appendChild(tip); return tip;
+  }
+  function place(e){
+    if(!tip||!target) return;
+    var x=(e&&e.clientX!=null)?e.clientX:(target.getBoundingClientRect().left+target.getBoundingClientRect().width/2);
+    var y=(e&&e.clientY!=null)?e.clientY:(target.getBoundingClientRect().top);
+    var r=tip.getBoundingClientRect(), pad=10;
+    var left=Math.min(window.innerWidth-r.width-pad, Math.max(pad,x+12));
+    var top=Math.min(window.innerHeight-r.height-pad, Math.max(pad,y+14));
+    tip.style.left=left+'px'; tip.style.top=top+'px';
+  }
+  function show(el,e){
+    var msg=el&&el.getAttribute('data-ui-tip'); if(!msg) return;
+    target=el; ensure(); tip.textContent=msg; tip.classList.add('show'); place(e);
+  }
+  function hide(){ if(tip) tip.classList.remove('show'); target=null; }
+  document.addEventListener('pointerover',function(e){
+    var el=e.target&&e.target.closest?e.target.closest('[data-ui-tip]'):null;
+    if(!el) return;
+    if(target!==el) show(el,e);
+  },true);
+  document.addEventListener('pointermove',function(e){ if(target) place(e); },true);
+  document.addEventListener('pointerdown',function(){ hide(); },true);
+  document.addEventListener('click',function(){ hide(); },true);
+  document.addEventListener('pointerout',function(e){
+    if(!target) return;
+    var to=e.relatedTarget;
+    if(to && target.contains(to)) return;
+    if(to && to.closest && to.closest('[data-ui-tip]')===target) return;
+    hide();
+  },true);
+  window.addEventListener('scroll',hide,true);
+})();
+</script>
 </body>
 <style id="overview-kpi-trend-arrows-final">
 #tab-overview .ov-pro-snapshot .ov-kpi-trend-arrow{font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:900;margin-left:5px;display:inline-block;vertical-align:middle;}
@@ -17300,6 +17495,9 @@ html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-mode-btn{white-
   html body #tab-yield2y .y2-chart-row>.card{height:430px!important;min-height:430px!important;max-height:430px!important;}
 }
 </style>
+<style id="scanner-watch-badge">
+#tab-scanner .scanner-side-watch{color:var(--amber)!important;}
+</style>
 </body>
 </html>
 
@@ -18200,3 +18398,61 @@ html body #tab-raw .surprise-bar-zero{border-radius:0!important;}
 </style>
 
 
+
+
+<style id="market-regime-clean-v1">
+/* Market Regime: one-glance layout. No explanatory prose, no pill-shaped bars, no role labels. */
+#tab-risk .risk-page{max-width:100%!important;}
+#tab-risk .strength-card{border-radius:7px!important;overflow:visible!important;background:var(--panel)!important;}
+#tab-risk .rg-panel{padding:10px 12px 8px!important;border-bottom:1px solid var(--border)!important;}
+#tab-risk .rg-head{margin:0 0 7px!important;}
+#tab-risk .rg-title{font-family:'Space Grotesk',sans-serif!important;font-size:12px!important;font-weight:800!important;letter-spacing:.7px!important;text-transform:uppercase!important;color:var(--text)!important;}
+#tab-risk .rg-note{display:none!important;}
+#tab-risk .rg-tiles{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;}
+#tab-risk .rg-tile{background:var(--panel2)!important;border:1px solid var(--border)!important;border-radius:5px!important;padding:9px 11px!important;min-height:58px!important;}
+#tab-risk .rg-k{font-size:10px!important;text-transform:uppercase!important;letter-spacing:.65px!important;color:var(--text-faint)!important;font-weight:700!important;}
+#tab-risk .rg-v{font-family:'IBM Plex Mono',monospace!important;font-size:20px!important;line-height:1!important;font-weight:800!important;margin-top:7px!important;color:var(--text)!important;}
+#tab-risk .rg-v.rg-pos{color:var(--bullish-strong)!important;}
+#tab-risk .rg-v.rg-neg{color:var(--bearish-strong)!important;}
+#tab-risk .risk-scope-tabs{display:flex!important;align-items:center!important;gap:3px!important;padding:8px 10px 0!important;border-bottom:1px solid var(--border)!important;overflow-x:auto!important;}
+#tab-risk .risk-scope-tab{background:transparent!important;border:0!important;border-bottom:2px solid transparent!important;color:var(--text-dim)!important;padding:6px 10px!important;border-radius:0!important;font:700 11px 'Inter',system-ui,sans-serif!important;cursor:pointer!important;}
+#tab-risk .risk-scope-tab:hover{color:var(--text)!important;}
+#tab-risk .risk-scope-tab.active{color:var(--text)!important;border-bottom-color:var(--amber)!important;background:var(--panel2)!important;}
+#tab-risk .strength-summary{grid-template-columns:repeat(4,minmax(0,1fr))!important;border-bottom:1px solid var(--border)!important;}
+#tab-risk .strength-stat{padding:9px 12px!important;}
+#tab-risk .strength-list-head,#tab-risk .strength-row{grid-template-columns:28px 86px minmax(160px,1fr) 52px!important;gap:9px!important;}
+#tab-risk .strength-list-head{padding:7px 12px!important;}
+#tab-risk .strength-row{min-height:36px!important;padding:6px 12px!important;}
+#tab-risk .strength-bar{height:8px!important;width:auto!important;border-radius:0!important;background:var(--panel3)!important;}
+#tab-risk .strength-bar i{border-radius:0!important;}
+#tab-risk .risk-scale-wrap{padding:0 12px!important;margin:8px 0!important;}
+#tab-risk .risk-scale{border-radius:0!important;height:6px!important;}
+#tab-risk .risk-scale i{border-radius:0!important;width:2px!important;}
+#tab-risk .risk-scale-mid{border-radius:0!important;}
+#tab-risk .strength-bias{display:none!important;}
+#tab-risk .risk-empty{border-top:1px solid var(--border)!important;}
+@media(max-width:760px){
+  #tab-risk .rg-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #tab-risk .strength-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+</style>
+<style id="overview-risk-clean-v1">
+/* Overview risk card: show all four regime inputs and only currency + score. */
+#tab-overview .ov-pro-risk-market{display:flex!important;gap:14px!important;align-items:baseline!important;flex-wrap:wrap!important;}
+#tab-overview .ov-risk-row{grid-template-columns:1fr auto!important;}
+#tab-overview .ov-risk-role{display:none!important;}
+</style>
+<style id="sync-status-clean-v1">
+/* Cloud retry stays internal; the header does not advertise transient queue state. */
+#updatedTag{min-width:72px!important;text-align:right!important;}
+</style>
+<style id="market-regime-clean-flat-v2">
+#tab-risk .rg-panel{padding:10px 14px 9px!important;border-bottom:1px solid var(--border)!important;}
+#tab-risk .rg-tiles{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:28px!important;align-items:center!important;}
+#tab-risk .rg-tile{background:transparent!important;border:0!important;border-radius:0!important;padding:2px 0!important;min-height:0!important;display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:10px!important;}
+#tab-risk .rg-k{font-size:11.5px!important;color:var(--text-dim)!important;font-weight:600!important;white-space:nowrap!important;}
+#tab-risk .rg-v{font-size:18px!important;font-weight:700!important;margin-top:0!important;line-height:1!important;}
+#tab-risk .rg-head{display:none!important;}
+#tab-risk .risk-scope-tabs{padding-top:7px!important;}
+@media(max-width:700px){#tab-risk .rg-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px 22px!important;}}
+</style>
