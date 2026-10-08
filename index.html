@@ -12679,26 +12679,22 @@ function regimeFredParse(txt){
   return out;
 }
 async function regimeFetchFred(){
-  var start=new Date(); start.setUTCDate(start.getUTCDate()-70);
-  var cosd=start.toISOString().slice(0,10), got={}, ok=[], bad=[];
-  var keys=Object.keys(REGIME_FRED);
-  for(var i=0;i<keys.length;i++){
-    var k=keys[i];
-    try{
-      var r=await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id='+REGIME_FRED[k]+'&cosd='+cosd,{cache:'no-store'});
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      var rows=regimeFredParse(await r.text());
-      if(!rows.length) throw new Error('empty');
-      got[k]=rows; ok.push(REGIME_NAMES[k]);
-    }catch(e){ bad.push(REGIME_NAMES[k]); }
-  }
+  var got={}, ok=[], bad=[];
+  try{
+    var r=await fetch(SUPABASE_URL+'/functions/v1/market-closes',{cache:'no-store',headers:{apikey:SUPABASE_KEY}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var j=await r.json();
+    Object.keys(REGIME_FRED).forEach(function(k){
+      if(j[k]&&j[k].length){ got[k]=j[k]; ok.push(REGIME_NAMES[k]); } else bad.push(REGIME_NAMES[k]);
+    });
+  }catch(e){ bad=Object.keys(REGIME_FRED).map(function(k){return REGIME_NAMES[k];}); }
   if(ok.length){
     RISK_SENTIMENT=normalizeRiskState(RISK_SENTIMENT);
     var by={}; RISK_SENTIMENT.history.forEach(function(r){by[r.date]=r;});
     Object.keys(got).forEach(function(k){
       got[k].forEach(function(p){
         var r=by[p.date]||(by[p.date]={date:p.date,spxClose:null,vixClose:null,ndxClose:null,goldClose:null,spxPct:null,vixPct:null});
-        r[k]=p.v; // FRED is authoritative for the daily market close
+        r[k]=p.v;
       });
     });
     var dates=Object.keys(by).sort(), hist=dates.map(function(d){return by[d];});
@@ -12710,7 +12706,7 @@ async function regimeFetchFred(){
     RISK_SENTIMENT.current=Object.assign({},hist[hist.length-1]);
     _regimeCache={key:'',val:null};
   }
-  regimeLastStatus=(ok.length?('FRED loaded: '+ok.join(', ')):'FRED did not return any data (browser may be blocking it)')+(bad.length?(' \u00b7 not loaded: '+bad.join(', ')+' \u2014 type those closes in manually'):'');
+  regimeLastStatus=(ok.length?('Loaded: '+ok.join(', ')):'Could not reach the market data function')+(bad.length?(' · not loaded: '+bad.join(', ')+' — type those closes in manually'):'');
   return {ok:ok,bad:bad};
 }
 function regimeAutoRefresh(){
