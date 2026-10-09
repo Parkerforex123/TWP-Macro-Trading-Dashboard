@@ -5813,8 +5813,8 @@ function cotPairBand(score){
   return 'Bearish';
 }
 // ---- CFTC Leveraged Funds Currency Pairs: LF Strength Index -----------------
-// Strength = (Net%LF(base) - Net%LF(quote)) / 2, Net%LF = LF Net / LF Open Interest * 100.
-// Fixed -100..+100 scale. No percentile, no pair history, no adaptive recalibration.
+// Strength = (Net%LF(base) - Net%LF(quote)) / 2, Net%LF = LF Net / (LF Long + LF Short) * 100.
+// Fixed theoretical -100..+100 scale. No percentile or history-dependent scoring in the live composite.
 function cotNetPctOI(ccy){
   // Denominator = LEVERAGED-FUNDS open interest = LF Long + LF Short (spreading excluded).
   // NOT the contract's total open interest (d.oi), which includes dealers, asset managers, etc.
@@ -5860,7 +5860,8 @@ function cotPairRankBand(score){
   return 'Neutral';
 }
 // Common Pair COT engine. Every BASE/QUOTE pair uses the same calculation.
-// posScore = raw LF Strength Index. flowScore = separate weekly-flow signal (unchanged).
+// posScore = raw LF Strength Index with fixed scale/bands; flowScore is a separate
+// historical-magnitude-ranked weekly-flow signal. History never replaces posScore.
 function cotPairRegime(base,quote){
   var empty={label:'Neutral',posLabel:'Neutral',flowLabel:'Neutral',posScore:0,flowScore:0,combined:0,positionAdvantage:null,flowAdvantage:null,insufficient:true};
   if(!base||!quote||base===quote) return empty;
@@ -5877,11 +5878,13 @@ function cotPairRegime(base,quote){
     flowScore=cotHistoricalMagnitudeScore(cur.relFlow,flowArr);
     flowAdvantage=flowScore>0?base:(flowScore<0?quote:null);
   }
-  // Position is now judged against the pair's OWN 52-week history (see cotPairRank); falls back to the raw
-  // strength + fixed bands only when the pair has fewer than 8 weeks of history.
-  var rk=cotPairRank(base,quote);
-  var posScore=(rk.score!=null)?rk.score:Math.round(strength*100)/100;
-  var posLabel=(rk.score!=null)?cotPairRankBand(rk.score):cotPairStrengthBand(strength);
+  // Position scoring is always the same raw LF Strength Index formula, regardless
+  // of how many historical observations exist. Historical rank remains available
+  // for the separate COT history visualisation, but must not replace the live
+  // positioning signal in the composite. This prevents the same raw position from
+  // changing direction merely because older observations enter/leave the window.
+  var posScore=Math.round(strength*100)/100;
+  var posLabel=cotPairStrengthBand(strength);
   return {
     label:posLabel,
     posLabel:posLabel,
@@ -5900,9 +5903,21 @@ function cotWowMagnitudeScore(ccy){
   var chg=cotLatest(ccy).netChg;
   if(chg==null) return 0;
   var a=Math.abs(chg), sign=chg>0?1:-1;
-  // Weekly COT flow, banded by size of the actual move — so a currency whose net
-  // position genuinely swung hard this week (e.g. JPY -14.9K) outweighs one that
-  // barely ticked (e.g. USD +2.3K), instead of both just counting as a flat +/-1.
+  // Weekly COT flow, banded by the size of the move RELATIVE TO THAT CURRENCY'S OWN
+  // leveraged-funds book: |weekly net change| / (LF long + LF short) * 100, i.e. the
+  // same denominator as Net % LF. A 6K move is big for CHF/NZD but routine for EUR/JPY,
+  // so fixed contract counts made EUR/JPY max out ~60% of weeks and CHF almost never.
+  // Bands: <2% = 0, 2-4% = +/-1, 4-7% = +/-2, >=7% = +/-3 (calibrated on the 52w backfill
+  // so the overall score mix is close to the old contract bands, but even across currencies).
+  var d=cotLatest(ccy), lfSize=(d.long!=null && d.short!=null)?(Number(d.long)+Number(d.short)):0;
+  if(lfSize>0){
+    var pctMove=a/lfSize*100;
+    if(pctMove<2) return 0;
+    if(pctMove<4) return sign*1;
+    if(pctMove<7) return sign*2;
+    return sign*3;
+  }
+  // Fallback only if long/short are missing: the old fixed contract bands.
   if(a<1000) return 0;
   if(a<3000) return sign*1;
   if(a<6000) return sign*2;
@@ -6541,12 +6556,12 @@ function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   var y2s=y2Calc(ccy).score, yieldScore=y2s==null?0:y2s;
   // COT is split into two independently-weighted legs instead of being summed first:
   // Net Position (direction only, +/-3) and Weekly Change (magnitude-banded, +/-3 via
-  // cotWowMagnitudeScore -- bigger weekly contract swings score higher instead of every
-  // nonzero change flattening to the same +/-1).
+  // cotWowMagnitudeScore -- the weekly net change as a % of that currency's own LF long + short,
+  // so bigger moves score higher regardless of how big the currency's futures market is).
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotNetTerm=cotNetOnlyScore(ccy)/3, cotWowTerm=cotWowMagnitudeScore(ccy)/3, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Weights (see CCY_W): Fundamentals 25% + Yield 23% + CB Stance 19% + COT Net Position 9% + COT Weekly Change 9% + Seasonality 8% + Risk Sentiment 7%.
-  // Fundamentals + Yield + CB stance still hold 67% of the composite. Positioning (18%), Seasonality (8%)
-  // and Risk (7%) together hold the other 33%, so they matter more than before.
+  // Authoritative weights (see CCY_W): Fundamentals 25%, Yield 23%, CB Stance 20%,
+  // COT Net Position 10%, COT Weekly Change 9%, Risk Sentiment 7%, Seasonality 6%.
+  // Keep this formula and CCY_W synchronised whenever the model is recalibrated.
   return CCY_W.fund*fundTerm+CCY_W.yield*yieldTerm+CCY_W.cb*cbTerm+CCY_W.pos*cotNetTerm+CCY_W.wow*cotWowTerm+CCY_W.risk*riskTerm+CCY_W.seas*seasTerm; }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
@@ -6819,9 +6834,9 @@ function pairSpreadChangeSince(base,quote,days){
 // These rulers control sensitivity inside their fixed pillar weights; they do not change the
 // 25/23/20/10/9/7/6 weighting itself.
 var PAIR_FUND_FULL_GAP=100, PAIR_CB_FULL_GAP=10;
-// Pair-score weights (points out of 100): Fundamentals 29, Yield 23, CB Stance 19,
-// Position 9, WoW 9, Risk Sentiment 7, Seasonality 4. CB stance is split 9.5/9.5
-// between Next Move + Conviction and Forward Guidance.
+// Authoritative pair-score weights (points out of 100): Fundamentals 25, Yield 23,
+// CB Stance 20, Position 10, WoW 9, Risk Sentiment 7, Seasonality 6.
+// CB stance is split equally between Next Move + Conviction and Forward Guidance.
 var PAIR_W_NEW={fund:25,yield:23,cb:20,pos:10,wow:9,risk:7,seas:6};
 function pairFundTerm(fundBase,fundQuote){
   return Math.max(-1,Math.min(1,(fundBase-fundQuote)*100/PAIR_FUND_FULL_GAP));
@@ -6912,7 +6927,7 @@ function pairAlignmentFor(base, quote, score){
     var sign=indicatorSign(ind);
     return ccy===base ? sign : -sign;
   }
-  // Fundamentals occupy 29% of the pair model (PAIR_W_NEW). Each underlying indicator keeps its
+  // Fundamentals occupy PAIR_W_NEW.fund (25%) of the pair model. Each underlying indicator keeps its
   // existing importance inside that pillar; the pillar is normalized to its total points.
   var fundWeightSum=0, fundAgreeWeight=0;
   [base,quote].forEach(function(ccy){
@@ -6934,13 +6949,13 @@ function pairAlignmentFor(base, quote, score){
   // Yield = 23% of the pair model.
   var y=pairYieldCalc(base,quote).score;
   if(pairYieldSign(y)!==0) vote(pairYieldSign(y),PAIR_W_NEW.yield);
-  // COT Position = 9%, COT Weekly Change = 9%. Voted separately instead of blending
+  // COT Position = 10%, COT Weekly Change = 9%. Voted separately instead of blending
   // into .combined, so a pair with position and flow disagreeing shows that split
   // instead of cancelling into one vote.
   var cot=cotPairRegime(base,quote);
   if(!cot.insufficient && cot.posLabel!=='Neutral') vote(Number(cot.posScore)>0?1:-1,PAIR_W_NEW.pos);
   if(!cot.insufficient && Number(cot.flowScore)!==0) vote(Number(cot.flowScore)>0?1:-1,PAIR_W_NEW.wow);
-  // CB stance = 19% split into two independent 9.5-point votes:
+  // CB stance = 20% split into two independent 10-point votes:
   // next move/conviction and forward-guidance direction.
   var cbNextDiff=cbNextMoveScore(base)-cbNextMoveScore(quote);
   if(cbNextDiff!==0) vote(cbNextDiff>0?1:-1,PAIR_W_NEW.cb/2);
@@ -6949,7 +6964,7 @@ function pairAlignmentFor(base, quote, score){
   // Risk = 7%.
   var riskDiff=riskTermFor(base)-riskTermFor(quote);
   if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,PAIR_W_NEW.risk);
-  // Seasonality = 4%.
+  // Seasonality = 6%.
   var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
   if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,PAIR_W_NEW.seas);
   return total ? Math.round((agree/total)*100) : null;
@@ -12458,7 +12473,7 @@ function cotPairTrendSvg(pair,ser){
 function cotOpenPairTrend(pair){
   activeCotPair=pair; cotClosePairTrend(); activeCotPair=pair;
   var ser=cotPairHistorySeries(pair), b=pair.slice(0,3), q=pair.slice(3,6), rk=cotPairRank(b,q);
-  var band=rk.score!=null?cotPairRankBand(rk.score):(rk.cur!=null?cotPairStrengthBand(rk.cur):'');
+  var band=(rk.cur!=null?cotPairStrengthBand(rk.cur):''); // label = raw two-sided LF Strength Index; 52w range below is reference only
   var bcol=/Bullish/.test(band)?'#22c98b':/Bearish/.test(band)?'#f04455':'var(--text-dim)';
   var bd=document.createElement('div'); bd.id='cotPairModal';
   bd.innerHTML='<div class="cot-pm-panel"><div class="cot-pm-head"><div><span class="cot-pm-pair">'+pair+'</span>'+
@@ -12478,11 +12493,11 @@ function cotPairGridHtml(){
   var items=[];
   COT_GRID_PAIRS.forEach(function(pr){
     var b=pr.slice(0,3), q=pr.slice(3,6), v=cotPairStrength(b,q); if(v==null||!Number.isFinite(v)) return;
-    var rk=cotPairRank(b,q); items.push({pair:pr,v:v,score:(rk.score!=null?rk.score:v*2)});
+    items.push({pair:pr,v:v,score:v}); // order + colour by the raw LF Strength Index (same as the scanner POS signal); history is NOT used here
   });
   items.sort(function(a,b){return b.score-a.score;});
   var tiles=items.map(function(o){
-    var a=0.10+0.50*Math.min(Math.abs(o.score)/100,1);
+    var a=0.10+0.50*Math.min(Math.abs(o.score)/50,1);
     var bg=o.score>=0?'rgba(34,201,139,'+a.toFixed(2)+')':'rgba(240,68,85,'+a.toFixed(2)+')';
     return '<div class="cot-pair-tile" data-cot-pair="'+o.pair+'" style="background:'+bg+';">'+
       '<span class="cp-n">'+o.pair+'</span><span class="cot-pair-val cp-v '+(o.score>=0?'up':'down')+'">'+cotFmtPct(o.v,1)+'</span></div>';
@@ -12494,8 +12509,8 @@ function cotPairGridHtml(){
 function cotPairTipHtml(pair){
   var b=pair.slice(0,3), q=pair.slice(3,6), v=cotPairStrength(b,q), nb=cotNetPctOI(b), nq=cotNetPctOI(q), rk=cotPairRank(b,q);
   if(v==null) return '<b>'+pair+'</b>';
-  var score=rk.score!=null?rk.score:null, band=score!=null?cotPairRankBand(score):cotPairStrengthBand(v);
-  var pts=((score!=null?score:v)/100)*PAIR_W_NEW.pos, adv=v>0?b:(v<0?q:'neither side');
+  var band=cotPairStrengthBand(v); // raw LF Strength Index band, same as the Trade Scanner POS tile
+  var pts=(v/100)*PAIR_W_NEW.pos, adv=v>0?b:(v<0?q:'neither side');
   return '<b>'+pair+'</b> \u00b7 '+band+'<br>Strength '+cotFmtPct(v,1)+(rk.rangePos!=null?' \u00b7 '+Math.round(rk.rangePos)+'% of its 52-week range':'')+
     (rk.rangePos!=null?'<br><span class="d">52w low '+cotFmtPct(rk.lo,1)+' \u00b7 high '+cotFmtPct(rk.hi,1)+'</span>':'')+
     '<br><span class="d">'+b+' '+cotFmtPct(nb,1)+' vs '+q+' '+cotFmtPct(nq,1)+' (net % of LF)</span><br>Funds lean toward '+adv+'.<br>Adds '+(pts>=0?'+':'\u2212')+Math.abs(pts).toFixed(1)+' pts to the pair score.<br><span class="d">Click for weekly trend.</span>';
@@ -12516,7 +12531,7 @@ function cotPairTipHtml(pair){
       var cx=P.L+(P.W-P.L-P.R)*i/(ser.length-1), cy=P.T+(P.H-P.T-P.B)*(sc.mx-o.v)/(sc.mx-sc.mn);
       var ln=svg.querySelector('#cotPtX'), dt=svg.querySelector('#cotPtDot'); ln.setAttribute('x1',cx); ln.setAttribute('x2',cx); ln.style.display=''; dt.setAttribute('cx',cx); dt.setAttribute('cy',cy); dt.style.display=''; cotSetAxisTag(svg,cy,o.v);
       var rp=cotRankOfValue(o.v,ser);
-      t.innerHTML='<b>'+o.date+'</b><br>'+pair+' '+cotFmtPct(o.v,1)+' \u00b7 '+cotPairRankBand((rp-50)*2)+'<br><span class="d">'+Math.round(rp)+'% of range \u00b7 '+pair.slice(0,3)+' '+cotFmtPct(o.b,1)+' vs '+pair.slice(3,6)+' '+cotFmtPct(o.q,1)+'</span>';
+      t.innerHTML='<b>'+o.date+'</b><br>'+pair+' '+cotFmtPct(o.v,1)+' \u00b7 '+cotPairStrengthBand(o.v)+'<br><span class="d">'+Math.round(rp)+'% of range \u00b7 '+pair.slice(0,3)+' '+cotFmtPct(o.b,1)+' vs '+pair.slice(3,6)+' '+cotFmtPct(o.q,1)+'</span>';
       t.style.display='block'; place(t,e); return;
     }
     t.style.display='none';
@@ -12679,22 +12694,26 @@ function regimeFredParse(txt){
   return out;
 }
 async function regimeFetchFred(){
-  var got={}, ok=[], bad=[];
-  try{
-    var r=await fetch(SUPABASE_URL+'/functions/v1/market-closes',{cache:'no-store',headers:{apikey:SUPABASE_KEY}});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    var j=await r.json();
-    Object.keys(REGIME_FRED).forEach(function(k){
-      if(j[k]&&j[k].length){ got[k]=j[k]; ok.push(REGIME_NAMES[k]); } else bad.push(REGIME_NAMES[k]);
-    });
-  }catch(e){ bad=Object.keys(REGIME_FRED).map(function(k){return REGIME_NAMES[k];}); }
+  var start=new Date(); start.setUTCDate(start.getUTCDate()-70);
+  var cosd=start.toISOString().slice(0,10), got={}, ok=[], bad=[];
+  var keys=Object.keys(REGIME_FRED);
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];
+    try{
+      var r=await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id='+REGIME_FRED[k]+'&cosd='+cosd,{cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var rows=regimeFredParse(await r.text());
+      if(!rows.length) throw new Error('empty');
+      got[k]=rows; ok.push(REGIME_NAMES[k]);
+    }catch(e){ bad.push(REGIME_NAMES[k]); }
+  }
   if(ok.length){
     RISK_SENTIMENT=normalizeRiskState(RISK_SENTIMENT);
     var by={}; RISK_SENTIMENT.history.forEach(function(r){by[r.date]=r;});
     Object.keys(got).forEach(function(k){
       got[k].forEach(function(p){
         var r=by[p.date]||(by[p.date]={date:p.date,spxClose:null,vixClose:null,ndxClose:null,goldClose:null,spxPct:null,vixPct:null});
-        r[k]=p.v;
+        r[k]=p.v; // FRED is authoritative for the daily market close
       });
     });
     var dates=Object.keys(by).sort(), hist=dates.map(function(d){return by[d];});
@@ -12706,7 +12725,7 @@ async function regimeFetchFred(){
     RISK_SENTIMENT.current=Object.assign({},hist[hist.length-1]);
     _regimeCache={key:'',val:null};
   }
-  regimeLastStatus=(ok.length?('Loaded: '+ok.join(', ')):'Could not reach the market data function')+(bad.length?(' · not loaded: '+bad.join(', ')+' — type those closes in manually'):'');
+  regimeLastStatus=(ok.length?('FRED loaded: '+ok.join(', ')):'FRED did not return any data (browser may be blocking it)')+(bad.length?(' \u00b7 not loaded: '+bad.join(', ')+' \u2014 type those closes in manually'):'');
   return {ok:ok,bad:bad};
 }
 function regimeAutoRefresh(){
