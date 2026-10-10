@@ -400,6 +400,8 @@ body.ash .ccy-pill.active, body.black .ccy-pill.active{border-bottom-color:#c85b
 body.ash .guidance-box, body.black .guidance-box{background:#111111;}
 body.ash .sector-block table td, body.black .sector-block table td{padding-top:2px;padding-bottom:2px;}
 body.ash .sector-title, body.black .sector-title{margin-bottom:4px;}
+/* Risk sentiment removed from the dashboard UI and scoring model. */
+#tab-risk, [data-tab="risk"], #tab-overview .ov-pro-risk, .scanner-pill-td[data-label="RSK"], th[title="Risk Sentiment"] { display:none !important; }
 </style>
 
 <style id="v10-tight-density">
@@ -4751,7 +4753,7 @@ html body #tab-cot .cot-expand-btn{display:none!important;}
       <button class="tab-btn" data-tab="yield2y">Bond Yields</button>
       <button class="tab-btn" data-tab="cot" id="cotTabBtn">COT Regime</button>
       <button class="tab-btn" data-tab="raw">Economic Surprise Index</button>
-      <button class="tab-btn" data-tab="risk" id="riskTabBtn">Market Regime</button>
+      <button hidden class="tab-btn" data-tab="risk" id="riskTabBtn">Risk Sentiment</button>
     </nav>
     <div class="lock-box" id="lockBox"></div>
   </aside>
@@ -4773,7 +4775,6 @@ html body #tab-cot .cot-expand-btn{display:none!important;}
     <section class="tab-panel" id="tab-detail"></section>
     <section class="tab-panel" id="tab-scanner"></section>
     <section class="tab-panel" id="tab-yield2y"></section>
-    <section class="tab-panel" id="tab-risk"></section>
     <section class="tab-panel" id="tab-cot"></section>
   </main>
 </div>
@@ -6147,11 +6148,11 @@ function riskSaveObservation(spxClose,vixClose,dateOverride,ndxClose,goldClose){
 }
 // Currency Detail weights (points out of 100). Same split as the pair side (PAIR_W_NEW) on purpose,
 // but kept as its own object so the two sides can be tuned separately later.
-// Fundamentals 25 + Yield 23 + CB Stance 19 (next move 9.5 + guidance 9.5) + COT Net Position 9 +
-// COT Weekly Change 9 + Seasonality 8 + Risk Sentiment 7 = 100.
-var CCY_W={fund:25,yield:23,cb:20,pos:10,wow:9,risk:7,seas:6};
+// Fundamentals 27 + Yield 25 + CB Stance 23 (next move 11.5 + guidance 11.5) + COT Net Position 11 +
+// COT Weekly Change 9 + Seasonality 5 = 100. Risk sentiment is excluded.
+var CCY_W={fund:27,yield:25,cb:23,pos:11,wow:9,seas:5};
 if(Math.abs(Object.keys(CCY_W).reduce(function(a,k){return a+CCY_W[k];},0)-100)>1e-9 && window.console) console.warn('CCY_W weights do not sum to 100');
-function riskContributionFor(ccy){ return CCY_W.risk*riskTermFor(ccy); } // matches compositeFor's risk weight (CCY_W.risk)
+function riskContributionFor(ccy){ return 0; } // Risk sentiment is excluded from scoring.
 function riskSurfaceHtml(selectedCcy){
   var score=riskRegimeScore(), label=riskRegimeLabel(score);
   var ready=riskHasAnyReading();
@@ -6186,7 +6187,7 @@ function riskSurfaceHtml(selectedCcy){
   return {ready:ready,html:
     scopeHtml+
     '<div class="strength-summary">'+
-      '<div class="strength-stat" data-ui-tip="Current four-input market regime."><div class="strength-k">Regime</div><div id="riskRegimeValue" class="strength-v '+(ready?(score>=0.12?'strength-pos':score<=-0.12?'strength-neg':''):'')+'">'+(ready?(Math.round(50+score*50)+' · '+label):'Baseline')+'</div></div>'+
+      '<div class="strength-stat" data-ui-tip="Current four-input risk sentiment."><div class="strength-k">Sentiment</div><div id="riskRegimeValue" class="strength-v '+(ready?(score>=0.12?'strength-pos':score<=-0.12?'strength-neg':''):'')+'">'+(ready?(Math.round(50+score*50)+' · '+label):'Baseline')+'</div></div>'+
       '<div class="strength-stat" data-ui-tip="Highest current FX risk score."><div class="strength-k">Strongest</div><div id="riskStrongestValue" class="strength-v strength-pos">'+(ready?strongest.c+' '+fmt(strongest.sc):'—')+'</div></div>'+
       '<div class="strength-stat" data-ui-tip="Lowest current FX risk score."><div class="strength-k">Weakest</div><div id="riskWeakestValue" class="strength-v strength-neg">'+(ready?weakest.c+' '+fmt(weakest.sc):'—')+'</div></div>'+
       '<div class="strength-stat" data-ui-tip="Gap between strongest and weakest."><div class="strength-k">Spread</div><div id="riskSpreadValue" class="strength-v">'+(ready?spread+' pts':'—')+'</div></div>'+
@@ -6559,10 +6560,10 @@ function compositeFor(ccy){ var d=DATA[ccy]; var f=fundFor(ccy);
   // cotWowMagnitudeScore -- the weekly net change as a % of that currency's own LF long + short,
   // so bigger moves score higher regardless of how big the currency's futures market is).
   var fundTerm=f.max?(f.raw/f.max):0, yieldTerm=yieldScore/10, cotNetTerm=cotNetOnlyScore(ccy)/3, cotWowTerm=cotWowMagnitudeScore(ccy)/3, seasTerm=seasonalitySign(d), riskTerm=riskTermFor(ccy), cbTerm=cbStanceScore(ccy)/10;
-  // Authoritative weights (see CCY_W): Fundamentals 25%, Yield 23%, CB Stance 20%,
-  // COT Net Position 10%, COT Weekly Change 9%, Risk Sentiment 7%, Seasonality 6%.
+  // Authoritative weights (see CCY_W): Fundamentals 27%, Yield 25%, CB Stance 23%,
+  // COT Net Position 11%, COT Weekly Change 9%, Seasonality 5%. Risk sentiment is excluded.
   // Keep this formula and CCY_W synchronised whenever the model is recalibrated.
-  return CCY_W.fund*fundTerm+CCY_W.yield*yieldTerm+CCY_W.cb*cbTerm+CCY_W.pos*cotNetTerm+CCY_W.wow*cotWowTerm+CCY_W.risk*riskTerm+CCY_W.seas*seasTerm; }
+  return CCY_W.fund*fundTerm+CCY_W.yield*yieldTerm+CCY_W.cb*cbTerm+CCY_W.pos*cotNetTerm+CCY_W.wow*cotWowTerm+CCY_W.seas*seasTerm; }
 function seasCotScore(ccy){ var d=DATA[ccy]; return getCotScore(ccy) + seasonalitySign(d); }
 function alignmentFor(ccy){
   var d=DATA[ccy], sc=compositeFor(ccy), dirSign = sc>0.0001?1:(sc<-0.0001?-1:0);
@@ -6591,7 +6592,7 @@ function alignmentFor(ccy){
   if(fundW>0 && dirSign!==0){ totalW+=CCY_W.fund; agreeW+=CCY_W.fund*(fundAgree/fundW); }
   var y2s=y2Calc(ccy).score;
   // Vote weights below match the composite hierarchy in CCY_W
-  // (Fundamentals 25 + Yield 23 + CB Stance 19 + COT Net 9 + COT Weekly Change 9 + Seasonality 8 + Risk 7).
+  // (Fundamentals 27 + Yield 25 + CB Stance 23 + COT Net 11 + COT Weekly Change 9 + Seasonality 5).
   if(y2s!=null) vote(y2s>0?1:(y2s<0?-1:0), CCY_W.yield);
   vote(d.cotNet==="Bullish"?1:(d.cotNet==="Bearish"?-1:0), CCY_W.pos);
   vote((d.cotChangeBias||"Neutral")==="Bullish"?1:((d.cotChangeBias||"Neutral")==="Bearish"?-1:0), CCY_W.wow);
@@ -6603,7 +6604,6 @@ function alignmentFor(ccy){
   var seasVal=seasonalitySign(d);
   vote(seasVal>0?1:(seasVal<0?-1:0), CCY_W.seas);
   var riskVal=riskTermFor(ccy);
-  vote(riskVal>0?1:(riskVal<0?-1:0), CCY_W.risk);
   if(dirSign===0 || totalW===0) return null;
   return {pct:Math.round(agreeW/totalW*100), dir:dirSign>0?"Bullish":"Bearish"};
 }
@@ -6832,18 +6832,23 @@ function pairSpreadChangeSince(base,quote,days){
 // -200..+200 relative scale; anything beyond that is capped. CB stance uses a 10-point
 // practical-full-strength gap on its -20..+20 relative scale; anything beyond that is capped.
 // These rulers control sensitivity inside their fixed pillar weights; they do not change the
-// 25/23/20/10/9/7/6 weighting itself.
+// Updated 27/25/23/11/9/5 weighting; risk sentiment is excluded.
 var PAIR_FUND_FULL_GAP=100, PAIR_CB_FULL_GAP=10;
-// Authoritative pair-score weights (points out of 100): Fundamentals 25, Yield 23,
-// CB Stance 20, Position 10, WoW 9, Risk Sentiment 7, Seasonality 6.
+// Authoritative pair-score weights (points out of 100): Fundamentals 27, Yield 25,
+// CB Stance 23, Position 11, WoW 9, Seasonality 5. Risk sentiment is excluded.
 // CB stance is split equally between Next Move + Conviction and Forward Guidance.
-var PAIR_W_NEW={fund:25,yield:23,cb:20,pos:10,wow:9,risk:7,seas:6};
+var PAIR_W_NEW={fund:27,yield:25,cb:23,pos:11,wow:9,seas:5};
 function pairFundTerm(fundBase,fundQuote){
   return Math.max(-1,Math.min(1,(fundBase-fundQuote)*100/PAIR_FUND_FULL_GAP));
 }
 function pairCbTerm(cbBase,cbQuote){
   return Math.max(-1,Math.min(1,(cbBase-cbQuote)*10/PAIR_CB_FULL_GAP));
 }
+// Pair risk-sentiment and seasonality terms use the SAME ruler as fundamentals and CB stance:
+// the base-minus-quote gap on each currency's -1..+1 scale, capped at +/-1 (full weight at a gap of 1.0).
+// Previously these two were halved, so they needed the full theoretical gap of 2.0 to reach full weight.
+function pairRiskTerm(base,quote){ return Math.max(-1,Math.min(1,riskTermFor(base)-riskTermFor(quote))); }
+function pairSeasTerm(base,quote){ return Math.max(-1,Math.min(1,seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]))); }
 function pairCompositeFor(base, quote){
   var db=DATA[base], dq=DATA[quote];
   var fb=fundFor(base), fq=fundFor(quote);
@@ -6858,28 +6863,64 @@ function pairCompositeFor(base, quote){
   // fixed-scale unit conversion (not a percentile). flowScore is the separate weekly-flow signal.
   var cotPosTerm=cotRegime.posScore/100, cotWowTerm=cotRegime.flowScore/100;
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
-  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   var cbNextBase=cbNextMoveScore(base)/10, cbNextQuote=cbNextMoveScore(quote)/10;
   var cbGuideBase=cbGuidanceScore(base)/10, cbGuideQuote=cbGuidanceScore(quote)/10;
-  // The 19-point CB bucket is split 9.5/9.5:
-  //   9.5 points = expected next move + conviction
-  //   9.5 points = what the central bank actually communicated
-  // Each side is calculated as BASE minus QUOTE. If both agree, the full 19 points
+  // The 23-point CB bucket is split 11.5/11.5:
+  //   11.5 points = expected next move + conviction
+  //   11.5 points = what the central bank actually communicated
+  // Each side is calculated as BASE minus QUOTE. If both agree, the full 23 points
   // can be earned; if they conflict, the two halves offset rather than double-counting.
   var cbNextPair=pairCbTerm(cbNextBase,cbNextQuote);
   var cbGuidePair=pairCbTerm(cbGuideBase,cbGuideQuote);
   var cbPair=0.5*cbNextPair + 0.5*cbGuidePair;
-  // All Base-vs-Quote differentials are normalized back to -1..1 before weighting.
+  // All Base-vs-Quote differentials are capped to -1..1 on the same ruler before weighting.
   var fundPair=pairFundTerm(fundBase,fundQuote);
-  var riskPair=(riskBase-riskQuote)/2;
-  var seasPair=(seasBase-seasQuote)/2;
-  // Pair weights: Fundamentals 25 + Yield 23 + CB Stance 20 + COT Position 10 + COT Weekly Change 9 + Risk Sentiment 7 + Seasonality 6 (see PAIR_W_NEW).
+  var seasPair=pairSeasTerm(base,quote);
+  // Pair weights: Fundamentals 27 + Yield 25 + CB Stance 23 + COT Position 11 + COT Weekly Change 9 + Seasonality 5 (see PAIR_W_NEW). Risk sentiment is excluded.
   // Fundamentals and CB gaps use the practical-full-strength ruler above (see pairFundTerm / pairCbTerm).
   var W=PAIR_W_NEW;
-  return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.risk*riskPair+W.seas*seasPair;
+  return W.fund*fundPair+W.yield*yieldTerm+W.cb*cbPair+W.pos*cotPosTerm+W.wow*cotWowTerm+W.seas*seasPair;
 }
 
 
+// Self-check that runs on the LIVE dashboard data. Open the browser console (F12) and type: twpAudit()
+// It verifies weights, pair symmetry, pillar ranges, composite = sum of weighted pillars, and that no tile
+// points the opposite way to the number feeding the score. Returns {ok, problems:[...]} and logs a PASS/FAIL line.
+function twpAudit(){
+  var C=['USD','GBP','EUR','JPY','AUD','NZD','CAD','CHF'], problems=[], W=PAIR_W_NEW, n=0;
+  var sum=function(o){return Object.keys(o).reduce(function(a,k){return a+o[k];},0);};
+  if(Math.abs(sum(CCY_W)-100)>1e-9) problems.push('Currency weights do not sum to 100');
+  if(Math.abs(sum(W)-100)>1e-9) problems.push('Pair weights do not sum to 100');
+  function pillars(b,q){
+    var fb=fundFor(b), fq=fundFor(q), fB=fb.max?fb.raw/fb.max:0, fQ=fq.max?fq.raw/fq.max:0;
+    var y=pairYieldCalc(b,q).score, cr=cotPairRegime(b,q);
+    var fr=(fb.max?100*fb.raw/fb.max:0)-(fq.max?100*fq.raw/fq.max:0);
+    var yl=y==null?'Neutral':(y>=7?'Very Bullish':y>=3?'Bullish':y<=-7?'Very Bearish':y<=-3?'Bearish':'Neutral');
+    return {
+      t:{fund:pairFundTerm(fB,fQ), yield:(y==null?0:y/10),
+         cb:0.5*pairCbTerm(cbNextMoveScore(b)/10,cbNextMoveScore(q)/10)+0.5*pairCbTerm(cbGuidanceScore(b)/10,cbGuidanceScore(q)/10),
+         pos:cr.posScore/100, wow:cr.flowScore/100, risk:pairRiskTerm(b,q), seas:pairSeasTerm(b,q)},
+      L:{fund:pillarBias(fr), yield:yl, cb:pairCbStanceLabel(b,q), pos:cr.posLabel, wow:cr.flowLabel, risk:riskPairState(b,q), seas:seasonalityPairText(b,q)}
+    };
+  }
+  C.forEach(function(a){ C.forEach(function(b){
+    if(a>=b) return; n++;
+    var f=pairCompositeFor(a,b), r=pairCompositeFor(b,a), P=pillars(a,b), tot=0;
+    if(!Number.isFinite(f)) problems.push(a+b+': composite is not a number');
+    if(Math.abs(f+r)>1e-6) problems.push(a+b+': not symmetric with '+b+a);
+    if(Math.abs(f)>100.0001) problems.push(a+b+': score outside -100..+100');
+    Object.keys(W).forEach(function(k){
+      var v=P.t[k]; tot+=W[k]*v;
+      if(!Number.isFinite(v)||Math.abs(v)>1.0001) problems.push(a+b+' '+k+': term out of range ('+v+')');
+      var ls=pillarSign(P.L[k]), vs=Math.abs(v)<1e-4?0:(v>0?1:-1);
+      if(ls!==0 && vs!==0 && ls!==vs) problems.push(a+b+' '+k+': tile says '+P.L[k]+' but the score points the other way');
+    });
+    if(Math.abs(tot-f)>1e-6) problems.push(a+b+': composite does not equal the sum of its weighted pillars');
+  }); });
+  var res={ok:problems.length===0, pairsChecked:n, problems:problems};
+  if(typeof console!=='undefined') console.log(res.ok?('TWP AUDIT PASS - '+n+' pairs, no problems'):('TWP AUDIT FAIL - '+problems.length+' problem(s)'), res.ok?'':problems);
+  return res;
+}
 // Pair Ranking uses its own relative-score bands. Currency Detail keeps the canonical
 // currency bands above, while pairs get a narrower neutral zone so small but meaningful
 // relative edges are visible instead of being flattened into Neutral.
@@ -6961,9 +7002,6 @@ function pairAlignmentFor(base, quote, score){
   if(cbNextDiff!==0) vote(cbNextDiff>0?1:-1,PAIR_W_NEW.cb/2);
   var cbGuideDiff=cbGuidanceScore(base)-cbGuidanceScore(quote);
   if(cbGuideDiff!==0) vote(cbGuideDiff>0?1:-1,PAIR_W_NEW.cb/2);
-  // Risk = 7%.
-  var riskDiff=riskTermFor(base)-riskTermFor(quote);
-  if(Math.abs(riskDiff)>0.0001) vote(riskDiff>0?1:-1,PAIR_W_NEW.risk);
   // Seasonality = 6%.
   var seasDiff=seasonalityValue(DATA[base])-seasonalityValue(DATA[quote]);
   if(Math.abs(seasDiff)>0.0001) vote(seasDiff>0?1:-1,PAIR_W_NEW.seas);
@@ -7070,7 +7108,6 @@ function scannerDriverBreakdown(base,quote){
   var yScore=pairYieldCalc(base,quote).score;
   var cot=cotPairRegime(base,quote);
   var seasBase=seasonalityValue(db), seasQuote=seasonalityValue(dq);
-  var riskBase=riskTermFor(base), riskQuote=riskTermFor(quote);
   var cbNextBase=cbNextMoveScore(base)/10, cbNextQuote=cbNextMoveScore(quote)/10;
   var cbGuideBase=cbGuidanceScore(base)/10, cbGuideQuote=cbGuidanceScore(quote)/10;
   var out=[];
@@ -7083,8 +7120,7 @@ function scannerDriverBreakdown(base,quote){
   push('CB stance',W.cb*(0.5*pairCbTerm(cbNextBase,cbNextQuote)+0.5*pairCbTerm(cbGuideBase,cbGuideQuote)),pairCbStanceLabel(base,quote));
   push('Position',cot.insufficient?0:(W.pos/100)*cot.posScore,cot.posLabel);
   push('WoW',cot.insufficient?0:(W.wow/100)*cot.flowScore,cot.flowLabel);
-  push('Seasonality',W.seas*((seasBase-seasQuote)/2),seasonalityPairText(base,quote));
-  push('Risk sentiment',W.risk*((riskBase-riskQuote)/2),riskPairState(base,quote));
+  push('Seasonality',W.seas*pairSeasTerm(base,quote),seasonalityPairText(base,quote));
   return out;
 }
 function scannerLedByDrivers(base,quote,dir){
@@ -7781,7 +7817,6 @@ function renderScanner(animateTrend){
       '<td class="scanner-pill-td" data-label="POS">'+scannerPillCell(cotPair.posLabel,scannerPillarExplanation(p.base,p.quote,"Net Positioning",cotPair.posLabel))+'</td>'+
       '<td class="scanner-pill-td" data-label="WOW">'+scannerPillCell(cotPair.flowLabel,scannerPillarExplanation(p.base,p.quote,"COT WoW",cotPair.flowLabel))+'</td>'+
       '<td class="scanner-pill-td" data-label="SSN">'+scannerPillCell(seasLbl,scannerPillarExplanation(p.base,p.quote,"Seasonality",seasLbl))+'</td>'+
-      '<td class="scanner-pill-td" data-label="RSK">'+scannerPillCell(riskLbl,scannerPillarExplanation(p.base,p.quote,"Risk Sentiment",riskLbl))+'</td>'+
       '<td class="scanner-agree" data-label="Agree" style="'+agreeStyle+'"'+(agreeTip?' data-scanner-tip="'+esc(agreeTip)+'"':'')+'>'+agreeTxt+'</td>'+
       '<td class="scanner-carry" data-label="Carry" style="'+carryStyle+'" data-scanner-tip="'+esc(carryTip)+'">'+carryTxt+'</td>'+
       '</tr>';
@@ -8087,12 +8122,11 @@ function renderLockBox(){
 }
 
 var TAB_META={
-  overview:{title:"Overview",sub:"Macro breadth, currency strength, pair radar and risk sentiment"},
+  overview:{title:"Overview",sub:"Macro breadth, currency strength and pair radar"},
   raw:{title:"Economic Surprise Index",sub:""},
   detail:{title:"Currency Detail",sub:""},
   scanner:{title:"Trade Scanner",sub:""},
   yield2y:{title:"Bond Yields",sub:""},
-  risk:{title:"Market Regime",sub:"S&P 500 · Nasdaq-100 · VIX · Gold"},
   cot:{title:"COT Regime",sub:"Institutional positioning, flow and crowding"}
 };
 function switchTab(tab){
@@ -8107,7 +8141,6 @@ function switchTab(tab){
   else if(tab==="detail"){ renderDetail(); }
   else if(tab==="scanner"){ renderScanner(true); }
   else if(tab==="yield2y"){ Y2G_PLAY=true; window.__y2NavAnim=true; renderYield2Y(); }
-  else if(tab==="risk"){ renderRiskSentiment(); }
   else if(tab==="cot"){ renderCotRegime(true); }
   if(tab==="yield2y" && typeof histSpreadDraw==="function"){
     // The chart canvas is built while its tab is still hidden, so the browser
@@ -9634,9 +9667,9 @@ function renderOverview(animate){
 
     calendarPanelHtml()+
 
-    '<section class="ov-pro-card ov-pro-risk" data-ui-tip="Market regime: S&amp;P, Nasdaq, VIX and Gold set the risk backdrop; pro-risk conditions favor AUD/NZD/CAD and defensive conditions favor JPY/CHF/USD.">'+
+    '<section class="ov-pro-card ov-pro-risk" data-ui-tip="Risk sentiment: S&amp;P, Nasdaq, VIX and Gold set the risk backdrop; pro-risk conditions favor AUD/NZD/CAD and defensive conditions favor JPY/CHF/USD.">'+
       '<div class="ov-pro-head">'+
-        '<div data-ui-tip="Current market regime: four market inputs translated into FX risk. The regime determines which currencies receive a risk-on or defensive tailwind."><div class="ov-pro-eyebrow">RISK SENTIMENT · FULL CURRENCY TRANSMISSION</div><div class="ov-pro-title '+(riskScore>0.06?'ov-pos':riskScore<-0.06?'ov-neg':'')+'">'+(riskReady?riskLabel:'Awaiting close')+'</div></div>'+ 
+        '<div data-ui-tip="Current risk sentiment: four market inputs translated into FX risk. Risk sentiment determines which currencies receive a risk-on or defensive tailwind."><div class="ov-pro-eyebrow">RISK SENTIMENT · FULL CURRENCY TRANSMISSION</div><div class="ov-pro-title '+(riskScore>0.06?'ov-pos':riskScore<-0.06?'ov-neg':'')+'">'+(riskReady?riskLabel:'Awaiting close')+'</div></div>'+ 
         '<div class="ov-pro-risk-market"><span>S&amp;P</span><b>'+spxTxt+'</b><span>NASDAQ</span><b>'+ndxTxt+'</b><span>VIX</span><b>'+vixTxt+'</b><span>GOLD</span><b>'+goldTxt+'</b></div>'+ 
       '</div>'+ 
       '<div class="ov-pro-risk-meter"><span>RISK-OFF</span><div><i style="left:'+riskPos+'%;background:'+riskTone+'"></i></div><span>RISK-ON</span></div>'+ 
@@ -10948,9 +10981,8 @@ function renderDetailBody(ccy, animate){
           dxTile('COT net','statCotNet-'+ccy,sgnTxt(cotNetScore),numColor(cotNetScore),3,'<span>Net position</span>','cot',ccy)+
           dxTile('COT weekly','statCotWow-'+ccy,sgnTxt(cotWowScore),numColor(cotWowScore),3,'<span>Weekly flow</span>','cot',ccy)+
         '</div></div>'+
-        '<div class="dx-group"><div class="dx-gh">Context</div><div class="dx-tiles">'+
+        '<div class="dx-group"><div class="dx-gh">Seasonality</div><div class="dx-tiles">'+
           dxTile('Season','statSeason-'+ccy,fmt(seasonalitySign(d)),numColor(seasonalitySign(d)),1,'<span>Month avg</span>','seasonality',ccy)+
-          dxTile('Risk','statRisk-'+ccy,(riskPts>0?"+":"")+riskPts.toFixed(1),numColor(riskPts),(CCY_W&&CCY_W.risk)||5,'<span>Points</span>','risk',ccy)+
         '</div></div>'+
       '</div>'+
     '</section>'+
@@ -11777,7 +11809,7 @@ function pairMacroSummaryHtml(pair, score){
   var fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
   var y=pairYieldCalc(base,quote), yScore=y.score;
   var cot=cotPairRegime(base,quote);
-  var riskDiff=PAIR_W_NEW.risk*(riskTermFor(base)-riskTermFor(quote))/2;
+  var riskDiff=0;
   var riskState=riskPairState(base,quote);
   var seas=seasonalityPairSpread(base,quote);
   var overall=pairBandLabel(score);
@@ -11922,7 +11954,7 @@ function pairMacroSummaryHtml(pair, score){
 // seasonalityValue, riskTermFor), each independently rescaled to 0-100. They are two
 // real, separate readings now, not a mirrored pair -- so they will not generally sum
 // to ~100 the way the old fake ones always did.
-var PAIR_FOCUS_PILLAR_CAP={Fundamentals:PAIR_W_NEW.fund,Yield:PAIR_W_NEW.yield,'CB stance':PAIR_W_NEW.cb,Position:PAIR_W_NEW.pos,WoW:PAIR_W_NEW.wow,Seasonality:PAIR_W_NEW.seas,'Risk sentiment':PAIR_W_NEW.risk};
+var PAIR_FOCUS_PILLAR_CAP={Fundamentals:PAIR_W_NEW.fund,Yield:PAIR_W_NEW.yield,'CB stance':PAIR_W_NEW.cb,Position:PAIR_W_NEW.pos,WoW:PAIR_W_NEW.wow,Seasonality:PAIR_W_NEW.seas};
 // The displayed pillar caps come directly from PAIR_W_NEW so the Pair Focus panel and the
 // live pair score cannot drift apart.
 var PAIR_FOCUS_PILLAR_WEIGHT=PAIR_FOCUS_PILLAR_CAP;
@@ -11936,7 +11968,6 @@ var PAIR_FOCUS_PILLAR_EXPLAIN={
   Position:'Net speculative futures positioning (CFTC COT) between the two currencies.',
   WoW:'This week\u2019s change in that COT positioning -- who added, who trimmed.',
   Seasonality:'Historical tendency for this pair to move a given direction at this time of year.',
-  'Risk sentiment':'How each currency tends to trade in the current risk-on/risk-off regime.'
 };
 function clamp0to100(v){ return Math.max(0,Math.min(100,v)); }
 // Real, independent, per-currency 0-100 reading for one pillar -- the same underlying
@@ -11950,7 +11981,6 @@ function pairFocusPillarAbsolute(name,ccy){
   if(name==='Position'){ return clamp0to100((cotNetOnlyScore(ccy)+3)/6*100); } // native range -3..+3 (discrete)
   if(name==='WoW'){ return clamp0to100((cotWowMagnitudeScore(ccy)+3)/6*100); } // native range -3..+3
   if(name==='Seasonality'){ return clamp0to100((seasonalityValue(DATA[ccy])+1)/2*100); } // native range -1..+1
-  if(name==='Risk sentiment'){ return clamp0to100((riskTermFor(ccy)+1)/2*100); } // native range -1..+1
   return 50;
 }
 // Single per-currency number blending all 7 pillars by their real composite weights
@@ -11958,7 +11988,7 @@ function pairFocusPillarAbsolute(name,ccy){
 // "USD"/"CHF" summary tiles at the top of the Pair Focus card, not the per-row table.
 function pairFocusDriverRowsHtml(base,quote,animate){
   var rows=scannerDriverBreakdown(base,quote);
-  var order=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'];
+  var order=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality'];
   rows=order.map(function(name){ var r=rows.filter(function(x){return x.name===name;})[0]; return r||{name:name,pts:0,label:'Neutral'}; });
   return rows.map(function(r){
     var cap=PAIR_FOCUS_PILLAR_CAP[r.name]||10;
@@ -12049,16 +12079,16 @@ function pairFocusHtml(pair,score,animate){
   var base=pair.slice(0,3), quote=pair.slice(3,6), y=pairYieldCalc(base,quote), cot=cotPairRegime(base,quote);
   var fb=fundFor(base), fq=fundFor(quote), fundRel=(fb.max?(100*fb.raw/fb.max):0)-(fq.max?(100*fq.raw/fq.max):0);
   var carry=scannerCarryPct(base,quote), bSur=surpriseWeightedPct(base), qSur=surpriseWeightedPct(quote);
-  var risk=riskPairState(base,quote), riskDiff=PAIR_W_NEW.risk*(riskTermFor(base)-riskTermFor(quote))/2;
+  var riskDiff=0;
   var dir=score>7?1:score<-7?-1:0;
   var labels={
     Fundamentals:pillarBias(fundRel),
     Yield:y.score==null?'Neutral':(y.score>=7?'Very Bullish':y.score>=3?'Bullish':y.score<=-7?'Very Bearish':y.score<=-3?'Bearish':'Neutral'),
     'CB stance':pairCbStanceLabel(base,quote),Position:cot.posLabel,WoW:cot.flowLabel,
-    Seasonality:seasonalityPairText(base,quote),'Risk sentiment':risk
+    Seasonality:seasonalityPairText(base,quote)
   };
   var agree=0,dis=0,neutral=0;
-  ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'].forEach(function(n){var sg=pillarSign(labels[n]);if(dir&&sg===dir)agree++;else if(dir&&sg!==0)dis++;else neutral++;});
+  ['Fundamentals','Yield','CB stance','Position','WoW','Seasonality'].forEach(function(n){var sg=pillarSign(labels[n]);if(dir&&sg===dir)agree++;else if(dir&&sg!==0)dis++;else neutral++;});
   var cbNameMap={USD:'Fed',EUR:'ECB',GBP:'Bank of England',JPY:'Bank of Japan',CHF:'SNB',AUD:'RBA',NZD:'RBNZ',CAD:'Bank of Canada'};
   function cb(ccy){return cbNameMap[ccy]||ccy;}
   function ccyRate(ccy){var v=DATA[ccy]&&parseNum(DATA[ccy].interestRate);return v&&v.num!=null?v.num:null;}
@@ -12769,7 +12799,7 @@ function renderRiskSentiment(){
       '<button id="riskFredBtn" class="risk-btn risk-btn-sm" type="button">Refresh from FRED</button>'+
       '<span id="riskLiveReadout" class="risk-inline-note">'+(regimeLastStatus||'FRED pulls the closes automatically \u00b7 FRED is authoritative for daily closes; manual entry is a fallback')+'</span>'+
     '</div>' : '';
-  tab.innerHTML='<div class="risk-page" data-ui-tip="Market Regime: four market inputs translated into FX risk."><div class="strength-card risk-compact-card">'+
+  tab.innerHTML='<div class="risk-page" data-ui-tip="Risk Sentiment: four market inputs translated into FX risk."><div class="strength-card risk-compact-card">'+
     '<div id="rgPanel" class="rg-panel">'+regimePanelHtml()+'</div>'+
     surface.html+
     inlineEditor+
@@ -12954,7 +12984,7 @@ function updateComputed(){
   if(document.getElementById("tab-risk") && !isTyping) renderRiskSentiment();
 }
 
-function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderScanner(); renderYield2Y(); renderRiskSentiment(); renderCotRegime(); }
+function renderAllStatic(){ document.body.classList.toggle("editing", unlockedLocally); renderOverview(); renderRaw(); renderDetail(); renderScanner(); renderYield2Y(); renderCotRegime(); }
 window.addEventListener("resize", function(){ if(document.getElementById("histSpreadCanvas")) histSpreadDraw(); });
 window.addEventListener("resize", function(){ if(document.getElementById("cotRegimeCanvas")) cotDrawChart(activeCotCcy==='ALL'?'USD':activeCotCcy); });
 
@@ -18416,7 +18446,7 @@ html body #tab-raw .surprise-bar-zero{border-radius:0!important;}
 
 
 <style id="market-regime-clean-v1">
-/* Market Regime: one-glance layout. No explanatory prose, no pill-shaped bars, no role labels. */
+/* Risk Sentiment: one-glance layout. No explanatory prose, no pill-shaped bars, no role labels. */
 #tab-risk .risk-page{max-width:100%!important;}
 #tab-risk .strength-card{border-radius:7px!important;overflow:visible!important;background:var(--panel)!important;}
 #tab-risk .rg-panel{padding:10px 12px 8px!important;border-bottom:1px solid var(--border)!important;}
