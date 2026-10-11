@@ -3450,7 +3450,7 @@ body{font-size:var(--twp-body-size);}
 }
 #tab-scanner .scanner-table th:nth-child(2),#tab-scanner .scanner-table th:nth-child(3){text-align:left;}
 /* SCORE header called out in the deep/burnt-orange accent, same tone as the Score column values. */
-#tab-scanner .scanner-table th:nth-child(4){color:var(--amber)!important;}
+/* Score header no longer orange: all scanner headers are white (see scanner-header-white-bold) */
 /* Agree / Carry / Led by: equal padding on both sides of each of these three columns
    so the visual gap before Carry matches the gap before Led by exactly. Led by's header
    is left-aligned to match its (left-aligned) body cells -- otherwise the header text
@@ -7009,10 +7009,10 @@ function pairAlignmentFor(base, quote, score){
 }
 
 // Final scanner regime gate.
-// The composite score always uses all seven weighted pillars. The gate does not
+// The composite score always uses all six weighted pillars (Risk sentiment is excluded). The gate does not
 // change that score; it decides whether the score is sufficiently macro-confirmed
 // to receive a directional regime. Fundamentals, Yield and CB stance are the
-// primary macro pillars. Positioning, COT WoW, Risk and Seasonality can reinforce
+// primary macro pillars. Positioning, COT WoW and Seasonality can reinforce
 // a directional score, but cannot create the directional regime on their own.
 // At least 2 of the 3 primary pillars must agree with the score's direction.
 // Otherwise the pair remains Neutral/FLAT regardless of how large the raw score is.
@@ -7096,8 +7096,8 @@ function scannerDriverExplanation(base,quote,driver){
   };
   return templates[driver.name]||('This driver '+direction+' '+leader+' versus '+other+'.');
 }
-// Single source of truth for the seven-pillar point breakdown (Fundamentals, Yield,
-// CB stance, Position, WoW, Seasonality, Risk sentiment) used by both the scanner
+// Single source of truth for the six-pillar point breakdown (Fundamentals, Yield,
+// CB stance, Position, WoW, Seasonality) used by both the scanner
 // table and the Pair Focus panel.
 // The driver table uses the same live pillar caps as the pair score: Fundamentals 29, Yield 23,
 // CB stance 19, Position 9, WoW 9, Seasonality 4, Risk sentiment 7.
@@ -7150,14 +7150,14 @@ function scannerAgreeTooltip(base,quote,dir){
     'Yield':y==null?'Neutral':(y>=7?'Very Bullish':y>=3?'Bullish':y<=-7?'Very Bearish':y<=-3?'Bearish':'Neutral'),
     'CB stance':pairCbStanceLabel(base,quote),
     'Position':cot.posLabel,'WoW':cot.flowLabel,
-    'Seasonality':seasonalityPairText(base,quote),'Risk sentiment':riskPairState(base,quote)
+    'Seasonality':seasonalityPairText(base,quote)
   };
-  var names=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality','Risk sentiment'], agree=0,disagree=0,neutral=0;
+  var names=['Fundamentals','Yield','CB stance','Position','WoW','Seasonality'], agree=0,disagree=0,neutral=0;
   names.forEach(function(name){var sg=pillarSign(labels[name]); if(sg===dir) agree++; else if(sg===0) neutral++; else disagree++;});
   var side=dir>0?'LONG':'SHORT';
   // stt-note-strong (see scanner7dTooltip) -- bolds the whole counts line so it survives
   // the later reset rule that otherwise flattens plain <b> back to font-weight 400.
-  return '<div class="stt-kicker">Agree</div><div class="stt-title">'+agree+' of 7 drivers agree with '+side+'</div><div class="stt-note"><b class="stt-note-strong">'+agree+' agree · '+disagree+' disagree · '+neutral+' take no side</b></div>';
+  return '<div class="stt-kicker">Agree</div><div class="stt-title">'+agree+' of 6 drivers agree with '+side+'</div><div class="stt-note"><b class="stt-note-strong">'+agree+' agree · '+disagree+' disagree · '+neutral+' take no side</b></div>';
 }
 function scannerPillarExplanation(base,quote,name,label){
   var displayName=name==='WoW'?'Core flow':name;
@@ -7339,6 +7339,7 @@ function ensureScannerTrendRangePopover(){
     if(!btn) return;
     e.stopPropagation();
     scannerTrendRange=btn.dataset.range;
+    expandedRange=scannerTrendRange;
     hideScannerTrendRangePopover();
     renderScanner(true);
   });
@@ -7397,7 +7398,8 @@ function pairFocusScoreSpark(pair){
   var w=64,h=18,pad=2;
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt][pair]!==undefined; }).sort();
   if(allDays.length<2) return '<span style="color:var(--text-faint);font-size:10px;">&mdash;</span>';
-  var days=allDays.slice(-14), vals=days.map(function(dt){ return Number(DAILY[dt][pair]); });
+  var days=filterDaysByRange(allDays, expandedRange); if(days.length<2) days=allDays;
+  var vals=days.map(function(dt){ return Number(DAILY[dt][pair]); });
   var live=liveValueForTrendKey(pair);
   if(live!=null){ var merged=withLiveToday(days,vals,live,null); days=merged.days; vals=merged.vals; }
   var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals); if(min===max){min-=5;max+=5;}
@@ -7475,13 +7477,13 @@ function scannerLedByBoxes(base,quote,dir){ return scannerLedByText(base,quote,d
 function scannerConvictionVerdict(score,agree,dir){
   if(!dir) return {label:'No Signal',tier:'flat'};
   var strong=Math.abs(Number(score)||0)>=21; // actual Bullish/Bearish scanner threshold
-  if(strong && agree>=6) return {label:'High Conviction',tier:'strong'};
-  if(strong && agree>=4) return {label:'Building Conviction',tier:'lean'};
+  if(strong && agree>=5) return {label:'High Conviction',tier:'strong'};
+  if(strong && agree>=3) return {label:'Building Conviction',tier:'lean'};
   if(strong) return {label:'Score-Led',tier:'caution'};
-  // 5 or 6 of 7 can be a solid consensus even when the score itself hasn't cleared
+  // 4 or more of 6 can be a solid consensus even when the score itself hasn't cleared
   // the +/-21 trade threshold yet. That is useful development information, not a trade
   // signal. Only 4-or-fewer agreeing alongside a weak score is a genuine "no edge".
-  if(agree>=5) return {label:'Early Conviction',tier:'lean'};
+  if(agree>=4) return {label:'Early Conviction',tier:'lean'};
   return {label:'No Edge',tier:'flat'};
 }
 function scannerConvictionTooltip(score,agree,dir){
@@ -7490,11 +7492,11 @@ function scannerConvictionTooltip(score,agree,dir){
   var side=dir>0?'the long side':'the short side';
   var scoreTxt=(score>0?'+':'')+Math.round(score);
   var reason;
-  if(v.label==='High Conviction') reason='Score is '+scoreTxt+', at or beyond the +/−21 Bullish/Bearish threshold, and '+agree+' of 7 drivers agree with '+side+'. Both the size of the edge and the breadth of evidence line up.';
-  else if(v.label==='Building Conviction') reason='Score is '+scoreTxt+', at or beyond the +/−21 threshold, and '+agree+' of 7 drivers agree with '+side+'. The edge is established and the consensus behind it is solid without being overwhelming.';
-  else if(v.label==='Score-Led') reason='Score is '+scoreTxt+', at or beyond the +/−21 threshold, but just '+agree+' of 7 drivers actually agree with '+side+'. The composite is strong, but the evidence is concentrated in fewer pillars, so inspect the drivers before sizing.';
-  else if(v.label==='Early Conviction') reason=agree+' of 7 drivers agree with '+side+', but the score is only '+scoreTxt+', still inside the +/-21 trade threshold. This is a developing setup to monitor, not a LONG/SHORT signal yet.';
-  else reason='Score is '+scoreTxt+' and only '+agree+' of 7 drivers agree with '+side+'. Neither the edge nor the consensus is there yet -- little reason to watch this one closely right now.';
+  if(v.label==='High Conviction') reason='Score is '+scoreTxt+', at or beyond the +/−21 Bullish/Bearish threshold, and '+agree+' of 6 drivers agree with '+side+'. Both the size of the edge and the breadth of evidence line up.';
+  else if(v.label==='Building Conviction') reason='Score is '+scoreTxt+', at or beyond the +/−21 threshold, and '+agree+' of 6 drivers agree with '+side+'. The edge is established and the consensus behind it is solid without being overwhelming.';
+  else if(v.label==='Score-Led') reason='Score is '+scoreTxt+', at or beyond the +/−21 threshold, but just '+agree+' of 6 drivers actually agree with '+side+'. The composite is strong, but the evidence is concentrated in fewer pillars, so inspect the drivers before sizing.';
+  else if(v.label==='Early Conviction') reason=agree+' of 6 drivers agree with '+side+', but the score is only '+scoreTxt+', still inside the +/-21 trade threshold. This is a developing setup to monitor, not a LONG/SHORT signal yet.';
+  else reason='Score is '+scoreTxt+' and only '+agree+' of 6 drivers agree with '+side+'. Neither the edge nor the consensus is there yet -- little reason to watch this one closely right now.';
   return '<div class="stt-kicker">Conviction</div><div class="stt-title">'+esc(v.label)+'</div><div class="stt-note"><b class="stt-note-strong">'+esc(reason)+'</b></div>';
 }
 function scannerGroupRow(label, cls){
@@ -7767,7 +7769,6 @@ function renderScanner(animateTrend){
     var cbLbl=pairCbStanceLabel(p.base,p.quote);
     var cotPair=cotPairRegime(p.base,p.quote);
     var seasLbl=seasonalityPairText(p.base,p.quote);
-    var riskLbl=riskPairState(p.base,p.quote);
     // Neutral is a true no-side state for the scanner. Agree stays a literal dash,
     // but hovering it explains why there is no agreement count. Led by stays a literal
     // dash with no tooltip because there is no directional driver to name.
@@ -7775,10 +7776,10 @@ function renderScanner(animateTrend){
     var dir=isNeutral?0:(p.score>0?1:-1);
     var agreeTxt="—", agreeStyle="", agreeTip=scannerAgreeTooltip(p.base,p.quote,dir);
     if(!isNeutral){
-      var agreeLabels=[fundBias,yb,cbLbl,cotPair.posLabel,cotPair.flowLabel,seasLbl,riskLbl];
+      var agreeLabels=[fundBias,yb,cbLbl,cotPair.posLabel,cotPair.flowLabel,seasLbl];
       var agree=agreeLabels.filter(function(lbl){return pillarSign(lbl)===dir;}).length;
-      agreeTxt=agree+"/7";
-      // 4/7 is the neutral evidence threshold: keep it white. 5-7/7 means
+      agreeTxt=agree+"/6";
+      // 4/6 is the neutral evidence threshold: keep it white. 5-6/6 means
       // the evidence is strongly aligned, so inherit the trade side colour:
       // LONG = green, SHORT = red.
       if(agree>=5){
@@ -7839,7 +7840,7 @@ function renderScanner(animateTrend){
     '<th></th><th>Idea</th><th>Pair</th><th>Score</th><th>7D &Delta;</th><th>Trend</th>'+
     '<th title="Fundamentals">FND</th><th title="Yield">YLD</th><th title="CB Stance">CB</th>'+
     '<th title="Net Positioning">POS</th><th title="COT WoW">WOW</th><th title="Seasonality">SSN</th>'+
-    '<th title="Risk Sentiment">RSK</th><th>Agree</th><th>Carry</th>'+
+    '<th>Agree</th><th>Carry</th>'+
     '</tr></thead><tbody id="scannerRows">'+rows+'</tbody></table></div></div>'+
     (scannerExpandedPair ? scannerPairExpandedHtml(scannerExpandedPair, scannerBigTrendAnimate) : '');
   document.getElementById("tab-scanner").innerHTML=html;
@@ -7909,7 +7910,7 @@ function renderScanner(animateTrend){
     if(!pairCell) return;
     var pr=this.dataset.pair;
     scannerExpandedPair=(scannerExpandedPair===pr)?null:pr;
-    if(scannerExpandedPair) scannerBigTrendAnimate=true;
+    if(scannerExpandedPair){ expandedRange=scannerTrendRange; scannerBigTrendAnimate=true; }
     hideAllScannerFloatingTooltips();
     renderScanner();
   }; }
@@ -9667,14 +9668,7 @@ function renderOverview(animate){
 
     calendarPanelHtml()+
 
-    '<section class="ov-pro-card ov-pro-risk" data-ui-tip="Risk sentiment: S&amp;P, Nasdaq, VIX and Gold set the risk backdrop; pro-risk conditions favor AUD/NZD/CAD and defensive conditions favor JPY/CHF/USD.">'+
-      '<div class="ov-pro-head">'+
-        '<div data-ui-tip="Current risk sentiment: four market inputs translated into FX risk. Risk sentiment determines which currencies receive a risk-on or defensive tailwind."><div class="ov-pro-eyebrow">RISK SENTIMENT · FULL CURRENCY TRANSMISSION</div><div class="ov-pro-title '+(riskScore>0.06?'ov-pos':riskScore<-0.06?'ov-neg':'')+'">'+(riskReady?riskLabel:'Awaiting close')+'</div></div>'+ 
-        '<div class="ov-pro-risk-market"><span>S&amp;P</span><b>'+spxTxt+'</b><span>NASDAQ</span><b>'+ndxTxt+'</b><span>VIX</span><b>'+vixTxt+'</b><span>GOLD</span><b>'+goldTxt+'</b></div>'+ 
-      '</div>'+ 
-      '<div class="ov-pro-risk-meter"><span>RISK-OFF</span><div><i style="left:'+riskPos+'%;background:'+riskTone+'"></i></div><span>RISK-ON</span></div>'+ 
-      '<div class="ov-pro-risk-grid">'+riskRows.slice(0,4).map(riskRow).join('')+riskRows.slice(4).map(riskRow).join('')+'</div>'+ 
-    '</section></div>'+
+    '</div>'+
 
     '<div class="ov-bottom"><div class="ov-pro-left-lower">'+
       '<section class="ov-pro-card ov-pro-strength" data-ui-tip="Composite Ranking: the seven-pillar macro score. Highest score = strongest currency.">'+
@@ -11030,7 +11024,6 @@ function renderDetailBody(ccy, animate){
             '<div class="dx-f"><span class="dx-k">COT WoW</span><span class="dx-v mono" id="cotWoWTxt-'+ccy+'" style="'+numColor(cotL.netChg)+'">'+cotFormat(cotL.netChg)+'</span></div>'+
             '<div class="dx-f"><span class="dx-k">Long / Short</span><span class="dx-v mono" id="cotLongShortTxt-'+ccy+'">'+(function(){var z=cotL;if(z.long==null||z.short==null)return "—";return Math.round(z.long).toLocaleString()+" / "+Math.round(z.short).toLocaleString();})()+'</span></div>'+
             '<div class="dx-f"><span class="dx-k">Latest change</span><span class="dx-v" id="cotFlowTxt-'+ccy+'">'+esc(cotFlow(ccy))+'</span></div>'+
-            '<div class="dx-f"><span class="dx-k">Risk sentiment</span><span class="dx-v" id="riskDetailTxt-'+ccy+'"><span class="mono '+riskClass(riskTermFor(ccy))+'">'+riskPublicStateFor(ccy)+'</span></span></div>'+
             '<div class="dx-f dx-season"><span class="dx-k">Seasonality</span><span class="dx-v">'+
               '<input class="seasonality-avg-input" id="seasAvg-'+ccy+'" data-role="ccyfield" data-ccy="'+ccy+'" data-field="seasonalityAvg" type="number" step="0.01" placeholder="Avg %" value="'+esc(d.seasonalityAvg||'')+'" '+(unlockedLocally?"":"disabled")+'>'+
               '<span class="seasonality-derived '+seasonalityLabel(d)+'" id="seasTxt-'+ccy+'">'+seasonalityLabel(d)+'</span>'+
@@ -11467,7 +11460,7 @@ function dailyChangeCell(key, liveVal){
     cls=t.dir==="down"?"day-delta-up":"day-delta-down";
   }
   var deltaTxt=(t.delta>0?"+":"")+t.delta;
-  return '<span class="mono day-delta '+cls+'">'+symbol+' '+deltaTxt+'</span>';
+  return '<span class="mono day-delta '+cls+'">'+deltaTxt+'</span>';
 }
 function pairTrend30d(pair){
   var allDays=Object.keys(DAILY).filter(function(dt){ return DAILY[dt] && DAILY[dt][pair]!==undefined; }).sort();
@@ -12134,7 +12127,7 @@ function pairFocusHtml(pair,score,animate){
   var drivers=dir?scannerLedByDrivers(base,quote,dir).slice(0,3):[];
   var support=drivers.length?drivers.map(function(d){return '<span class="pair-focus-driver '+(d.pts>0?'pos':'neg')+'">'+esc(d.name)+' '+(d.pts>0?'+':'')+Math.round(d.pts)+'</span>';}).join(' '):'<span class="pair-focus-muted">No directional driver yet</span>';
   var focusNotes=[];
-  focusNotes.push(dir ? ('<strong>'+esc(agree)+'/7 pillars support '+esc(dir>0?base:quote)+'</strong>' + (dis ? ' · '+esc(dis)+' against'+(neutral?' · '+esc(neutral)+' neutral':'') : '')) : '<strong>Neutral band</strong> · no side has enough separation to claim the trade');
+  focusNotes.push(dir ? ('<strong>'+esc(agree)+'/6 pillars support '+esc(dir>0?base:quote)+'</strong>' + (dis ? ' · '+esc(dis)+' against'+(neutral?' · '+esc(neutral)+' neutral':'') : '')) : '<strong>Neutral band</strong> · no side has enough separation to claim the trade');
   if(y.current!=null) focusNotes.push('<strong>2Y '+esc(bps(y.current))+'</strong>'+ (y.week!=null?' · week '+esc(bps(y.week)):'') );
   if(carry!=null) focusNotes.push('<strong>Carry '+esc((carry>0?'+':'')+carry.toFixed(2)+'%')+'</strong> · policy-rate gap');
   var pairTileScore=Number(score)||0;
@@ -16534,7 +16527,7 @@ twpShowNameGateIfNeeded();
    TRADE SCANNER
    ================================================================== */
 /* Pillar strip (FND ... RSK) packed tight, rows shorter */
-#tab-scanner .scanner-table th:nth-child(n+7):nth-child(-n+13),
+#tab-scanner .scanner-table th:nth-child(n+7):nth-child(-n+12),
 #tab-scanner .scanner-table td.scanner-pill-td{
   width:40px!important;min-width:40px!important;max-width:40px!important;
   padding-left:2px!important;padding-right:2px!important;
@@ -16555,10 +16548,10 @@ twpShowNameGateIfNeeded();
 /* Trend has a fixed width so it sits toward the left instead of floating in the leftover space */
 #tab-scanner .scanner-table th:nth-child(6),#tab-scanner .scanner-table td:nth-child(6){width:250px!important;min-width:250px!important;max-width:250px!important;}
 /* Agree follows the strip; Carry follows Agree. Any spare width goes after Carry, not before it. */
-#tab-scanner .scanner-table th:nth-child(14),#tab-scanner .scanner-table td:nth-child(14){
+#tab-scanner .scanner-table th:nth-child(13),#tab-scanner .scanner-table td:nth-child(13){
   width:112px!important;min-width:112px!important;max-width:112px!important;padding-left:24px!important;padding-right:8px!important;
 }
-#tab-scanner .scanner-table th:nth-child(15),#tab-scanner .scanner-table td:nth-child(15){
+#tab-scanner .scanner-table th:nth-child(14),#tab-scanner .scanner-table td:nth-child(14){
   width:auto!important;min-width:100px!important;max-width:none!important;
   padding-left:30px!important;padding-right:16px!important;text-align:left!important;
 }
@@ -18500,4 +18493,39 @@ html body #tab-raw .surprise-bar-zero{border-radius:0!important;}
 #tab-risk .rg-head{display:none!important;}
 #tab-risk .risk-scope-tabs{padding-top:7px!important;}
 @media(max-width:700px){#tab-risk .rg-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px 22px!important;}}
+</style>
+<style id="scanner-pill-gap-agree">
+/* Pillar boxes sit closer together (4px gap instead of 8px); Agree gets clear space from the last box */
+#tab-scanner .scanner-table th:nth-child(n+7):nth-child(-n+12),
+#tab-scanner .scanner-table td.scanner-pill-td{width:36px!important;min-width:36px!important;max-width:36px!important;padding-left:0!important;padding-right:0!important;text-align:center!important;}
+#tab-scanner .scanner-table th:nth-child(13),#tab-scanner .scanner-table td:nth-child(13){width:128px!important;min-width:128px!important;max-width:128px!important;padding-left:48px!important;padding-right:8px!important;text-align:center!important;}
+</style>
+<style id="scanner-header-white-bold">
+/* Trade Scanner column headers: soft ash-white (not glaring), bold, every column including Score */
+#tab-scanner table.scanner-table thead tr th,
+#tab-scanner table.scanner-table thead tr th:nth-child(n),
+#tab-scanner table.scanner-table thead tr th *{color:#d3d5da!important;font-weight:700!important;opacity:1!important;-webkit-text-fill-color:#d3d5da!important;text-shadow:none!important;}
+</style>
+<style id="no-double-line-header">
+/* The sticky page header drew its own bottom line directly above every card's top border = a double line. Header line removed; the cards' own borders are the only line. */
+.page-head{border-bottom:0!important;border-bottom-color:transparent!important;box-shadow:none!important;}
+</style>
+<style id="no-double-line-last-row">
+/* The last table row drew its own bottom line right above the card's bottom border = a double line. The card border is the only line at the bottom of any table. */
+.card tbody tr:last-child>td,.card tbody tr:last-child>th,
+#tab-scanner .scanner-table tbody tr:last-child>td,#tab-scanner .scanner-table tbody tr:last-child>th,
+.tab-panel .table-scroll table tbody tr:last-child>td{border-bottom:0!important;box-shadow:none!important;}
+</style>
+<style id="delta-plain-live-lock-hidden">
+/* 7D change: plain signed number (+23, -2), no arrows, same size/weight as Agree and Carry */
+#tab-scanner .scanner-table .day-delta,.day-delta{font-family:'Inter',system-ui,sans-serif!important;font-size:13.5px!important;font-weight:700!important;letter-spacing:0!important;}
+/* "Live synced" status text removed from the header */
+#updatedTag{display:none!important;}
+/* Sign-in padlock invisible while collapsed, but still clickable in the same spot; once opened (or signed in) the sign-in box shows normally */
+.lock-box.collapsed,.lock-box.collapsed *{opacity:0!important;}
+.lock-box.collapsed:hover,.lock-box.collapsed:hover *{opacity:0!important;}
+</style>
+<style id="delta-matches-score">
+/* 7D number: exactly the Score number's look -- same font, size, regular weight, no bold, no italic */
+#tab-scanner .scanner-table .day-delta,#tab-scanner .scanner-table td .day-delta{font-family:'Inter',system-ui,sans-serif!important;font-size:14px!important;font-weight:400!important;font-style:normal!important;letter-spacing:normal!important;text-shadow:none!important;}
 </style>
