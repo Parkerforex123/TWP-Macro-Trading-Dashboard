@@ -4566,7 +4566,7 @@ body.editing .ov-pro-live{display:block!important;}
 #tab-yield2y .y2g-chart{position:relative;flex:1 1 0;min-height:0;margin-top:8px;}
 #tab-yield2y .y2g-chart canvas{display:block;cursor:crosshair;}
 #tab-yield2y .y2g-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--text-dim);font-size:13px;}
-#tab-yield2y .y2g-tip{position:absolute;display:none;pointer-events:none;background:#202027;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 10px;min-width:126px;font-size:12px;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.45);}
+#tab-yield2y .y2g-tip{position:absolute;display:none;pointer-events:none;background:#16161b;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 10px;min-width:126px;font-size:12px;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.45);}
 #tab-yield2y .y2g-tip-d{font-weight:700;margin-bottom:4px;}
 #tab-yield2y .y2g-tip-r{display:flex;justify-content:space-between;gap:14px;line-height:1.55;font-variant-numeric:tabular-nums;}
 #tab-yield2y .y2g-tip-r span{display:flex;align-items:center;gap:6px;color:var(--text-dim);}
@@ -8706,7 +8706,7 @@ function y2gDrawSplit(ctx,W,H,rows,list,hoverIdx){
       var y=q.Y(v); ctx.fillStyle=Y2G_COLORS[q.c]; ctx.strokeStyle='#121216'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.stroke();
       var txt=v.toFixed(3)+'%  \u00b7  '+y2gDate(rows[hoverIdx].date);
       ctx.font='600 11.5px '+FONT; var tw=ctx.measureText(txt).width+16, bx=x+12; if(bx+tw>q.x0+cw-4) bx=x-tw-12; var by=Math.max(q.y0+T+2,Math.min(q.y0+T+ph-26,y-13));
-      ctx.fillStyle='#202027'; ctx.fillRect(bx,by,tw,24); ctx.strokeStyle='rgba(255,255,255,.14)'; ctx.lineWidth=1; ctx.strokeRect(bx+.5,by+.5,tw-1,23);
+      ctx.fillStyle='#16161b'; ctx.fillRect(bx,by,tw,24); ctx.strokeStyle='rgba(255,255,255,.14)'; ctx.lineWidth=1; ctx.strokeRect(bx+.5,by+.5,tw-1,23);
       ctx.fillStyle='#fff'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(txt,bx+8,by+12);
     });
   }
@@ -13970,7 +13970,7 @@ body.black .rail, body.ash .rail{
   --twp-bg:#0a0a0c;
   --twp-panel:#121216;
   --twp-panel2:#191920;
-  --twp-panel3:#202027;
+  --twp-panel3:#16161b;
   --twp-border:rgba(255,255,255,.12);
   --twp-bg-ash:#0a0a0c;
   --twp-panel-ash:#121216;
@@ -15000,7 +15000,7 @@ body,html{background:var(--bg);}
 #tab-risk .rg-z3{width:44%;background:rgba(34,201,139,.35);}
 #tab-risk .rg-bar b{position:absolute;top:-4px;width:3px;height:14px;background:#f2f3f5;transform:translateX(-50%);}
 #tab-risk .rg-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-#tab-risk .rg-tile{background:#0f0f11;border:1px solid rgba(255,255,255,.08);padding:9px 11px;border-radius:0;}
+#tab-risk .rg-tile{background:#111114;border:1px solid rgba(255,255,255,.08);padding:9px 11px;border-radius:0;}
 #tab-risk .rg-k{color:var(--text-dim);font-size:12.5px;}
 #tab-risk .rg-v{font-size:22px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums;}
 #tab-risk .rg-s{color:var(--text-dim);font-size:12px;margin-top:2px;}
@@ -17065,7 +17065,7 @@ twpShowNameGateIfNeeded();
 #tab-detail{
   --dx-line:rgba(255,255,255,.075);
   --dx-line-2:rgba(255,255,255,.13);
-  --dx-surface:#0f0f11;
+  --dx-surface:#111114;
   --dx-surface-2:#121215;
   --dx-grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.055'/></svg>");
   --dx-accent:var(--bullish-strong);
@@ -17717,7 +17717,7 @@ html body #tab-detail .dx-sector{background:#16161a!important;border-bottom:1px 
 
 <style id="wt-v10-edits">
 /* panel heading band: clearly lighter than the black body, ONE line under it, flush to the card edges */
-html body .wt-head.wt-head.wt-head,html body #tab-scanner .ws-head.ws-head.ws-head,html body #tab-scanner .scanner-head.scanner-head.scanner-head,html body #tab-detail .dx-ch.dx-ch.dx-ch,html body #tab-cot .cot-card-head.cot-card-head.cot-card-head,html body #tab-raw .esi-panel-head.esi-panel-head.esi-panel-head,html body #tab-yield2y .hist-spread-head.hist-spread-head.hist-spread-head,html body #tab-yield2y .y2g-head.y2g-head.y2g-head{background:#202027!important;border-bottom:1px solid #34343c!important;border-top:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;}
+html body .wt-head.wt-head.wt-head,html body #tab-scanner .ws-head.ws-head.ws-head,html body #tab-scanner .scanner-head.scanner-head.scanner-head,html body #tab-detail .dx-ch.dx-ch.dx-ch,html body #tab-cot .cot-card-head.cot-card-head.cot-card-head,html body #tab-raw .esi-panel-head.esi-panel-head.esi-panel-head,html body #tab-yield2y .hist-spread-head.hist-spread-head.hist-spread-head,html body #tab-yield2y .y2g-head.y2g-head.y2g-head{background:#16161b!important;border-bottom:1px solid #34343c!important;border-top:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;}
 /* bond yields: cards are flush, so the heading is a real tab edge to edge (no black gap around it) */
 html body #tab-yield2y .hist-spread-card.hist-spread-card,html body #tab-yield2y .y2g-card.y2g-card{padding:0!important;overflow:hidden;}
 html body #tab-yield2y .y2g-inner.y2g-inner{padding:0!important;}
@@ -17736,11 +17736,11 @@ html body #tab-raw .esi3-side .esi-panel.esi-panel.esi-panel{border:0!important;
 html body #tab-raw .esi3-side{padding:0!important;}
 </style>
 
-<style id="wt-v8-edits">html body #tab-detail .dx-card.dx-card.dx-card.dx-card,html body #tab-cot .cot-card.cot-card.cot-card.cot-card{background:#0f0f11!important;background-image:none!important;border-color:#242428!important;}html body #tab-detail .dx-ch.dx-ch.dx-ch{background:#16161a!important;}</style>
-<style id="wt-v7-edits">html body #tab-detail .dx-card,html body #tab-detail .cot-card,html body #tab-detail .card,html body #tab-detail .hist-spread-chart,html body #tab-cot .dx-card,html body #tab-cot .cot-card,html body #tab-cot .card,html body #tab-cot .hist-spread-chart,html body #tab-yield2y .dx-card,html body #tab-yield2y .cot-card,html body #tab-yield2y .card,html body #tab-yield2y .hist-spread-chart,html body #tab-yields .dx-card,html body #tab-yields .cot-card,html body #tab-yields .card,html body #tab-yields .hist-spread-chart,html body #tab-bonds .dx-card,html body #tab-bonds .cot-card,html body #tab-bonds .card,html body #tab-bonds .hist-spread-chart{background:#0f0f11!important;border-color:#242428!important;}</style>
+<style id="wt-v8-edits">html body #tab-detail .dx-card.dx-card.dx-card.dx-card,html body #tab-cot .cot-card.cot-card.cot-card.cot-card{background:#111114!important;background-image:none!important;border-color:#242428!important;}html body #tab-detail .dx-ch.dx-ch.dx-ch{background:#16161a!important;}</style>
+<style id="wt-v7-edits">html body #tab-detail .dx-card,html body #tab-detail .cot-card,html body #tab-detail .card,html body #tab-detail .hist-spread-chart,html body #tab-cot .dx-card,html body #tab-cot .cot-card,html body #tab-cot .card,html body #tab-cot .hist-spread-chart,html body #tab-yield2y .dx-card,html body #tab-yield2y .cot-card,html body #tab-yield2y .card,html body #tab-yield2y .hist-spread-chart,html body #tab-yields .dx-card,html body #tab-yields .cot-card,html body #tab-yields .card,html body #tab-yields .hist-spread-chart,html body #tab-bonds .dx-card,html body #tab-bonds .cot-card,html body #tab-bonds .card,html body #tab-bonds .hist-spread-chart{background:#111114!important;border-color:#242428!important;}</style>
 <style id="wt-v6-edits">
 /* ONE black for every card/table body, ONE band colour for table headers; the lighter ash is only the page behind them */
-html body .card,html body .dx-card,html body .cot-card,html body .esi-panel,html body .hist-spread-chart,html body .wt-card,html body .ws-panel{background:#0f0f11!important;border-color:#242428!important;}
+html body .card,html body .dx-card,html body .cot-card,html body .esi-panel,html body .hist-spread-chart,html body .wt-card,html body .ws-panel{background:#111114!important;border-color:#242428!important;}
 html body .wt-card .esi-panel{background:transparent!important;border:0!important;}
 html body .scanner-main-card tbody td,html body .scanner-main-card tbody tr,html body #tab-scanner .scanner-table tbody td,html body #tab-scanner .scanner-table tbody tr{background:transparent!important;background-image:none!important;}
 html body .scanner-main-card thead,html body .scanner-main-card thead tr,html body .scanner-main-card thead th,html body #tab-scanner .scanner-table thead,html body #tab-scanner .scanner-table thead th{background:#16161a!important;}
@@ -17751,10 +17751,10 @@ html body td.ws-neu,html body .wt-heat td.neu{background:#17171b!important;}
 </style>
 <style id="wt-v5-edits">
 /* ---- WatchTower-style chrome: lighter page, darker panels, visible lines ---- */
-:root,html.ash,html.black,body.ash,body.black,html body.ash,html body.black{--bg:#161618;--panel:#0f0f11;--panel2:#141417;--panel3:#1a1a1e;--border:#242428;--twp-border:#242428;}
-html,body{background:#161618!important;}
+:root,html.ash,html.black,body.ash,body.black,html body.ash,html body.black{--bg:#0a0a0c;--panel:#111114;--panel2:#141417;--panel3:#1a1a1e;--border:#242428;--twp-border:#242428;}
+html,body{background:#0a0a0c!important;}
 html body header,html body .topbar,html body .twp-topbar,html body .app-header{background:#16161a!important;}
-.wt-card,html body #tab-scanner .ws-panel,html body #tab-scanner .scanner-main-card,html body #tab-raw .esi3-card{background:#0f0f11!important;border:1px solid #242428!important;}
+.wt-card,html body #tab-scanner .ws-panel,html body #tab-scanner .scanner-main-card,html body #tab-raw .esi3-card{background:#111114!important;border:1px solid #242428!important;}
 .wt-head{border-bottom:1px solid #242428;padding:9px 12px 8px;}
 html body #tab-scanner .ws-head{border-bottom:1px solid #242428;padding:10px 14px 9px;}
 .wt-col+.wt-col,.wt-ntk-main{border-color:#242428;}
@@ -17845,7 +17845,7 @@ html body #tab-scanner #wsPanel-hist .ws-chart-wrap{min-height:150px!important;f
 </style>
 
 <style id="wt-final-last">
-html body .wt-head.wt-head.wt-head.wt-head,html body #tab-scanner .ws-head.ws-head.ws-head.ws-head,html body #tab-scanner .scanner-head.scanner-head.scanner-head.scanner-head,html body #tab-detail .dx-ch.dx-ch.dx-ch.dx-ch,html body #tab-detail header.dx-ch.dx-ch,html body #tab-cot .cot-card-head.cot-card-head.cot-card-head,html body #tab-raw .esi-panel-head.esi-panel-head.esi-panel-head,html body #tab-yield2y .hist-spread-head.hist-spread-head.hist-spread-head,html body #tab-yield2y .y2g-head.y2g-head.y2g-head{background:#23232b!important;border-bottom:1px solid #3a3a43!important;border-top:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;}
+html body .wt-head.wt-head.wt-head.wt-head,html body #tab-scanner .ws-head.ws-head.ws-head.ws-head,html body #tab-scanner .scanner-head.scanner-head.scanner-head.scanner-head,html body #tab-detail .dx-ch.dx-ch.dx-ch.dx-ch,html body #tab-detail header.dx-ch.dx-ch,html body #tab-cot .cot-card-head.cot-card-head.cot-card-head,html body #tab-raw .esi-panel-head.esi-panel-head.esi-panel-head,html body #tab-yield2y .hist-spread-head.hist-spread-head.hist-spread-head,html body #tab-yield2y .y2g-head.y2g-head.y2g-head{background:#16161b!important;border-bottom:1px solid #2b2b30!important;border-top:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;}
 html body #tab-detail .dx-sector{background:#18181c!important;}
 html body #tab-detail .dx-sl.dx-sl{color:#9b9ba4!important;}
 html body #tab-detail .dx-st.dx-st{border-left-color:#5b5b63!important;}
@@ -17884,6 +17884,126 @@ html body #tab-yield2y .hist-spread-chart{flex:1;min-height:0;}
   };
 })();
 </script>
+
+<style id="wt-final-last2">
+/* ONE divider colour for every line in the dashboard */
+html body .wt-card{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .wt-ntk-main{border-right-color:#2b2b30!important;}
+html body .wt-item{border-top-color:#2b2b30!important;}
+html body .wt-row{border-top-color:#2b2b30!important;}
+html body .wt-col.wt-rel{border-left-color:#2b2b30!important;}
+html body .wt-rel-h{border-bottom-color:#2b2b30!important;}
+html body .dx-card.dx-hero{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .dx-builder{border-left-color:#2b2b30!important;}
+html body .dx-group{border-left-color:#2b2b30!important;}
+html body .dx-card.dx-ind{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .surprise{border-bottom-color:#2b2b30!important;}
+html body .dx-card.dx-cb{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .dx-rate{border-bottom-color:#2b2b30!important;}
+html body .dx-rc{border-left-color:#2b2b30!important;}
+html body .policy-metric{border-bottom-color:#2b2b30!important;}
+html body .dx-gd{border-top-color:#2b2b30!important;}
+html body .dx-card.dx-trend{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .dx-card.dx-pos{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .dx-f{border-bottom-color:#2b2b30!important;}
+html body .dx-f.dx-season{border-bottom-color:#2b2b30!important;}
+html body .card.ws-panel{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .rowhover.scanner-row{border-bottom-color:#2b2b30!important;}
+html body .scanner-star-td{border-bottom-color:#2b2b30!important;}
+html body .scanner-pair-td{border-bottom-color:#2b2b30!important;}
+html body .day-delta-cell{border-bottom-color:#2b2b30!important;}
+html body .scanner-agree{border-bottom-color:#2b2b30!important;}
+html body .scanner-carry{border-bottom-color:#2b2b30!important;}
+html body .scanner-group-row{border-bottom-color:#2b2b30!important;}
+html body .card.y2g-card{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .card.hist-spread-card{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .cot-card{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .right{border-bottom-color:#2b2b30!important;}
+html body .cot-side{border-right-color:#2b2b30!important;}
+html body .stat{border-bottom-color:#2b2b30!important;}
+html body .cot-pair-tile{border-right-color:#2b2b30!important;}
+html body .wt-card.esi3-field{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .esi3-stage{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .esi3-gl{border-top-color:#2b2b30!important;}
+html body .wt-card.esi3-side{border-bottom-color:#2b2b30!important;border-left-color:#2b2b30!important;border-right-color:#2b2b30!important;border-top-color:#2b2b30!important;}
+html body .esi-drv-row{border-bottom-color:#2b2b30!important;}
+
+html body .scanner-main-card.scanner-main-card{padding:0!important;overflow:hidden;border-color:#2b2b30!important;}
+html body .scanner-main-card > :not(.scanner-head){margin-left:10px;margin-right:10px;}
+html body #tab-scanner .scanner-head.scanner-head{margin:0!important;padding:5px 12px!important;}
+html body .card.ws-panel,html body .wt-card,html body .dx-card,html body .cot-card,html body .y2g-card,html body .hist-spread-card{border-color:#2b2b30!important;overflow:hidden;}
+html body .wt-head.wt-head,html body #tab-scanner .ws-head.ws-head,html body #tab-detail .dx-ch.dx-ch,html body #tab-cot .cot-card-head.cot-card-head,html body #tab-yield2y .y2g-head.y2g-head,html body #tab-yield2y .hist-spread-head.hist-spread-head{border-bottom-color:#2b2b30!important;}
+/* score history legend inside the heading */
+html body #tab-scanner .ws-head .ws-head-legend{display:flex;flex-wrap:nowrap;gap:10px;margin:0 8px 0 auto;padding:0;overflow:hidden;white-space:nowrap;}
+html body #tab-scanner .ws-head .ws-head-legend .wt-leg{font-size:12.5px;}
+html body #tab-scanner .ws-wt-top:empty{display:none;}
+html body #tab-scanner .ws-wt-top{padding:0!important;}
+/* overview heatmap: WatchTower proportions (airy cells, calmer type, bigger flags) */
+.wt-heat{border-spacing:3px!important;}
+.wt-heat-wrap{padding:8px 12px 12px!important;}
+.wt-heat th{font-size:13px!important;color:rgba(255,255,255,.7)!important;}
+.wt-heat th.wt-rh{font-size:13.5px!important;padding-left:6px!important;}
+.wt-heat th img,.wt-heat th .ccy-flag{width:21px!important;height:15px!important;margin-right:6px!important;}
+.wt-heat td{font-size:14px!important;font-weight:500!important;}
+.wt-row img,.wt-row .ccy-flag{width:22px!important;height:16px!important;}
+/* pair comparison: calmer cells, bigger currency names, designed row labels */
+html body #tab-scanner .ws-matrix{border-spacing:3px!important;}
+html body #tab-scanner .ws-matrix td{font-size:13px!important;font-weight:500!important;}
+html body #tab-scanner .ws-matrix tr.ws-total td{font-size:14px!important;font-weight:600!important;}
+html body #tab-scanner .ws-matrix th{font-size:14px!important;font-weight:700!important;}
+html body #tab-scanner .ws-matrix th img,html body #tab-scanner .ws-matrix th .ccy-flag{width:22px!important;height:16px!important;}
+html body #tab-scanner .ws-matrix td.ws-rowh{background:#16161a!important;border-left:3px solid var(--acc,#6b6b75)!important;text-align:left;padding:0 12px!important;font-size:13.5px!important;font-weight:600!important;color:#d6d6dc!important;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(1) td.ws-rowh{--acc:#fa660f;background:#1d1d22!important;color:#fff!important;font-weight:800!important;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(2) td.ws-rowh{--acc:#4c8dff;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(3) td.ws-rowh{--acc:#35c4a8;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(4) td.ws-rowh{--acc:#a77bff;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(5) td.ws-rowh{--acc:#f0b429;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(6) td.ws-rowh{--acc:#35b8d6;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(7) td.ws-rowh{--acc:#ff7a9c;}
+/* surprise field extras */
+.esi3-links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.esi3-links polyline{stroke:rgba(255,255,255,.14);stroke-width:1.5;stroke-dasharray:3 5;stroke-linejoin:round;}
+.esi3-pt{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.28);animation:esiRise linear infinite;pointer-events:none;}
+@keyframes esiRise{0%{transform:translateY(0);opacity:0}15%{opacity:.9}85%{opacity:.9}100%{transform:translateY(-120px);opacity:0}}
+.esi3-dot.hot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1.5px solid rgba(var(--rgb),.55);animation:esiPulse 2.6s ease-out infinite;pointer-events:none;}
+@keyframes esiPulse{0%{transform:scale(.92);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+.esi3-pips{position:absolute;top:100%;left:0;right:0;display:flex;justify-content:center;gap:3px;margin-top:6px;}
+.esi3-pips i{width:5px;height:5px;border-radius:50%;display:block;}
+.esi3-pips i.b{background:#22c98b;}.esi3-pips i.m{background:#f04455;}
+</style>
+<style id="wt-final-last3">
+html body #tab-scanner #wsPanel-hist .ws-head .ws-title,html body #tab-scanner #wsPanel-hist .ws-head h3,html body #tab-scanner #wsPanel-hist .ws-head>span:first-of-type{white-space:nowrap!important;flex:0 0 auto!important;}
+html body #tab-scanner .ws-head .ws-head-legend{flex:1 1 0!important;min-width:0!important;justify-content:flex-end!important;gap:9px!important;margin:0 8px 0 10px!important;}
+html body #tab-scanner .ws-head .ws-head-legend .wt-leg{font-size:12px!important;padding:0!important;flex:0 0 auto;}
+</style>
+<style id="wt-final-last4">
+html body #tab-scanner .ws-head .ws-head-legend{gap:7px!important;margin:0 6px 0 8px!important;}
+html body #tab-scanner .ws-head .ws-head-legend .wt-leg{font-size:11.5px!important;gap:4px!important;}
+html body #tab-scanner .ws-head .ws-head-legend .wt-leg i{width:7px!important;height:7px!important;}
+</style>
+<style id="wt-final-last5">
+/* WatchTower token palette: page bg-0 #0a0a0c, panel #111114, heading = faint lit surface, hairlines ~11% white */
+html,body{background:#0a0a0c!important;}
+html body .wt-head.wt-head.wt-head,html body #tab-scanner .ws-head.ws-head.ws-head,html body #tab-scanner .scanner-head.scanner-head.scanner-head,html body #tab-detail .dx-ch.dx-ch.dx-ch.dx-ch,html body #tab-detail header.dx-ch.dx-ch,html body #tab-cot .cot-card-head.cot-card-head.cot-card-head,html body #tab-raw .esi-panel-head.esi-panel-head.esi-panel-head,html body #tab-yield2y .hist-spread-head.hist-spread-head.hist-spread-head,html body #tab-yield2y .y2g-head.y2g-head.y2g-head{
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012)),#131318!important;box-shadow:none!important;}
+html body #tab-scanner .scanner-main-card thead,html body #tab-scanner .scanner-main-card thead tr,html body #tab-scanner .scanner-main-card thead th{background:#0e0e11!important;}
+html body #tab-detail .dx-sector{background:#141418!important;}
+/* flags: sharp corners, sized to sit with the label text, never bigger than the word */
+html body img.ccy-flag,html body .ws-matrix img,html body .wt-heat img,html body .scanner-pair-td img,html body .wt-row img{border-radius:0!important;}
+.wt-heat th,html body #tab-scanner .ws-matrix th{font-size:12px!important;font-weight:600!important;letter-spacing:.03em;color:rgba(255,255,255,.66)!important;}
+.wt-heat th.wt-rh{font-size:12px!important;}
+.wt-heat th img,.wt-heat th .ccy-flag,html body #tab-scanner .ws-matrix th img,html body #tab-scanner .ws-matrix th .ccy-flag{width:16px!important;height:12px!important;margin-right:5px!important;vertical-align:-2px!important;}
+.wt-heat td{font-size:13px!important;font-weight:500!important;letter-spacing:0;}
+.wt-heat{border-spacing:2px!important;}
+html body #tab-scanner .ws-matrix{border-spacing:2px!important;}
+html body #tab-scanner .ws-matrix td{font-size:12.5px!important;font-weight:500!important;}
+html body #tab-scanner .ws-matrix tr.ws-total td{font-size:13px!important;font-weight:600!important;}
+html body #tab-scanner .ws-matrix td.ws-rowh{font-size:12.5px!important;font-weight:500!important;background:#15151a!important;border-left-width:2px!important;color:#cfcfd6!important;}
+html body #tab-scanner .ws-matrix tbody tr:nth-child(1) td.ws-rowh{font-weight:700!important;background:#18181d!important;}
+.wt-row img,.wt-row .ccy-flag{width:18px!important;height:13px!important;}
+html body #tab-scanner .scanner-pair-td img,html body #tab-scanner .scanner-pair-td .ccy-flag{width:18px!important;height:13px!important;}
+html body #tab-scanner .scanner-pair-td{font-weight:500!important;}
+</style>
 </body>
 </html>
 
@@ -18203,7 +18323,7 @@ html body #tab-yield2y .hist-spread-chart{flex:1;min-height:0;}
 .y2g-expand-panel2 .y2g-chart{position:relative!important;flex:1 1 0!important;min-height:0!important;height:auto!important;margin-top:12px!important;overflow:hidden!important;}
 .y2g-expand-panel2 .y2g-chart canvas{display:block;cursor:crosshair;}
 .y2g-expand-panel2 .y2g-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--text-dim);font-size:13px;}
-.y2g-expand-panel2 .y2g-tip{position:absolute;display:none;pointer-events:none;background:#202027;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 10px;min-width:126px;font-size:12px;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.45);}
+.y2g-expand-panel2 .y2g-tip{position:absolute;display:none;pointer-events:none;background:#16161b;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 10px;min-width:126px;font-size:12px;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.45);}
 .y2g-expand-panel2 .y2g-tip-d{font-weight:700;margin-bottom:4px;}
 .y2g-expand-panel2 .y2g-tip-r{display:flex;justify-content:space-between;gap:14px;line-height:1.55;font-variant-numeric:tabular-nums;}
 .y2g-expand-panel2 .y2g-tip-r span{display:flex;align-items:center;gap:6px;color:var(--text-dim);}
@@ -18247,7 +18367,7 @@ html body #tab-yield2y .hist-spread-chart{flex:1;min-height:0;}
 <style id="v83-spread-expand-tip">
 .hist-spread-expand-panel .hist-spread-hover-dot{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--panel);border:2px solid var(--bullish-strong);pointer-events:none;display:none;z-index:3;}
 .hist-spread-expand-panel .hist-spread-hover-dot.bear{border-color:var(--bearish-strong);}
-.hist-spread-expand-panel .hist-spread-trace-tip{position:absolute;z-index:4;display:none;pointer-events:none;min-width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:#202027;box-shadow:0 8px 22px rgba(0,0,0,.35);font:500 11.5px Inter,system-ui,sans-serif;line-height:1.35;color:var(--text);}
+.hist-spread-expand-panel .hist-spread-trace-tip{position:absolute;z-index:4;display:none;pointer-events:none;min-width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:#16161b;box-shadow:0 8px 22px rgba(0,0,0,.35);font:500 11.5px Inter,system-ui,sans-serif;line-height:1.35;color:var(--text);}
 .hist-spread-expand-panel .hist-spread-trace-tip .d{color:var(--text-faint);font-size:10.5px;}
 .hist-spread-expand-panel .hist-spread-trace-tip .v{font-size:13px;font-weight:700;margin-top:2px;}
 </style>
@@ -19365,7 +19485,7 @@ html body .twp-top .brand{height:26px;gap:12px;padding-right:20px;margin-right:4
 html body .twp-top .brand-mark{font-size:20px;font-weight:800;letter-spacing:.5px;text-shadow:none;}
 html body .twp-top .brand-tag{font-size:8.5px;letter-spacing:1.5px;color:#7c7b82;}
 html body .twp-search{flex:0 1 470px;min-width:180px;}
-html body .twp-search input{height:28px;background:#08080a;border:1px solid #0f0f11;border-radius:6px;font-size:12px;color:#e8e8ec;padding:0 34px 0 14px;}
+html body .twp-search input{height:28px;background:#08080a;border:1px solid #111114;border-radius:6px;font-size:12px;color:#e8e8ec;padding:0 34px 0 14px;}
 html body .twp-search input::placeholder{color:#818183;}
 html body .twp-search input:focus{border-color:var(--amber);}
 html body .twp-search-key{right:7px;width:16px;height:16px;line-height:14px;font-size:10px;border-radius:3px;color:#d6d6da;border:1px solid #4a4a50;}
@@ -19467,17 +19587,17 @@ html body .twp-top .twp-greeting-banner,html body .twp-top .twp-greeting-banner 
 <style id="twp-watchtower-palette">
 /* WatchTower's own layered colours, sampled from its screenshot:
    page / lanes #0a0a0c | cards & panels #121216 | nested rows #16161a | buttons & chips #1e1e25 / #1f2027
-   top row #222228 to #1c1c23 (line #2c2c33) | tab strip #121216 (line #2e2e32) | card & row borders #242428 | scrollbar thumb #202027 */
+   top row #222228 to #1c1c23 (line #2c2c33) | tab strip #121216 (line #2e2e32) | card & row borders #242428 | scrollbar thumb #16161b */
 :root,html.ash,html.black,body.ash,body.black,html body.ash,html body.black{--twp-border:#242428;--border:#242428;}
 html,body{background:#0a0a0c;}
 html body .twp-top{background:#121216;border-bottom:1px solid #2e2e32;}
 html body .twp-top-row{background:linear-gradient(180deg,#222228,#1c1c23);border-bottom:1px solid #2c2c33;}
 html body .twp-top .twp-nav{background:#121216;}
 html body .twp-top .brand{border-right-color:#2c2c33;}
-*{scrollbar-width:thin;scrollbar-color:#202027 transparent;}
+*{scrollbar-width:thin;scrollbar-color:#16161b transparent;}
 ::-webkit-scrollbar{width:8px;height:8px;background:transparent;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#202027;border-radius:4px;}
+::-webkit-scrollbar-thumb{background:#16161b;border-radius:4px;}
 ::-webkit-scrollbar-thumb:hover{background:#2e2e35;}
 </style>
 
@@ -19485,7 +19605,7 @@ html body .twp-top .brand{border-right-color:#2c2c33;}
 /* ===== WatchTower-style Overview (wt-*) ===== */
 html body #tab-overview{height:calc(100dvh - 84px)!important;overflow:hidden!important;padding:0!important;}
 html body #tab-overview .wt-ov{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:10px;height:100%;min-height:0;font-family:'Inter',system-ui,sans-serif;}
-.wt-card{display:flex;flex-direction:column;min-width:0;min-height:0;background:#0f0f11;border:1px solid rgba(255,255,255,.08);border-radius:0;overflow:hidden;}
+.wt-card{display:flex;flex-direction:column;min-width:0;min-height:0;background:#111114;border:1px solid rgba(255,255,255,.08);border-radius:0;overflow:hidden;}
 .wt-head{display:flex;align-items:center;gap:8px;padding:9px 12px 7px;flex:0 0 auto;}
 .wt-dot{width:6px;height:6px;border-radius:50%;background:#22c98b;flex:0 0 auto;}
 .wt-title{font-size:13px;font-weight:700;color:#f2f3f5;}
@@ -19533,7 +19653,7 @@ html body #tab-overview .wt-ov{display:grid;grid-template-columns:minmax(0,1fr) 
 .wt-setups{display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;min-height:0;}
 .wt-col{min-width:0;min-height:0;overflow:auto;padding:0 12px 8px;}
 .wt-col+.wt-col{border-left:1px solid rgba(255,255,255,.07);}
-.wt-col-h{font-size:13px;font-weight:800;letter-spacing:.6px;margin:2px 0 4px;position:sticky;top:0;background:#0f0f11;padding:2px 0;}
+.wt-col-h{font-size:13px;font-weight:800;letter-spacing:.6px;margin:2px 0 4px;position:sticky;top:0;background:#111114;padding:2px 0;}
 .wt-row{display:grid;grid-template-columns:minmax(0,1fr) 44px 92px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:12.5px;}
 .wt-row:hover{background:rgba(255,255,255,.04);}
 .wt-row .p{display:flex;align-items:center;gap:7px;font-weight:700;color:#f2f3f5;}
@@ -19810,6 +19930,10 @@ window.wsHistoryHtml=function(){
 };
 window.wsDrawChart=function(){
   var wrap=document.getElementById('wsChartWrap');if(!wrap)return;
+  (function(){var pn=document.getElementById('wsPanel-hist');if(!pn)return;var hd=pn.querySelector('.ws-head');if(!hd)return;
+    [].forEach.call(hd.querySelectorAll('.ws-head-legend'),function(n){n.remove();});
+    var lg=pn.querySelector('.ws-wt-top .wt-legend');if(!lg)return;lg.classList.add('ws-head-legend');
+    var ex=hd.querySelector('.ws-expand');hd.insertBefore(lg,ex||null);})();
   var first=!wrap.getAttribute('data-drawn');wrap.setAttribute('data-drawn','1');
   drawCsi(first,'wsChartWrap');
   var panel=document.getElementById('wsPanel-hist');if(!panel)return;
@@ -19848,10 +19972,12 @@ window.renderRaw=function(animate){
   var items=CCY_ORDER.map(function(c){var b=surpriseWeightedPct(c),d=surpriseDataForCurrency(c);
     return {c:c,pct:b.pct==null?50:b.pct,has:b.pct!=null,beats:d.rows.filter(function(r){return r.ratio>=1;}).length,miss:d.rows.filter(function(r){return r.ratio<=-1;}).length};});
   var dots=items.map(function(it){var rgb=pctDivergingRgbArr(it.pct).join(',');
+    var pips=new Array(Math.min(it.beats,6)+1).join('<i class="b"></i>')+new Array(Math.min(it.miss,6)+1).join('<i class="m"></i>');
     return '<div class="esi3-stem" data-c="'+it.c+'" style="--rgb:'+rgb+'"></div>'+
-      '<div class="esi3-dot'+(esiSelectedCcy===it.c?' sel':'')+(esiSelectedCcy&&esiSelectedCcy!==it.c?' dim':'')+'" data-c="'+it.c+'" style="--rgb:'+rgb+'">'+flagImg(it.c)+'<b>'+it.c+'</b><em>'+it.pct+'%</em></div>';}).join('');
+      '<div class="esi3-dot'+((it.pct>=65||it.pct<=35)?' hot':'')+(esiSelectedCcy===it.c?' sel':'')+(esiSelectedCcy&&esiSelectedCcy!==it.c?' dim':'')+'" data-c="'+it.c+'" style="--rgb:'+rgb+'">'+flagImg(it.c)+'<b>'+it.c+'</b><em>'+it.pct+'%</em><span class="esi3-pips">'+pips+'</span></div>';}).join('');
+  var sd=7,parts='';for(var q=0;q<16;q++){sd=(sd*9301+49297)%233280;var a=sd/233280;sd=(sd*9301+49297)%233280;var b2=sd/233280;parts+='<i class="esi3-pt" style="left:'+(a*100).toFixed(1)+'%;top:'+(b2*100).toFixed(1)+'%;animation-delay:-'+(a*14).toFixed(1)+'s;animation-duration:'+(16+b2*14).toFixed(1)+'s"></i>';}
   var grid=[75,50,25].map(function(v){return '<div class="esi3-gl" data-v="'+v+'"><span>'+v+'%</span></div>';}).join('');
-  host.innerHTML='<div class="esi3"><section class="wt-card esi3-field"><div class="wt-head"><span class="wt-dot"></span><span class="wt-title">Fundamentals field</span><span class="wt-sub">Higher = stronger growth, inflation and labour data</span></div><div class="esi3-stage" id="esiStage">'+grid+dots+'</div></section>'+
+  host.innerHTML='<div class="esi3"><section class="wt-card esi3-field"><div class="wt-head"><span class="wt-dot"></span><span class="wt-title">Fundamentals field</span><span class="wt-sub">Higher = stronger growth, inflation and labour data</span></div><div class="esi3-stage" id="esiStage">'+parts+grid+'<svg class="esi3-links" id="esiLinks"><polyline fill="none"></polyline></svg>'+dots+'</div></section>'+
     '<section class="wt-card esi3-side">'+esiDriversHtml()+'</section></div><div class="wt-hover-tip" id="esiTip"></div>';
   var stage=document.getElementById('esiStage'), tip=document.getElementById('esiTip');
   var els={};[].forEach.call(stage.querySelectorAll('.esi3-dot'),function(e){els[e.dataset.c]=e;});
@@ -19866,6 +19992,7 @@ window.renderRaw=function(animate){
     if(W>50&&H>50){
       var p=(animate===false||reduce)?1:Math.min(1,(ts-t0)/1300), e=1-Math.pow(1-p,3);
       [].forEach.call(stage.querySelectorAll('.esi3-gl'),function(g){g.style.top=Y(Number(g.dataset.v),H)+'px';});
+      var pts=[];
       items.forEach(function(it,i){
         var el=els[it.c],st=stems[it.c]; if(!el)return;
         var ph=i*1.7+.6, dx=reduce?0:Math.sin(ts/2100+ph)*16, dy=reduce?0:Math.cos(ts/1700+ph*1.3)*8;
@@ -19873,7 +20000,9 @@ window.renderRaw=function(animate){
         el.style.transform='translate('+(cx-37).toFixed(1)+'px,'+(cy-37).toFixed(1)+'px)';
         var top=Math.min(cy,yM),h=Math.abs(cy-yM);
         st.style.transform='translate('+cx.toFixed(1)+'px,'+top.toFixed(1)+'px)';st.style.height=h.toFixed(1)+'px';
+        pts.push(cx.toFixed(1)+','+cy.toFixed(1));
       });
+      var lk=document.querySelector('#esiLinks polyline');if(lk)lk.setAttribute('points',pts.join(' '));
     }
     window.__esiRaf=requestAnimationFrame(tick);
   }
