@@ -18049,7 +18049,8 @@ html body #tab-overview .wt-rel .ov-cal-ccy img{width:16px!important;height:12px
 html body #tab-overview .wt-rel .ov-cal-row{min-height:34px!important;}
 </style>
 <style id="wt-season">
-html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!important;padding:0!important;}
+html body #tab-season{height:calc(100dvh - 74px)!important;overflow:hidden!important;padding:0!important;margin:0 -14px -10px!important;max-width:none!important;width:calc(100% + 28px)!important;box-sizing:border-box!important;}
+html body #tab-season .ss-card{border-left:0!important;border-right:0!important;border-bottom:0!important;}
 .ss{height:100%;display:flex;flex-direction:column;font-family:'Inter',system-ui,sans-serif;color:#f2f3f5;}
 .ss-card{flex:1;min-height:0;display:flex;flex-direction:column;background:#111114;border:1px solid #2b2b30;overflow:hidden;}
 .ss-head{display:flex;align-items:center;gap:8px;padding:6px 10px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012)),#131318;border-bottom:1px solid #2b2b30;flex-wrap:wrap;}
@@ -18079,7 +18080,7 @@ html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!impor
 .ss-leg.off{opacity:.35;}
 .ss-statkey{font-size:11.5px;color:rgba(255,255,255,.5);}
 .ss-statkey select{background:#16161a;color:#f2f3f5;border:1px solid #2b2b30;font-size:11.5px;padding:2px 4px;font-family:inherit;}
-.ss-chart{position:relative;flex:1;min-height:0;margin:4px 10px 10px;}
+.ss-chart{position:relative;flex:1;min-height:0;width:100%;margin:2px 0 4px;}
 .ss-chart svg{display:block;}
 .ss-tip{position:absolute;background:#16161a;border:1px solid #34343b;padding:8px 10px;font-size:12px;pointer-events:none;min-width:120px;z-index:5;}
 .ss-tip .d{font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.55);margin-bottom:5px;font-weight:700;}
@@ -18129,13 +18130,21 @@ html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!impor
     var a5=avg(5),a10=avg(10),a15=avg(15);
     return {y5:a5.a,y10:a10.a,y15:a15.a,n5:a5.n,n10:a10.n,n15:a15.n,cur:P[nowY]||null};
   }
+  function fillFromDaily(c){
+    var s=DAILY&&DAILY[c], src=SEASON_SRC[c]; if(!s||!src) return;
+    var nY=new Date().getUTCFullYear(), nM=new Date().getUTCMonth(), end={}, i, k;
+    for(i=0;i<s.d.length;i++){ end[(+s.d[i].slice(0,4))*12+(+s.d[i].slice(5,7)-1)]=s.c[i]; }
+    Object.keys(src.data).forEach(function(y){ y=+y; var arr=src.data[y]; for(var m=0;m<12;m++){
+      if(arr[m]!=null) continue; if(y>nY||(y===nY&&m>=nM)) continue;
+      var a=end[y*12+m-1], b=end[y*12+m]; if(a&&b) arr[m]=Math.round((b/a-1)*10000)/100; else break; } });
+  }
   function applyDaily(c,D){
     if(!DAILY||!DAILY[c]||D.daily) return;
     try{ var r=dailyPaths(DAILY[c]); if(!r.y10&&!r.y5) return; ['y5','y10','y15','n5','n10','n15'].forEach(function(k){D[k]=r[k];}); if(r.cur) D.cur=r.cur; D.daily=true; }catch(e){ console.error('seasonality daily',c,e); }
   }
   function loadDaily(){
     if(dailyState!=='idle') return; dailyState='loading';
-    var done=function(j){ if(j&&j.data&&Object.keys(j.data).length){ DAILY=j.data; dailyState='done'; Object.keys(CACHE).forEach(function(c){applyDaily(c,CACHE[c]);}); try{ if(activeTab==='season') render(); }catch(e){} } else dailyState='failed'; };
+    var done=function(j){ if(j&&j.data&&Object.keys(j.data).length){ DAILY=j.data; dailyState='done'; SYMS.forEach(fillFromDaily); Object.keys(CACHE).forEach(function(c){delete CACHE[c];}); store(); try{ if(activeTab==='season') render(); }catch(e){} } else dailyState='failed'; };
     try{ var raw=localStorage.getItem('twpSeasDaily'); if(raw){ var o=JSON.parse(raw); if(o&&o.t&&Date.now()-o.t<20*3600*1000&&o.j){ done(o.j); return; } } }catch(e){}
     fetch(SUPABASE_URL+'/functions/v1/seasonality-daily',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}})
       .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
@@ -18203,17 +18212,17 @@ html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!impor
   }
   /* ---------- chart ---------- */
   function smooth(a,k){ if(!a) return a; var o=a.slice(); for(var i=0;i<a.length;i++){ if(a[i]==null)continue; var s=0,c=0; for(var j=-k;j<=k;j++){var v=a[i+j]; if(v!=null){s+=v;c++;}} o[i]=s/c; } return o; }
-  function scale(lo,hi){ var rng=Math.max(1,hi-lo)*1.1, steps=[1,2,2.5,5,10,20,25,50], st=steps[steps.length-1]; for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=7){st=steps[i];break;} } var a=Math.floor(Math.min(lo,0)/st)*st, b=Math.ceil(Math.max(hi,0)/st)*st; if(a===b)b=a+st; var t=[];for(var v=a;v<=b+1e-9;v+=st)t.push(Math.round(v*100)/100); return {lo:a,hi:b,ticks:t}; }
+  function scale(lo,hi){ var rng=Math.max(.5,hi-lo)*1.03, steps=[.25,.5,1,2,2.5,5,10,20,25,50], st=steps[steps.length-1]; for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=9){st=steps[i];break;} } var a=Math.floor(Math.min(lo,0)/st)*st, b=Math.ceil(Math.max(hi,0)/st)*st; if(a===b)b=a+st; var t=[];for(var v=a;v<=b+1e-9;v+=st)t.push(Math.round(v*100)/100); return {lo:a,hi:b,ticks:t}; }
   function draw(D){
     var wrap=document.getElementById('ssChart'); if(!wrap) return; var W=wrap.clientWidth,H=wrap.clientHeight; if(W<200||H<120) return;
-    var pl=54,pr=18,pt=22,pb=30, vs=SER.filter(function(s){return D[s.k]&&!hidden[s.k];}), lo=0,hi=0;
+    var pl=46,pr=10,pt=16,pb=26, vs=SER.filter(function(s){return D[s.k]&&!hidden[s.k];}), lo=0,hi=0;
     var data={}; vs.forEach(function(s){data[s.k]=(s.k==='cur'||D.daily)?D.cur&&s.k==='cur'?D.cur:D[s.k]:smooth(D[s.k],2); data[s.k].forEach(function(v){if(v!=null){lo=Math.min(lo,v);hi=Math.max(hi,v);}});});
     var sc=scale(lo,hi), X=function(i){return pl+i/364*(W-pl-pr);}, Y=function(v){return pt+(1-(v-sc.lo)/(sc.hi-sc.lo))*(H-pt-pb);}, g='';
-    sc.ticks.forEach(function(t){g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'" stroke="rgba(255,255,255,'+(t===0?'.26':'.07')+')" '+(t===0?'stroke-dasharray="4 4"':'')+'/><text x="'+(pl-8)+'" y="'+(Y(t)+3.5).toFixed(1)+'" text-anchor="end" font-size="11" fill="rgba(255,255,255,.45)">'+t.toFixed(t%1?1:0)+'%</text>';});
+    sc.ticks.forEach(function(t){g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'" stroke="rgba(255,255,255,'+(t===0?'.26':'.07')+')" '+(t===0?'stroke-dasharray="4 4"':'')+'/><text x="'+(pl-8)+'" y="'+(Y(t)+3.5).toFixed(1)+'" text-anchor="end" font-size="11" fill="rgba(255,255,255,.45)">'+t.toFixed(t%1?(t*4%1?2:1):0)+'%</text>';});
     for(var m=0;m<12;m++){ var x=X((MS[m]+MS[m+1])/2); g+='<text x="'+x.toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.42)">'+MN[m]+'</text><line x1="'+X(MS[m]).toFixed(1)+'" x2="'+X(MS[m]).toFixed(1)+'" y1="'+(H-pb)+'" y2="'+(H-pb+4)+'" stroke="rgba(255,255,255,.22)"/>'; }
     var ts=todaySlot(); g+='<line x1="'+X(ts).toFixed(1)+'" x2="'+X(ts).toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#fa660f" stroke-opacity=".55" stroke-dasharray="3 4"/><text x="'+(X(ts)+6).toFixed(1)+'" y="'+(pt+2)+'" font-size="10.5" fill="#fa8a3c" letter-spacing="1">TODAY</text>';
     vs.forEach(function(s){ var a=data[s.k],d='',pen=false,lastI=-1; a.forEach(function(v,i){if(v==null)return;d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true;lastI=i;});
-      g+='<path d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="'+(s.k==='cur'?2.6:2.1)+'" '+(s.dash?'stroke-dasharray="'+s.dash+'" ':'')+'stroke-linejoin="round" stroke-linecap="round"/>';
+      g+='<path d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="'+(s.k==='cur'?1.6:1.2)+'" '+(s.dash?'stroke-dasharray="'+s.dash+'" ':'')+'stroke-linejoin="round" stroke-linecap="round"/>';
       if(s.k==='cur'&&lastI>=0) g+='<circle cx="'+X(lastI).toFixed(1)+'" cy="'+Y(a[lastI]).toFixed(1)+'" r="3.6" fill="'+s.c+'"/>'; });
     wrap.innerHTML='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'<line id="ssX" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(255,255,255,.35)" visibility="hidden"/></svg><div class="ss-tip" id="ssTip" hidden></div>';
     var svg=wrap.querySelector('svg'),tip=document.getElementById('ssTip'),xh=document.getElementById('ssX');
@@ -18228,12 +18237,13 @@ html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!impor
   function tcell(v,big){ if(v==null) return '<td class="ss-na">&mdash;</td>'; var a=Math.min(.8,.16+Math.abs(v)/(big?18:7)*.64); return '<td style="background:rgba('+(v>=0?'34,201,139':'240,68,85')+','+a.toFixed(2)+')">'+(v<0?'\u2212':'')+Math.abs(v).toFixed(2)+'%</td>'; }
   function tableYears(D){ var ys=Object.keys(D.tbl.m).map(Number).sort(function(a,b){return a-b;}); var mn=ys[0],mx=ys[ys.length-1]; var lo=yLo==null?mn:Math.max(mn,yLo),hi=yHi==null?mx:Math.min(mx,yHi); if(lo>hi){lo=hi;} return {all:ys,mn:mn,mx:mx,lo:lo,hi:hi,sel:ys.filter(function(y){return y>=lo&&y<=hi;})}; }
   function tableHtml(D){
+    var nY0=new Date().getUTCFullYear(), nM0=new Date().getUTCMonth(), fin0=function(y,m){return !(y===nY0&&m>=nM0);};
     var T=D.tbl, Y=tableYears(D), sel=Y.sel.slice().reverse(), h='<thead><tr><th class="ss-ty">Date</th>'+MFULL.map(function(m){return '<th>'+m+'</th>';}).join('')+'<th class="ss-yr">Year</th></tr></thead><tbody>';
-    sel.forEach(function(y){ h+='<tr><th class="ss-ty">'+y+'</th>'+T.m[y].map(function(v){return tcell(v,false);}).join('')+tcell(T.y[y],true)+'</tr>'; });
-    var avg=[]; for(var m=0;m<12;m++){var s0=0,c=0;sel.forEach(function(y){var v=T.m[y][m];if(v!=null){s0+=v;c++;}});avg.push(c?Math.round(s0/c*100)/100:null);} var ya=0,yc=0; sel.forEach(function(y){ya+=T.y[y];yc++;});
+    sel.forEach(function(y){ h+='<tr><th class="ss-ty">'+y+'</th>'+T.m[y].map(function(v,m){return tcell(fin0(y,m)?v:null,false);}).join('')+tcell(y<nY0?T.y[y]:null,true)+'</tr>'; });
+    var nY=new Date().getUTCFullYear(), nM=new Date().getUTCMonth(), fin=function(y,m){return !(y===nY&&m>=nM);}; var avg=[]; for(var m=0;m<12;m++){var s0=0,c=0;sel.forEach(function(y){var v=T.m[y][m];if(v!=null&&fin(y,m)){s0+=v;c++;}});avg.push(c?Math.round(s0/c*100)/100:null);} var ya=0,yc=0; sel.forEach(function(y){if(y<nY){ya+=T.y[y];yc++;}});
     h+='<tr class="ss-avg"><th class="ss-ty">Average</th>'+avg.map(function(v){return tcell(v,false);}).join('')+tcell(yc?Math.round(ya/yc*100)/100:null,true)+'</tr></tbody><tfoot><tr><th class="ss-ty">Rises and falls</th>';
-    for(m=0;m<12;m++){var u=0,d=0;sel.forEach(function(y){var v=T.m[y][m];if(v==null)return;if(v>=0)u++;else d++;});h+='<td><span class="up">&#9650;'+u+'</span> <span class="dn">&#9660;'+d+'</span></td>';}
-    var yu=0,yd=0; sel.forEach(function(y){if(T.y[y]>=0)yu++;else yd++;});
+    for(m=0;m<12;m++){var u=0,d=0;sel.forEach(function(y){var v=T.m[y][m];if(v==null||!fin(y,m))return;if(v>=0)u++;else d++;});h+='<td><span class="up">&#9650;'+u+'</span> <span class="dn">&#9660;'+d+'</span></td>';}
+    var yu=0,yd=0; sel.forEach(function(y){if(y>=nY)return;if(T.y[y]>=0)yu++;else yd++;});
     return h+'<td><span class="up">&#9650;'+yu+'</span> <span class="dn">&#9660;'+yd+'</span></td></tr></tfoot>';
   }
   function tableBlock(D){
@@ -18244,7 +18254,7 @@ html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!impor
   }
   /* ---------- tab ---------- */
   function render(){
-    var host=document.getElementById('tab-season'); if(!host) return; var D=store()[sym]; loadDaily();
+    var host=document.getElementById('tab-season'); if(!host) return; loadDaily(); var D=store()[sym];
     var pills=SYMS.map(function(s){var has=!!store()[s];return '<button type="button" class="ss-pill'+(s===sym?' active':'')+'" data-sym="'+s+'">'+s+(has?'':'<i></i>')+'</button>';}).join('');
     var sub=D?('· '+sym+' · '+D.name+' · cumulative path · '+D.first+'\u2013'+D.lastY):'· '+sym;
     var legend=D?SER.filter(function(s){return D[s.k];}).map(function(s){var n=D['n'+s.k.slice(1)];return '<button type="button" class="ss-leg'+(hidden[s.k]?' off':'')+'" data-k="'+s.k+'"><i style="background:'+s.c+'"></i>'+s.l+(s.k!=='cur'&&n&&n<Number(s.k.slice(1))?' <em>('+n+' available)</em>':'')+'</button>';}).join(''):'';
@@ -18253,7 +18263,7 @@ html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!impor
       (D&&view==='table'?tableBlock(D):D?'<div class="ss-stats">'+statsHtml(D)+'</div><div class="ss-legend">'+legend+'<span class="ss-grow"></span>'+stat+'</div><div class="ss-chart" id="ssChart"></div>'
         :'<div class="ss-empty"><div class="ss-et">No seasonality loaded for '+sym+' yet</div><div class="ss-es">This currency has not been added to the dashboard yet.</div></div>')+
       '</section></div>';
-    [].forEach.call(host.querySelectorAll('[data-sym]'),function(b){b.onclick=function(){sym=this.getAttribute('data-sym');yLo=null;yHi=null;render();};});
+    [].forEach.call(host.querySelectorAll('[data-sym]'),function(b){b.onclick=function(){sym=this.getAttribute('data-sym');yLo=null;yHi=null;hidden={};render();};});
     [].forEach.call(host.querySelectorAll('[data-view]'),function(b){b.onclick=function(){view=this.getAttribute('data-view');render();};});
     var slo=document.getElementById('ssLo'),shi=document.getElementById('ssHi');
     if(slo&&shi&&D&&D.tbl){ var upd=function(){ var a=Number(slo.value),b=Number(shi.value); if(a>b){ if(this===slo){b=a;shi.value=b;}else{a=b;slo.value=a;} } yLo=a;yHi=b; document.getElementById('ssLoL').textContent=a; document.getElementById('ssHiL').textContent=b; document.getElementById('ssTbl').innerHTML=tableHtml(D); }; slo.oninput=upd; shi.oninput=upd; }
