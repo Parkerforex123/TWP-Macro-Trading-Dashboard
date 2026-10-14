@@ -4772,12 +4772,14 @@ html body #tab-cot .cot-expand-btn{display:none!important;}
       <button class="tab-btn" data-tab="yield2y">Bond Yields</button>
       <button class="tab-btn" data-tab="cot" id="cotTabBtn">COT Regime</button>
       <button class="tab-btn" data-tab="raw">Economic Surprise Index</button>
+      <button class="tab-btn" data-tab="season">Seasonality</button>
       <button hidden class="tab-btn" data-tab="risk" id="riskTabBtn">Risk Sentiment</button>
     </nav>
   </header>
   <main class="content">
     <section class="tab-panel active" id="tab-overview"></section>
     <section class="tab-panel" id="tab-raw"></section>
+    <section class="tab-panel" id="tab-season"></section>
     <section class="tab-panel" id="tab-detail"></section>
     <section class="tab-panel" id="tab-scanner"></section>
     <section class="tab-panel" id="tab-yield2y"></section>
@@ -18046,6 +18048,247 @@ html body #tab-overview .wt-rel .ov-cal-ccy{font-size:11.5px!important;font-weig
 html body #tab-overview .wt-rel .ov-cal-ccy img{width:16px!important;height:12px!important;border-radius:0!important;}
 html body #tab-overview .wt-rel .ov-cal-row{min-height:34px!important;}
 </style>
+<style id="wt-season">
+html body #tab-season{height:calc(100dvh - 84px)!important;overflow:hidden!important;padding:0!important;}
+.ss{height:100%;display:flex;flex-direction:column;font-family:'Inter',system-ui,sans-serif;color:#f2f3f5;}
+.ss-card{flex:1;min-height:0;display:flex;flex-direction:column;background:#111114;border:1px solid #2b2b30;overflow:hidden;}
+.ss-head{display:flex;align-items:center;gap:8px;padding:6px 10px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012)),#131318;border-bottom:1px solid #2b2b30;flex-wrap:wrap;}
+.ss-dot{width:6px;height:6px;border-radius:50%;background:#22c98b;flex:0 0 6px;}
+.ss-title{font-size:14px;font-weight:700;}
+.ss-subt{font-size:12px;color:rgba(255,255,255,.5);}
+.ss-grow{flex:1;}
+.ss-pill{background:transparent;border:1px solid #2b2b30;color:rgba(255,255,255,.62);font-size:11.5px;font-weight:600;padding:3px 9px;cursor:pointer;font-family:inherit;position:relative;}
+.ss-pill i{position:absolute;top:2px;right:2px;width:4px;height:4px;border-radius:50%;background:#fa660f;}
+.ss-pill:hover{color:#fff;background:rgba(255,255,255,.05);}
+.ss-pill.active{color:#fff;background:rgba(250,102,15,.14);border-color:rgba(250,102,15,.55);}
+.ss-btn{background:#fa660f;color:#0a0a0c;border:0;font-size:11.5px;font-weight:700;padding:4px 11px;cursor:pointer;font-family:inherit;}
+.ss-btn.ghost{background:transparent;color:rgba(255,255,255,.65);border:1px solid #2b2b30;}
+.ss-btn.big{padding:9px 18px;font-size:13px;margin-top:14px;}
+.ss-msg{padding:7px 12px;font-size:12px;color:#ffab40;border-bottom:1px solid #2b2b30;background:rgba(255,171,64,.06);}
+.ss-stats{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-bottom:1px solid #2b2b30;}
+.ss-stat{padding:9px 12px 8px;border-right:1px solid #2b2b30;min-width:0;}
+.ss-stat:last-child{border-right:0;}
+.ss-sl{font-size:11.5px;color:rgba(255,255,255,.52);margin-bottom:2px;}
+.ss-sv{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:3px;white-space:nowrap;}
+.ss-sv.pos{color:#22c98b}.ss-sv.neg{color:#f04455}.ss-sv.neu{color:rgba(255,255,255,.6)}
+.ss-spark{display:block;opacity:.9;}
+.ss-legend{display:flex;align-items:center;gap:14px;padding:8px 14px 0;}
+.ss-leg{background:transparent;border:0;color:rgba(255,255,255,.72);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;padding:0;}
+.ss-leg i{width:14px;height:3px;display:inline-block;}
+.ss-leg em{font-style:normal;color:rgba(255,255,255,.4);}
+.ss-leg.off{opacity:.35;}
+.ss-statkey{font-size:11.5px;color:rgba(255,255,255,.5);}
+.ss-statkey select{background:#16161a;color:#f2f3f5;border:1px solid #2b2b30;font-size:11.5px;padding:2px 4px;font-family:inherit;}
+.ss-chart{position:relative;flex:1;min-height:0;margin:4px 10px 10px;}
+.ss-chart svg{display:block;}
+.ss-tip{position:absolute;background:#16161a;border:1px solid #34343b;padding:8px 10px;font-size:12px;pointer-events:none;min-width:120px;z-index:5;}
+.ss-tip .d{font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.55);margin-bottom:5px;font-weight:700;}
+.ss-tip .r{display:flex;align-items:center;gap:7px;margin-top:3px;}
+.ss-tip .r i{width:10px;height:3px;display:inline-block;}
+.ss-tip .r span{flex:1;color:rgba(255,255,255,.75);}
+.ss-tip .r b{font-variant-numeric:tabular-nums;}
+.ss-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
+.ss-et{font-size:16px;font-weight:700;margin-bottom:8px;}
+.ss-es{max-width:560px;font-size:13px;line-height:1.55;color:rgba(255,255,255,.55);}
+</style>
+<script>
+/* ===== Seasonality tab: cumulative seasonal path from imported daily closes (15y / 10y / 5y + current year) ===== */
+(function(){
+  var SYMS=['USD','EUR','GBP','JPY','AUD','NZD','CAD','CHF'];
+  /* Monthly % returns copied from TradingView's Seasonals table (one array of 12 per year, null = month not finished).
+     name = the TradingView ticker used. invert:true flips a USDxxx pair into the currency's own direction (USDJPY up = JPY down). */
+  var SEASON_SRC={
+    USD:{name:'DXY',data:{"2026":[-1.15,0.51,1.95,-1.35,0.99,2.25,-1.59,-0.15,2.4,0.47,null,null],"2025":[0.02,-0.86,-3.13,-3.86,-0.73,-2.81,2.1,-1.0,0.01,2.06,-0.31,-1.13],"2024":[2.15,0.61,0.79,0.64,-0.95,1.15,-1.41,-2.5,-0.51,3.07,1.4,2.55],"2023":[-1.38,2.72,-2.25,-0.35,1.38,-0.63,-0.59,1.89,1.81,0.72,-3.17,-2.09],"2022":[0.99,0.17,1.99,4.39,-0.45,2.58,0.3,4.02,2.21,-0.57,-4.96,-2.29],"2021":[1.16,0.06,2.08,-1.77,-1.59,3.08,-0.46,0.3,1.72,-0.17,2.25,-0.41],"2020":[1.04,0.76,1.57,-0.6,-1.26,-0.65,-3.96,-1.08,1.49,0.35,-2.31,-2.1],"2019":[-0.62,0.61,1.12,0.47,0.07,-0.93,1.57,0.56,0.21,-1.91,1.06,-1.92],"2018":[-3.25,1.66,-0.51,2.55,1.88,0.47,-0.01,0.55,0.17,1.03,1.03,-1.13],"2017":[-2.64,1.62,-0.76,-1.27,-1.9,-1.62,-2.7,-0.25,0.28,1.87,-1.86,-0.99],"2016":[0.38,-0.81,-3.66,-1.62,2.55,0.2,0.07,-0.06,-0.2,2.34,3.89,0.7],"2015":[5.02,0.52,3.03,-2.94,2.2,-1.11,1.07,-1.94,0.77,0.79,3.33,-1.54],"2014":[1.59,-1.99,0.51,-0.71,1.06,-0.69,1.86,1.78,3.9,1.1,1.18,2.64],"2013":[-0.7,3.46,0.96,-1.51,2.32,-0.39,-0.86,-0.3,-2.37,0.72,-0.04,-0.8],"2012":[-1.11,-0.69,0.34,-0.18,5.1,-1.52,1.75,-2.23,-1.7,0.28,0.13,-0.48],"2011":[-1.64,-1.09,-1.37,-3.82,2.39,-0.44,-0.12,0.29,5.47,-1.64,1.45,2.29],"2010":[1.77,1.79,0.15,1.35,5.84,-2.22,-3.75,1.21,-5.37,-1.01,5.04,-2.67],"2009":[5.77,2.34,-2.85,-1.12,-6.36,0.58,-1.62,0.53,-2.0,-1.15,-1.86,3.98],"2008":[-1.98,-1.95,-1.56,0.98,-0.54,-0.7,1.46,5.39,2.69,7.76,1.27,-6.25],"2007":[1.06,-1.23,-0.77,-1.61,0.89,-0.49,-1.28,-0.1,-3.57,-1.68,-0.58,0.72],"2006":[-2.42,1.29,-0.42,-4.19,-1.37,0.51,-0.2,-0.13,1.21,-0.76,-2.81,0.96]}},
+    EUR:{name:'EURUSD',data:{"2026":[0.88,-0.27,-1.94,1.14,-0.76,-2.19,1.39,0.5,-3.01,-0.8,null,null],"2025":[0.07,0.15,4.01,4.61,0.51,4.03,-1.86,1.07,0.17,-1.65,0.63,1.17],"2024":[-1.5,-0.31,-0.88,-0.29,1.27,-1.0,0.48,2.37,0.19,-2.11,-2.37,-2.11],"2023":[2.68,-2.94,1.63,1.24,-1.95,1.38,0.67,-1.9,-1.9,0.0,2.44,1.93],"2022":[-0.92,-1.29,-0.72,-4.55,1.0,-2.08,-1.59,-3.09,-2.12,1.43,6.6,1.69],"2021":[-1.26,-0.09,-2.26,2.05,1.61,-2.98,0.16,-0.24,-2.08,0.11,-2.47,0.49],"2020":[-1.08,-0.58,-0.57,0.17,1.38,1.05,4.69,1.13,-1.37,-0.86,3.64,1.19],"2019":[-0.09,-0.79,-1.33,-0.15,-0.24,1.05,-1.77,-0.86,-0.52,2.12,-1.3,1.74],"2018":[4.22,-1.95,0.47,-2.69,-2.77,0.21,-0.21,-0.49,-0.21,-1.47,-0.8,1.31],"2017":[2.4,-2.06,0.99,2.32,2.88,1.91,3.28,0.5,-0.39,-1.66,2.38,0.91],"2016":[0.28,-0.19,4.82,0.52,-2.29,-0.47,0.23,0.31,0.4,-1.66,-3.57,-1.36],"2015":[-6.7,-0.86,-3.84,4.21,-2.59,1.16,-0.63,3.01,-1.05,-1.8,-3.28,2.12],"2014":[-1.95,2.37,-0.1,0.55,-1.7,0.33,-1.86,-2.21,-3.85,-0.7,-0.52,-2.96],"2013":[3.45,-4.6,-1.32,2.58,-1.4,0.53,1.09,0.07,2.34,-0.28,0.68,1.3],"2012":[1.66,1.19,0.14,-0.8,-6.11,1.72,-3.2,2.82,2.42,0.45,0.45,1.45],"2011":[3.4,-0.44,3.4,4.01,-3.12,1.25,-1.74,-0.03,-6.19,2.02,-1.39,-3.79],"2010":[-2.8,-2.6,0.19,-2.16,-7.88,2.17,4.31,-1.96,7.78,0.86,-5.64,1.89],"2009":[-8.5,-1.13,4.53,0.22,6.88,-0.24,0.79,-0.35,2.16,1.43,2.49,-5.08],"2008":[1.48,2.55,2.89,-0.9,0.5,1.53,-1.46,-6.28,-4.08,-8.98,-1.08,11.15],"2007":[-1.4,1.17,1.43,1.86,-1.15,0.69,0.92,-0.27,4.45,1.33,1.44,-0.31],"2006":[1.71,-1.2,1.65,3.72,1.97,-0.19,0.25,0.12,-1.28,0.8,4.39,-1.03]}},
+    GBP:{name:'GBPUSD',data:{"2026":[1.57,-1.48,-1.32,2.01,-0.87,-1.34,1.59,0.21,-2.36,-0.05,null,null],"2025":[-0.95,1.48,2.73,2.75,1.35,2.15,-3.39,2.0,-0.49,-2.43,0.47,1.98],"2024":[0.1,-0.72,-0.8,-0.2,1.72,-0.72,0.71,3.04,1.21,-2.75,-1.41,-1.75],"2023":[2.38,-2.77,2.53,1.32,0.24,1.37,0.63,-1.48,-3.09,-0.39,4.6,0.16],"2022":[-0.07,-1.46,-1.58,-4.12,-0.7,-3.11,1.25,-5.74,-4.5,4.16,6.61,-1.31],"2021":[-0.01,1.9,-0.65,-0.22,2.52,-2.69,0.97,-0.96,-1.62,0.88,-2.82,1.91],"2020":[-0.44,-2.9,-3.47,0.93,0.0,-0.13,4.77,2.4,-3.67,0.44,3.63,1.84],"2019":[2.53,0.91,-0.75,-0.4,-3.19,0.04,-4.02,0.26,1.17,5.18,-0.08,2.56],"2018":[5.58,-3.42,1.73,-2.87,-1.97,-1.03,-0.62,-1.28,0.65,-0.25,-1.96,0.03],"2017":[2.59,-2.88,2.15,2.6,-0.03,1.1,1.38,-1.88,3.43,-1.15,1.72,0.28],"2016":[-2.06,-3.34,2.0,2.69,-1.35,-7.98,-0.66,0.69,-2.19,-5.66,2.85,-2.01],"2015":[-3.38,2.5,-3.99,2.22,0.32,2.74,-0.02,-1.98,-1.13,1.89,-2.19,-2.28],"2014":[-0.72,1.86,-0.7,1.58,-0.78,2.31,-1.9,-1.29,-2.54,-1.15,-1.69,-0.9],"2013":[-3.29,-4.3,1.34,2.14,-2.29,0.12,-0.64,2.49,4.52,-1.66,2.69,1.26],"2012":[2.01,0.72,0.27,1.36,-5.3,1.99,-0.79,2.16,1.59,0.01,-0.7,1.36],"2011":[3.47,0.76,-0.9,3.69,-2.2,-1.63,1.51,-0.74,-3.78,2.31,-1.61,-0.95],"2010":[-1.36,-6.1,2.15,-0.14,-3.94,3.35,3.5,-1.59,2.42,1.51,-2.78,-0.11],"2009":[-1.3,-1.56,1.09,3.12,10.35,0.19,1.33,-3.52,-1.43,3.47,1.08,-2.75],"2008":[-1.02,1.22,-0.52,-0.05,0.22,0.62,-0.96,-9.28,-1.37,-9.05,-7.56,-0.87],"2007":[0.38,-0.49,0.55,1.55,-0.8,1.32,1.05,-0.63,1.34,1.63,-1.0,-3.47],"2006":[2.92,-1.41,-0.67,4.9,2.38,-0.92,1.45,1.57,-1.77,1.9,3.82,-1.06]}},
+    JPY:{name:'JPYUSD',data:{"2026":[1.29,-0.84,-1.65,1.0,-1.59,-1.79,3.27,-1.73,1.33,-0.14,null,null],"2025":[1.46,3.03,0.62,2.98,0.92,0.46,-2.74,0.15,0.07,-4.5,-0.94,-0.81],"2024":[-3.78,-2.48,-0.99,-1.82,-1.79,-2.63,8.11,2.21,1.68,-6.05,2.17,-4.87],"2023":[1.71,-5.34,2.55,-3.43,-0.94,-3.79,1.05,-2.36,-2.11,-1.03,2.81,4.2],"2022":[0.37,-0.22,-6.2,-5.64,-0.23,-3.78,2.72,-6.11,-3.11,-2.37,9.55,3.21],"2021":[-1.71,-1.7,-3.47,1.14,-0.11,-1.85,1.68,-0.32,-0.91,-2.6,1.09,-2.02],"2020":[-0.09,0.14,0.97,0.19,-0.67,0.17,1.45,-0.02,0.39,0.83,0.35,1.13],"2019":[0.22,-2.16,0.48,0.0,2.87,-0.14,1.04,0.97,-1.34,-0.34,-1.22,1.12],"2018":[3.0,2.97,-0.02,-3.24,0.29,-1.07,-0.89,0.51,-2.53,1.21,-0.73,3.39],"2017":[3.38,-0.4,2.08,-0.39,0.43,-0.95,1.88,0.07,-1.95,-1.44,1.71,-0.43],"2016":[-0.63,6.12,2.09,5.02,-2.86,6.76,0.16,-0.83,1.86,-2.62,-8.79,-2.57],"2015":[1.8,-1.72,0.01,-0.43,-3.67,1.29,-0.59,3.79,-0.43,-0.55,-1.88,2.2],"2014":[3.48,0.2,-1.83,1.14,0.51,0.51,-1.32,-1.65,-4.08,-3.16,-4.95,-1.07],"2013":[-6.6,-0.84,-0.66,-3.21,-3.12,0.81,0.4,1.09,0.39,-0.88,-3.66,-2.77],"2012":[0.85,-6.04,-2.12,3.49,2.81,-2.27,1.76,0.08,0.55,-2.73,-2.81,-4.88],"2011":[-0.33,-0.57,-2.63,3.54,0.33,0.16,4.3,0.7,-0.15,-1.7,0.87,1.09],"2010":[2.71,1.64,-5.1,0.0,3.21,3.66,1.5,2.43,1.36,3.6,-4.44,3.8],"2009":[0.91,-7.95,-0.98,-0.5,2.69,-0.1,2.04,1.9,3.73,-0.63,3.99,-6.79],"2008":[4.83,2.79,1.88,-2.46,-1.05,-0.53,-1.49,-0.32,2.06,7.45,5.74,2.72],"2007":[-1.44,2.79,-0.12,-1.78,-1.93,-0.86,3.59,2.75,0.0,1.05,3.11,-0.56],"2006":[-0.12,1.66,-1.4,3.79,1.29,-2.06,0.45,-2.74,-0.82,1.45,0.8,-3.02]}},
+    AUD:{name:'AUDUSD',data:{"2026":[4.36,2.17,-2.64,3.92,-0.56,-3.73,2.07,1.54,-3.0,0.57,null,null],"2025":[0.37,-0.04,1.13,1.67,0.77,2.34,-1.72,1.28,0.93,-1.01,-0.02,1.97],"2024":[-3.5,-0.7,-0.55,0.51,2.0,0.1,-2.39,3.85,1.95,-4.7,-0.7,-5.0],"2023":[4.69,-5.27,-1.12,-0.81,-0.88,1.39,-0.76,-2.44,-0.29,-0.61,4.42,2.01],"2022":[-1.83,1.74,3.41,-5.85,1.63,-5.05,3.11,-3.39,-5.7,-0.1,6.52,0.07],"2021":[-0.96,1.99,-2.0,1.24,0.54,-3.66,-1.67,0.29,-1.33,3.5,-5.55,2.2],"2020":[-4.61,-2.74,-6.74,5.72,5.91,1.73,3.16,3.35,-2.55,-2.17,4.88,4.38],"2019":[2.82,-2.37,0.49,-1.37,-1.11,0.42,-2.38,-0.95,-0.46,3.0,-2.08,3.77],"2018":[2.91,-3.53,-1.01,-2.45,1.03,-2.12,-0.04,-2.85,0.43,-0.26,1.48,-3.58],"2017":[5.25,1.2,-0.64,-1.33,-2.01,4.26,3.65,0.09,-1.78,-2.02,-0.82,2.62],"2016":[-2.44,0.88,6.99,-0.92,-4.6,3.27,0.58,0.19,1.44,-0.1,-3.11,-2.79],"2015":[-4.69,0.37,-2.72,3.15,-2.97,0.5,-4.39,-3.99,0.18,1.51,2.63,-0.45],"2014":[-1.99,1.98,3.65,0.29,0.37,2.02,-1.94,0.2,-6.37,0.72,-3.53,-3.82],"2013":[0.01,-1.93,2.21,-1.39,-6.79,-3.56,-3.41,-0.25,5.56,0.39,-3.43,-2.04],"2012":[5.01,0.88,-4.2,-0.19,-6.34,5.68,2.31,-1.33,0.31,0.51,0.22,-0.36],"2011":[-1.26,0.23,2.48,5.63,-3.22,1.43,2.08,-2.48,-9.89,6.69,-0.83,-0.14],"2010":[-0.67,0.94,2.35,0.34,-9.74,1.29,7.03,0.42,7.06,1.66,-2.29,6.01],"2009":[-9.67,0.34,9.31,4.56,11.11,-0.26,3.31,-1.22,5.07,3.61,2.95,-3.0],"2008":[3.33,2.94,-2.49,2.88,2.38,-0.13,-2.66,-8.57,-6.8,-15.7,-4.93,11.06],"2007":[-1.95,1.43,3.07,2.25,0.71,1.94,0.44,-4.14,9.23,2.45,-3.36,-1.06],"2006":[2.5,-1.12,-3.81,5.66,-1.03,-0.73,3.09,0.04,-2.84,3.84,1.95,0.06]}},
+    NZD:{name:'NZDUSD',data:{"2026":[4.57,-0.4,-4.07,2.52,0.6,-4.4,3.89,0.01,-4.89,-0.23,null,null],"2025":[0.77,-0.69,1.83,3.62,1.0,2.24,-2.94,-0.29,-1.45,-1.6,0.01,0.57],"2024":[-2.75,-0.59,-2.53,-0.4,3.98,-1.46,-2.09,5.0,0.54,-5.05,-0.73,-5.5],"2023":[2.46,-3.82,-0.03,-1.41,-1.57,1.12,0.19,-3.39,0.94,-2.53,6.24,1.73],"2022":[-2.95,1.78,2.44,-6.72,0.43,-4.25,1.97,-3.96,-7.95,4.39,8.99,-0.27],"2021":[-0.38,1.51,-3.41,1.89,1.48,-3.95,0.07,1.37,-1.82,3.53,-5.26,0.46],"2020":[-3.95,-3.37,-5.25,2.33,3.93,2.91,2.26,2.04,-1.61,-0.52,6.78,1.71],"2019":[2.58,-1.32,0.07,-2.69,-1.32,2.09,-1.78,-3.69,-1.04,2.9,-0.12,4.84],"2018":[4.31,-2.0,-0.19,-3.21,-0.36,-3.07,0.39,-2.45,-0.13,0.59,3.37,-2.33],"2017":[5.1,-1.87,-1.98,-1.37,2.21,3.84,1.86,-4.17,0.73,-4.46,0.06,2.93],"2016":[-4.13,1.25,4.21,1.01,-2.3,5.32,-0.11,1.55,0.03,-1.39,-1.33,-2.28],"2015":[-6.79,4.04,-1.45,1.17,-6.01,-4.96,-2.0,-4.01,0.98,5.87,-1.43,2.28],"2014":[-1.74,3.66,3.09,-0.07,-1.61,3.3,-3.03,-1.54,-7.05,0.1,0.92,-0.86],"2013":[1.99,-2.42,1.53,1.54,-6.41,-1.68,0.9,-1.98,7.0,-0.36,-1.4,1.19],"2012":[7.28,0.66,-2.37,-0.47,-7.56,6.21,1.19,-0.76,3.1,-0.09,-0.81,0.89],"2011":[0.45,-4.47,2.73,5.51,0.74,1.39,5.94,-2.83,-10.59,4.18,-1.75,-0.3],"2010":[-1.92,-1.29,1.2,2.63,-6.78,2.03,5.04,-2.15,4.76,3.07,-2.46,4.1],"2009":[-12.69,-1.64,13.1,0.6,13.84,-1.08,3.13,2.09,5.56,0.69,1.23,-0.55],"2008":[3.8,0.49,-1.5,-1.18,0.72,-3.2,-4.04,-4.74,-2.95,-13.39,-9.68,10.79],"2007":[-3.17,1.64,3.06,3.48,0.7,3.72,-1.07,-8.22,9.01,-0.73,0.65,0.21],"2006":[0.51,-2.98,-7.4,2.99,-0.92,-3.03,1.72,5.78,-0.35,3.11,2.03,2.55]}},
+    CAD:{name:'CADUSD',data:{"2026":[0.74,-0.19,-1.61,2.05,-1.78,-2.64,1.36,0.84,-2.24,-0.11,null,null],"2025":[-0.9,0.41,1.17,3.21,0.82,0.71,-1.05,0.29,-1.35,-0.52,0.08,2.03],"2024":[-0.97,-1.25,-0.12,-1.21,0.83,-0.79,-0.96,2.78,0.03,-3.32,-0.39,-2.7],"2023":[1.94,-2.22,0.56,-0.19,0.71,1.51,-0.13,-2.4,0.11,-1.98,2.65,1.8],"2022":[-0.35,-0.44,1.84,-2.68,1.6,-1.78,0.35,-2.39,-4.9,1.47,1.48,-0.86],"2021":[-0.98,1.66,0.8,2.06,1.83,-2.94,-0.26,-1.2,-0.21,2.23,-3.5,1.41],"2020":[-1.88,-1.14,-5.61,0.71,3.79,-0.07,1.22,2.73,-1.67,-0.32,3.03,1.62],"2019":[4.14,-1.48,-0.05,-0.96,-0.82,3.1,-0.59,-1.11,1.07,0.45,-0.88,2.23],"2018":[2.32,-4.43,-0.49,0.37,-0.84,-1.37,1.05,-0.31,1.75,-2.05,-1.53,-2.61],"2017":[3.07,-2.06,0.12,-2.7,1.23,4.18,3.45,1.12,-0.57,-3.03,1.42,1.05],"2016":[-0.8,4.03,3.12,3.63,-4.08,1.2,-1.56,0.26,-0.2,-1.99,0.51,-0.99],"2015":[-8.68,1.76,-0.81,3.72,-2.88,-0.49,-3.89,-1.17,-0.11,1.35,-2.04,-3.45],"2014":[-4.37,0.58,0.38,0.6,1.05,2.03,-2.61,0.37,-2.57,-0.92,-0.54,-2.58],"2013":[-0.33,-2.94,0.88,0.94,-2.71,-1.22,1.43,-1.84,1.99,-0.85,-1.81,-0.28],"2012":[2.23,1.34,-1.31,1.31,-5.33,2.42,1.13,1.93,0.41,-1.45,0.25,0.08],"2011":[0.77,1.62,1.2,1.92,-3.28,1.95,0.26,-2.08,-7.05,3.07,0.49,-0.67],"2010":[-0.88,1.92,3.23,-0.86,-3.47,-0.37,2.82,-2.06,3.05,0.43,-0.16,1.89],"2009":[-0.55,-3.71,1.25,6.24,8.55,-4.97,6.54,-2.34,1.89,-0.1,3.71,-0.58],"2008":[-0.23,0.75,-3.47,0.34,2.61,-2.81,-0.32,-3.97,0.46,-12.47,-2.64,2.17],"2007":[-1.07,0.5,1.69,3.79,4.77,-0.41,0.86,0.01,6.47,4.24,-4.86,0.77],"2006":[1.78,0.61,-2.91,4.88,1.07,-1.21,-1.31,2.44,-1.24,-1.26,-1.0,-1.92]}},
+    CHF:{name:'CHFUSD',data:{"2026":[2.48,0.53,-3.13,1.53,-0.57,-2.82,0.2,-0.5,-2.35,-0.46,null,null],"2025":[-0.35,0.91,2.22,6.43,0.89,3.81,-1.44,0.4,0.5,-1.13,0.15,1.58],"2024":[-2.0,-2.9,-2.42,-1.38,1.72,-0.14,3.45,2.77,0.27,-2.53,-1.35,-2.91],"2023":[1.76,-3.34,2.69,2.08,-1.05,1.21,2.65,-1.54,-3.22,0.71,4.56,3.4],"2022":[-0.99,0.27,-0.73,-4.94,0.91,0.55,1.0,-3.25,-0.55,-1.25,6.71,1.36],"2021":[-1.33,-1.94,-2.91,3.17,1.75,-3.03,2.22,-1.11,-1.59,2.36,-1.23,0.91],"2020":[0.02,-0.2,-0.15,0.59,0.0,1.6,3.52,0.52,-1.08,0.26,1.88,1.68],"2019":[-1.38,-0.36,0.0,-1.83,1.78,1.26,-0.3,0.12,-0.44,1.02,-1.65,3.78],"2018":[5.32,-1.65,-1.22,-4.35,0.86,-0.26,-0.11,2.36,-1.55,-1.82,0.36,1.73],"2017":[2.63,-1.58,0.52,0.72,2.59,1.23,-0.62,0.02,-0.35,-3.41,2.74,0.06],"2016":[-1.95,2.26,4.05,-0.09,-2.92,1.61,0.48,-1.22,0.89,-0.4,-3.5,-0.82],"2015":[7.91,-3.5,-1.28,3.67,-1.43,-0.21,-1.9,0.75,-1.84,-1.06,-3.74,2.58],"2014":[-1.59,3.02,-0.38,0.49,-1.78,0.87,-2.06,-1.46,-3.87,-0.66,-0.19,-2.93],"2013":[0.77,-3.7,-0.75,2.45,-2.94,1.07,0.96,0.7,2.67,-0.73,0.68,1.57],"2012":[2.58,1.02,0.4,-0.57,-6.05,1.84,-3.45,2.92,1.74,0.69,0.41,1.44],"2011":[0.06,0.71,0.51,6.8,2.7,-0.68,8.21,-1.41,-12.41,2.3,-3.15,-2.44],"2010":[-2.03,-2.15,2.39,-2.19,-6.9,9.23,1.8,2.52,4.37,-1.9,-1.04,7.12],"2009":[-8.05,-0.82,1.99,1.02,6.05,-0.33,0.48,0.33,2.35,1.55,2.63,-3.43],"2008":[4.0,4.68,2.85,-3.39,0.52,2.19,-2.84,-4.69,-2.05,-2.78,-4.07,12.98],"2007":[-1.96,1.77,0.57,0.07,-1.29,0.69,1.48,-0.36,3.35,0.94,2.34,-0.15],"2006":[1.93,-1.83,0.71,5.06,1.6,-0.17,-0.28,-0.36,-1.58,0.39,4.37,-2.11]}}
+  };
+  var MS=[0,31,59,90,120,151,181,212,243,273,304,334,365], MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var SER=[{k:'y15',l:'15y',c:'#fa660f',dash:''},{k:'y10',l:'10y',c:'#22c98b',dash:'4 3'},{k:'y5',l:'5y',c:'#4c8dff',dash:'4 3'},{k:'cur',l:'This year',c:'#f2f3f5',dash:''}];
+  var sym=SYMS[0], hidden={}, statKey='y10', msg='', view='chart', yLo=null, yHi=null;
+  var CACHE={};
+  var DAILY=null, dailyState='idle';
+  /* real daily closes -> cumulative % path per calendar year (from prior year's last close), averaged over the last N complete years */
+  function dailyPaths(s){
+    var by={}, nowY=new Date().getUTCFullYear(), i, y, k;
+    for(i=0;i<s.d.length;i++){ y=+s.d[i].slice(0,4); (by[y]=by[y]||{})[slotOf(+s.d[i].slice(5,7)-1,+s.d[i].slice(8,10))]=s.c[i]; }
+    var years=Object.keys(by).map(Number).sort(function(a,b){return a-b;}), P={}, ok={}, prev=null;
+    years.forEach(function(yy){
+      var slots=Object.keys(by[yy]).map(Number).sort(function(a,b){return a-b;}), base=prev!=null?prev:by[yy][slots[0]];
+      var maxS=yy<nowY?364:slots[slots.length-1], p=new Array(365).fill(null), j=0, lastV=base, sl;
+      for(sl=0;sl<=maxS;sl++){ if(by[yy][sl]!=null) lastV=by[yy][sl]; p[sl]=Math.round((lastV/base-1)*10000)/100; }
+      P[yy]=p; prev=by[yy][slots[slots.length-1]];
+      ok[yy]=yy<nowY&&slots[slots.length-1]>=355&&(prev!=null)&&(yy>years[0]||slots[0]<=10);
+    });
+    var done=years.filter(function(yy){return ok[yy];});
+    function avg(N){ var ys=done.slice(-N); if(!ys.length) return {a:null,n:0}; var o=[],t; for(var q=0;q<365;q++){ t=0; ys.forEach(function(yy){t+=P[yy][q];}); o.push(Math.round(t/ys.length*100)/100);} return {a:o,n:ys.length}; }
+    var a5=avg(5),a10=avg(10),a15=avg(15);
+    return {y5:a5.a,y10:a10.a,y15:a15.a,n5:a5.n,n10:a10.n,n15:a15.n,cur:P[nowY]||null};
+  }
+  function applyDaily(c,D){
+    if(!DAILY||!DAILY[c]||D.daily) return;
+    try{ var r=dailyPaths(DAILY[c]); if(!r.y10&&!r.y5) return; ['y5','y10','y15','n5','n10','n15'].forEach(function(k){D[k]=r[k];}); if(r.cur) D.cur=r.cur; D.daily=true; }catch(e){ console.error('seasonality daily',c,e); }
+  }
+  function loadDaily(){
+    if(dailyState!=='idle') return; dailyState='loading';
+    var done=function(j){ if(j&&j.data&&Object.keys(j.data).length){ DAILY=j.data; dailyState='done'; Object.keys(CACHE).forEach(function(c){applyDaily(c,CACHE[c]);}); try{ if(activeTab==='season') render(); }catch(e){} } else dailyState='failed'; };
+    try{ var raw=localStorage.getItem('twpSeasDaily'); if(raw){ var o=JSON.parse(raw); if(o&&o.t&&Date.now()-o.t<20*3600*1000&&o.j){ done(o.j); return; } } }catch(e){}
+    fetch(SUPABASE_URL+'/functions/v1/seasonality-daily',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(j){ try{localStorage.setItem('twpSeasDaily',JSON.stringify({t:Date.now(),j:j}));}catch(e){} done(j); })
+      .catch(function(e){ console.warn('seasonality daily unavailable, using monthly returns',e); dailyState='failed'; });
+  }
+  function store(){ SYMS.forEach(function(c){ if(SEASON_SRC[c]&&!CACHE[c]){ try{CACHE[c]=build(SEASON_SRC[c]); applyDaily(c,CACHE[c]);}catch(e){console.error('seasonality',c,e);} } }); return CACHE; }
+  function slotOf(m,d){ if(m===1&&d>28)d=28; return MS[m]+d-1; }
+  function todaySlot(){ var n=new Date(); return slotOf(n.getUTCMonth(),n.getUTCDate()); }
+  function slotLabel(s){ var m=0; while(m<11&&s>=MS[m+1]) m++; var d=s-MS[m]+1,sf=(d%10===1&&d!==11)?'st':(d%10===2&&d!==12)?'nd':(d%10===3&&d!==13)?'rd':'th'; return MN[m].toUpperCase()+' '+d+sf.toUpperCase(); }
+  function fmt(v){ return (v>=0?'+':'')+v.toFixed(2)+'%'; }
+  function tone(v){ return v>0.005?'pos':v<-0.005?'neg':'neu'; }
+  /* ---------- build the seasonal paths from monthly returns ---------- */
+  function build(srcObj){
+    var inv=!!srcObj.invert, years=Object.keys(srcObj.data).map(Number).sort(function(a,b){return a-b;});
+    var now=new Date(), nowY=now.getUTCFullYear(), nowM=now.getUTCMonth(), nowD=now.getUTCDate();
+    var R={}, paths={}, yret={}, complete={}, lastY=years[years.length-1], lastM=-1;
+    years.forEach(function(y){ R[y]=srcObj.data[y].map(function(v){ return v==null?null:(inv?(100/(1+v/100)-100):v); }); });
+    years.forEach(function(y){
+      var r=R[y], p=new Array(365).fill(null), cum=1, lm=-1, m, j;
+      for(m=0;m<12;m++){ if(r[m]==null) break; lm=m; }
+      for(m=0;m<=lm;m++){
+        var L=MS[m+1]-MS[m], span=L, f=1+r[m]/100;
+        if(y===nowY&&m===nowM&&m===lm) span=Math.max(1,Math.min(L,nowD)); /* month still running: draw only the days that have happened */
+        for(j=0;j<span;j++) p[MS[m]+j]=(cum*Math.pow(f,(j+1)/span)-1)*100;
+        cum*=f;
+      }
+      paths[y]=p; yret[y]=Math.round((cum-1)*10000)/100; complete[y]=(lm===11);
+      if(y===lastY) lastM=lm;
+    });
+    var done=years.filter(function(y){return y<nowY&&complete[y];});
+    function avg(N){ var ys=done.slice(-N); if(!ys.length) return {a:null,n:0,m:null}; var out=[],mm=[],i,m;
+      for(i=0;i<365;i++){ var s=0; ys.forEach(function(y){s+=paths[y][i];}); out.push(Math.round(s/ys.length*100)/100); }
+      for(m=0;m<12;m++){ var t=0; ys.forEach(function(y){t+=R[y][m];}); mm.push(Math.round(t/ys.length*100)/100); }
+      return {a:out,n:ys.length,m:mm}; }
+    var a5=avg(5),a10=avg(10),a15=avg(15);
+    if(!a5.n) throw new Error('Need at least one complete calendar year.');
+    var cur=paths[nowY]?paths[nowY].map(function(v){return v==null?null:Math.round(v*100)/100;}):null;
+    return {tbl:{m:R,y:yret},name:srcObj.name,y5:a5.a,y10:a10.a,y15:a15.a,n5:a5.n,n10:a10.n,n15:a15.n,
+            mavg:{y5:a5.m,y10:a10.m,y15:a15.m},cur:cur,first:years[0],lastY:lastY,lastM:lastM};
+  }
+  /* ---------- helpers for stats ---------- */
+  function P(path,i){ return i<0?0:(path[Math.min(364,i)]==null?0:path[Math.min(364,i)]); }
+  function monthRet(path,m){ return P(path,MS[m+1]-1)-P(path,MS[m]-1); }
+  function slice(path,a,b){ var o=[]; for(var i=a;i<=b;i++) o.push(P(path,i)); return o; }
+  function spark(arr,col){
+    if(!arr.length) return ''; var w=64,h=18,mn=Math.min.apply(null,arr),mx=Math.max.apply(null,arr); if(mx-mn<1e-9){mx+=1;mn-=1;}
+    var d=arr.map(function(v,i){return (i/(arr.length-1||1)*w).toFixed(1)+','+(h-2-(v-mn)/(mx-mn)*(h-4)).toFixed(1);}).join(' ');
+    return '<svg class="ss-spark" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline fill="none" stroke="'+col+'" stroke-width="1.4" points="'+d+'"/></svg>';
+  }
+  function statsHtml(D){
+    var key=D[statKey]?statKey:(D.y10?'y10':D.y5?'y5':'y15'); var path=D[key], t=todaySlot(), nm=new Date().getUTCMonth();
+    var mv=(D.mavg&&D.mavg[key])?D.mavg[key]:null, months=[];for(var m=0;m<12;m++)months.push({m:m,v:mv?mv[m]:monthRet(path,m)}); months.sort(function(a,b){return b.v-a.v;});
+    var best=months[0],worst=months[11];
+    var cells=[
+      ['By now, average',P(path,t),slice(path,0,t)],
+      [MN[nm]+' average',mv?mv[nm]:monthRet(path,nm),slice(path,MS[nm],MS[nm+1]-1)],
+      ['Next 30 days',P(path,t+30)-P(path,t),slice(path,t,t+30)],
+      ['Rest of year',P(path,364)-P(path,t),slice(path,t,364)],
+      ['Full year',P(path,364),slice(path,0,364)]
+    ].map(function(c){var tn=tone(c[1]);return '<div class="ss-stat"><div class="ss-sl">'+c[0]+'</div><div class="ss-sv '+tn+'">'+fmt(c[1])+'</div>'+spark(c[2],tn==='neg'?'#f04455':'#22c98b')+'</div>';}).join('');
+    cells+='<div class="ss-stat"><div class="ss-sl">Best month</div><div class="ss-sv pos">'+MN[best.m]+' '+fmt(best.v)+'</div></div>'+
+           '<div class="ss-stat"><div class="ss-sl">Weakest month</div><div class="ss-sv neg">'+MN[worst.m]+' '+fmt(worst.v)+'</div></div>';
+    return cells;
+  }
+  /* ---------- chart ---------- */
+  function smooth(a,k){ if(!a) return a; var o=a.slice(); for(var i=0;i<a.length;i++){ if(a[i]==null)continue; var s=0,c=0; for(var j=-k;j<=k;j++){var v=a[i+j]; if(v!=null){s+=v;c++;}} o[i]=s/c; } return o; }
+  function scale(lo,hi){ var rng=Math.max(1,hi-lo)*1.1, steps=[1,2,2.5,5,10,20,25,50], st=steps[steps.length-1]; for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=7){st=steps[i];break;} } var a=Math.floor(Math.min(lo,0)/st)*st, b=Math.ceil(Math.max(hi,0)/st)*st; if(a===b)b=a+st; var t=[];for(var v=a;v<=b+1e-9;v+=st)t.push(Math.round(v*100)/100); return {lo:a,hi:b,ticks:t}; }
+  function draw(D){
+    var wrap=document.getElementById('ssChart'); if(!wrap) return; var W=wrap.clientWidth,H=wrap.clientHeight; if(W<200||H<120) return;
+    var pl=54,pr=18,pt=22,pb=30, vs=SER.filter(function(s){return D[s.k]&&!hidden[s.k];}), lo=0,hi=0;
+    var data={}; vs.forEach(function(s){data[s.k]=(s.k==='cur'||D.daily)?D.cur&&s.k==='cur'?D.cur:D[s.k]:smooth(D[s.k],2); data[s.k].forEach(function(v){if(v!=null){lo=Math.min(lo,v);hi=Math.max(hi,v);}});});
+    var sc=scale(lo,hi), X=function(i){return pl+i/364*(W-pl-pr);}, Y=function(v){return pt+(1-(v-sc.lo)/(sc.hi-sc.lo))*(H-pt-pb);}, g='';
+    sc.ticks.forEach(function(t){g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'" stroke="rgba(255,255,255,'+(t===0?'.26':'.07')+')" '+(t===0?'stroke-dasharray="4 4"':'')+'/><text x="'+(pl-8)+'" y="'+(Y(t)+3.5).toFixed(1)+'" text-anchor="end" font-size="11" fill="rgba(255,255,255,.45)">'+t.toFixed(t%1?1:0)+'%</text>';});
+    for(var m=0;m<12;m++){ var x=X((MS[m]+MS[m+1])/2); g+='<text x="'+x.toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.42)">'+MN[m]+'</text><line x1="'+X(MS[m]).toFixed(1)+'" x2="'+X(MS[m]).toFixed(1)+'" y1="'+(H-pb)+'" y2="'+(H-pb+4)+'" stroke="rgba(255,255,255,.22)"/>'; }
+    var ts=todaySlot(); g+='<line x1="'+X(ts).toFixed(1)+'" x2="'+X(ts).toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#fa660f" stroke-opacity=".55" stroke-dasharray="3 4"/><text x="'+(X(ts)+6).toFixed(1)+'" y="'+(pt+2)+'" font-size="10.5" fill="#fa8a3c" letter-spacing="1">TODAY</text>';
+    vs.forEach(function(s){ var a=data[s.k],d='',pen=false,lastI=-1; a.forEach(function(v,i){if(v==null)return;d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true;lastI=i;});
+      g+='<path d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="'+(s.k==='cur'?2.6:2.1)+'" '+(s.dash?'stroke-dasharray="'+s.dash+'" ':'')+'stroke-linejoin="round" stroke-linecap="round"/>';
+      if(s.k==='cur'&&lastI>=0) g+='<circle cx="'+X(lastI).toFixed(1)+'" cy="'+Y(a[lastI]).toFixed(1)+'" r="3.6" fill="'+s.c+'"/>'; });
+    wrap.innerHTML='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'<line id="ssX" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(255,255,255,.35)" visibility="hidden"/></svg><div class="ss-tip" id="ssTip" hidden></div>';
+    var svg=wrap.querySelector('svg'),tip=document.getElementById('ssTip'),xh=document.getElementById('ssX');
+    svg.addEventListener('mousemove',function(e){ var r=svg.getBoundingClientRect(),x=(e.clientX-r.left)*(W/r.width); var i=Math.max(0,Math.min(364,Math.round((x-pl)/(W-pl-pr)*364)));
+      xh.setAttribute('x1',X(i));xh.setAttribute('x2',X(i));xh.setAttribute('visibility','visible');
+      tip.innerHTML='<div class="d">'+slotLabel(i)+'</div>'+vs.map(function(s){var v=(s.k==='cur'?D.cur:D[s.k])[i];return v==null?'':'<div class="r"><i style="background:'+s.c+'"></i><span>'+s.l+'</span><b>'+v.toFixed(1)+'%</b></div>';}).join('');
+      tip.hidden=false; var px=X(i)/W*r.width,tw=tip.offsetWidth; tip.style.left=Math.max(4,(px+14+tw>r.width)?px-tw-14:px+14)+'px'; tip.style.top='10px'; });
+    svg.addEventListener('mouseleave',function(){tip.hidden=true;xh.setAttribute('visibility','hidden');});
+  }
+  /* ---------- monthly returns table ---------- */
+  var MFULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function tcell(v,big){ if(v==null) return '<td class="ss-na">&mdash;</td>'; var a=Math.min(.8,.16+Math.abs(v)/(big?18:7)*.64); return '<td style="background:rgba('+(v>=0?'34,201,139':'240,68,85')+','+a.toFixed(2)+')">'+(v<0?'\u2212':'')+Math.abs(v).toFixed(2)+'%</td>'; }
+  function tableYears(D){ var ys=Object.keys(D.tbl.m).map(Number).sort(function(a,b){return a-b;}); var mn=ys[0],mx=ys[ys.length-1]; var lo=yLo==null?mn:Math.max(mn,yLo),hi=yHi==null?mx:Math.min(mx,yHi); if(lo>hi){lo=hi;} return {all:ys,mn:mn,mx:mx,lo:lo,hi:hi,sel:ys.filter(function(y){return y>=lo&&y<=hi;})}; }
+  function tableHtml(D){
+    var T=D.tbl, Y=tableYears(D), sel=Y.sel.slice().reverse(), h='<thead><tr><th class="ss-ty">Date</th>'+MFULL.map(function(m){return '<th>'+m+'</th>';}).join('')+'<th class="ss-yr">Year</th></tr></thead><tbody>';
+    sel.forEach(function(y){ h+='<tr><th class="ss-ty">'+y+'</th>'+T.m[y].map(function(v){return tcell(v,false);}).join('')+tcell(T.y[y],true)+'</tr>'; });
+    var avg=[]; for(var m=0;m<12;m++){var s0=0,c=0;sel.forEach(function(y){var v=T.m[y][m];if(v!=null){s0+=v;c++;}});avg.push(c?Math.round(s0/c*100)/100:null);} var ya=0,yc=0; sel.forEach(function(y){ya+=T.y[y];yc++;});
+    h+='<tr class="ss-avg"><th class="ss-ty">Average</th>'+avg.map(function(v){return tcell(v,false);}).join('')+tcell(yc?Math.round(ya/yc*100)/100:null,true)+'</tr></tbody><tfoot><tr><th class="ss-ty">Rises and falls</th>';
+    for(m=0;m<12;m++){var u=0,d=0;sel.forEach(function(y){var v=T.m[y][m];if(v==null)return;if(v>=0)u++;else d++;});h+='<td><span class="up">&#9650;'+u+'</span> <span class="dn">&#9660;'+d+'</span></td>';}
+    var yu=0,yd=0; sel.forEach(function(y){if(T.y[y]>=0)yu++;else yd++;});
+    return h+'<td><span class="up">&#9650;'+yu+'</span> <span class="dn">&#9660;'+yd+'</span></td></tr></tfoot>';
+  }
+  function tableBlock(D){
+    if(!D.tbl) return '<div class="ss-empty"><div class="ss-et">Table needs a fresh import</div><div class="ss-es">This pair was imported before the table view existed. Import the CSV again and the monthly table will be built.</div></div>';
+    var Y=tableYears(D);
+    return '<div class="ss-range"><span>Years</span><b id="ssLoL">'+Y.lo+'</b><input type="range" id="ssLo" min="'+Y.mn+'" max="'+Y.mx+'" value="'+Y.lo+'"><input type="range" id="ssHi" min="'+Y.mn+'" max="'+Y.mx+'" value="'+Y.hi+'"><b id="ssHiL">'+Y.hi+'</b></div>'+
+      '<div class="ss-tablewrap"><table class="ss-tbl" id="ssTbl">'+tableHtml(D)+'</table></div>';
+  }
+  /* ---------- tab ---------- */
+  function render(){
+    var host=document.getElementById('tab-season'); if(!host) return; var D=store()[sym]; loadDaily();
+    var pills=SYMS.map(function(s){var has=!!store()[s];return '<button type="button" class="ss-pill'+(s===sym?' active':'')+'" data-sym="'+s+'">'+s+(has?'':'<i></i>')+'</button>';}).join('');
+    var sub=D?('· '+sym+' · '+D.name+' · cumulative path · '+D.first+'\u2013'+D.lastY):'· '+sym;
+    var legend=D?SER.filter(function(s){return D[s.k];}).map(function(s){var n=D['n'+s.k.slice(1)];return '<button type="button" class="ss-leg'+(hidden[s.k]?' off':'')+'" data-k="'+s.k+'"><i style="background:'+s.c+'"></i>'+s.l+(s.k!=='cur'&&n&&n<Number(s.k.slice(1))?' <em>('+n+' available)</em>':'')+'</button>';}).join(''):'';
+    var stat=D?'<div class="ss-statkey">Stats from <select id="ssStatKey">'+['y5','y10','y15'].filter(function(k){return D[k];}).map(function(k){return '<option value="'+k+'"'+(k===statKey?' selected':'')+'>'+k.slice(1)+'y average</option>';}).join('')+'</select></div>':'';
+    host.innerHTML='<div class="ss"><section class="ss-card"><div class="ss-head"><span class="ss-dot"></span><span class="ss-title">Seasonality</span><span class="ss-subt">'+sub+'</span><span class="ss-grow"></span><span class="ss-seg"><button type="button" class="'+(view==='chart'?'active':'')+'" data-view="chart">Chart</button><button type="button" class="'+(view==='table'?'active':'')+'" data-view="table">Table</button></span>'+pills+'</div>'+
+      (D&&view==='table'?tableBlock(D):D?'<div class="ss-stats">'+statsHtml(D)+'</div><div class="ss-legend">'+legend+'<span class="ss-grow"></span>'+stat+'</div><div class="ss-chart" id="ssChart"></div>'
+        :'<div class="ss-empty"><div class="ss-et">No seasonality loaded for '+sym+' yet</div><div class="ss-es">This currency has not been added to the dashboard yet.</div></div>')+
+      '</section></div>';
+    [].forEach.call(host.querySelectorAll('[data-sym]'),function(b){b.onclick=function(){sym=this.getAttribute('data-sym');yLo=null;yHi=null;render();};});
+    [].forEach.call(host.querySelectorAll('[data-view]'),function(b){b.onclick=function(){view=this.getAttribute('data-view');render();};});
+    var slo=document.getElementById('ssLo'),shi=document.getElementById('ssHi');
+    if(slo&&shi&&D&&D.tbl){ var upd=function(){ var a=Number(slo.value),b=Number(shi.value); if(a>b){ if(this===slo){b=a;shi.value=b;}else{a=b;slo.value=a;} } yLo=a;yHi=b; document.getElementById('ssLoL').textContent=a; document.getElementById('ssHiL').textContent=b; document.getElementById('ssTbl').innerHTML=tableHtml(D); }; slo.oninput=upd; shi.oninput=upd; }
+    [].forEach.call(host.querySelectorAll('[data-k]'),function(b){b.onclick=function(){var k=this.getAttribute('data-k');hidden[k]=!hidden[k];this.classList.toggle('off',!!hidden[k]);draw(D);};});
+    var sk=document.getElementById('ssStatKey'); if(sk) sk.onchange=function(){statKey=this.value;render();};
+    if(D&&view==='chart') requestAnimationFrame(function(){requestAnimationFrame(function(){draw(D);});});
+  }
+  window.renderSeason=render; window.__seasonBuild=function(c){return store()[c];};
+  if(typeof TAB_META!=='undefined') TAB_META.season={title:'Seasonality',sub:'Average cumulative path of each currency over the last 5, 10 and 15 years.'};
+  var _sw=window.switchTab||switchTab;
+  switchTab=function(tab){ _sw(tab); if(tab==='season') render(); };
+  window.addEventListener('resize',function(){ if(window.activeTab==='season'||(typeof activeTab!=='undefined'&&activeTab==='season')){var D=store()[sym]; if(D&&view==='chart')draw(D);} });
+})();
+
+</script>
+<style id="wt-season-table">
+.ss-seg{display:inline-flex;border:1px solid #2b2b30;}
+.ss-seg button{background:transparent;border:0;color:rgba(255,255,255,.55);font-size:11.5px;font-weight:600;padding:3px 10px;cursor:pointer;font-family:inherit;}
+.ss-seg button.active{background:rgba(255,255,255,.09);color:#fff;box-shadow:inset 0 -2px 0 #fa660f;}
+.ss-range{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #2b2b30;font-size:12px;color:rgba(255,255,255,.55);}
+.ss-range b{color:#f2f3f5;font-variant-numeric:tabular-nums;min-width:34px;}
+.ss-range input[type=range]{flex:1;accent-color:#fa660f;height:4px;}
+.ss-tablewrap{flex:1;min-height:0;overflow:auto;}
+.ss-tbl{width:100%;border-collapse:separate;border-spacing:1px;font-variant-numeric:tabular-nums;}
+.ss-tbl th,.ss-tbl td{padding:9px 8px;font-size:13px;text-align:center;font-weight:500;color:#f2f3f5;}
+.ss-tbl thead th{position:sticky;top:0;z-index:2;background:#131318;color:rgba(255,255,255,.6);font-weight:600;font-size:12.5px;border-bottom:1px solid #2b2b30;}
+.ss-tbl .ss-ty{text-align:left;padding-left:14px;color:rgba(255,255,255,.6);font-weight:600;background:#111114;position:sticky;left:0;z-index:1;white-space:nowrap;}
+.ss-tbl thead .ss-ty{z-index:3;}
+.ss-tbl .ss-yr{color:#f2f3f5;}
+.ss-tbl td.ss-na{color:rgba(255,255,255,.3);background:#0e0e11;}
+.ss-tbl tr.ss-avg th,.ss-tbl tr.ss-avg td{border-top:1px solid #2b2b30;font-weight:700;}
+.ss-tbl tfoot td,.ss-tbl tfoot th{position:sticky;bottom:0;background:#131318;border-top:1px solid #2b2b30;font-size:12.5px;z-index:2;}
+.ss-tbl tfoot .ss-ty{color:#f2f3f5;z-index:3;}
+.ss-tbl .up{color:#22c98b;font-weight:600;}.ss-tbl .dn{color:#f04455;font-weight:600;}
+</style>
 </body>
 </html>
 
@@ -19935,6 +20178,25 @@ function wtLegendHtml(){
   var M=wtModel();
   return CCY_ORDER.map(function(c){var v=M?M.chg[c]:0;return '<button type="button" class="wt-leg'+(OV_CSI_HIDDEN[c]?' off':'')+'" data-wt-leg="'+c+'"><i style="background:'+OV_CSI_COLORS[c]+'"></i>'+c+' <span class="'+tone(v)+'">'+sgn(v)+'</span></button>';}).join('');
 }
+function wtScale(lo,hi){
+  var rng=Math.max(20,hi-lo)*1.08, steps=[10,20,25,50,100], st=100;
+  for(var i=0;i<steps.length;i++){ if(rng/steps[i]<=7){st=steps[i];break;} }
+  var a=Math.floor(Math.min(lo,0)/st)*st, b=Math.ceil(Math.max(hi,0)/st)*st; if(a===b) b=a+st;
+  var t=[]; for(var v=a;v<=b+1e-9;v+=st) t.push(v);
+  return {lo:a,hi:b,ticks:t};
+}
+function wtSmoothSeries(a){ var o=a.slice(); for(var i=1;i<a.length-1;i++){ if(a[i]==null||a[i-1]==null||a[i+1]==null) continue; o[i]=(a[i-1]+2*a[i]+a[i+1])/4; } return o; }
+function wtCurve(pts){
+  if(!pts.length) return ''; if(pts.length<3) return 'M'+pts.map(function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1);}).join(' L');
+  var d='M'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1), t=.18;
+  for(var i=0;i<pts.length-1;i++){
+    var p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+    var c1x=p1[0]+(p2[0]-p0[0])*t, c1y=p1[1]+(p2[1]-p0[1])*t, c2x=p2[0]-(p3[0]-p1[0])*t, c2y=p2[1]-(p3[1]-p1[1])*t;
+    var lo=Math.min(p1[1],p2[1]),hi=Math.max(p1[1],p2[1]); c1y=Math.max(lo,Math.min(hi,c1y)); c2y=Math.max(lo,Math.min(hi,c2y));
+    d+=' C'+c1x.toFixed(1)+' '+c1y.toFixed(1)+' '+c2x.toFixed(1)+' '+c2y.toFixed(1)+' '+p2[0].toFixed(1)+' '+p2[1].toFixed(1);
+  }
+  return d;
+}
 function drawCsi(animate,hostId){
   hostId=hostId||'wtCsi';
   var wrap=document.getElementById(hostId); if(!wrap) return;
@@ -19943,8 +20205,8 @@ function drawCsi(animate,hostId){
   var days=M.days, ser=M.ser, first=M.first, last=M.last;
   var vis=CCY_ORDER.filter(function(c){return !OV_CSI_HIDDEN[c];}), lo=0,hi=0;
   vis.forEach(function(c){ser[c].forEach(function(v){if(v==null)return;lo=Math.min(lo,v);hi=Math.max(hi,v);});});
-  var sc=niceScale(lo,hi,5);
-  var W=Math.max(300,wrap.clientWidth),H=Math.max(150,wrap.clientHeight),pl=44,pr=Math.round(W*.09)+34,pt=12,pb=26,span=sc.hi-sc.lo;
+  var sc=wtScale(lo,hi);
+  var W=Math.max(300,wrap.clientWidth),H=Math.max(150,wrap.clientHeight),pl=48,pr=Math.round(W*.09)+34,pt=20,pb=32,span=sc.hi-sc.lo;
   var X=function(i){return pl+((i-first)/(last-first))*(W-pl-pr);},Y=function(v){return pt+(1-(v-sc.lo)/span)*(H-pt-pb);};
   var g='<line x1="'+pl+'" x2="'+pl+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(255,255,255,.18)"/>';
   sc.ticks.forEach(function(t){g+='<line x1="'+pl+'" x2="'+(W-8)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'" stroke="rgba(255,255,255,'+(t===0?'.24':'.07')+')" '+(t===0?'stroke-dasharray="4 4"':'')+'/><text x="'+(pl-8)+'" y="'+(Y(t)+3.5).toFixed(1)+'" text-anchor="end" font-size="11" fill="rgba(255,255,255,.45)">'+(t>0?'+'+t:t)+'</text>';});
@@ -19952,12 +20214,12 @@ function drawCsi(animate,hostId){
   dateTicks(f0,l0).forEach(function(ms){var i=first+Math.round((ms-f0)/86400000);if(i>last)return;xl+='<line x1="'+X(i).toFixed(1)+'" x2="'+X(i).toFixed(1)+'" y1="'+(H-pb)+'" y2="'+(H-pb+4)+'" stroke="rgba(255,255,255,.25)"/><text x="'+X(i).toFixed(1)+'" y="'+(H-7)+'" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.45)">'+fmtDate(ms,l0-f0>200*86400000)+'</text>';});
   /* end labels, nudged apart so they never sit on top of each other */
   var ends=vis.map(function(c){return {c:c,y:Y(ser[c][last]!=null?ser[c][last]:0)};}).sort(function(a,b){return a.y-b.y;});
-  for(var q=1;q<ends.length;q++){if(ends[q].y-ends[q-1].y<13)ends[q].y=ends[q-1].y+13;}
+  for(var q=1;q<ends.length;q++){if(ends[q].y-ends[q-1].y<16)ends[q].y=ends[q-1].y+16;}
   var ly={};ends.forEach(function(e){ly[e.c]=e.y;});
   var lines=vis.map(function(c,k){
-    var d='',pen=false;ser[c].forEach(function(v,i){if(v==null)return;d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true;});
+    var pts=[];wtSmoothSeries(ser[c]).forEach(function(v,i){if(v==null)return;pts.push([X(i),Y(v)]);});var d=wtCurve(pts);
     var ev=ser[c][last],ey=Y(ev==null?0:ev);
-    return '<g class="wt-g" data-c="'+c+'" style="transition:opacity .12s"><path class="wt-line" d="'+d+'" fill="none" stroke="'+cols[c]+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" pathLength="1"'+(animate?' style="stroke-dasharray:1;stroke-dashoffset:1"':'')+'/><circle cx="'+X(last).toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="3.4" fill="'+cols[c]+'"/><text x="'+(X(last)+9).toFixed(1)+'" y="'+(ly[c]+4).toFixed(1)+'" font-size="11" font-weight="700" fill="'+cols[c]+'">'+c+'</text></g>';
+    return '<g class="wt-g" data-c="'+c+'" style="transition:opacity .12s"><path class="wt-line" d="'+d+'" fill="none" stroke="'+cols[c]+'" stroke-opacity=".92" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" pathLength="1"'+(animate?' style="stroke-dasharray:1;stroke-dashoffset:1"':'')+'/><circle cx="'+X(last).toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="3.4" fill="'+cols[c]+'"/><text x="'+(X(last)+9).toFixed(1)+'" y="'+(ly[c]+4).toFixed(1)+'" font-size="11" font-weight="700" fill="'+cols[c]+'">'+c+'</text></g>';
   }).join('');
   wrap.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">'+g+xl+lines+'<line id="'+hostId+'Xh" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(255,255,255,.35)" visibility="hidden"/></svg><div class="wt-tipbox" id="'+hostId+'Tip" hidden></div>';
   if(animate){requestAnimationFrame(function(){requestAnimationFrame(function(){[].forEach.call(wrap.querySelectorAll('.wt-line'),function(p,i){p.style.transition='stroke-dashoffset .9s ease '+(i*40)+'ms';p.style.strokeDashoffset='0';});});});}
