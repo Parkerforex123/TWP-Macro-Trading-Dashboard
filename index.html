@@ -7924,6 +7924,7 @@ function renderScanner(animateTrend){
     var pairCell=e.target && e.target.closest ? e.target.closest('.scanner-pair-td') : null;
     if(!pairCell) return;
     var pr=this.dataset.pair;
+    if(typeof syncYieldPair==='function') syncYieldPair(pr);
     scannerExpandedPair=(scannerExpandedPair===pr)?null:pr;
     if(scannerExpandedPair){ expandedRange=scannerTrendRange; scannerBigTrendAnimate=true; }
     hideAllScannerFloatingTooltips();
@@ -8542,7 +8543,7 @@ function y2LoadDemo(){
 }
 /* ===== Global Yields: outright 2Y per currency, full stored history ===== */
 var Y2G_COLORS={USD:'#f2f3f5',EUR:'#4f8cff',GBP:'#b388ff',AUD:'#fa660f',NZD:'#22c98b',CAD:'#f04455',JPY:'#ffd166',CHF:'#ff9ecb'};
-var Y2G_SEL={USD:1,EUR:1,GBP:1,AUD:1,NZD:1,CAD:1,JPY:1,CHF:1}, Y2G_GEO=null, Y2G_BOUND=false;
+var Y2G_SEL={USD:1,EUR:1,GBP:1,AUD:1,NZD:0,CAD:0,JPY:0,CHF:0}, Y2G_GEO=null, Y2G_BOUND=false;
 /* Defaults to USD alone on every fresh load. Y2G_MODE 'change' rebases every line to 0 at the start of the
    history (so 3-8 stacked currencies stay readable instead of being squashed flat by the 0.5%-4.9% level gap);
    'level' is the raw yield view. Y2G_REVEAL (0..1) drives the draw-in sweep; Y2G_PLAY arms it for the next visible render. */
@@ -8694,8 +8695,7 @@ function y2gDrawSplit(ctx,W,H,rows,list,hoverIdx){
     for(var t=0;t<xt;t++){ var xi=Math.round(t*(n-1)/(xt-1)); ctx.textAlign=t===0?'left':(t===xt-1?'right':'center'); ctx.fillText(y2gDate(rows[xi].date),X(xi),y0+chh-8); }
     var pts=[]; vals.forEach(function(v,i){ if(v!=null) pts.push([X(i),Y(v)]); });
     if(pts.length<2) return;
-    var gr=ctx.createLinearGradient(0,y0+T,0,y0+T+ph); gr.addColorStop(0,Y2G_COLORS[c]+'30'); gr.addColorStop(1,Y2G_COLORS[c]+'00');
-    ctx.beginPath(); ctx.moveTo(pts[0][0],y0+T+ph); pts.forEach(function(q){ctx.lineTo(q[0],q[1]);}); ctx.lineTo(pts[pts.length-1][0],y0+T+ph); ctx.closePath(); ctx.fillStyle=gr; ctx.fill();
+    /* Global Yields separate charts also remain line-only; Bond Yield Spread is untouched. */
     ctx.strokeStyle=Y2G_COLORS[c]; ctx.lineWidth=2.4; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath(); pts.forEach(function(q,i){ if(i===0) ctx.moveTo(q[0],q[1]); else ctx.lineTo(q[0],q[1]); }); ctx.stroke();
     ctx.fillStyle=Y2G_COLORS[c]; ctx.beginPath(); ctx.arc(pts[pts.length-1][0],pts[pts.length-1][1],3.4,0,Math.PI*2); ctx.fill();
   });
@@ -8771,7 +8771,7 @@ function y2gDraw(hoverIdx){
   ctx.save(); ctx.beginPath(); ctx.rect(0,0,L+pw*reveal+(reveal>=0.999?W:0),H); ctx.clip();
   list.forEach(function(c){
     var pts=path(c); paths[c]=pts; if(pts.length<2)return;var col=Y2G_COLORS[c];
-    var g=ctx.createLinearGradient(0,T,0,T+ph);g.addColorStop(0,col+(multi?'1c':'26'));g.addColorStop(1,col+'00');ctx.beginPath();ctx.moveTo(pts[0][0],T+ph);pts.forEach(function(p){ctx.lineTo(p[0],p[1]);});ctx.lineTo(pts[pts.length-1][0],T+ph);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+    /* Global Yields: line-only rendering; no gradient/area fill beneath the yield series. */
     ctx.strokeStyle=col;ctx.lineWidth=multi?2.25:2.8;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();pts.forEach(function(p,i){if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);});ctx.stroke();
   });
   ctx.restore();
@@ -9719,7 +9719,7 @@ function renderOverview(animate){
   var riskGotos=document.querySelectorAll('#tab-overview [data-ccy]');
   for(var j=0;j<riskGotos.length;j++)riskGotos[j].onclick=function(){activeDetailCcy=this.dataset.ccy;switchTab('detail');renderDetail();};
   var pairGotos=document.querySelectorAll('#tab-overview [data-pair]');
-  for(var k=0;k<pairGotos.length;k++)pairGotos[k].onclick=function(){scannerExpandedPair=this.dataset.pair;if(typeof hideAllScannerFloatingTooltips==='function')hideAllScannerFloatingTooltips();switchTab('scanner');renderScanner();};
+  for(var k=0;k<pairGotos.length;k++)pairGotos[k].onclick=function(){if(typeof syncYieldPair==='function')syncYieldPair(this.dataset.pair);scannerExpandedPair=this.dataset.pair;if(typeof hideAllScannerFloatingTooltips==='function')hideAllScannerFloatingTooltips();switchTab('scanner');renderScanner();};
   var openBtns=document.querySelectorAll('#tab-overview [data-open-tab]');
   for(var m=0;m<openBtns.length;m++)openBtns[m].onclick=function(e){e.stopPropagation();switchTab(this.dataset.openTab);};
   var csiBtns=document.querySelectorAll('#tab-overview [data-csi-toggle]');
@@ -17616,15 +17616,15 @@ html body :is(#tab-yield2y,.y2g-expand-panel2) .y2g-toolbar .y2g-mode-btn{white-
 }
 </style>
 <script id="y2g-default-all">
-/* Opening the Bond Yields tab always starts Global Yields on All currencies + Change view
-   (unless you jumped in from a specific currency elsewhere, which keeps that currency). */
+/* Opening the Bond Yields tab starts Global Yields with USD, EUR, GBP and AUD + Change view.
+   The remaining currencies are available through the currency buttons or All. */
 (function(){
   if(typeof switchTab!=='function') return;
   var _st=switchTab;
   switchTab=function(t){
     if(t==='yield2y' && typeof activeTab!=='undefined' && activeTab!=='yield2y'){
       if(window.__y2gKeep){ window.__y2gKeep=false; }
-      else { Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=1;}); Y2G_MODE='change'; Y2G_PLAY=true; }
+      else if(!window.__y2gPairDriven){ Y2_CCY_ORDER.forEach(function(x){Y2G_SEL[x]=['USD','EUR','GBP','AUD'].indexOf(x)>=0?1:0;}); Y2G_MODE='change'; Y2G_PLAY=true; }
     }
     return _st.apply(this,arguments);
   };
@@ -18110,7 +18110,7 @@ html body #tab-season .ss-card{border-left:0!important;border-right:0!important;
   };
   var MS=[0,31,59,90,120,151,181,212,243,273,304,334,365], MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var SER=[{k:'y15',l:'15y',c:'#fa660f',dash:''},{k:'y10',l:'10y',c:'#22c98b',dash:'4 3'},{k:'y5',l:'5y',c:'#4c8dff',dash:'4 3'},{k:'cur',l:'This year',c:'#f2f3f5',dash:''}];
-  var sym=SYMS[0], hidden={}, statKey='y10', msg='', view='chart', yLo=null, yHi=null;
+  var sym=SYMS[0], hidden={cur:true}, statKey='y10', msg='', view='chart', yLo=null, yHi=null;
   var CACHE={};
   var DAILY=null, dailyState='idle';
   /* real daily closes -> cumulative % path per calendar year (from prior year's last close), averaged over the last N complete years */
@@ -18220,12 +18220,38 @@ html body #tab-season .ss-card{border-left:0!important;border-right:0!important;
     var sc=scale(lo,hi), X=function(i){return pl+i/364*(W-pl-pr);}, Y=function(v){return pt+(1-(v-sc.lo)/(sc.hi-sc.lo))*(H-pt-pb);}, g='';
     sc.ticks.forEach(function(t){g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'" stroke="rgba(255,255,255,'+(t===0?'.26':'.07')+')" '+(t===0?'stroke-dasharray="4 4"':'')+'/><text x="'+(pl-8)+'" y="'+(Y(t)+3.5).toFixed(1)+'" text-anchor="end" font-size="11" fill="rgba(255,255,255,.45)">'+t.toFixed(t%1?(t*4%1?2:1):0)+'%</text>';});
     for(var m=0;m<12;m++){ var x=X((MS[m]+MS[m+1])/2); g+='<text x="'+x.toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.42)">'+MN[m]+'</text><line x1="'+X(MS[m]).toFixed(1)+'" x2="'+X(MS[m]).toFixed(1)+'" y1="'+(H-pb)+'" y2="'+(H-pb+4)+'" stroke="rgba(255,255,255,.22)"/>'; }
-    var ts=todaySlot(); g+='<line x1="'+X(ts).toFixed(1)+'" x2="'+X(ts).toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#fa660f" stroke-opacity=".55" stroke-dasharray="3 4"/><text x="'+(X(ts)+6).toFixed(1)+'" y="'+(pt+2)+'" font-size="10.5" fill="#fa8a3c" letter-spacing="1">TODAY</text>';
+    var ts=todaySlot(); g+='<line id="ssToday" x1="'+X(ts).toFixed(1)+'" x2="'+X(ts).toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#fa660f" stroke-opacity=".72" stroke-width="1.5" stroke-dasharray="3 4"/><text id="ssTodayLabel" x="'+(X(ts)+6).toFixed(1)+'" y="'+(pt+2)+'" font-size="10.5" fill="#fa8a3c" letter-spacing="1">TODAY</text>';
     vs.forEach(function(s){ var a=data[s.k],d='',pen=false,lastI=-1; a.forEach(function(v,i){if(v==null)return;d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true;lastI=i;});
-      g+='<path d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="'+(s.k==='cur'?1.6:1.2)+'" '+(s.dash?'stroke-dasharray="'+s.dash+'" ':'')+'stroke-linejoin="round" stroke-linecap="round"/>';
+      g+='<path class="ss-season-path" d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="'+(s.k==='cur'?2.8:2.7)+'" '+(s.dash?'stroke-dasharray="'+s.dash+'" ':'')+'stroke-linejoin="round" stroke-linecap="round"/>';
       if(s.k==='cur'&&lastI>=0) g+='<circle cx="'+X(lastI).toFixed(1)+'" cy="'+Y(a[lastI]).toFixed(1)+'" r="3.6" fill="'+s.c+'"/>'; });
     wrap.innerHTML='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+g+'<line id="ssX" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(255,255,255,.35)" visibility="hidden"/></svg><div class="ss-tip" id="ssTip" hidden></div>';
     var svg=wrap.querySelector('svg'),tip=document.getElementById('ssTip'),xh=document.getElementById('ssX');
+    /* Animate the seasonal data lines themselves on entry. The TODAY guide stays fixed
+       at the current calendar date; it is not the element being animated. */
+    var todayLine=svg.querySelector('#ssToday'), todayLabel=svg.querySelector('#ssTodayLabel');
+    var seasonPaths=svg.querySelectorAll('.ss-season-path');
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      var drawStart=null, drawDuration=1050;
+      var pathInfo=[];
+      for(var pi=0;pi<seasonPaths.length;pi++){
+        try{
+          var path=seasonPaths[pi], plen=path.getTotalLength();
+          if(!isFinite(plen)||plen<=0) continue;
+          path.style.strokeDasharray=plen+' '+plen;
+          path.style.strokeDashoffset=plen;
+          pathInfo.push({el:path,len:plen});
+        }catch(e){}
+      }
+      function drawSeasonLines(now){
+        if(!wrap.isConnected) return;
+        if(drawStart===null) drawStart=now;
+        var q=Math.min(1,(now-drawStart)/drawDuration), eased=1-Math.pow(1-q,3);
+        pathInfo.forEach(function(o){o.el.style.strokeDashoffset=(o.len*(1-eased)).toFixed(2);});
+        if(q<1) requestAnimationFrame(drawSeasonLines);
+        else pathInfo.forEach(function(o){o.el.style.strokeDasharray='';o.el.style.strokeDashoffset='';});
+      }
+      if(pathInfo.length) requestAnimationFrame(drawSeasonLines);
+    }
     svg.addEventListener('mousemove',function(e){ var r=svg.getBoundingClientRect(),x=(e.clientX-r.left)*(W/r.width); var i=Math.max(0,Math.min(364,Math.round((x-pl)/(W-pl-pr)*364)));
       xh.setAttribute('x1',X(i));xh.setAttribute('x2',X(i));xh.setAttribute('visibility','visible');
       tip.innerHTML='<div class="d">'+slotLabel(i)+'</div>'+vs.map(function(s){var v=(s.k==='cur'?D.cur:D[s.k])[i];return v==null?'':'<div class="r"><i style="background:'+s.c+'"></i><span>'+s.l+'</span><b>'+v.toFixed(1)+'%</b></div>';}).join('');
@@ -18299,6 +18325,78 @@ html body #tab-season .ss-card{border-left:0!important;border-right:0!important;
 .ss-tbl tfoot .ss-ty{color:#f2f3f5;z-index:3;}
 .ss-tbl .up{color:#22c98b;font-weight:600;}.ss-tbl .dn{color:#f04455;font-weight:600;}
 </style>
+
+<script id="yield-pair-follow-selection-v1">
+/* The selected trading pair drives the Bond Yield Spread pair and the Global Yields
+   comparison. Extra currencies explicitly switched on by the user stay on when the
+   selected pair changes; old pair legs are not kept unless manually added. */
+(function(){
+  var manual={};
+  var lastPair='';
+  function pairCode(raw){
+    raw=String(raw||'').toUpperCase().replace(/[^A-Z]/g,'');
+    if(raw.length===6 && typeof CCY_ORDER!=='undefined' && CCY_ORDER.indexOf(raw.slice(0,3))>=0 && CCY_ORDER.indexOf(raw.slice(3,6))>=0) return raw;
+    return '';
+  }
+  function repaintGlobal(){
+    var card=document.getElementById('y2gCard');
+    if(!card) return;
+    var tabs=card.querySelector('#y2gTabs');
+    if(tabs && typeof y2gAllOn==='function' && typeof y2gSelList==='function'){
+      var allOn=y2gAllOn();
+      tabs.querySelectorAll('.y2g-tab').forEach(function(b){
+        var c=b.getAttribute('data-ccy');
+        b.classList.toggle('active',c==='ALL'?allOn:!!Y2G_SEL[c]&&!allOn);
+        b.classList.toggle('all-on',c!=='ALL'&&allOn);
+      });
+    }
+    if(typeof y2gStats==='function') y2gStats();
+    if(typeof y2gRefreshMode==='function') y2gRefreshMode();
+    if(typeof y2gDraw==='function') y2gDraw();
+  }
+  window.syncYieldPair=function(raw){
+    var code=pairCode(raw); if(!code) return;
+    lastPair=code; window.__y2gPairDriven=true;
+    var base=code.slice(0,3), quote=code.slice(3,6);
+    if(typeof HIST_SPREAD_ACTIVE!=='undefined') HIST_SPREAD_ACTIVE=code;
+    var select=document.getElementById('histSpreadPair');
+    if(select){ select.value=code; }
+    if(typeof Y2_CCY_ORDER!=='undefined' && typeof Y2G_SEL!=='undefined'){
+      Y2_CCY_ORDER.forEach(function(c){Y2G_SEL[c]=(c===base||c===quote||!!manual[c])?1:0;});
+      if(typeof Y2G_MODE!=='undefined') Y2G_MODE='level';
+      repaintGlobal();
+    }
+    if(typeof histSpreadDraw==='function' && select) histSpreadDraw(true);
+  };
+  // Track only deliberate manual additions in Global Yields, separate from the two
+  // currencies automatically selected by the active pair.
+  document.addEventListener('click',function(ev){
+    var tab=ev.target&&ev.target.closest?ev.target.closest('#y2gTabs .y2g-tab'):null;
+    if(!tab) return;
+    var c=tab.getAttribute('data-ccy');
+    setTimeout(function(){
+      if(c==='ALL'){
+        if(typeof Y2_CCY_ORDER!=='undefined') Y2_CCY_ORDER.forEach(function(x){manual[x]=1;});
+      }else if(c && c!=='ALL' && typeof Y2G_SEL!=='undefined'){
+        var pairLeg=lastPair && (c===lastPair.slice(0,3)||c===lastPair.slice(3,6));
+        if(Y2G_SEL[c]) manual[c]=1;
+        else manual[c]=0;
+        // Active pair currencies are always present while pair-follow is enabled.
+        if(pairLeg && lastPair){ Y2G_SEL[c]=1; repaintGlobal(); }
+      }
+    },0);
+  },false);
+  // Choosing a pair directly in the Bond Yield Spread selector also drives Global Yields.
+  document.addEventListener('change',function(ev){
+    if(ev.target && ev.target.id==='histSpreadPair') window.syncYieldPair(ev.target.value);
+  });
+  // Other pair pickers in the dashboard (Overview, expanded pair lists, watch rows).
+  document.addEventListener('click',function(ev){
+    var el=ev.target&&ev.target.closest?ev.target.closest('.ov-pair-row[data-pair], .wt-row[data-pair]'):null;
+    if(el) window.syncYieldPair(el.getAttribute('data-pair'));
+  },true);
+})();
+</script>
 </body>
 </html>
 
