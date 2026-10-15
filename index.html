@@ -4740,6 +4740,62 @@ html body #tab-cot .cot-expand-btn{display:none!important;}
 #cotPairModal #cotPairTrendSvg{background:var(--bg)!important;}
 #cotPairModal .cot-pm-sub{max-width:620px;}
 </style>
+<style id="twp-viewport-fit-preserve-design-v1">
+/* Screen fitting only: preserve the existing board geometry and typography.
+   Reclaim the original four-panel Overview layout on laptop/tablet widths instead
+   of allowing the old 1000px breakpoint to turn it into a tall, scrolling column. */
+@media (min-width:760px) and (max-width:1000px){
+  html body #tab-overview{height:calc(100dvh - 84px)!important;overflow:hidden!important;padding:0!important;}
+  html body #tab-overview .wt-ov{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.12fr)!important;
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:10px!important;height:100%!important;min-height:0!important;
+  }
+  html body #tab-overview .wt-card{min-width:0!important;min-height:0!important;height:auto!important;overflow:hidden!important;}
+  html body #tab-overview .wt-ntk{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)!important;min-height:0!important;}
+  html body #tab-overview .wt-ntk-main,
+  html body #tab-overview .wt-ntk-side{min-width:0!important;min-height:0!important;overflow:auto!important;}
+  html body #tab-overview .wt-heat-wrap{min-height:0!important;}
+  html body #tab-overview .wt-heat{width:100%!important;height:100%!important;}
+  html body #tab-overview .wt-chart{height:auto!important;min-height:0!important;flex:1 1 auto!important;}
+  html body #tab-overview .wt-setups{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;min-height:0!important;}
+  html body #tab-overview .wt-col{min-width:0!important;min-height:0!important;overflow:auto!important;}
+}
+
+/* Compact only the amount of empty chart space when a laptop has a short viewport.
+   Text sizes and panel positions stay the same; this is what lets the final
+   "Oct 2026 average" row remain inside Currency Detail instead of being cut off. */
+@media (min-width:1100px) and (max-height:780px){
+  html body #tab-detail .dx-col > .dx-trend{
+    flex:1 1 0!important;min-height:175px!important;max-height:none!important;
+  }
+  html body #tab-detail .dx-col > .dx-trend .detail-trend-spark{
+    min-height:105px!important;max-height:200px!important;
+  }
+}
+@media (min-width:1100px) and (max-height:719px){
+  html body #tab-detail .dx-col > .dx-pos .dx-f{
+    min-height:28px!important;height:28px!important;flex:0 0 28px!important;
+  }
+}
+
+/* The seasonality plot already has a 1200px cap. Preserve it and retain an
+   explicit, even gutter when the browser window is narrower than that cap. */
+@media (min-width:760px){
+  html body #tab-season .ss-chart{width:calc(100% - 32px)!important;max-width:1200px!important;margin-left:auto!important;margin-right:auto!important;}
+}
+
+/* Prevent the rotating greeting from colliding with navigation in a narrower
+   browser window. The dashboard tabs remain in their existing horizontal strip. */
+@media (min-width:760px) and (max-width:900px){
+  html body .twp-top .twp-greeting-banner{display:none!important;}
+  html body .twp-top-row{gap:10px!important;padding-left:12px!important;padding-right:12px!important;}
+  html body .twp-search{flex:1 1 auto!important;min-width:120px!important;}
+  html body .twp-top .page-head{flex:0 0 auto!important;gap:6px!important;margin-left:auto!important;}
+  html body .twp-top .twp-nav{gap:20px!important;padding-left:12px!important;padding-right:12px!important;}
+}
+</style>
 </head>
 <body>
 <div class="shell">
