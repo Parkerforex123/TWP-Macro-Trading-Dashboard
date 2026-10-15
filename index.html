@@ -18080,7 +18080,7 @@ html body #tab-season .ss-card{border-left:0!important;border-right:0!important;
 .ss-leg.off{opacity:.35;}
 .ss-statkey{font-size:11.5px;color:rgba(255,255,255,.5);}
 .ss-statkey select{background:#16161a;color:#f2f3f5;border:1px solid #2b2b30;font-size:11.5px;padding:2px 4px;font-family:inherit;}
-.ss-chart{position:relative;flex:1;min-height:0;width:100%;margin:2px 0 4px;}
+.ss-chart{position:relative;flex:1;min-height:0;width:100%;max-width:1200px;margin:2px auto 4px;}
 .ss-chart svg{display:block;}
 .ss-tip{position:absolute;background:#16161a;border:1px solid #34343b;padding:8px 10px;font-size:12px;pointer-events:none;min-width:120px;z-index:5;}
 .ss-tip .d{font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.55);margin-bottom:5px;font-weight:700;}
@@ -18289,7 +18289,7 @@ html body #tab-season .ss-card{border-left:0!important;border-right:0!important;
       (D&&view==='table'?tableBlock(D):D?'<div class="ss-stats">'+statsHtml(D)+'</div><div class="ss-legend">'+legend+'<span class="ss-grow"></span>'+stat+'</div><div class="ss-chart" id="ssChart"></div>'
         :'<div class="ss-empty"><div class="ss-et">No seasonality loaded for '+sym+' yet</div><div class="ss-es">This currency has not been added to the dashboard yet.</div></div>')+
       '</section></div>';
-    [].forEach.call(host.querySelectorAll('[data-sym]'),function(b){b.onclick=function(){sym=this.getAttribute('data-sym');yLo=null;yHi=null;hidden={};render();};});
+    [].forEach.call(host.querySelectorAll('[data-sym]'),function(b){b.onclick=function(){sym=this.getAttribute('data-sym');yLo=null;yHi=null;render();};});
     [].forEach.call(host.querySelectorAll('[data-view]'),function(b){b.onclick=function(){view=this.getAttribute('data-view');render();};});
     var slo=document.getElementById('ssLo'),shi=document.getElementById('ssHi');
     if(slo&&shi&&D&&D.tbl){ var upd=function(){ var a=Number(slo.value),b=Number(shi.value); if(a>b){ if(this===slo){b=a;shi.value=b;}else{a=b;slo.value=a;} } yLo=a;yHi=b; document.getElementById('ssLoL').textContent=a; document.getElementById('ssHiL').textContent=b; document.getElementById('ssTbl').innerHTML=tableHtml(D); }; slo.oninput=upd; shi.oninput=upd; }
@@ -18363,8 +18363,10 @@ html body #tab-season .ss-card{border-left:0!important;border-right:0!important;
     if(select){ select.value=code; }
     if(typeof Y2_CCY_ORDER!=='undefined' && typeof Y2G_SEL!=='undefined'){
       Y2_CCY_ORDER.forEach(function(c){Y2G_SEL[c]=(c===base||c===quote||!!manual[c])?1:0;});
-      if(typeof Y2G_MODE!=='undefined') Y2G_MODE='level';
+      if(typeof Y2G_MODE!=='undefined') Y2G_MODE='change';
       repaintGlobal();
+      if(typeof Y2G_PLAY!=='undefined') Y2G_PLAY=true;
+      if(typeof y2gPlay==='function') setTimeout(y2gPlay,0);
     }
     if(typeof histSpreadDraw==='function' && select) histSpreadDraw(true);
   };
@@ -20085,6 +20087,39 @@ html body #tab-scanner .ws-matrix td.ws-pos{color:#3ddc97;}html body #tab-scanne
 html body #tab-scanner .ws-matrix{border-spacing:4px;}html body #tab-scanner .ws-matrix td{border-radius:4px;}html body #tab-scanner .ws-matrix tbody tr{height:14.28%;}
 </style>
 
+
+<style id="wt-v2-overrides">
+.wt-sec{margin:0 0 9px}
+.wt-sec-h{font-size:10.5px;font-weight:800;letter-spacing:.8px;color:#fa660f;margin:0 0 2px}
+.wt-sec-t{font-size:13px;line-height:1.55;color:rgba(242,243,245,.76)}
+.wt-sec-t b{color:#f2f3f5;font-weight:700}
+.wt-grp-h{font-size:11px;font-weight:800;letter-spacing:.8px;color:#fa660f;margin:10px 0 2px}
+.wt-grp-h:first-child{margin-top:2px}
+.wt-item.g{grid-template-columns:54px minmax(0,1fr);padding:8px 0;gap:9px}
+.wt-item.g:first-of-type{border-top:0}
+.wt-grp-h+.wt-item.g{border-top:0}
+.wt-tag.pos{color:#22c98b;background:rgba(34,201,139,.12)}
+.wt-tag.neg{color:#f04455;background:rgba(240,68,85,.12)}
+.wt-tag.amb{color:#fa8a3c;background:rgba(250,102,15,.12)}
+/* Strength shift: faint dotted straight lines, per-currency colours, arc meters, ripples */
+html body #tab-overview #wtSlope{background:radial-gradient(ellipse 75% 60% at 46% 0%,rgba(250,102,15,.20),transparent 72%),radial-gradient(ellipse 55% 45% at 50% 100%,rgba(255,194,71,.09),transparent 72%),#0b0a09;}
+.sx-svg{display:block;font-family:'Inter',system-ui,sans-serif;}
+.sx-line{stroke-width:1;stroke-dasharray:1 5.5;stroke-linecap:round;opacity:.5;animation:sxMarch 2.6s linear infinite;transition:opacity .15s,stroke-width .15s;}
+@keyframes sxMarch{to{stroke-dashoffset:-13}}
+.sx-pop{transform-box:fill-box;transform-origin:center;transform:scale(0);animation:sxPop .5s cubic-bezier(.3,1.6,.5,1) forwards;}
+@keyframes sxPop{to{transform:scale(1)}}
+.sx-arc{stroke-dashoffset:var(--c);animation:sxArc 1.3s cubic-bezier(.22,.8,.3,1) forwards;}
+@keyframes sxArc{to{stroke-dashoffset:var(--t)}}
+.sx-rip{transform-box:fill-box;transform-origin:center;opacity:0;animation:sxRip 3.8s ease-out infinite;}
+@keyframes sxRip{0%{opacity:.45;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
+.sx-lab{opacity:0;animation:sxFade .5s ease-out forwards;}
+@keyframes sxFade{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.sx-static .sx-pop{animation:none;transform:none}.sx-static .sx-arc{animation:none;stroke-dashoffset:var(--t)}.sx-static .sx-lab{animation:none;opacity:1}
+.sx-svg:hover .sx{opacity:.3;transition:opacity .15s}.sx-svg .sx:hover{opacity:1}
+.sx:hover .sx-line{opacity:.95;stroke-width:1.6}
+.sx-hit{cursor:pointer}
+@media (prefers-reduced-motion:reduce){.sx-line,.sx-pop,.sx-arc,.sx-rip,.sx-lab{animation:none!important;opacity:1!important;transform:none!important}.sx-arc{stroke-dashoffset:var(--t)!important}}
+</style>
 <script id="wt-overview-js">
 (function(){
 var WT_UP=[34,201,139], WT_DN=[240,68,85]; var WT_MODE='score';/* 'score' = real composite, every line starts at a shared 0 origin */
@@ -20105,47 +20140,193 @@ function why(name,L,G){
     'Seasonality':'seasonality is a small tailwind for '+L};
   return m[name]||(name+' favours '+L);
 }
+var WT_BANK={USD:'Fed',EUR:'ECB',GBP:'BoE',JPY:'BoJ',AUD:'RBA',NZD:'RBNZ',CAD:'BoC',CHF:'SNB'};
+var WT_NAME={USD:'dollar',EUR:'euro',GBP:'pound',JPY:'yen',AUD:'Aussie',NZD:'Kiwi',CAD:'loonie',CHF:'franc'};
+function cbRead(c){
+  var s=0,label='neutral',move='HOLD',conv='',rate='',d=DATA[c]||{};
+  try{ s=cbGuidanceScore(c); label=String(cbGuidanceLabel(s)).toLowerCase(); }catch(e){}
+  move=String(d.nextMove||'HOLD').toUpperCase();
+  conv=String(d.conviction||'').replace(/\s*conviction/i,'').toLowerCase();
+  rate=String(d.interestRate||'');
+  return {s:s,label:label,move:move,conv:conv,rate:rate,bank:WT_BANK[c]||c};
+}
+function cbLine(c){
+  var r=cbRead(c), t='the <b>'+r.bank+'</b> reads <b>'+r.label+'</b>';
+  if(r.move==='HIKE'||r.move==='CUT') t+=' and is leaning toward a <b>'+r.move.toLowerCase()+'</b>'+(r.conv?' ('+r.conv+' conviction)':'');
+  else t+=' and is expected to hold';
+  if(r.rate) t+=', policy rate '+esc2(r.rate);
+  return t;
+}
+function guidanceSnippet(c){
+  try{ var a=macroGuidanceAnalysis(c), s=String((a&&a.summary)||''); if(!s) return '';
+    s=s.split(/(?<=[.!?])\s/)[0]; if(s.length>180) s=s.slice(0,177).replace(/\s+\S*$/,'')+'...'; return s; }catch(e){return '';}
+}
+function tally(c){
+  var d=DATA[c]||{}, b=0,r=0,n=0;
+  ['growth','inflation','labour'].forEach(function(k){(d[k]||[]).forEach(function(x){var s=String(x.bias||'');if(s==='Bullish')b++;else if(s==='Bearish')r++;n++;});});
+  return {bull:b,bear:r,n:n};
+}
+function recentFor(c){
+  var out=[]; try{
+    var v=calendarVisibleEvents();
+    (v.recent||[]).forEach(function(e){
+      if(e.ccy!==c||e.actual===undefined||String(e.actual).trim()==='') return;
+      out.push({e:e,tone:calendarReleaseTone(e)});
+    });
+  }catch(err){}
+  out.sort(function(a,b){return (b.tone!=='neutral')-(a.tone!=='neutral');});
+  return out;
+}
+function relTxt(x){var e=x.e;return '<b>'+esc2(e.name||'Release')+'</b> ('+esc2(e.actual)+' vs '+esc2(e.forecast===undefined||e.forecast===''?'n/a':e.forecast)+')';}
+function upcomingList(ccys,max){
+  var out=[]; try{
+    var now=Date.now();
+    (ECON_CALENDAR||[]).forEach(function(e){
+      if(ccys.indexOf(e.ccy)<0) return; var t=calendarDateTime(e);
+      if(!Number.isFinite(t)||t<=now||t>now+10*864e5) return;
+      if(String(e.actual==null?'':e.actual).trim()!=='') return;
+      out.push({e:e,t:t,hi:/high/i.test(String(e.impact||''))?1:0});
+    });
+    out.sort(function(a,b){return (b.hi-a.hi)||(a.t-b.t);});
+  }catch(err){}
+  return out.slice(0,max||2);
+}
+function whyMacro(name,L,G){
+  var m={'Fundamentals':L+"'s growth, inflation and jobs data are running ahead of "+G+"'s",
+    'Yield':'the 2Y yield gap is moving in '+L+"'s favour",
+    'CB stance':'the '+(WT_BANK[L]||L)+' is '+cbRead(L).label+' against a '+cbRead(G).label+' '+(WT_BANK[G]||G),
+    'Position':'positioning leans '+L,
+    'WoW':'this week\'s positioning flow is going '+L+"'s way",
+    'Seasonality':'seasonality is a small tailwind for '+L};
+  return m[name]||(name+' favours '+L);
+}
+function yieldLine(lead,lag,base,quote,dir){
+  var ys=null,a=null,b=null,t='';
+  try{ys=pairYieldCalc(base,quote).score;}catch(e){}
+  try{a=y2Calc(lead).current;b=y2Calc(lag).current;}catch(e){}
+  if(a!=null&&b!=null){var gap=Math.round((a-b)*100); t+='2Y yields: '+lead+' <b>'+a.toFixed(2)+'%</b> vs '+lag+' <b>'+b.toFixed(2)+'%</b>, a gap of <b>'+(gap>0?'+':'')+gap+'bp</b> '+(gap>0?'in '+lead+"'s favour":'against '+lead)+'. ';}
+  if(ys!=null){var s2=ys*dir; t+=s2>=3?'The gap is also moving '+lead+"'s way.":s2<=-3?'The gap is moving against '+lead+', which is a warning sign.':'The gap is not trending either way yet.';}
+  return t;
+}
 function wtNarrative(scores){
   var rows=CCY_ORDER.slice().sort(function(a,b){return scores[b]-scores[a];});
   var S=rows[0], W=rows[rows.length-1];
   var pairs=buildPairs(scores).slice().sort(function(a,b){return Math.abs(b.score)-Math.abs(a.score);});
-  var T=pairs[0], dir=T.score>0?1:-1, lead=dir>0?T.base:T.quote, lag=dir>0?T.quote:T.base;
+  var T=pairs[0], dir=T.score>0?1:-1, strong=Math.abs(T.score)>=21;
+  var lead=dir>0?T.base:T.quote, lag=dir>0?T.quote:T.base;
   var drv=scannerDriverBreakdown(T.base,T.quote);
   var withIt=drv.filter(function(d){return Math.sign(d.pts)===dir&&Math.abs(d.pts)>=1;}).sort(function(a,b){return Math.abs(b.pts)-Math.abs(a.pts);});
-  var against=drv.filter(function(d){return Math.sign(d.pts)===-dir&&Math.abs(d.pts)>=2;}).sort(function(a,b){return Math.abs(b.pts)-Math.abs(a.pts);});
-  var strong=Math.abs(T.score)>=21;
-  var headline=strong?(lead+' Holds the Edge Over '+lag):'Macro Is Mixed, No Pair Clears the Bar';
-  var p='';
-  if(strong){
-    p+='<b>'+T.pair+'</b> is the widest macro gap on the board at <b class="'+tone(T.score)+'">'+sgn(T.score)+'</b> ('+esc2(T.bias)+'). ';
-    if(withIt.length){p+='The story is '+why(withIt[0].name,lead,lag)+(withIt[1]?', and '+why(withIt[1].name,lead,lag):'')+'. ';}
-    if(against.length){p+='The one thing pushing back: '+against[0].name.toLowerCase()+' sits on the other side ('+sgn(against[0].pts)+'), so it is not a clean sweep. ';}
-    else {p+='Nothing meaningful is pushing against it. ';}
-  } else {
-    p+='The biggest gap on the board is <b>'+T.pair+'</b> at <b>'+sgn(T.score)+'</b>, still inside the neutral band. Nothing has a clear fundamental edge right now. ';
-  }
-  p+='Across the eight, <b>'+S+'</b> tops the composite table at <b class="'+tone(scores[S])+'">'+sgn(scores[S])+'</b> and <b>'+W+'</b> is bottom at <b class="'+tone(scores[W])+'">'+sgn(scores[W])+'</b>.';
-  return {headline:headline,body:p,pairs:pairs,top:T};
+  var against=drv.filter(function(d){return Math.sign(d.pts)===-dir&&Math.abs(d.pts)>=1.5;}).sort(function(a,b){return Math.abs(b.pts)-Math.abs(a.pts);});
+  var cL=cbRead(lead), cG=cbRead(lag), cbGap=cL.s-cG.s;
+  var rL=recentFor(lead), rG=recentFor(lag);
+  var beatL=rL.filter(function(x){return x.tone==='pos';}), missL=rL.filter(function(x){return x.tone==='neg';});
+  var beatG=rG.filter(function(x){return x.tone==='pos';}), missG=rG.filter(function(x){return x.tone==='neg';});
+  var headline;
+  if(!strong) headline='Macro Is Split: '+S+' Leads, '+W+' Lags, No Clean Pair';
+  else if(cbGap>=4) headline=cL.bank+' Tilt Keeps '+lead+' Ahead of '+lag;
+  else if(missG.length&&!beatL.length) headline=lag+' Data Miss Hands '+lead+' the Edge';
+  else if(beatL.length) headline=lead+' Holds the Edge Over '+lag+' After a Data Beat';
+  else headline=lead+' Holds the Edge Over '+lag;
+  var secs=[];
+  /* POLICY */
+  var pol='Policy first: '+cbLine(lead)+'. '+'Against that, '+cbLine(lag)+'. ';
+  if(cbGap>=4) pol+='That is a clear guidance gap in '+lead+"'s favour. ";
+  else if(cbGap<=-4) pol+='Guidance actually leans the other way, so '+lead+"'s edge has to come from data and yields. ";
+  else pol+='The two banks are close, so guidance is not what separates them. ';
+  var gs=guidanceSnippet(lead); if(gs) pol+='Latest '+cL.bank+' read: '+esc2(gs);
+  secs.push({k:'POLICY',h:pol});
+  /* DATA */
+  var tl=tally(lead), tg=tally(lag), dat='';
+  if(tl.n&&tg.n) dat+='Across growth, inflation and jobs, <b>'+lead+'</b> has '+tl.bull+' bullish and '+tl.bear+' bearish indicators; <b>'+lag+'</b> has '+tg.bull+' and '+tg.bear+'. ';
+  var bits=[];
+  beatL.slice(0,2).forEach(function(x){bits.push(lead+' beat on '+relTxt(x));});
+  missG.slice(0,2).forEach(function(x){bits.push(lag+' missed on '+relTxt(x));});
+  missL.slice(0,1).forEach(function(x){bits.push(lead+' missed on '+relTxt(x));});
+  beatG.slice(0,1).forEach(function(x){bits.push(lag+' beat on '+relTxt(x));});
+  if(bits.length) dat+='This week: '+bits.join('; ')+'. ';
+  else dat+='No fresh '+lead+' or '+lag+' releases logged this week, so this rests on the indicator table. ';
+  secs.push({k:'DATA',h:dat});
+  /* YIELDS */
+  secs.push({k:'YIELDS',h:yieldLine(lead,lag,T.base,T.quote,dir)});
+  /* ACROSS THE BOARD */
+  var mine=pairs.filter(function(p){return p.base===lead||p.quote===lead;}), good=[],bad=[],flat=0;
+  mine.forEach(function(p){var o=p.base===lead?p.quote:p.base, v=(p.base===lead?1:-1)*p.score; if(v>=21)good.push({o:o,v:v}); else if(v<=-21)bad.push({o:o,v:v}); else flat++;});
+  good.sort(function(a,b){return b.v-a.v;}); bad.sort(function(a,b){return a.v-b.v;});
+  var p7=ccyPrior7(lead), d7=p7==null?null:scores[lead]-p7, rk=rows.indexOf(lead)+1;
+  var acc='<b>'+lead+'</b> ranks <b>#'+rk+'</b> of 8 at <b>'+sgn(scores[lead])+'</b>'+(d7!=null&&Math.abs(d7)>=1?', '+(d7>0?'up ':'down ')+Math.abs(Math.round(d7))+' on the week':'')+'. ';
+  if(good.length&&good.length>=mine.length-1) acc+='The '+(WT_NAME[lead]||lead)+' is strong across the board: it clears the bar against '+good.slice(0,5).map(function(x){return x.o+' ('+sgn(x.v)+')';}).join(', ')+'. ';
+  else if(good.length) acc+='It clears the bar against '+good.slice(0,4).map(function(x){return x.o+' ('+sgn(x.v)+')';}).join(', ')+(flat?', with no clear edge against '+flat+' other'+(flat>1?'s':''):'')+'. ';
+  if(bad.length) acc+='It is on the wrong side against '+bad.slice(0,3).map(function(x){return x.o;}).join(', ')+'. ';
+  var other=rows.filter(function(c){return c!==lead&&c!==lag;});
+  var s2=other[0], w2=other[other.length-1];
+  if(s2&&scores[s2]>=10) acc+='Elsewhere, <b>'+s2+'</b> is the next strongest at '+sgn(scores[s2])+' ('+(WT_BANK[s2]||s2)+' '+cbRead(s2).label+'). ';
+  if(w2&&scores[w2]<=-10) acc+='<b>'+w2+'</b> is the weak link at '+sgn(scores[w2])+' ('+(WT_BANK[w2]||w2)+' '+cbRead(w2).label+').';
+  secs.push({k:'ACROSS THE BOARD',h:acc});
+  /* AGAINST IT */
+  var ag=[];
+  against.slice(0,2).forEach(function(d){ag.push(whyMacro(d.name,lag,lead));});
+  missL.slice(0,1).forEach(function(x){ag.push(lead+' missed on '+relTxt(x));});
+  beatG.slice(0,1).forEach(function(x){ag.push(lag+' beat on '+relTxt(x));});
+  var up=upcomingList([lead,lag],2);
+  var agt=ag.length?'Pushing back: '+ag.join('; ')+'. ':'Nothing material is pushing against it right now. ';
+  if(up.length) agt+='Next risk: '+up.map(function(u){return '<b>'+esc2(u.e.ccy)+' '+esc2(u.e.name||'release')+'</b> ('+esc2(u.e.date||'')+')';}).join(' and ')+'.';
+  else agt+='The risk is a surprise in the next '+lead+' or '+lag+' release.';
+  secs.push({k:'AGAINST IT',h:agt});
+  return {headline:headline,secs:secs,body:'',pairs:pairs,top:T,lead:lead,lag:lag,dir:dir};
 }
-function wtItems(pairs){
-  var items=[];
-  var bull=pairs.filter(function(p){return p.score>=21;}).sort(function(a,b){return b.score-a.score;})[0];
-  var bear=pairs.filter(function(p){return p.score<=-21;}).sort(function(a,b){return a.score-b.score;})[0];
-  var setup=(bull?'Best long: <b>'+bull.pair+'</b> <span class="wt-pos">'+sgn(bull.score)+'</span>. ':'No pair clears +21 on the long side. ')+(bear?'Best short: <b>'+bear.pair+'</b> <span class="wt-neg">'+sgn(bear.score)+'</span>.':'Nothing clears -21 on the short side.');
-  items.push({tag:'SETUPS',txt:setup});
-  var mv=null;
-  pairs.forEach(function(p){var pr=pairPriorLoggedScore(p.pair);if(pr==null)return;var d=p.score-pr;if(!mv||Math.abs(d)>Math.abs(mv.d))mv={p:p,d:d};});
-  if(mv&&Math.abs(mv.d)>=3){items.push({tag:'MOVER',txt:'<b>'+mv.p.pair+'</b> moved the most since the last logged day, <span class="'+tone(mv.d)+'">'+sgn(mv.d)+'</span> to <b>'+sgn(mv.p.score)+'</b>. Check what changed before you lean on it.'});}
-  else items.push({tag:'MOVER',txt:'No pair has moved meaningfully since the last logged day.'});
-  var conf=null;
-  pairs.filter(function(p){return Math.abs(p.score)>=21;}).forEach(function(p){
-    if(conf)return; var dir=p.score>0?1:-1, d=scannerDriverBreakdown(p.base,p.quote);
-    var core=d.filter(function(x){return x.name==='Fundamentals'||x.name==='Yield'||x.name==='CB stance';});
-    var bad=core.filter(function(x){return Math.sign(x.pts)===-dir&&Math.abs(x.pts)>=3;})[0];
-    if(bad) conf={p:p,bad:bad};
+function joinAnd(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
+function wtItems(pairs,scores){
+  var groups=[], strong=pairs.filter(function(p){return Math.abs(p.score)>=21;});
+  function core(p){
+    var dr=p.score>0?1:-1, dd=scannerDriverBreakdown(p.base,p.quote).filter(function(x){return x.name==='Fundamentals'||x.name==='Yield'||x.name==='CB stance';});
+    return {dir:dr,agree:dd.filter(function(x){return Math.sign(x.pts)===dr&&Math.abs(x.pts)>=1;}),against:dd.filter(function(x){return Math.sign(x.pts)===-dr&&Math.abs(x.pts)>=3;}),all:dd};
+  }
+  /* SETUPS */
+  var su=[];
+  strong.slice(0,4).forEach(function(p){
+    var dr=p.score>0?1:-1, L=dr>0?p.base:p.quote, G=dr>0?p.quote:p.base;
+    var why=scannerDriverBreakdown(p.base,p.quote).filter(function(x){return Math.sign(x.pts)===dr&&Math.abs(x.pts)>=1;}).sort(function(a,b){return Math.abs(b.pts)-Math.abs(a.pts);}).slice(0,2).map(function(x){return whyMacro(x.name,L,G);}).join(', and ');
+    su.push({tag:dr>0?'LONG':'SHORT',tcls:dr>0?'pos':'neg',txt:'<b>'+p.pair+'</b>: '+(why||'macro leans '+L)+'.'});
   });
-  items.push({tag:'WATCH',txt:conf?'<b>'+conf.p.pair+'</b> scores <b>'+sgn(conf.p.score)+'</b> but '+conf.bad.name.toLowerCase()+' disagrees ('+sgn(conf.bad.pts)+'). Cross-check against price before chasing.':'Fundamentals, yield and CB stance agree on every pair that clears the bar.'});
-  return items;
+  if(!su.length) su.push({tag:'NONE',tcls:'',txt:'No pair has a clean macro edge right now. Best of the rest is <b>'+pairs[0].pair+'</b>; wait for guidance or data to confirm it.'});
+  groups.push({h:'SETUPS',list:su});
+  /* MOVERS */
+  var mv=[];
+  pairs.forEach(function(p){var pr=pairPriorLoggedScore(p.pair);if(pr==null)return;var dd=p.score-pr;if(Math.abs(dd)>=3)mv.push({p:p,d:dd});});
+  mv.sort(function(a,b){return Math.abs(b.d)-Math.abs(a.d);});
+  var ml=[];
+  mv.slice(0,3).forEach(function(m){
+    var ev=recentFor(m.p.base).concat(recentFor(m.p.quote)).filter(function(x){return x.tone!=='neutral';})[0];
+    ml.push({tag:sgn(m.d),tcls:m.d>0?'pos':'neg',txt:'<b>'+m.p.pair+'</b> now '+sgn(m.p.score)+' since the last logged day.'+(ev?' Likely driver: '+ev.e.ccy+' '+relTxt(ev)+', a '+(ev.tone==='pos'?'beat':'miss')+'.':' No fresh release explains it, so check guidance and yields.')});
+  });
+  var cm=CCY_ORDER.map(function(c){var p7=ccyPrior7(c);return {c:c,d:p7==null?0:scores[c]-p7};}).filter(function(x){return Math.abs(x.d)>=5;}).sort(function(a,b){return Math.abs(b.d)-Math.abs(a.d);}).slice(0,2);
+  cm.forEach(function(x){
+    var ev=recentFor(x.c).filter(function(r){return r.tone!=='neutral';})[0], r=cbRead(x.c);
+    ml.push({tag:sgn(x.d),tcls:x.d>0?'pos':'neg',txt:'<b>'+x.c+'</b> '+(x.d>0?'gained':'lost')+' '+Math.abs(Math.round(x.d))+' points on the week to '+sgn(scores[x.c])+'. '+r.bank+' reads '+r.label+(ev?', and '+relTxt(ev)+' was a '+(ev.tone==='pos'?'beat':'miss'):'')+'.'});
+  });
+  if(!ml.length) ml.push({tag:'FLAT',tcls:'',txt:'Nothing has shifted meaningfully since the last logged day or over the week.'});
+  groups.push({h:'MOVERS',list:ml});
+  /* WATCH */
+  var wl=[];
+  strong.forEach(function(p){
+    var c=core(p); if(wl.length>=2) return;
+    if(c.against.length>=2||c.agree.length<=1){
+      var dr=c.dir, L=dr>0?p.base:p.quote, G=dr>0?p.quote:p.base;
+      var miss=c.all.filter(function(x){return !(Math.sign(x.pts)===dr&&Math.abs(x.pts)>=1);}).map(function(x){return x.name==='CB stance'?'central-bank guidance':x.name==='Yield'?'the yield gap':'fundamentals';});
+      wl.push({tag:'RISK',tcls:'neg',txt:'<b>'+p.pair+'</b> clears the bar, but '+joinAnd(miss)+' do not back '+L+'. Wait for those to turn before trusting it.'});
+    }
+  });
+  var near=pairs.filter(function(p){var a=Math.abs(p.score);return a>=14&&a<21;}).sort(function(a,b){return Math.abs(b.score)-Math.abs(a.score);});
+  near.slice(0,2).forEach(function(p){
+    var c=core(p), dr=c.dir, L=dr>0?p.base:p.quote, G=dr>0?p.quote:p.base;
+    var lack=c.all.filter(function(x){return !(Math.sign(x.pts)===dr&&Math.abs(x.pts)>=2);}).map(function(x){return x.name==='CB stance'?'central-bank guidance':x.name==='Yield'?'the yield gap':'fundamentals';});
+    wl.push({tag:'NEAR',tcls:'amb',txt:'<b>'+p.pair+'</b> at '+sgn(p.score)+', just under the band for a '+(dr>0?'long ':'short ')+p.pair+' (favouring '+L+'). '+(lack.length?'It needs '+joinAnd(lack)+' to firm up.':'A little more confirmation from data tips it over.')});
+  });
+  var T0=strong[0]||pairs[0], dr0=T0.score>0?1:-1, up=upcomingList([dr0>0?T0.base:T0.quote,dr0>0?T0.quote:T0.base,(strong[1]?strong[1].base:'')],2);
+  up.forEach(function(u){wl.push({tag:'DATA',tcls:'amb',txt:'<b>'+esc2(u.e.ccy)+' '+esc2(u.e.name||'release')+'</b> on '+esc2(u.e.date||'')+'. A miss or beat here moves the lead setups.'});});
+  if(!wl.length) wl.push({tag:'CLEAR',tcls:'pos',txt:'Fundamentals, yields and guidance agree on every pair that clears the bar, and nothing sits close to the line.'});
+  groups.push({h:'WATCH',list:wl});
+  return groups;
 }
 function greetingText(){
   var nm=''; try{nm=localStorage.getItem('twp_visitor_name')||'';}catch(e){}
@@ -20181,47 +20362,46 @@ function setupsHtml(pairs){
 function drawSlope(animate){
   var wrap=document.getElementById('wtSlope'); if(!wrap) return;
   var W=wrap.clientWidth,H=wrap.clientHeight; if(W<120||H<120) return;
-  var scores=allScores(), rows=CCY_ORDER.map(function(c){var p=ccyPrior7(c);return {c:c,now:scores[c],prev:p==null?scores[c]:p};});
+  var scores=allScores(), cols=OV_CSI_COLORS;
+  var rows=CCY_ORDER.map(function(c){var p=ccyPrior7(c);return {c:c,now:scores[c],prev:p==null?scores[c]:p};});
   var vals=[];rows.forEach(function(r){vals.push(r.now,r.prev);});
-  var lo=Math.min.apply(null,vals.concat([0]))-10,hi=Math.max.apply(null,vals.concat([0]))+10,pt=46,pb=22;
-  var Y=function(v){return pt+(1-(v-lo)/(hi-lo))*(H-pt-pb);}, xL=Math.round(W*.30), xR=Math.round(W*.62);
-  function spread(list,key){var arr=list.slice().sort(function(x,y){return Y(x[key])-Y(y[key]);}),prev=-99;arr.forEach(function(r){var y=Y(r[key]);if(y-prev<18)y=prev+18;r['y_'+key]=y;prev=y;});}
+  var lo=Math.min.apply(null,vals.concat([0]))-10,hi=Math.max.apply(null,vals.concat([0]))+10,pt=46,pb=26;
+  var Y=function(v){return pt+(1-(v-lo)/(hi-lo))*(H-pt-pb);}, xL=Math.round(W*.30), xR=Math.round(W*.62), GAP=32;
+  function spread(list,key){
+    var arr=list.slice().sort(function(x,y){return Y(x[key])-Y(y[key]);}),prev=-99,i;
+    arr.forEach(function(r){var y=Y(r[key]);if(y-prev<GAP)y=prev+GAP;r['y_'+key]=y;prev=y;});
+    var maxY=H-pb+6; if(arr.length&&arr[arr.length-1]['y_'+key]>maxY){arr[arr.length-1]['y_'+key]=maxY;for(i=arr.length-2;i>=0;i--){if(arr[i]['y_'+key]>arr[i+1]['y_'+key]-GAP)arr[i]['y_'+key]=arr[i+1]['y_'+key]-GAP;}}
+  }
   spread(rows,'prev');spread(rows,'now');
-  var order=rows.slice().sort(function(a,b){return Math.abs(b.now-b.prev)-Math.abs(a.now-a.prev);});
-  var topMover=order[0]&&Math.abs(order[0].now-order[0].prev)>=1?order[0].c:null;
-  var defs='<defs>'+
-    '<linearGradient id="slUp" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#fa660f"/></linearGradient>'+
-    '<linearGradient id="slDn" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#a83a1d"/><stop offset="1" stop-color="#e5303f"/></linearGradient>'+
-    '<linearGradient id="slFl" x1="0" x2="1"><stop offset="0" stop-color="#6b6256"/><stop offset="1" stop-color="#8a7f70"/></linearGradient>'+
-    '<linearGradient id="slCol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fa660f" stop-opacity=".0"/><stop offset=".5" stop-color="#fa660f" stop-opacity=".28"/><stop offset="1" stop-color="#fa660f" stop-opacity="0"/></linearGradient>'+
-    '<filter id="slGlow" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'+
-    '</defs>';
+  var maxAbs=Math.max.apply(null,rows.map(function(r){return Math.abs(r.now);}).concat([30])), C=69.1;
+  var st=animate?'':' sx-static';
+  var defs='<defs><linearGradient id="sxCol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fa660f" stop-opacity="0"/><stop offset=".5" stop-color="#fa660f" stop-opacity=".30"/><stop offset="1" stop-color="#fa660f" stop-opacity="0"/></linearGradient>';
+  rows.forEach(function(r,i){var w=animate?0:(xR-xL+2);defs+='<clipPath id="sxc'+i+'"><rect x="'+xL+'" y="0" width="'+w+'" height="'+H+'">'+(animate?'<animate attributeName="width" from="0" to="'+(xR-xL+2)+'" dur=".9s" begin="'+((i*90+250)/1000).toFixed(2)+'s" fill="freeze"/>':'')+'</rect></clipPath>';});
+  defs+='</defs>';
   var g='';
-  g+='<rect x="'+(xL-1)+'" y="'+(pt-14)+'" width="2" height="'+(H-pt-pb+22)+'" fill="url(#slCol)"/><rect x="'+(xR-1)+'" y="'+(pt-14)+'" width="2" height="'+(H-pt-pb+22)+'" fill="url(#slCol)"/>';
-  g+='<text x="'+xL+'" y="22" text-anchor="middle" font-size="11" letter-spacing="2" fill="#c9a24a" font-weight="700">7D AGO</text><text x="'+xR+'" y="22" text-anchor="middle" font-size="11" letter-spacing="2" fill="#fa8a3c" font-weight="700">NOW</text>';
-  g+='<line x1="'+(xL-28)+'" x2="'+(xR+28)+'" y1="'+Y(0).toFixed(1)+'" y2="'+Y(0).toFixed(1)+'" stroke="#fa660f" stroke-opacity=".28" stroke-dasharray="2 5"/>';
+  g+='<rect x="'+xL+'" y="'+(pt-14)+'" width="1" height="'+(H-pt-pb+26)+'" fill="url(#sxCol)"/><rect x="'+xR+'" y="'+(pt-14)+'" width="1" height="'+(H-pt-pb+26)+'" fill="url(#sxCol)"/>';
+  g+='<text x="'+xL+'" y="22" text-anchor="middle" font-size="11" letter-spacing="2" fill="#c9a24a" fill-opacity=".85" font-weight="700">7D AGO</text><text x="'+xR+'" y="22" text-anchor="middle" font-size="11" letter-spacing="2" fill="#fa8a3c" fill-opacity=".9" font-weight="700">NOW</text>';
+  g+='<line x1="'+(xL-30)+'" x2="'+(xR+30)+'" y1="'+Y(0).toFixed(1)+'" y2="'+Y(0).toFixed(1)+'" stroke="#fff" stroke-opacity=".10" stroke-dasharray="1 5" stroke-linecap="round"/>';
   rows.forEach(function(r,i){
-    var d=r.now-r.prev, dir=d>=1?'up':d<=-1?'dn':'fl', y1=Y(r.prev), y2=Y(r.now), len=Math.hypot(xR-xL,y2-y1);
-    var grad=dir==='up'?'url(#slUp)':dir==='dn'?'url(#slDn)':'url(#slFl)', dc=dir==='up'?'#ffc247':dir==='dn'?'#f04455':'#8a7f70';
-    var del=i*110, lineDelay=del+200, endDelay=lineDelay+850;
-    g+='<g class="sl sl-'+dir+'" data-c="'+r.c+'">';
-    g+='<line class="sl-hit" x1="'+xL+'" y1="'+y1.toFixed(1)+'" x2="'+xR+'" y2="'+y2.toFixed(1)+'" stroke="transparent" stroke-width="16"/>';
-    g+='<line class="sl-line anim" x1="'+xL+'" y1="'+y1.toFixed(1)+'" x2="'+xR+'" y2="'+y2.toFixed(1)+'" stroke="'+grad+'" stroke-width="'+(r.c===topMover?3.4:2.4)+'" stroke-linecap="round" '+(dir==='up'?'filter="url(#slGlow)" ':'')+'style="--len:'+len.toFixed(0)+';animation-delay:'+lineDelay+'ms" gradientUnits="userSpaceOnUse"/>';
-    g+='<circle class="sl-dot anim" cx="'+xL+'" cy="'+y1.toFixed(1)+'" r="4" fill="#15110c" stroke="'+dc+'" stroke-width="2" style="animation-delay:'+(del)+'ms"/>';
-    g+='<circle class="sl-dot anim" cx="'+xR+'" cy="'+y2.toFixed(1)+'" r="5" fill="'+dc+'" style="animation-delay:'+endDelay+'ms"/>';
-    if(r.c===topMover) g+='<circle class="sl-ring" cx="'+xR+'" cy="'+y2.toFixed(1)+'" r="5" fill="none" stroke="'+dc+'" stroke-width="1.5"/>';
-    if(dir!=='fl') g+='<circle r="2.6" fill="'+(dir==='up'?'#fff3cf':'#ffb3b3')+'" opacity=".95"><animateMotion dur="'+(dir==='up'?2.8:3.8)+'s" begin="'+((endDelay+300)/1000).toFixed(2)+'s" repeatCount="indefinite" path="M'+xL+' '+y1.toFixed(1)+' L'+xR+' '+y2.toFixed(1)+'"/></circle>';
-    g+='<text class="sl-lab anim" x="'+(xL-14)+'" y="'+(r.y_prev+4).toFixed(1)+'" text-anchor="end" font-size="12.5" fill="#8d8579" style="animation-delay:'+(del+60)+'ms"><tspan font-weight="700" fill="#efe7da">'+r.c+'</tspan> '+sgn(r.prev)+'</text>';
-    g+='<text class="sl-lab anim" x="'+(xR+16)+'" y="'+(r.y_now+4).toFixed(1)+'" font-size="12.5" fill="#cbbfae" style="animation-delay:'+endDelay+'ms"><tspan font-weight="700" fill="#fff7ea">'+r.c+'</tspan> <tspan class="cu" data-from="'+Math.round(r.prev)+'" data-to="'+Math.round(r.now)+'">'+sgn(r.prev)+'</tspan>'+(Math.round(d)===0?'':' <tspan class="cu cu-d" font-weight="700" fill="'+dc+'" data-from="0" data-to="'+Math.round(d)+'">+0</tspan>')+'</text>';
+    var d=r.now-r.prev, dir=d>=1?'up':d<=-1?'dn':'fl', y1=r.y_prev, y2=r.y_now, col=cols[r.c]||'#f28c28';
+    var dcol=dir==='up'?'#22c98b':dir==='dn'?'#f04455':'#8a8f98', del=i*90;
+    var arcT=(C*(1-Math.min(1,Math.abs(r.now)/maxAbs))).toFixed(1);
+    g+='<g class="sx" data-c="'+r.c+'">';
+    g+='<line class="sx-hit" x1="'+xL+'" y1="'+y1.toFixed(1)+'" x2="'+xR+'" y2="'+y2.toFixed(1)+'" stroke="transparent" stroke-width="20" pointer-events="stroke"/>';
+    g+='<line class="sx-line" x1="'+xL+'" y1="'+y1.toFixed(1)+'" x2="'+xR+'" y2="'+y2.toFixed(1)+'" stroke="'+col+'" clip-path="url(#sxc'+i+')"/>';
+    g+='<circle class="sx-pop" cx="'+xL+'" cy="'+y1.toFixed(1)+'" r="3.6" fill="#0b0a09" stroke="'+col+'" stroke-width="1.4" style="animation-delay:'+del+'ms"/>';
+    g+='<circle r="2.1" fill="'+col+'" opacity=".95"><animateMotion dur="'+(3.2+i*.28).toFixed(2)+'s" begin="'+((del+1100)/1000).toFixed(2)+'s" repeatCount="indefinite" path="M'+xL+' '+y1.toFixed(1)+' L'+xR+' '+y2.toFixed(1)+'"/></circle>';
+    g+='<circle class="sx-pop" cx="'+xR+'" cy="'+y2.toFixed(1)+'" r="5.5" fill="'+col+'" style="animation-delay:'+(del+700)+'ms"/>';
+    g+='<circle class="sx-rip" cx="'+xR+'" cy="'+y2.toFixed(1)+'" r="5" fill="none" stroke="'+col+'" stroke-width="1.2" style="animation-delay:'+((i*.45)+1.8).toFixed(2)+'s"/>';
+    g+='<text class="sx-lab" x="'+(xL-14)+'" y="'+(y1+4).toFixed(1)+'" text-anchor="end" font-size="12.5" fill="#7c8088" style="animation-delay:'+(del+60)+'ms"><tspan font-weight="700" fill="#e8e9ec">'+r.c+'</tspan> '+sgn(r.prev)+'</text>';
+    g+='<text class="sx-lab" x="'+(xR+16)+'" y="'+(y2+4).toFixed(1)+'" font-size="12.5" fill="#b9bcc3" style="animation-delay:'+(del+900)+'ms"><tspan font-weight="700" fill="#fff">'+r.c+'</tspan> <tspan class="cu" data-from="'+Math.round(r.prev)+'" data-to="'+Math.round(r.now)+'">'+sgn(r.prev)+'</tspan>'+(Math.round(d)===0?'':' <tspan class="cu cu-d" font-weight="700" fill="'+dcol+'" data-from="0" data-to="'+Math.round(d)+'">'+sgn(0)+'</tspan>')+'</text>';
     g+='</g>';
   });
-  wrap.innerHTML='<svg class="sl-svg'+(animate?'':' sl-static')+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+defs+g+'</svg>';
-  // gradient strokes need objectBoundingBox off for horizontal-ish lines
-  [].forEach.call(wrap.querySelectorAll('.sl-line'),function(l){l.removeAttribute('gradientUnits');});
+  wrap.innerHTML='<svg class="sx-svg'+st+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+defs+g+'</svg>';
   var cus=wrap.querySelectorAll('.cu');
   function fmt(v){v=Math.round(v);return v>0?'+'+v:String(v);}
   if(animate){
-    var t0=null,dur=1000,startAfter=1050;
+    var t0=null,dur=1000,startAfter=1000;
     [].forEach.call(cus,function(e){e.textContent=fmt(Number(e.getAttribute('data-from')));});
     var raf=function(ts){
       if(!document.body.contains(wrap)||!wrap.contains(cus[0]||wrap))return;
@@ -20351,11 +20531,11 @@ function drawCsi(animate,hostId){
 window.renderOverview=function(animate){
   if(!window.DATA) return;
   var host=document.getElementById('tab-overview'); if(!host) return;
-  var scores=allScores(), N=wtNarrative(scores), items=wtItems(N.pairs);
+  var scores=allScores(), N=wtNarrative(scores), items=wtItems(N.pairs,scores);
     host.innerHTML='<div class="wt-ov">'+
    '<section class="wt-card"><div class="wt-head"><span class="wt-dot"></span><span class="wt-title">Daily need-to-know</span></div>'+
-     '<div class="wt-ntk"><div class="wt-ntk-main"><div class="wt-hello">'+greetingText()+'</div><div class="wt-headline">'+esc2(N.headline)+'</div><div class="wt-copy">'+N.body+'</div></div>'+
-     '<div class="wt-ntk-side"><div class="wt-kicker">NEED TO KNOW</div>'+items.map(function(it,i){return '<div class="wt-item"><span class="wt-n">'+(i+1)+'</span><span class="wt-tag">'+it.tag+'</span><span class="wt-txt">'+it.txt+'</span></div>';}).join('')+'</div></div></section>'+
+     '<div class="wt-ntk"><div class="wt-ntk-main"><div class="wt-hello">'+greetingText()+'</div><div class="wt-headline">'+esc2(N.headline)+'</div>'+N.secs.map(function(x){return '<div class="wt-sec"><div class="wt-sec-h">'+x.k+'</div><div class="wt-sec-t">'+x.h+'</div></div>';}).join('')+'</div>'+
+     '<div class="wt-ntk-side">'+items.map(function(g){return '<div class="wt-grp-h">'+g.h+'</div>'+g.list.map(function(it){return '<div class="wt-item g"><span class="wt-tag '+(it.tcls||'')+'">'+it.tag+'</span><span class="wt-txt">'+it.txt+'</span></div>';}).join('');}).join('')+'</div></div></section>'+
    '<section class="wt-card"><div class="wt-head"><span class="wt-dot"></span><span class="wt-title">Currency pair heatmap</span><span class="wt-sub">Composite score · Pair matrix</span></div>'+heatHtml()+'</section>'+
    '<section class="wt-card"><div class="wt-head"><span class="wt-dot"></span><span class="wt-title">Strength shift</span><span class="wt-sub">Composite · 7D ago to now</span></div><div class="wt-chart" id="wtSlope"></div></section>'+
    '<section class="wt-card"><div class="wt-head"><span class="wt-dot"></span><span class="wt-title">Top setups</span><span class="wt-sub">Top 5 · past ±21</span><span class="wt-grow"></span><button class="wt-open" data-wt-open>Open scanner &rarr;</button></div>'+setupsHtml(N.pairs)+'</section>'+
